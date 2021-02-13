@@ -13,7 +13,7 @@ namespace AudioTagger
 
             for (var i = 0; i < args.Length; i++)
             {
-                var filename = args[i];
+                var filename = args[i]?.Trim();
 
                 if (string.IsNullOrWhiteSpace(filename))
                 {
