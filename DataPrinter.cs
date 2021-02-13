@@ -8,7 +8,7 @@ namespace AudioTagger
         private string LineTextToPrepend { get; set; }
         private byte LinesToAppend { get; set; }
         private readonly string _separator = ":"; // TODO: Make into a user setting?
-        const sbyte _minTitleWidth = -13; // TODO: Make into a user setting?
+        const sbyte _minTitleWidth = -12; // TODO: Make into a user setting?
 
         public DataPrinter(byte linesToPrepend, string lineTextToPrepend, byte linesToAppend = 0)
         {
