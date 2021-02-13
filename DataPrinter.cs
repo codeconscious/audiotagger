@@ -8,7 +8,7 @@ namespace AudioTagger
         private string LineTextToPrepend { get; set; }
         private byte LinesToAppend { get; set; }
 
-        public DataPrinter(byte linesToPrepend, string lineTextToPrepend, byte linesToAppend)
+        public DataPrinter(byte linesToPrepend, string lineTextToPrepend, byte linesToAppend = 0)
         {
             LinesToPrepend = linesToPrepend;
             LineTextToPrepend = lineTextToPrepend;
@@ -20,6 +20,7 @@ namespace AudioTagger
             for (var prepend = 0; prepend < LinesToPrepend; prepend++)
                 Console.WriteLine();
 
+            // TODO: Make labels multilingual
             Console.WriteLine(LineTextToPrepend + $"Title: {fileData.Title}");
             Console.WriteLine(LineTextToPrepend + $"Artist(s): {string.Join(", ", fileData.Artists)}");
             Console.WriteLine(LineTextToPrepend + $"Duration: {fileData.Duration:c}");
