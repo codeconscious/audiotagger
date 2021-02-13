@@ -17,10 +17,11 @@ namespace AudioTagger
 
         public void PrintData(FileData fileData)
         {
-            for (var prepend = 0; prepend < LinesToPrepend; prepend++)
-                Console.WriteLine();
+            PrintPrependLines();
 
             Console.WriteLine($"\"{fileData.FileName}\"");
+
+            // JA characters are wider than EN, so the alignment is off.
             Console.WriteLine(new string('-', fileData.FileName.Length));
 
             // TODO: Make labels multilingual
@@ -35,21 +36,27 @@ namespace AudioTagger
             if (fileData.Composers?.Length > 0)
                 Console.WriteLine(LineTextToPrepend + $"Composers: {string.Join("; ", fileData.Composers)}");
 
-            for (var append = 0; append < LinesToAppend; append++)
-                Console.WriteLine();
+            PrintAppendLines();
         }
 
         public void PrintError(string message)
         {
-            if (string.IsNullOrWhiteSpace(message))
+            if (string.IsNullOrWhiteSpace(message)) // TODO: Turn on nullable references
                 throw new ArgumentNullException(nameof(message), "Argument cannot be empty");
 
-            // TODO: Violates DRY -- fix.
-            for (var prepend = 0; prepend < LinesToPrepend; prepend++)
-                Console.WriteLine();
-
+            PrintPrependLines();
             Console.WriteLine("ERROR: " + message);
+            PrintAppendLines();            
+        }
 
+        private void PrintPrependLines()
+        {
+            for (var prepend = 0; prepend<LinesToPrepend; prepend++)
+                Console.WriteLine();
+        }
+
+        private void PrintAppendLines()
+        {
             for (var append = 0; append < LinesToAppend; append++)
                 Console.WriteLine();
         }
