@@ -7,6 +7,8 @@ namespace AudioTagger
     {
         static void Main(string[] args)
         {
+            Console.WriteLine();
+
             foreach (var filename in args)
             {
                 if (string.IsNullOrWhiteSpace(filename))
@@ -22,13 +24,15 @@ namespace AudioTagger
                     taggedFile.Tag.Performers,
                     taggedFile.Properties.Duration,
                     taggedFile.Tag.Genres,
-                    taggedFile.Properties.AudioBitrate, // TODO: Figure out why this is a
+                    taggedFile.Properties.AudioBitrate, // TODO: Figure out why this is always 0
                     taggedFile.Properties.AudioSampleRate,
                     taggedFile.Tag.Composers);
 
-                var printer = new DataPrinter(1, "   • ", 1);
+                var printer = new DataPrinter(1, "   • ");
 
                 printer.PrintData(fileRecord);
+
+                Console.WriteLine();
             }
         }
     }
