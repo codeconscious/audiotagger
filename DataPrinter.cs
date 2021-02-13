@@ -20,6 +20,8 @@ namespace AudioTagger
             for (var prepend = 0; prepend < LinesToPrepend; prepend++)
                 Console.WriteLine();
 
+            Console.WriteLine($"\"{fileData.FileName}\"");
+
             // TODO: Make labels multilingual
             Console.WriteLine(LineTextToPrepend + $"Title: {fileData.Title}");
             Console.WriteLine(LineTextToPrepend + $"Artist(s): {string.Join(", ", fileData.Artists)}");
@@ -30,6 +32,21 @@ namespace AudioTagger
 
             if (fileData.Composers?.Length > 0)
                 Console.WriteLine(LineTextToPrepend + $"Composers: {string.Join("; ", fileData.Composers)}");
+
+            for (var append = 0; append < LinesToAppend; append++)
+                Console.WriteLine();
+        }
+
+        public void PrintError(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                throw new ArgumentNullException(nameof(message), "Argument cannot be empty");
+
+            // TODO: Violates DRY -- fix.
+            for (var prepend = 0; prepend < LinesToPrepend; prepend++)
+                Console.WriteLine();
+
+            Console.WriteLine("ERROR: " + message);
 
             for (var append = 0; append < LinesToAppend; append++)
                 Console.WriteLine();

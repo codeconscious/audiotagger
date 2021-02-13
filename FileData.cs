@@ -3,6 +3,7 @@
 namespace AudioTagger
 {
     public record FileData(
+        string FileName,
         string Title,
         string[] Artists,
         TimeSpan Duration,
