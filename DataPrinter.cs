@@ -19,10 +19,11 @@ namespace AudioTagger
         {
             PrintPrependLines();
 
-            Console.WriteLine($"\"{fileData.FileName}\"");
+            var header = $"\"{fileData.FileName}\"";
+            Console.WriteLine(header);
 
             // JA characters are wider than EN, so the alignment is off.
-            Console.WriteLine(new string('-', fileData.FileName.Length));
+            Console.WriteLine(new string('-', header.Length));
 
             // TODO: Make labels multilingual
             // TODO: Add label spaces so that data is aligned
