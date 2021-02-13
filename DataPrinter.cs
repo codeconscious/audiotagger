@@ -21,15 +21,16 @@ namespace AudioTagger
                 Console.WriteLine();
 
             Console.WriteLine($"\"{fileData.FileName}\"");
+            Console.WriteLine(new string('-', fileData.FileName.Length));
 
             // TODO: Make labels multilingual
             // TODO: Add label spaces so that data is aligned
-            Console.WriteLine(LineTextToPrepend + $"Title: {fileData.Title}");
-            Console.WriteLine(LineTextToPrepend + $"Artist(s): {string.Join(", ", fileData.Artists)}");
-            Console.WriteLine(LineTextToPrepend + $"Duration: {fileData.Duration:mm\\:ss}");
-            Console.WriteLine(LineTextToPrepend + $"Genre: {string.Join(", ", fileData.Genres)}");
-            Console.WriteLine(LineTextToPrepend + $"Bitrate: {fileData.BitRate}");
-            Console.WriteLine(LineTextToPrepend + $"Sample Rate: {fileData.SampleRate:#,##0}");
+            Console.WriteLine(LineTextToPrepend + $"Title       : {fileData.Title}");
+            Console.WriteLine(LineTextToPrepend + $"Artist(s)   : {string.Join(", ", fileData.Artists)}");
+            Console.WriteLine(LineTextToPrepend + $"Duration    : {fileData.Duration:mm\\:ss}");
+            Console.WriteLine(LineTextToPrepend + $"Genre       : {string.Join(", ", fileData.Genres)}");
+            Console.WriteLine(LineTextToPrepend + $"Bitrate     : {fileData.BitRate}");
+            Console.WriteLine(LineTextToPrepend + $"Sample Rate : {fileData.SampleRate:#,##0}");
 
             if (fileData.Composers?.Length > 0)
                 Console.WriteLine(LineTextToPrepend + $"Composers: {string.Join("; ", fileData.Composers)}");
