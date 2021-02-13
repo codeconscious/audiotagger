@@ -11,8 +11,10 @@ namespace AudioTagger
 
             var printer = new DataPrinter(1, "   • ");
 
-            foreach (var filename in args)
+            for (var i = 0; i < args.Length; i++)
             {
+                var filename = args[i];
+
                 if (string.IsNullOrWhiteSpace(filename))
                 {
                     printer.PrintError("No filename was entered.");
@@ -43,8 +45,4 @@ namespace AudioTagger
             Console.WriteLine();
         }
     }
-
-        
-
-    
 }
