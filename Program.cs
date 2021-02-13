@@ -37,7 +37,8 @@ namespace AudioTagger
                     taggedFile.Tag.Genres,
                     taggedFile.Properties.AudioBitrate, // TODO: Figure out why this is always 0
                     taggedFile.Properties.AudioSampleRate,
-                    taggedFile.Tag.Composers);                
+                    taggedFile.Tag.Composers,
+                    taggedFile.Tag.ReplayGainTrackGain > 0 || taggedFile.Tag.ReplayGainAlbumGain > 0);
 
                 printer.PrintData(fileRecord);                
             }

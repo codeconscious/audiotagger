@@ -10,6 +10,7 @@ namespace AudioTagger
         string[] Genres,
         int BitRate,
         int SampleRate,
-        string[] Composers
+        string[] Composers,
+        bool HasReplayGainData
     );
 }

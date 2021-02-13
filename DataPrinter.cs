@@ -33,6 +33,7 @@ namespace AudioTagger
             Console.WriteLine(LineTextToPrepend + $"Genre       : {string.Join(", ", fileData.Genres)}");
             Console.WriteLine(LineTextToPrepend + $"Bitrate     : {fileData.BitRate}");
             Console.WriteLine(LineTextToPrepend + $"Sample Rate : {fileData.SampleRate:#,##0}");
+            Console.WriteLine(LineTextToPrepend + $"ReplayGain? : {(fileData.HasReplayGainData ? "Yes" : "No")}");
 
             if (fileData.Composers?.Length > 0)
                 Console.WriteLine(LineTextToPrepend + $"Composers: {string.Join("; ", fileData.Composers)}");
