@@ -3,6 +3,7 @@
     public enum Mode
     {
         Read,
-        Update
+        Update,
+        Rename
     }
 }

@@ -43,7 +43,7 @@ namespace AudioTagger
                     updates.Genres = element.Value.Value.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             }
 
-            Console.WriteLine("NEW DATA:");
+            Console.WriteLine("Proposed updates:");
 
             if (updates.Title != null && updates.Title != fileData.Title)
                 Console.WriteLine("  - Title: " + updates.Title);
