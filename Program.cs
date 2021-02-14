@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace AudioTagger
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
@@ -74,6 +74,4 @@ namespace AudioTagger
                 taggedFile.Tag.ReplayGainTrackGain > 0 || taggedFile.Tag.ReplayGainAlbumGain > 0);
         }
     }
-
-    public enum Mode { Read, Update }
 }
