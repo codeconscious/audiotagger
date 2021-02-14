@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using TagLib;
 
 namespace AudioTagger
@@ -22,19 +23,19 @@ namespace AudioTagger
         public string Title
         {
             get => _tabLibFile.Tag.Title;
-            set => _tabLibFile.Tag.Title = value;
+            set => _tabLibFile.Tag.Title = value.Trim();
         }
 
         public string[] Artists
         {
             get => _tabLibFile.Tag.Performers;
-            set => _tabLibFile.Tag.Performers = value;
+            set => _tabLibFile.Tag.Performers = value.Where(a => !string.IsNullOrWhiteSpace(a)).ToArray();
         }
 
         public string Album
         {
             get => _tabLibFile.Tag.Album;
-            set => _tabLibFile.Tag.Album = value;
+            set => _tabLibFile.Tag.Album = value.Trim();
         }
 
         public uint Year
@@ -54,6 +55,18 @@ namespace AudioTagger
             set => _tabLibFile.Tag.Genres = value;
         }
 
+        public string[] Composers
+        {
+            get => _tabLibFile.Tag.Composers;
+            set => _tabLibFile.Tag.Composers = value;
+        }
+
+        public string Comments
+        {
+            get => _tabLibFile.Tag.Comment ?? "";
+            set => _tabLibFile.Tag.Comment = value.Trim();
+        }
+
         public int BitRate
         {
             get => _tabLibFile.Properties.AudioBitrate;
@@ -62,12 +75,6 @@ namespace AudioTagger
         public int SampleRate
         {
             get => _tabLibFile.Properties.AudioSampleRate;
-        }
-
-        public string[] Composers
-        {
-            get => _tabLibFile.Tag.Composers;
-            set => _tabLibFile.Tag.Composers = value;
         }
 
         public bool HasReplayGainData
