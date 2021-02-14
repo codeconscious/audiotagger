@@ -14,21 +14,23 @@ namespace AudioTagger
 
             var printer = new DataPrinter(1, "  • ");
 
-            var argss = new Queue<string>(args.Select(a => a.Trim()));
+            var trimmedArgs = new Queue<string>(args.Select(a => a.Trim()));
 
+            // Set the action mode
             Mode mode;
-            if (argss.Peek().ToLowerInvariant() == "-u")
+            if (trimmedArgs.Peek().ToLowerInvariant() == "-u")
             {
                 mode = Mode.Update;
-                argss.Dequeue();
+                trimmedArgs.Dequeue();
             }
             else
             {
                 mode = Mode.Read;
             }
 
+            // Iterate over each arg, checking if it's a file or directory
             var fileNames = new List<string>();
-            foreach (var path in argss)
+            foreach (var path in trimmedArgs)
             {
                 if (Directory.Exists(path))
                     fileNames.AddRange(Directory.GetFiles(path, "*.mp3"));
