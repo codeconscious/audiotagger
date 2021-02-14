@@ -78,6 +78,8 @@ namespace AudioTagger
             if (updates.Genres != null && !updates.Genres.All(a => fileData.Genres.Contains(a)))
                 fileData.Genres = updates.Genres;
 
+            fileData.SaveUpdates();
+
             return "Saved!";
         }
     }

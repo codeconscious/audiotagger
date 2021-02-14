@@ -42,7 +42,7 @@ namespace AudioTagger
                     if (fileData == null)
                         printer.PrintError("Skipped file.");
                     else
-                        Updater.UpdateTags(fileData, printer);
+                        Console.WriteLine(Updater.UpdateTags(fileData, printer));
 
             Console.WriteLine();
         }
