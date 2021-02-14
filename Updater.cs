@@ -45,14 +45,34 @@ namespace AudioTagger
 
             Console.WriteLine("Proposed updates:");
 
+            byte proposedUpdateCount = 0;
             if (updates.Title != null && updates.Title != fileData.Title)
+            {
                 Console.WriteLine("  - Title: " + updates.Title);
+                proposedUpdateCount++;
+            }
             if (updates.Artists != null && !updates.Artists.All(a => fileData.Artists.Contains(a)))
+            {
                 Console.WriteLine("  - Artists: " + string.Join(";", updates.Artists));
+                proposedUpdateCount++;
+            }
             if (updates.Year != null && updates.Year != fileData.Year)
+            {
                 Console.WriteLine("  - Year: " + updates.Year);
+                proposedUpdateCount++;
+            }
             if (updates.Genres != null && !updates.Genres.All(a => fileData.Genres.Contains(a)))
+            {
                 Console.WriteLine("  - Genres: " + string.Join(";", updates.Genres));
+                proposedUpdateCount++;
+            }
+
+            if (proposedUpdateCount == 0)
+            {
+                Console.WriteLine("There were no updates found to make!");
+                Console.ReadLine();
+                return "There were no updates found to make!";
+            }
 
             Console.WriteLine("Do you want to apply these updates to the file?");
             Console.Write("Enter Y or N:  ");
@@ -74,14 +94,27 @@ namespace AudioTagger
             if (!shouldUpdate)
                 return "Updates cancelled.";
 
+            //byte updatesMade = 0;
             if (updates.Title != null && updates.Title != fileData.Title)
+            {
                 fileData.Title = updates.Title;
+                //updatesMade++;
+            }                
             if (updates.Artists?.All(a => fileData.Artists.Contains(a)) == false)
+            {
                 fileData.Artists = updates.Artists;
+                //updatesMade++;
+            }
             if (updates.Year != null && updates.Year != fileData.Year)
+            {
                 fileData.Year = updates.Year.Value;
+                //updatesMade++;
+            }
             if (updates.Genres?.All(a => fileData.Genres.Contains(a)) == false)
+            {
                 fileData.Genres = updates.Genres;
+                //updatesMade++;
+            }
 
             fileData.SaveUpdates();
 
