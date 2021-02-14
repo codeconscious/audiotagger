@@ -56,6 +56,7 @@ namespace AudioTagger
 
             Console.WriteLine("Do you want to apply these updates to the file?");
             Console.Write("Enter Y or N:  ");
+
             var validInput = false;
             var shouldUpdate = false;
             do
@@ -71,7 +72,7 @@ namespace AudioTagger
             Console.WriteLine();
 
             if (!shouldUpdate)
-                return "Cancelled.";
+                return "Updates cancelled.";
 
             if (updates.Title != null && updates.Title != fileData.Title)
                 fileData.Title = updates.Title;
@@ -84,7 +85,7 @@ namespace AudioTagger
 
             fileData.SaveUpdates();
 
-            return "Saved!";
+            return "Updates saved!";
         }
     }
 }
