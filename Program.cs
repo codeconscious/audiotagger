@@ -48,6 +48,8 @@ namespace AudioTagger
         }
     }
 
+    public enum Mode { Read, Update }
+
     public static class Parser
     {
         public static FileData? GetFileRecordOrNull(DataPrinter printer, string filename)
@@ -66,18 +68,7 @@ namespace AudioTagger
 
             var taggedFile = TagLib.File.Create(filename);
 
-            return new FileData(
-                Path.GetFileName(filename),
-                taggedFile.Tag.Title,
-                taggedFile.Tag.Performers,
-                taggedFile.Tag.Album,
-                taggedFile.Tag.Year,
-                taggedFile.Properties.Duration,
-                taggedFile.Tag.Genres,
-                taggedFile.Properties.AudioBitrate, // TODO: Figure out why this is always 0
-                taggedFile.Properties.AudioSampleRate,
-                taggedFile.Tag.Composers,
-                taggedFile.Tag.ReplayGainTrackGain > 0 || taggedFile.Tag.ReplayGainAlbumGain > 0);
+            return new FileData(Path.GetFileName(filename), taggedFile);
         }
     }
 }
