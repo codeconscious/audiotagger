@@ -59,27 +59,5 @@ namespace AudioTagger
         }
     }
 
-    public enum Mode { Read, Update }
-
-    public static class Parser
-    {
-        public static FileData? GetFileRecordOrNull(DataPrinter printer, string filename)
-        {
-            if (string.IsNullOrWhiteSpace(filename))
-            {
-                printer.PrintError("No filename was entered.");
-                return null;
-            }
-
-            if (!File.Exists(filename))
-            {
-                printer.PrintError($"File \"{filename}\" was not found.");
-                return null;
-            }
-
-            var taggedFile = TagLib.File.Create(filename);
-
-            return new FileData(Path.GetFileName(filename), taggedFile);
-        }
-    }
+    public enum Mode { Read, Update }    
 }
