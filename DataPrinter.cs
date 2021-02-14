@@ -38,6 +38,7 @@ namespace AudioTagger
             PrintFormattedLine("Bitrate", fileData.BitRate.ToString());
             PrintFormattedLine("Sample Rate", fileData.SampleRate.ToString("#,##0"));
             PrintFormattedLine("ReplayGain?", fileData.HasReplayGainData ? "Yes" : "No");
+            //PrintFormattedLine("Comment", fileData.Comments?.Substring(0, (fileData.Comments.Length > 70 ? 70 : fileData.Comments.Length-1)) ?? "N/A");
 
             if (fileData.Composers?.Length > 0)
                 Console.WriteLine(LineTextToPrepend + $"Composers: {string.Join("; ", fileData.Composers)}");
@@ -52,11 +53,11 @@ namespace AudioTagger
 
             PrintPrependLines();
             Console.WriteLine("ERROR: " + message);
-            PrintAppendLines();            
+            PrintAppendLines();
         }
 
         private void PrintFormattedLine(string title, string data)
-        {            
+        {
             Console.Write(LineTextToPrepend);
             Console.Write(string.Format($"{title,_minTitleWidth}"));
             Console.WriteLine($"{_separator} {data}");
