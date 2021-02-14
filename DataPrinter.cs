@@ -31,6 +31,8 @@ namespace AudioTagger
             // TODO: Add label spaces so that data is aligned
             PrintFormattedLine("Title", fileData.Title);
             PrintFormattedLine("Artist(s)", string.Join(", ", fileData.Artists));
+            PrintFormattedLine("Album", fileData.Album);
+            PrintFormattedLine("Year", fileData.Year.ToString());
             PrintFormattedLine("Duration", fileData.Duration.ToString("m\\:ss"));
             PrintFormattedLine("Genres", string.Join(", ", fileData.Genres));
             PrintFormattedLine("Bitrate", fileData.BitRate.ToString());

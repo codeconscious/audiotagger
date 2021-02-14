@@ -11,9 +11,9 @@ namespace AudioTagger
 
     public static class Updater
     {
-        private const string _regex = @"(?:(?'Artists'.+) \- )?(?'Title'[^\[]+)\s?(?:\[(?'Year'\d{3,})\])?\s?(?:\{(?'Genre'.+)\})";
+        private const string _regex = @"(?'Artists'.+) [-–] (?'Title'[^\[\{]+)(?: ?\[(?'Year'\d{3,})\])?(?: ?\{(?'Genres'.+)\})?";
 
-        public static string UpdateTags(FileData fileData)
+        public static string UpdateTags(FileData fileData, DataPrinter printer)
         {
             var regex = new Regex(_regex);
 
@@ -27,7 +27,23 @@ namespace AudioTagger
             if (foundElements == null)
                 return "ERROR: No successful matches were found";
 
-            // TODO: COMPLETE
+            printer.PrintData(fileData);
+
+            var newFileData = fileData;
+            foreach (var element in foundElements)
+            {
+                if (element.Value.Name == "Title")
+                    newFileData = newFileData with { Title = element.Value.Value };
+                if (element.Value.Name == "Artists")
+                    newFileData = newFileData with { Artists = element.Value.Value.Split(new [] { ";" }, StringSplitOptions.RemoveEmptyEntries) };
+                if (element.Value.Name == "Year")
+                    newFileData = newFileData with { Year = (uint.TryParse(element.Value.Value, out var parsed) ? parsed : 0) };
+                if (element.Value.Name == "Genres")
+                    newFileData = newFileData with { Genres = element.Value.Value.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries) };
+            }
+
+            Console.WriteLine("NEW DATA:");
+            printer.PrintData(newFileData);
 
             return "Success!";
         }

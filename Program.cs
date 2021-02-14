@@ -17,7 +17,7 @@ namespace AudioTagger
             var argss = new Queue<string>(args.Select(a => a.Trim()));
 
             Mode mode;
-            if (argss.Peek() == "-u")
+            if (argss.Peek().ToLowerInvariant() == "-u")
             {
                 mode = Mode.Update;
                 argss.Dequeue();
@@ -37,8 +37,12 @@ namespace AudioTagger
                         printer.PrintError("Skipped file.");
                     else
                         printer.PrintData(fileData);
-            else
-                throw new NotImplementedException("Not done yet!");
+            else // (mode == Mode.Update)
+                foreach (var fileData in filesData)
+                    if (fileData == null)
+                        printer.PrintError("Skipped file.");
+                    else
+                        Updater.UpdateTags(fileData, printer);
 
             Console.WriteLine();
         }
@@ -66,6 +70,8 @@ namespace AudioTagger
                 Path.GetFileName(filename),
                 taggedFile.Tag.Title,
                 taggedFile.Tag.Performers,
+                taggedFile.Tag.Album,
+                taggedFile.Tag.Year,
                 taggedFile.Properties.Duration,
                 taggedFile.Tag.Genres,
                 taggedFile.Properties.AudioBitrate, // TODO: Figure out why this is always 0
