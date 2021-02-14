@@ -45,7 +45,7 @@ namespace AudioTagger
 
         public TimeSpan Duration
         {
-            get => _tabLibFile.Properties.Duration;            
+            get => _tabLibFile.Properties.Duration;
         }
 
         public string[] Genres
