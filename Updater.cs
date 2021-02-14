@@ -20,7 +20,10 @@ namespace AudioTagger
             if (match == null)
                 return "ERROR: No match was found.";
 
-            var foundElements = match.Groups.OfType<Group>().Where(g => g.Success).ToDictionary(g => g.Name, g => g);
+            var foundElements = match.Groups
+                                     .OfType<Group>()
+                                     .Where(g => g.Success)
+                                     .ToDictionary(g => g.Name, g => g);
 
             if (foundElements == null)
                 return "ERROR: No successful matches were found";
@@ -35,13 +38,13 @@ namespace AudioTagger
                 if (element.Value.Name == "Artists")
                     updates.Artists = element.Value.Value.Split(new [] { ";" }, StringSplitOptions.RemoveEmptyEntries);
                 if (element.Value.Name == "Year")
-                    updates.Year = (uint.TryParse(element.Value.Value, out var parsed) ? parsed : 0);
+                    updates.Year = uint.TryParse(element.Value.Value, out var parsed) ? parsed : 0;
                 if (element.Value.Name == "Genres")
                     updates.Genres = element.Value.Value.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             Console.WriteLine("NEW DATA:");
-            
+
             if (updates.Title != null && updates.Title != fileData.Title)
                 Console.WriteLine("  - Title: " + updates.Title);
             if (updates.Artists != null && !updates.Artists.All(a => fileData.Artists.Contains(a)))
@@ -54,28 +57,29 @@ namespace AudioTagger
             Console.WriteLine("Do you want to apply these updates to the file?");
             Console.Write("Enter Y or N:  ");
             var validInput = false;
-            var shouldProceed = false;
+            var shouldUpdate = false;
             do
             {
                 var reply = Console.ReadKey();
                 if (reply.KeyChar == 'n' || reply.KeyChar == 'y')
                 {
-                    shouldProceed = reply.KeyChar == 'y' ? true : false;
+                    shouldUpdate = reply.KeyChar == 'y';
                     validInput = true;
                 }
             }
             while (!validInput);
-            
-            if (!shouldProceed)
+            Console.WriteLine();
+
+            if (!shouldUpdate)
                 return "Cancelled.";
 
             if (updates.Title != null && updates.Title != fileData.Title)
                 fileData.Title = updates.Title;
-            if (updates.Artists != null && !updates.Artists.All(a => fileData.Artists.Contains(a)))
+            if (updates.Artists?.All(a => fileData.Artists.Contains(a)) == false)
                 fileData.Artists = updates.Artists;
             if (updates.Year != null && updates.Year != fileData.Year)
                 fileData.Year = updates.Year.Value;
-            if (updates.Genres != null && !updates.Genres.All(a => fileData.Genres.Contains(a)))
+            if (updates.Genres?.All(a => fileData.Genres.Contains(a)) == false)
                 fileData.Genres = updates.Genres;
 
             fileData.SaveUpdates();
