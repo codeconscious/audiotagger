@@ -27,22 +27,33 @@ namespace AudioTagger
                 mode = Mode.Read;
             }
 
-            var filesData = new List<FileData?>();
-            foreach (var filename in argss)
-                filesData.Add(Parser.GetFileRecordOrNull(printer, filename));
+            var fileNames = new List<string>();
+            foreach (var path in argss)
+            {
+                if (Directory.Exists(path))
+                    fileNames.AddRange(Directory.GetFiles(path, "*.mp3"));
+                else if (File.Exists(path))
+                    fileNames.Add(path);
+                else
+                    printer.PrintError("Could not determine if directory or file: " + path);
 
-            if (mode == Mode.Read)
-                foreach (var fileData in filesData)
-                    if (fileData == null)
-                        printer.PrintError("Skipped file.");
-                    else
-                        printer.PrintData(fileData);
-            else // (mode == Mode.Update)
-                foreach (var fileData in filesData)
-                    if (fileData == null)
-                        printer.PrintError("Skipped file.");
-                    else
-                        Console.WriteLine(Updater.UpdateTags(fileData, printer));
+                var filesData = new List<FileData?>();
+                foreach (var filename in fileNames)
+                    filesData.Add(Parser.GetFileRecordOrNull(printer, filename));
+
+                if (mode == Mode.Read)
+                    foreach (var fileData in filesData)
+                        if (fileData == null)
+                            printer.PrintError("Skipped file.");
+                        else
+                            printer.PrintData(fileData);
+                else // (mode == Mode.Update)
+                    foreach (var fileData in filesData)
+                        if (fileData == null)
+                            printer.PrintError("Skipped file.");
+                        else
+                            Console.WriteLine(Updater.UpdateTags(fileData, printer));
+            }            
 
             Console.WriteLine();
         }
