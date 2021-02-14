@@ -12,7 +12,7 @@ namespace AudioTagger
         {
             Console.WriteLine();
 
-            var printer = new DataPrinter(1, "   • ");
+            var printer = new DataPrinter(1, "  • ");
 
             var argss = new Queue<string>(args.Select(a => a.Trim()));
 
@@ -58,6 +58,4 @@ namespace AudioTagger
             Console.WriteLine();
         }
     }
-
-    public enum Mode { Read, Update }    
 }
