@@ -41,7 +41,7 @@ namespace AudioTagger
             //PrintFormattedLine("Comment", fileData.Comments?.Substring(0, (fileData.Comments.Length > 70 ? 70 : fileData.Comments.Length-1)) ?? "N/A");
 
             if (fileData.Composers?.Length > 0)
-                Console.WriteLine(LineTextToPrepend + $"Composers: {string.Join("; ", fileData.Composers)}");
+                PrintFormattedLine($"Composers", string.Join("; ", fileData.Composers));
 
             PrintAppendLines();
         }
