@@ -31,7 +31,13 @@ namespace AudioTagger
             // Iterate over each arg, checking if it's a file or directory
             foreach (var path in trimmedArgs)
             {
-                var fileNames = PopulateFileNames(path);                
+                var fileNames = PopulateFileNames(path);
+
+                if (!fileNames.Any())
+                {
+                    printer.PrintError("No filenames were found for \"{path}\"...");
+                    continue;
+                }
 
                 var filesData = new List<FileData?>();
                 foreach (var filename in fileNames)
