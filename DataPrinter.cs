@@ -48,7 +48,7 @@ namespace AudioTagger
 
         public void PrintError(string message)
         {
-            if (string.IsNullOrWhiteSpace(message)) // TODO: Turn on nullable references
+            if (string.IsNullOrWhiteSpace(message))
                 throw new ArgumentNullException(nameof(message), "Argument cannot be empty");
 
             PrintPrependLines();
