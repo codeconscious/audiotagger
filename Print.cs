@@ -66,6 +66,11 @@ namespace AudioTagger
                 Console.Write(string.Format($"{title,_minTitleWidth}"));
                 Console.WriteLine($"{_separator} {data}");
             }
-        }               
+        }
+
+        public static void UpdateData(UpdateableFields updates)
+        {
+
+        }
     }
 }

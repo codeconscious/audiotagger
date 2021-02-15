@@ -78,8 +78,8 @@ namespace AudioTagger
                         {
                             try
                             {
-                                var (success, message) = Updater.UpdateTags(fileData);
-                                Print.Message(message, 0, 0, success ? "◯ " : "× ");
+                                var (updatesDone, message) = Updater.UpdateTags(fileData);
+                                Print.Message(message, 0, 0, updatesDone ? "◯ " : "× ");
                             }
                             catch (TagLib.CorruptFileException e)
                             {
@@ -96,7 +96,7 @@ namespace AudioTagger
                 }
             }            
 
-            Console.WriteLine();
+            //Console.WriteLine();
         }
 
         private static string[] PopulateFileNames(string fileOrDirectoryPath)
