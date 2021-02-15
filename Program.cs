@@ -28,10 +28,9 @@ namespace AudioTagger
                 mode = Mode.Read;
             }
 
-            // Iterate over each arg, checking if it's a file or directory
-            foreach (var path in trimmedArgs)
+            foreach (var fileOrDirectoryPath in trimmedArgs)
             {
-                var fileNames = PopulateFileNames(path);
+                var fileNames = PopulateFileNames(fileOrDirectoryPath);
 
                 if (!fileNames.Any())
                 {
@@ -43,13 +42,15 @@ namespace AudioTagger
                 foreach (var filename in fileNames)
                 {
                     Console.WriteLine($"Found \"{filename}\"");
-                    filesData.Add(Parser.GetFileRecordOrNull(printer, filename));
+                    filesData.Add(Parser.GetFileDataOrNull(printer, filename));
                 }
 
                 if (mode == Mode.Read)
+                {
                     foreach (var fileData in filesData)
+                    {
                         if (fileData == null)
-                            printer.PrintError("Skipped file.");
+                            printer.PrintError($"Skipped invalid file...");
                         else
                         {
                             try
@@ -65,10 +66,14 @@ namespace AudioTagger
                             {
                                 printer.PrintError("An known error occurred." + e.Message);
                                 continue;
-                            }                            
+                            }
                         }
+                    }
+                }
                 else // (mode == Mode.Update)
+                {
                     foreach (var fileData in filesData)
+                    {
                         if (fileData == null)
                             printer.PrintError("Skipped invalid file.");
                         else
@@ -87,7 +92,9 @@ namespace AudioTagger
                                 printer.PrintError("An known error occurred. " + e.Message);
                                 continue;
                             }
-                        }                            
+                        }
+                    }
+                }
             }            
 
             Console.WriteLine();
@@ -97,8 +104,10 @@ namespace AudioTagger
         {
             if (Directory.Exists(fileOrDirectoryPath))
                 return Directory.GetFiles(fileOrDirectoryPath, "*.mp3");
+
             if (File.Exists(fileOrDirectoryPath))
                 return new string[] { fileOrDirectoryPath };
+
             else
                 return Array.Empty<string>();
         }

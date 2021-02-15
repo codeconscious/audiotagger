@@ -8,7 +8,7 @@ namespace AudioTagger
 {
     public static class Parser
     {
-        public static FileData? GetFileRecordOrNull(DataPrinter printer, string filename)
+        public static FileData? GetFileDataOrNull(DataPrinter printer, string filename)
         {
             if (string.IsNullOrWhiteSpace(filename))
             {
