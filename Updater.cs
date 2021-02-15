@@ -11,14 +11,14 @@ namespace AudioTagger
     {
         private const string _regex = @"(?'Artists'.+) [-–] (?'Title'[^\[\{]+)(?: ?\[(?'Year'\d{3,})\])?(?: ?\{(?'Genres'.+)\})?";
 
-        public static string UpdateTags(FileData fileData)
+        public static (bool success, string message) UpdateTags(FileData fileData)
         {
             var regex = new Regex(_regex);
 
             var match = Regex.Match(fileData.FileName, _regex);
 
             if (match == null)
-                return "ERROR: No match was found.";
+                return (false, "No match was found");
 
             var foundElements = match.Groups
                                      .OfType<Group>()
@@ -26,7 +26,7 @@ namespace AudioTagger
                                      .ToDictionary(g => g.Name, g => g);
 
             if (foundElements == null)
-                return "ERROR: No successful matches were found";
+                return (false, "ERROR: No successful match groups were found");
 
             Print.FileData(fileData);
 
@@ -71,7 +71,7 @@ namespace AudioTagger
             {
                 Console.WriteLine("There were no updates found to make!");
                 Console.ReadLine();
-                return "There were no updates found to make!";
+                return (false, "There were no updates found to make");
             }
 
             Console.WriteLine("Do you want to apply these updates to the file?");
@@ -82,9 +82,10 @@ namespace AudioTagger
             do
             {
                 var reply = Console.ReadKey();
-                if (reply.KeyChar == 'n' || reply.KeyChar == 'y')
+                if (reply.KeyChar == 'n' || reply.KeyChar == 'N' ||
+                    reply.KeyChar == 'y' || reply.KeyChar == 'Y')
                 {
-                    shouldUpdate = reply.KeyChar == 'y';
+                    shouldUpdate = reply.KeyChar == 'y' || reply.KeyChar == 'Y';
                     validInput = true;
                 }
             }
@@ -92,7 +93,7 @@ namespace AudioTagger
             Console.WriteLine();
 
             if (!shouldUpdate)
-                return "Updates cancelled.";
+                return (false, "Updates were cancelled");
 
             //byte updatesMade = 0;
             if (updates.Title != null && updates.Title != fileData.Title)
@@ -118,7 +119,7 @@ namespace AudioTagger
 
             fileData.SaveUpdates();
 
-            return "Updates saved!";
+            return (true, "Updates saved!");
         }
     }
 }

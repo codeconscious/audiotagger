@@ -10,9 +10,7 @@ namespace AudioTagger
     {
         static void Main(string[] args)
         {
-            Console.WriteLine();
-
-            //var printer = new Print(1, "  • ");
+            //Console.WriteLine();
 
             var trimmedArgs = new Queue<string>(args.Select(a => a.Trim()));
 
@@ -80,7 +78,8 @@ namespace AudioTagger
                         {
                             try
                             {
-                                Console.WriteLine(Updater.UpdateTags(fileData));
+                                var (success, message) = Updater.UpdateTags(fileData);
+                                Print.Message(message, 0, 0, success ? "◯ " : "× ");
                             }
                             catch (TagLib.CorruptFileException e)
                             {
