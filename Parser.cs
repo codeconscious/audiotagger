@@ -8,17 +8,17 @@ namespace AudioTagger
 {
     public static class Parser
     {
-        public static FileData? GetFileDataOrNull(DataPrinter printer, string filename)
+        public static FileData? GetFileDataOrNull(string filename)
         {
             if (string.IsNullOrWhiteSpace(filename))
             {
-                printer.PrintError("No filename was entered.");
+                Print.Error("No filename was entered.");
                 return null;
             }
 
             if (!File.Exists(filename))
             {
-                printer.PrintError($"File \"{filename}\" was not found.");
+                Print.Error($"File \"{filename}\" was not found.");
                 return null;
             }
 

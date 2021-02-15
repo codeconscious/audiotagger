@@ -11,7 +11,7 @@ namespace AudioTagger
     {
         private const string _regex = @"(?'Artists'.+) [-–] (?'Title'[^\[\{]+)(?: ?\[(?'Year'\d{3,})\])?(?: ?\{(?'Genres'.+)\})?";
 
-        public static string UpdateTags(FileData fileData, DataPrinter printer)
+        public static string UpdateTags(FileData fileData)
         {
             var regex = new Regex(_regex);
 
@@ -28,7 +28,7 @@ namespace AudioTagger
             if (foundElements == null)
                 return "ERROR: No successful matches were found";
 
-            printer.PrintData(fileData);
+            Print.FileData(fileData);
 
             var updates = new UpdateableFields();
             foreach (var element in foundElements)

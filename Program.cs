@@ -12,7 +12,7 @@ namespace AudioTagger
         {
             Console.WriteLine();
 
-            var printer = new DataPrinter(1, "  • ");
+            //var printer = new Print(1, "  • ");
 
             var trimmedArgs = new Queue<string>(args.Select(a => a.Trim()));
 
@@ -34,15 +34,15 @@ namespace AudioTagger
 
                 if (!fileNames.Any())
                 {
-                    printer.PrintError("No filenames were found for \"{path}\"...");
+                    Print.Error("No filenames were found for \"{path}\"...");
                     continue;
                 }
 
                 var filesData = new List<FileData?>();
                 foreach (var filename in fileNames)
                 {
-                    Console.WriteLine($"Found \"{filename}\"");
-                    filesData.Add(Parser.GetFileDataOrNull(printer, filename));
+                    //Console.WriteLine($"Found \"{filename}\"");
+                    filesData.Add(Parser.GetFileDataOrNull(filename));
                 }
 
                 if (mode == Mode.Read)
@@ -50,21 +50,21 @@ namespace AudioTagger
                     foreach (var fileData in filesData)
                     {
                         if (fileData == null)
-                            printer.PrintError($"Skipped invalid file...");
+                            Print.Error($"Skipped invalid file...");
                         else
                         {
                             try
                             {
-                                printer.PrintData(fileData);
+                                Print.FileData(fileData);
                             }
                             catch (TagLib.CorruptFileException e)
                             {
-                                printer.PrintError("The file's tag metadata was corrupt or missing." + e.Message);
+                                Print.Error("The file's tag metadata was corrupt or missing." + e.Message);
                                 continue;
                             }
                             catch (Exception e)
                             {
-                                printer.PrintError("An known error occurred." + e.Message);
+                                Print.Error("An known error occurred." + e.Message);
                                 continue;
                             }
                         }
@@ -75,21 +75,21 @@ namespace AudioTagger
                     foreach (var fileData in filesData)
                     {
                         if (fileData == null)
-                            printer.PrintError("Skipped invalid file.");
+                            Print.Error("Skipped invalid file.");
                         else
                         {
                             try
                             {
-                                Console.WriteLine(Updater.UpdateTags(fileData, printer));
+                                Console.WriteLine(Updater.UpdateTags(fileData));
                             }
                             catch (TagLib.CorruptFileException e)
                             {
-                                printer.PrintError("The file's tag metadata was corrupt or missing.  " + e.Message);
+                                Print.Error("The file's tag metadata was corrupt or missing.  " + e.Message);
                                 continue;
                             }
                             catch (Exception e)
                             {
-                                printer.PrintError("An known error occurred. " + e.Message);
+                                Print.Error("An known error occurred. " + e.Message);
                                 continue;
                             }
                         }
