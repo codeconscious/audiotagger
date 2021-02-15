@@ -33,28 +33,67 @@ namespace AudioTagger
             foreach (var path in trimmedArgs)
             {
                 if (Directory.Exists(path))
+                {
+                    //Console.WriteLine("Directory detected");
                     fileNames.AddRange(Directory.GetFiles(path, "*.mp3"));
+                }
                 else if (File.Exists(path))
+                {
+                    //Console.WriteLine("File detected");
                     fileNames.Add(path);
+                }
                 else
                     printer.PrintError("Could not determine if directory or file: " + path);
 
                 var filesData = new List<FileData?>();
                 foreach (var filename in fileNames)
+                {
+                    Console.WriteLine("Working on " + filename);
                     filesData.Add(Parser.GetFileRecordOrNull(printer, filename));
+                }
 
                 if (mode == Mode.Read)
                     foreach (var fileData in filesData)
                         if (fileData == null)
                             printer.PrintError("Skipped file.");
                         else
-                            printer.PrintData(fileData);
+                        {
+                            try
+                            {
+                                printer.PrintData(fileData);
+                            }
+                            catch (TagLib.CorruptFileException e)
+                            {
+                                printer.PrintError("The file's tag metadata was corrupt or missing." + e.Message);
+                                continue;
+                            }
+                            catch (System.Exception e)
+                            {
+                                printer.PrintError("Any known error occurred." + e.Message);
+                                continue;
+                            }                            
+                        }
                 else // (mode == Mode.Update)
                     foreach (var fileData in filesData)
                         if (fileData == null)
                             printer.PrintError("Skipped file.");
                         else
-                            Console.WriteLine(Updater.UpdateTags(fileData, printer));
+                        {
+                            try
+                            {
+                                Console.WriteLine(Updater.UpdateTags(fileData, printer));
+                            }
+                            catch (TagLib.CorruptFileException e)
+                            {
+                                printer.PrintError("The file's tag metadata was corrupt or missing.  " + e.Message);
+                                continue;
+                            }
+                            catch (System.Exception e)
+                            {
+                                printer.PrintError("Any known error occurred. " + e.Message);
+                                continue;
+                            }
+                        }                            
             }            
 
             Console.WriteLine();
