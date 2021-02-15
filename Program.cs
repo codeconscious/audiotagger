@@ -33,17 +33,11 @@ namespace AudioTagger
             foreach (var path in trimmedArgs)
             {
                 if (Directory.Exists(path))
-                {
-                    //Console.WriteLine("Directory detected");
                     fileNames.AddRange(Directory.GetFiles(path, "*.mp3"));
-                }
                 else if (File.Exists(path))
-                {
-                    //Console.WriteLine("File detected");
                     fileNames.Add(path);
-                }
                 else
-                    printer.PrintError("Could not determine if directory or file: " + path);
+                    printer.PrintError("Invalid item: " + path);
 
                 var filesData = new List<FileData?>();
                 foreach (var filename in fileNames)
@@ -69,14 +63,14 @@ namespace AudioTagger
                             }
                             catch (System.Exception e)
                             {
-                                printer.PrintError("Any known error occurred." + e.Message);
+                                printer.PrintError("An known error occurred." + e.Message);
                                 continue;
                             }                            
                         }
                 else // (mode == Mode.Update)
                     foreach (var fileData in filesData)
                         if (fileData == null)
-                            printer.PrintError("Skipped file.");
+                            printer.PrintError("Skipped invalid file.");
                         else
                         {
                             try
@@ -90,7 +84,7 @@ namespace AudioTagger
                             }
                             catch (System.Exception e)
                             {
-                                printer.PrintError("Any known error occurred. " + e.Message);
+                                printer.PrintError("An known error occurred. " + e.Message);
                                 continue;
                             }
                         }                            
