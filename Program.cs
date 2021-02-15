@@ -29,20 +29,14 @@ namespace AudioTagger
             }
 
             // Iterate over each arg, checking if it's a file or directory
-            var fileNames = new List<string>();
             foreach (var path in trimmedArgs)
             {
-                if (Directory.Exists(path))
-                    fileNames.AddRange(Directory.GetFiles(path, "*.mp3"));
-                else if (File.Exists(path))
-                    fileNames.Add(path);
-                else
-                    printer.PrintError("Invalid item: " + path);
+                var fileNames = PopulateFileNames(path);                
 
                 var filesData = new List<FileData?>();
                 foreach (var filename in fileNames)
                 {
-                    Console.WriteLine("Working on " + filename);
+                    Console.WriteLine($"Found \"{filename}\"");
                     filesData.Add(Parser.GetFileRecordOrNull(printer, filename));
                 }
 
@@ -61,7 +55,7 @@ namespace AudioTagger
                                 printer.PrintError("The file's tag metadata was corrupt or missing." + e.Message);
                                 continue;
                             }
-                            catch (System.Exception e)
+                            catch (Exception e)
                             {
                                 printer.PrintError("An known error occurred." + e.Message);
                                 continue;
@@ -82,7 +76,7 @@ namespace AudioTagger
                                 printer.PrintError("The file's tag metadata was corrupt or missing.  " + e.Message);
                                 continue;
                             }
-                            catch (System.Exception e)
+                            catch (Exception e)
                             {
                                 printer.PrintError("An known error occurred. " + e.Message);
                                 continue;
@@ -91,6 +85,16 @@ namespace AudioTagger
             }            
 
             Console.WriteLine();
+        }
+
+        private static string[] PopulateFileNames(string fileOrDirectoryPath)
+        {
+            if (Directory.Exists(fileOrDirectoryPath))
+                return Directory.GetFiles(fileOrDirectoryPath, "*.mp3");
+            if (File.Exists(fileOrDirectoryPath))
+                return new string[] { fileOrDirectoryPath };
+            else
+                return Array.Empty<string>();
         }
     }
 }
