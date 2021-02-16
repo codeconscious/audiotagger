@@ -2,7 +2,7 @@
 {
     public enum Mode
     {
-        Read,
+        View,
         Update,
         Rename
     }

@@ -21,9 +21,14 @@ namespace AudioTagger
                 mode = Mode.Update;
                 trimmedArgs.Dequeue();
             }
+            else if (trimmedArgs.Peek().ToLowerInvariant() == "-r")
+            {
+                mode = Mode.Rename;
+                trimmedArgs.Dequeue();
+            }
             else
             {
-                mode = Mode.Read;
+                mode = Mode.View;
             }
 
             foreach (var fileOrDirectoryPath in trimmedArgs)
@@ -43,7 +48,7 @@ namespace AudioTagger
                     filesData.Add(Parser.GetFileDataOrNull(filename));
                 }
 
-                if (mode == Mode.Read)
+                if (mode == Mode.View)
                 {
                     foreach (var fileData in filesData)
                     {
