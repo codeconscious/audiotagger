@@ -10,7 +10,15 @@ namespace AudioTagger
     {
         static void Main(string[] args)
         {
-            //Console.WriteLine();
+            if (args.Length == 0)
+            {
+                Print.Message("Audio tagger and renamer!", 1, 1);
+                Print.Message("Arguments:");
+                Print.Message("  -u: Update");
+                Print.Message("  -r: Rename");
+                Print.Message("(More to come!)", 1, 1);
+                return;
+            }
 
             var trimmedArgs = new Queue<string>(args.Select(a => a.Trim()));
 
@@ -59,6 +67,32 @@ namespace AudioTagger
                             try
                             {
                                 Print.FileData(fileData);
+                            }
+                            catch (TagLib.CorruptFileException e)
+                            {
+                                Print.Error("The file's tag metadata was corrupt or missing." + e.Message);
+                                continue;
+                            }
+                            catch (Exception e)
+                            {
+                                Print.Error("An known error occurred." + e.Message);
+                                continue;
+                            }
+                        }
+                    }
+                }
+                else if (mode == Mode.Rename)
+                {
+                    foreach (var fileData in filesData)
+                    {
+                        if (fileData == null)
+                            Print.Error($"Skipped invalid file...");
+                        else
+                        {
+                            try
+                            {
+                                var (wasDone, message) = Renamer.RenameFile(fileData);
+                                Print.Message(wasDone ? "◯ " : "× " + message);
                             }
                             catch (TagLib.CorruptFileException e)
                             {
