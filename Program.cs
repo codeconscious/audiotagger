@@ -8,6 +8,13 @@ namespace AudioTagger
 {
     static class Program
     {
+        private static Func<string, bool> fileFilter =
+            new Func<string, bool>(
+                file =>
+                    file.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase) ||
+                    file.EndsWith(".ogg", StringComparison.InvariantCultureIgnoreCase) ||
+                    file.EndsWith(".m4a", StringComparison.InvariantCultureIgnoreCase));
+
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -19,7 +26,7 @@ namespace AudioTagger
                 Print.Message("  -v: View tags (default, optional)");
                 Print.Message("  -u: Update tags");
                 Print.Message("  -r: Rename files based on their tags (Coming soonish)", 0, 1);
-                // Print.Message("(More to come!)", 1, 1);
+                
                 return;
             }
 
@@ -146,8 +153,12 @@ namespace AudioTagger
         private static string[] PopulateFileNames(string fileOrDirectoryPath)
         {
             if (Directory.Exists(fileOrDirectoryPath))
-                return Directory.GetFiles(fileOrDirectoryPath, "*.mp3");
-
+            {
+                return Directory
+                    .EnumerateFiles(fileOrDirectoryPath, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(fileFilter)
+                    .ToArray();
+            }
             if (File.Exists(fileOrDirectoryPath))
                 return new string[] { fileOrDirectoryPath };
 
