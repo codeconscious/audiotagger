@@ -117,8 +117,10 @@ namespace AudioTagger
                         {
                             try
                             {
-                                var (updatesDone, message) = Updater.UpdateTags(fileData);
+                                var (updatesDone, message, cancel) = Updater.UpdateTags(fileData);
                                 Print.Message(message, 0, 1, updatesDone ? "◯ " : "× ");
+                                if (cancel)
+                                    break;
                             }
                             catch (TagLib.CorruptFileException e)
                             {

@@ -11,21 +11,21 @@ namespace AudioTagger
     {
         private const string _regex = @"(?'Artists'.+) [-–] (?'Title'[^\[\{]+)(?: ?\[(?'Year'\d{3,})\])?(?: ?\{(?'Genres'.+)\})?";
 
-        public static (bool updatesDone, string message) UpdateTags(FileData fileData)
+        public static (bool updatesDone, string message, bool cancel) UpdateTags(FileData fileData)
         {
             var regex = new Regex(_regex);
 
             var match = Regex.Match(fileData.FileName, _regex);
 
             if (match == null)
-                return (false, "No match was found.");
+                return (false, "No match was found.", false);
 
             var foundElements = match.Groups
                                      .OfType<Group>()
                                      .Where(g => g.Success);
 
             if (foundElements == null || !foundElements.Any())
-                return (false, "No successful match groups were found. (Check the filename format.)");
+                return (false, "No successful match groups found. (Check the filename format.)", false);
 
             Print.FileData(fileData);
 
@@ -41,7 +41,7 @@ namespace AudioTagger
             }
             if (updateables.Artists != null && !updateables.Artists.All(a => fileData.Artists.Contains(a)))
             {
-                Console.WriteLine("  - Artists: " + string.Join(";", updateables.Artists));
+                Console.WriteLine("  - Artists: " + string.Join("; ", updateables.Artists));
                 proposedUpdateCount++;
             }
             if (updateables.Year != null && updateables.Year != fileData.Year)
@@ -51,17 +51,17 @@ namespace AudioTagger
             }
             if (updateables.Genres != null && !updateables.Genres.All(a => fileData.Genres.Contains(a)))
             {
-                Console.WriteLine("  - Genres: " + string.Join(";", updateables.Genres));
+                Console.WriteLine("  - Genres: " + string.Join("; ", updateables.Genres));
                 proposedUpdateCount++;
             }
 
             if (proposedUpdateCount == 0)
             {
-                return (false, "No updates to make.");
+                return (false, "No updates to make.", false);
             }
 
             Console.WriteLine("Do you want to apply these updates to the file?");
-            Console.Write("Enter Y or N:  ");
+            Console.Write("Enter Y or N (or C to cancel):  ");
 
             var validInput = false;
             var shouldUpdate = false;
@@ -69,8 +69,15 @@ namespace AudioTagger
             {
                 var reply = Console.ReadKey();
                 if (reply.KeyChar == 'n' || reply.KeyChar == 'N' ||
-                    reply.KeyChar == 'y' || reply.KeyChar == 'Y')
+                    reply.KeyChar == 'y' || reply.KeyChar == 'Y' ||
+                    reply.KeyChar == 'c' || reply.KeyChar == 'C')
                 {
+                    if (reply.KeyChar == 'c' || reply.KeyChar == 'C')
+                    {
+                        Console.WriteLine();
+                        return (false, "All operations cancelled!", true);
+                    }
+
                     shouldUpdate = reply.KeyChar == 'y' || reply.KeyChar == 'Y';
                     validInput = true;
                 }
@@ -79,7 +86,7 @@ namespace AudioTagger
             Console.WriteLine();
 
             if (!shouldUpdate)
-                return (false, "Updates were cancelled");
+                return (false, "No updates made", false);
 
             //byte updatesMade = 0;
             if (updateables.Title != null && updateables.Title != fileData.Title)
@@ -105,7 +112,7 @@ namespace AudioTagger
 
             fileData.SaveUpdates();
 
-            return (true, "Updates saved!");
+            return (true, "Updates saved!", false);
         }
     }
 }
