@@ -31,7 +31,7 @@ namespace AudioTagger
 
             var updateables = new UpdateableFields(foundElements);
 
-            Print.Message("Proposed updates:");
+            Print.Message("Proposed updates:"); // TODO: Should not be shown when none.
 
             byte proposedUpdateCount = 0;
             if (updateables.Title != null && updateables.Title != fileData.Title)
@@ -55,9 +55,9 @@ namespace AudioTagger
                 proposedUpdateCount++;
             }
 
-            if (updateables.Count == 0)
+            if (proposedUpdateCount == 0)
             {
-                return (false, "There were no updates found to make.");
+                return (false, "No updates to make.");
             }
 
             Console.WriteLine("Do you want to apply these updates to the file?");
