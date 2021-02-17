@@ -13,7 +13,7 @@ namespace AudioTagger
             if (args.Length == 0)
             {
                 Print.Message("Audio tagger and renamer");
-                Print.Message("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]", 0, 0); // TODO: Decide on a name
+                Print.Message("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 0); // TODO: Decide on a name
                 Print.Message("Supply one command, followed by one or more files or directories to process.", 0, 1);
                 Print.Message("Commands:");
                 Print.Message("  -v: View tags (default, optional)");
@@ -48,7 +48,7 @@ namespace AudioTagger
 
                 if (!fileNames.Any())
                 {
-                    Print.Error("No filenames were found for \"{path}\"...");
+                    Print.Error($"No filenames were found for \"{fileOrDirectoryPath}\"...");
                     continue;
                 }
 
@@ -64,7 +64,7 @@ namespace AudioTagger
                     foreach (var fileData in filesData)
                     {
                         if (fileData == null)
-                            Print.Error($"Skipped invalid file...");
+                            Print.Error($"Skipped invalid file..."); // TODO: Refactor identical checks
                         else
                         {
                             try
@@ -78,7 +78,7 @@ namespace AudioTagger
                             }
                             catch (Exception e)
                             {
-                                Print.Error("An known error occurred." + e.Message);
+                                Print.Error("An unknown error occurred." + e.Message);
                                 continue;
                             }
                         }
