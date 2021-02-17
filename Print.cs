@@ -5,7 +5,7 @@ namespace AudioTagger
     public static class Print
     {
         const string _separator = ":"; // Make into a user setting?
-        const sbyte _minTitleWidth = -12; // Make into a user setting?
+        const sbyte _minTitleWidth = -11; // Make into a user setting?
 
         private static void PrependLines(byte lines)
         {
@@ -32,6 +32,7 @@ namespace AudioTagger
         public static void Error(string message) =>
             Message(message, 1, 1, "ERROR: ");        
 
+        // TODO: Move to the FileData class, probably.
         public static void FileData(FileData fileData, string prependLine = "  • ", byte prepend = 0, byte append = 0)
         {
             PrependLines(prepend);
@@ -49,13 +50,17 @@ namespace AudioTagger
             TagDataWithHeader("Year", fileData.Year.ToString(), prependLine);
             TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss"), prependLine);
             TagDataWithHeader("Genres", string.Join(", ", fileData.Genres), prependLine);
-            TagDataWithHeader("Bitrate", fileData.BitRate.ToString(), prependLine);
-            TagDataWithHeader("Sample Rate", fileData.SampleRate.ToString("#,##0"), prependLine);
-            TagDataWithHeader("ReplayGain?", fileData.HasReplayGainData ? "Yes" : "No", prependLine);
-            //PrintFormattedLine("Comment", fileData.Comments?.Substring(0, (fileData.Comments.Length > 70 ? 70 : fileData.Comments.Length-1)) ?? "N/A");
 
+            var bitrate = fileData.BitRate.ToString();
+            var sampleRate = fileData.SampleRate.ToString("#,##0");
+            var hasReplayGain = fileData.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
+            TagDataWithHeader("Quality", $"{bitrate}kbps | {sampleRate}kHz | {hasReplayGain}", prependLine);
+            
             if (fileData.Composers?.Length > 0)
                 TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers), prependLine);
+
+            if (!string.IsNullOrWhiteSpace(fileData.Comments))
+                TagDataWithHeader("Comment", fileData.Comments, prependLine);
 
             AppendLines(append);
 

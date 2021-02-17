@@ -66,7 +66,7 @@ namespace AudioTagger
                         {
                             try
                             {
-                                Print.FileData(fileData);
+                                Print.FileData(fileData, "", 0, 1);
                             }
                             catch (TagLib.CorruptFileException e)
                             {
