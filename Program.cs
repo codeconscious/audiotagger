@@ -12,11 +12,14 @@ namespace AudioTagger
         {
             if (args.Length == 0)
             {
-                Print.Message("Audio tagger and renamer!", 1, 1);
-                Print.Message("Arguments:");
-                Print.Message("  -u: Update");
-                Print.Message("  -r: Rename");
-                Print.Message("(More to come!)", 1, 1);
+                Print.Message("Audio tagger and renamer");
+                Print.Message("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]", 0, 0); // TODO: Decide on a name
+                Print.Message("Supply one command, followed by one or more files or directories to process.", 0, 1);
+                Print.Message("Commands:");
+                Print.Message("  -v: View tags (default, optional)");
+                Print.Message("  -u: Update tags");
+                Print.Message("  -r: Rename files based on their tags (Coming soonish)", 0, 1);
+                // Print.Message("(More to come!)", 1, 1);
                 return;
             }
 
