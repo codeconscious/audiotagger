@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Linq;
 
 namespace AudioTagger
 {
@@ -57,7 +58,7 @@ namespace AudioTagger
             Console.WriteLine(header);
 
             // JA characters are wider than EN, so the alignment is off.
-            Console.WriteLine(new string('—', header.Length));
+            Console.WriteLine(new string('—', header.Length * 2));
             // var separator = new StringBuilder();
             // foreach (var ch in header)
             // {
