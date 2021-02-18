@@ -27,38 +27,28 @@ namespace AudioTagger
             if (foundElements == null || !foundElements.Any())
                 return (false, "No successful match groups found. (Check the filename format.)", false);
 
-            Print.FileData(fileData);
-
             var updateables = new UpdateableFields(foundElements);
 
-            Print.Message("Proposed updates:"); // TODO: Should not be shown when none.
-
-            byte proposedUpdateCount = 0;
+            var proposedUpdates = new List<string>();
             if (updateables.Title != null && updateables.Title != fileData.Title)
-            {
-                Console.WriteLine("  - Title: " + updateables.Title);
-                proposedUpdateCount++;
-            }
+                proposedUpdates.Add("  - Title: " + updateables.Title);
             if (updateables.Artists != null && !updateables.Artists.All(a => fileData.Artists.Contains(a)))
-            {
-                Console.WriteLine("  - Artists: " + string.Join("; ", updateables.Artists));
-                proposedUpdateCount++;
-            }
+                proposedUpdates.Add("  - Artists: " + string.Join("; ", updateables.Artists));
             if (updateables.Year != null && updateables.Year != fileData.Year)
-            {
-                Console.WriteLine("  - Year: " + updateables.Year);
-                proposedUpdateCount++;
-            }
+                proposedUpdates.Add("  - Year: " + updateables.Year);
             if (updateables.Genres != null && !updateables.Genres.All(a => fileData.Genres.Contains(a)))
+                proposedUpdates.Add("  - Genres: " + string.Join("; ", updateables.Genres));
+
+            if (!proposedUpdates.Any())
             {
-                Console.WriteLine("  - Genres: " + string.Join("; ", updateables.Genres));
-                proposedUpdateCount++;
+                return (false, "No updates: " + Path.GetFileName(fileData.FileName), false);
             }
 
-            if (proposedUpdateCount == 0)
-            {
-                return (false, "No updates to make.", false);
-            }
+            Print.FileData(fileData);
+
+            Print.Message("Proposed updates:"); // TODO: Should not be shown when none.
+            foreach (var update in proposedUpdates)
+                Console.WriteLine(update);
 
             Console.WriteLine("Do you want to apply these updates to the file?");
             Console.Write("Enter Y or N (or C to cancel):  ");

@@ -66,6 +66,8 @@ namespace AudioTagger
                     filesData.Add(Parser.GetFileDataOrNull(filename));
                 }
 
+                //filesData.Sort();
+
                 if (mode == Mode.View)
                 {
                     foreach (var fileData in filesData)
@@ -128,7 +130,7 @@ namespace AudioTagger
                             try
                             {
                                 var (updatesDone, message, cancel) = Updater.UpdateTags(fileData);
-                                Print.Message(message, 0, 1, updatesDone ? "◯ " : "× ");
+                                Print.Message(message, 0, updatesDone ? 1 : 0, updatesDone ? "◯ " : "× ");
                                 if (cancel)
                                     break;
                             }
