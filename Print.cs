@@ -6,15 +6,27 @@ namespace AudioTagger
     {
         const string _separator = ":"; // Make into a user setting?
         const sbyte _minTitleWidth = -11; // Make into a user setting?
+        private static bool _previousWasBlankLine;
 
         private static void PrependLines(byte lines)
         {
+            if (lines == 0)
+                return;
+
+            if (_previousWasBlankLine)
+                lines--;
+
             for (var prepend = 0; prepend < lines; prepend++)
                 Console.WriteLine();
         }
 
         private static void AppendLines(byte lines)
         {
+            if (lines == 0)
+                return;
+
+            _previousWasBlankLine = true;
+
             for (var append = 0; append < lines; append++)
                 Console.WriteLine();
         }
@@ -27,6 +39,9 @@ namespace AudioTagger
             PrependLines(prependLines);
             Console.WriteLine(prependText + message);
             AppendLines(appendLines);
+
+            // if (appendLines > 0 || string.IsNullOrWhiteSpace(prependText + message))
+            //     _previousWasBlankLine = true;
         }
 
         public static void Error(string message) =>
@@ -64,7 +79,7 @@ namespace AudioTagger
 
             AppendLines(append);
 
-            // I just wanted to practice using a local method.
+            // I just wanted to practice using a local method...
             static void TagDataWithHeader(string title, string data, string prepend = "")
             {
                 Console.Write(prepend);
