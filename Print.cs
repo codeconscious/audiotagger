@@ -56,7 +56,7 @@ namespace AudioTagger
             Console.WriteLine(header);
 
             // JA characters are wider than EN, so the alignment is off.
-            Console.WriteLine(new string('-', header.Length));
+            Console.WriteLine(new string('–', header.Length));
 
             // TODO: Make labels multilingual
             TagDataWithHeader("Title", fileData.Title, prependLine);
