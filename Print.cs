@@ -7,8 +7,6 @@ namespace AudioTagger
 {
     public static class Print
     {
-        const string _separator = ":"; // Make into a user setting?
-        const sbyte _minTitleWidth = -11; // Make into a user setting?
         private static bool _previousWasBlankLine;
 
         private static void PrependLines(byte lines)
@@ -56,11 +54,11 @@ namespace AudioTagger
             PrependLines(prepend);
 
             var header = $"\"{fileData.FileName}\"";
-            var formattedHeader = header.Pastel(System.Drawing.Color.LightGoldenrodYellow);
+            var formattedHeader = header.Pastel(System.Drawing.Color.YellowGreen);
             Console.WriteLine(formattedHeader);
 
             // JA characters are wider than EN, so the alignment is off.
-            Console.WriteLine(new string('—', header.Length * 2));
+            // Console.WriteLine(new string('—', header.Length * 2));
             // var separator = new StringBuilder();
             // foreach (var ch in header)
             // {
@@ -74,12 +72,12 @@ namespace AudioTagger
             TagDataWithHeader("Album", fileData.Album, prependLine);
             TagDataWithHeader("Year", fileData.Year.ToString(), prependLine);
             TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss"), prependLine);
-            TagDataWithHeader("Genres", string.Join(", ", fileData.Genres), prependLine);
+            TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres), prependLine);
 
             var bitrate = fileData.BitRate.ToString();
             var sampleRate = fileData.SampleRate.ToString("#,##0");
             var hasReplayGain = fileData.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
-            TagDataWithHeader("Quality", $"{bitrate}kbps | {sampleRate}kHz | {hasReplayGain}", prependLine);
+            TagDataWithHeader("Quality", $"{bitrate}kbps {"|".Pastel(System.Drawing.Color.DimGray)} {sampleRate}kHz {"|".Pastel(System.Drawing.Color.DimGray)} {hasReplayGain}", prependLine);
             
             if (fileData.Composers?.Length > 0)
                 TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers), prependLine);
@@ -92,13 +90,15 @@ namespace AudioTagger
             // I just wanted to practice using a local method...
             static void TagDataWithHeader(string title, string data, string prepend = "")
             {
-                var formattedTitle = title.Pastel(System.Drawing.Color.FromArgb(165, 229, 250));
-                var spacesToAdd = Math.Abs(_minTitleWidth) - title.Length;
+                var formattedTitle = title.Pastel(System.Drawing.Color.DimGray);
+                var spacesToPrepend = 4;
+                var spacesToAppend = 11 - title.Length;
+                var separator = ":".Pastel(System.Drawing.Color.DarkSlateGray);
 
                 Console.Write(prepend);
                 //Console.Write($"{formattedTitle,_minTitleWidth}");
-                Console.Write(formattedTitle + new string(' ', spacesToAdd));
-                Console.WriteLine($"{_separator} {data}");
+                Console.Write(new string(' ', spacesToPrepend) + formattedTitle + new string(' ', spacesToAppend));
+                Console.WriteLine($"{separator} {data}");
             }
         }
 
