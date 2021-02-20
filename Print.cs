@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
-using Pastel;
 
 namespace AudioTagger
 {
@@ -49,15 +48,15 @@ namespace AudioTagger
             Message(message, 1, 1, "ERROR: ");        
 
         // TODO: Move to the FileData class, probably.
-        public static void FileData(FileData fileData, string prependLine = "  • ", byte prepend = 0, byte append = 0)
+        public static void FileData(FileData fileData, string prependLine = "  • ", byte prependLines = 0, byte appendLines = 0)
         {
-            PrependLines(prepend);
+            PrependLines(prependLines);
 
             var header = $"\"{fileData.FileName}\"";
-            var formattedHeader = header.Pastel(System.Drawing.Color.YellowGreen);
-            Console.WriteLine(formattedHeader);
+            PrintText(header, ConsoleColor.DarkGreen, null, true);
 
             // JA characters are wider than EN, so the alignment is off.
+            // TODO: Delete if not needed.
             // Console.WriteLine(new string('—', header.Length * 2));
             // var separator = new StringBuilder();
             // foreach (var ch in header)
@@ -66,7 +65,7 @@ namespace AudioTagger
             // }
             // Console.WriteLine(separator.ToString());
 
-            // TODO: Make labels multilingual
+            // TODO: Make labels multilingual?
             TagDataWithHeader("Title", fileData.Title, prependLine);
             TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists), prependLine);
             TagDataWithHeader("Album", fileData.Album, prependLine);
@@ -77,34 +76,60 @@ namespace AudioTagger
             var bitrate = fileData.BitRate.ToString();
             var sampleRate = fileData.SampleRate.ToString("#,##0");
             var hasReplayGain = fileData.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
-            TagDataWithHeader("Quality", $"{bitrate}kbps {"|".Pastel(System.Drawing.Color.DimGray)} {sampleRate}kHz {"|".Pastel(System.Drawing.Color.DimGray)} {hasReplayGain}", prependLine);
-            
+            //TagDataWithHeader("Quality", $"{bitrate}kbps {"|".Pastel(System.Drawing.Color.DimGray)} {sampleRate}kHz {"|".Pastel(System.Drawing.Color.DimGray)} {hasReplayGain}", prependLine);
+            TagDataWithHeader("Quality", $"{bitrate}kbps | {sampleRate}kHz | {hasReplayGain}", prependLine);
+
             if (fileData.Composers?.Length > 0)
                 TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers), prependLine);
 
             if (!string.IsNullOrWhiteSpace(fileData.Comments))
                 TagDataWithHeader("Comment", fileData.Comments, prependLine);
 
-            AppendLines(append);
+            AppendLines(appendLines);
 
             // I just wanted to practice using a local method...
-            static void TagDataWithHeader(string title, string data, string prepend = "")
+            static void TagDataWithHeader(string tagName, string tagData, string toPrepend = "")
             {
-                var formattedTitle = title.Pastel(System.Drawing.Color.DimGray);
+                /* TODO: Remove Pastel-related code if the library will be removed. */
+                //var formattedTitle = title/*.Pastel(System.Drawing.Color.DimGray)*/;
                 var spacesToPrepend = 4;
-                var spacesToAppend = 11 - title.Length;
-                var separator = ":".Pastel(System.Drawing.Color.DarkSlateGray);
+                var spacesToAppend = 11 - tagName.Length;
+                var separator = ": "/*.Pastel(System.Drawing.Color.DarkSlateGray)*/;
 
-                Console.Write(prepend);
-                //Console.Write($"{formattedTitle,_minTitleWidth}");
-                Console.Write(new string(' ', spacesToPrepend) + formattedTitle + new string(' ', spacesToAppend));
-                Console.WriteLine($"{separator} {data}");
+                PrintText(toPrepend);                
+                PrintText(new string(' ', spacesToPrepend));
+                PrintText(tagName, ConsoleColor.DarkGray);
+                PrintText(new string(' ', spacesToAppend));
+                PrintText(separator, ConsoleColor.DarkGray);
+                PrintText(tagData, true);
             }
         }
 
-        public static void UpdateData(UpdateableFields updates)
+        private static void PrintText(string text, ConsoleColor? fgColor, ConsoleColor? bgColor = null, bool addLineBreak = false)
         {
+            if (fgColor.HasValue)
+                Console.ForegroundColor = fgColor.Value;
 
+            if (bgColor.HasValue)
+                Console.BackgroundColor = bgColor.Value;
+
+            Console.Write(text);
+
+            if (addLineBreak)
+                Console.WriteLine();
+
+            Console.ResetColor();
         }
+
+        private static void PrintText(string text, bool addLineBreak = false)
+        {
+            PrintText(text, null, null, addLineBreak);
+        }
+
+        // TODO: Complete or delete
+        //public static void UpdateData(UpdateableFields updates)
+        //{
+
+        //}
     }
 }
