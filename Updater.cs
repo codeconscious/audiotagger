@@ -21,36 +21,27 @@ namespace AudioTagger
             if (match == null)
                 return (false, "No match was found.", false);
 
-            var foundElements = match.Groups
-                                     .OfType<Group>()
-                                     .Where(g => g.Success);
+            var foundTags = match.Groups
+                                 .OfType<Group>()
+                                 .Where(g => g.Success);
 
-            if (foundElements == null || !foundElements.Any())
-                return (false, "No successful match groups found. (Check the filename format.)", false);
+            if (foundTags == null || !foundTags.Any())
+                return (false, "No tag groups successfully found. (Check the filename format.)", false);
 
-            var updateables = new UpdateableFields(foundElements);
+            var updateables = new UpdateableFields(foundTags);
 
-            var proposedUpdates = new List<string>();
-            if (updateables.Title != null && updateables.Title != fileData.Title)
-                proposedUpdates.Add("  - Title: " + updateables.Title);
-            if (updateables.Artists != null && !updateables.Artists.All(a => fileData.Artists.Contains(a)))
-                proposedUpdates.Add("  - Artists: " + string.Join("; ", updateables.Artists));
-            if (updateables.Year != null && updateables.Year != fileData.Year)
-                proposedUpdates.Add("  - Year: " + updateables.Year);
-            if (updateables.Genres != null && !updateables.Genres.All(a => fileData.Genres.Contains(a)))
-                proposedUpdates.Add("  - Genres: " + string.Join("; ", updateables.Genres));
+            var proposedUpdates = updateables.GetUpdateOutput(fileData);
 
-            if (!proposedUpdates.Any())
+            if (proposedUpdates == null || !proposedUpdates.Any())
             {
                 return (false, "No updates: " + Path.GetFileName(fileData.FileName), false);
             }
 
-            //Printer.FileData(fileData, "  • ", 1);
-            //Printer.Print()
+            Printer.Print(fileData.GetTagsAsOutputLines());
 
-            Printer.Print("Proposed updates:"); // TODO: Should not be shown when none.
+            Printer.Print("Proposed updates:");
             foreach (var update in proposedUpdates)
-                Console.WriteLine(update);
+                Printer.Print(update.Line);
 
             Console.WriteLine("Do you want to apply these updates to the file?");
             Console.Write("Enter Y or N (or C to cancel):  ");

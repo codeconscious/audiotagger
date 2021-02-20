@@ -1,13 +1,14 @@
 using System;
 using System.IO;
 using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace AudioTagger
 {
-    public enum UpdateableField
+    public enum UpdatableField
     {
         Artists,
         Title,
@@ -15,7 +16,7 @@ namespace AudioTagger
         Genres
     }
 
-    public class UpdateableFields
+    public class UpdatableFields
     {
         public string[]? Artists { get; set; }
         public string? Title { get; set; }
@@ -24,7 +25,7 @@ namespace AudioTagger
 
         public byte Count { get; }
 
-        public UpdateableFields(IEnumerable<Group> regexElements)
+        public UpdatableFields(IEnumerable<Group> regexElements)
         {
             foreach (var element in regexElements)
             {
@@ -49,6 +50,23 @@ namespace AudioTagger
                     Count++;
                 }
             }
+        }
+
+        public IList<LineOutput> GetUpdateOutput(FileData fileData)
+        {
+            var updateOutput = new List<LineOutput>();
+            var headerColor = ConsoleColor.DarkMagenta;
+
+            if (Title != null && Title != fileData.Title)
+                updateOutput.Add(Printer.TagDataWithHeader("Title", Title, "", headerColor));
+            if (Artists != null && !Artists.All(a => fileData.Artists.Contains(a)))
+                updateOutput.Add(Printer.TagDataWithHeader("Artists", string.Join("; ", Artists), "", headerColor));
+            if (Year != null && Year != fileData.Year)
+                updateOutput.Add(Printer.TagDataWithHeader("Year", Year.Value.ToString(CultureInfo.InvariantCulture), "", headerColor));
+            if (Genres != null && !Genres.All(a => fileData.Genres.Contains(a)))
+                updateOutput.Add(Printer.TagDataWithHeader("Genres", string.Join("; ", Genres), "", headerColor));
+
+            return updateOutput;
         }
     }
 }

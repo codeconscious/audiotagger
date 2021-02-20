@@ -93,7 +93,7 @@ namespace AudioTagger
         }
 
         // TODO: Move to the FileData class, probably.
-        public LineOutputCollection GetLineOutput()
+        public LineOutputCollection GetTagsAsOutputLines()
         {
             var lines = new LineOutputCollection();
 
@@ -114,18 +114,17 @@ namespace AudioTagger
             // }
             // Console.WriteLine(separator.ToString());
 
-            // TODO: Make labels multilingual?
-            lines.Add(TagDataWithHeader("Title", Title));
-            lines.Add(TagDataWithHeader("Artist(s)", string.Join(", ", Artists)));
-            lines.Add(TagDataWithHeader("Album", Album));
-            lines.Add(TagDataWithHeader("Year", Year.ToString()));
-            lines.Add(TagDataWithHeader("Duration", Duration.ToString("m\\:ss")));
-            lines.Add(TagDataWithHeader("Genre(s)", string.Join(", ", Genres)));
+            lines.Add(Printer.TagDataWithHeader("Title", Title));
+            lines.Add(Printer.TagDataWithHeader("Artist(s)", string.Join(", ", Artists)));
+            lines.Add(Printer.TagDataWithHeader("Album", Album));
+            lines.Add(Printer.TagDataWithHeader("Year", Year.ToString()));
+            lines.Add(Printer.TagDataWithHeader("Duration", Duration.ToString("m\\:ss")));
+            lines.Add(Printer.TagDataWithHeader("Genre(s)", string.Join(", ", Genres)));
 
             var bitrate = BitRate.ToString();
             var sampleRate = SampleRate.ToString("#,##0");
             var hasReplayGain = HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
-            lines.Add(TagDataWithHeader("Quality", $"{bitrate}kbps | {sampleRate}kHz | {hasReplayGain}"));
+            lines.Add(Printer.TagDataWithHeader("Quality", $"{bitrate}kbps | {sampleRate}kHz | {hasReplayGain}"));
             //TagDataWithHeader(
             //    "Quality",
             //    new List<LineParts>
@@ -135,30 +134,14 @@ namespace AudioTagger
             //    prependLine);
 
             if (Composers?.Length > 0)
-                lines.Add(TagDataWithHeader($"Composers", string.Join("; ", Composers)));
+                lines.Add(Printer.TagDataWithHeader($"Composers", string.Join("; ", Composers)));
 
             if (!string.IsNullOrWhiteSpace(Comments))
-                lines.Add(TagDataWithHeader("Comment", Comments));
+                lines.Add(Printer.TagDataWithHeader("Comment", Comments));
 
-            return lines;
+            lines.Add(new LineSubString(""));
 
-            static LineOutput TagDataWithHeader(string tagName, string tagData, string toPrepend = "")
-            {
-                var spacesToPrepend = 4;
-                var spacesToAppend = 11 - tagName.Length; // TODO: Calcuate this instead
-                var separator = ": ";
-
-                var lineOutput = new LineOutput();
-
-                lineOutput.Add(toPrepend);
-                lineOutput.Add(new string(' ', spacesToPrepend));
-                lineOutput.Add(tagName, ConsoleColor.DarkGray);
-                lineOutput.Add(new string(' ', spacesToAppend));
-                lineOutput.Add(separator, ConsoleColor.DarkGray);
-                lineOutput.Add(tagData);
-
-                return lineOutput;
-            }
+            return lines;            
         }
     }
 }

@@ -60,6 +60,26 @@ namespace AudioTagger
             PrintColor();
         }
 
+        public static void Print(IList<LineOutput> lines)
+        {
+            if (!lines.Any())
+                return; // TODO: Think about this.
+
+            foreach (var line in lines)
+            {
+                var lastLine = line.Line.Last();
+                foreach (var lineParts in line.Line)
+                {
+                    PrintColor(lineParts);
+                    if (lineParts == lastLine)
+                        PrintColor();
+                }
+            }
+
+            PrintColor();
+        }
+
+        // TODO: Probably unnecessary -- review.
         public static void Print(LineOutputCollection lines)
         {
             var collection = lines.Lines;
@@ -78,7 +98,7 @@ namespace AudioTagger
                 }
             }
 
-            PrintColor();
+            //PrintColor();
         }
 
         public static void Error(string message) =>
@@ -108,6 +128,24 @@ namespace AudioTagger
         private static void PrintColor()
         {
             Console.WriteLine();
+        }
+
+        public static LineOutput TagDataWithHeader(string tagName, string tagData, string toPrepend = "", ConsoleColor headerColor = ConsoleColor.DarkGray)
+        {
+            var spacesToPrepend = 4;
+            var spacesToAppend = 11 - tagName.Length; // TODO: Calcuate this instead
+            var separator = ": ";
+
+            var lineOutput = new LineOutput();
+
+            lineOutput.Add(toPrepend);
+            lineOutput.Add(new string(' ', spacesToPrepend));
+            lineOutput.Add(tagName, headerColor);
+            lineOutput.Add(new string(' ', spacesToAppend));
+            lineOutput.Add(separator, headerColor);
+            lineOutput.Add(tagData);
+
+            return lineOutput;
         }
 
         //private static void PrintColor(string text, bool addLineBreak = false)

@@ -80,7 +80,7 @@ namespace AudioTagger
                             try
                             {
                                 //Printer.FileData(fileData, "", 0, 1);
-                                Printer.Print(fileData.GetOutput());
+                                Printer.Print(fileData.GetTagsAsOutputLines());
                             }
                             catch (TagLib.CorruptFileException e)
                             {
