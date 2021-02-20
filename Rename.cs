@@ -12,7 +12,7 @@ namespace AudioTagger
     {        
         public static (bool wasDone, string message) RenameFile(FileData fileData)
         {
-            Print.Message("Enter rename method...");
+            Printer.Print("Enter rename method...");
             var fileName = fileData.FileName;
 
             // Check mandatory fields
@@ -37,11 +37,11 @@ namespace AudioTagger
             if (!string.IsNullOrWhiteSpace(genre))
                 newFileName.Append($" {{genre}}");
 
-            Print.Message("Rename file:");
-            Print.Message("OLD: " + fileName);
-            Print.Message("NEW: " + newFileName.ToString());
+            Printer.Print("Rename file:");
+            Printer.Print("OLD: " + fileName);
+            Printer.Print("NEW: " + newFileName.ToString());
             if (fileName.Equals(newFileName.ToString()))
-                Print.Message("(No changes)");
+                Printer.Print("(No changes)");
             
             Console.Read();
 

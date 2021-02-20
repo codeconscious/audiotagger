@@ -19,13 +19,13 @@ namespace AudioTagger
         {
             if (args.Length == 0)
             {
-                Print.Message("Audio tagger and renamer");
-                Print.Message("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 0); // TODO: Decide on a name
-                Print.Message("Supply one command, followed by one or more files or directories to process.", 0, 1);
-                Print.Message("Commands:");
-                Print.Message("  -v: View tags (default, optional)");
-                Print.Message("  -u: Update tags");
-                Print.Message("  -r: Rename files based on their tags (Coming soonish)", 0, 1);
+                Printer.Print("Audio tagger and renamer");
+                Printer.Print("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 0); // TODO: Decide on a name
+                Printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1);
+                Printer.Print("Commands:");
+                Printer.Print("  -v: View tags (default, optional)");
+                Printer.Print("  -u: Update tags");
+                Printer.Print("  -r: Rename files based on their tags (Coming soonish)", 0, 1);
                 // TODO: Add option to disable colors
                 
                 return;
@@ -56,7 +56,7 @@ namespace AudioTagger
 
                 if (!fileNames.Any())
                 {
-                    Print.Error($"No filenames were found for \"{fileOrDirectoryPath}\"...");
+                    Printer.Error($"No filenames were found for \"{fileOrDirectoryPath}\"...");
                     continue;
                 }
 
@@ -74,21 +74,22 @@ namespace AudioTagger
                     foreach (var fileData in filesData)
                     {
                         if (fileData == null)
-                            Print.Error($"Skipped invalid file..."); // TODO: Refactor identical checks
+                            Printer.Error($"Skipped invalid file..."); // TODO: Refactor identical checks
                         else
                         {
                             try
                             {
-                                Print.FileData(fileData, "", 0, 1);
+                                //Printer.FileData(fileData, "", 0, 1);
+                                Printer.Print(fileData.GetOutput());
                             }
                             catch (TagLib.CorruptFileException e)
                             {
-                                Print.Error("The file's tag metadata was corrupt or missing." + e.Message);
+                                Printer.Error("The file's tag metadata was corrupt or missing." + e.Message);
                                 continue;
                             }
                             catch (Exception e)
                             {
-                                Print.Error("An unknown error occurred." + e.Message);
+                                Printer.Error("An unknown error occurred." + e.Message);
                                 continue;
                             }
                         }
@@ -99,22 +100,22 @@ namespace AudioTagger
                     foreach (var fileData in filesData)
                     {
                         if (fileData == null)
-                            Print.Error($"Skipped invalid file...");
+                            Printer.Error($"Skipped invalid file...");
                         else
                         {
                             try
                             {
                                 var (wasDone, message) = Renamer.RenameFile(fileData);
-                                Print.Message(wasDone ? "◯ " : "× " + message);
+                                Printer.Print(wasDone ? "◯ " : "× " + message);
                             }
                             catch (TagLib.CorruptFileException e)
                             {
-                                Print.Error("The file's tag metadata was corrupt or missing." + e.Message);
+                                Printer.Error("The file's tag metadata was corrupt or missing." + e.Message);
                                 continue;
                             }
                             catch (Exception e)
                             {
-                                Print.Error("An known error occurred." + e.Message);
+                                Printer.Error("An known error occurred." + e.Message);
                                 continue;
                             }
                         }
@@ -125,24 +126,24 @@ namespace AudioTagger
                     foreach (var fileData in filesData)
                     {
                         if (fileData == null)
-                            Print.Error("Skipped invalid file.");
+                            Printer.Error("Skipped invalid file.");
                         else
                         {
                             try
                             {
                                 var (updatesDone, message, cancel) = Updater.UpdateTags(fileData);
-                                Print.Message(message, 0, updatesDone ? 1 : 0, updatesDone ? "◯ " : "× ");
+                                Printer.Print(message, 0, updatesDone ? 1 : 0, updatesDone ? "◯ " : "× ");
                                 if (cancel)
                                     break;
                             }
                             catch (TagLib.CorruptFileException e)
                             {
-                                Print.Error("The file's tag metadata was corrupt or missing.  " + e.Message);
+                                Printer.Error("The file's tag metadata was corrupt or missing.  " + e.Message);
                                 continue;
                             }
                             catch (Exception e)
                             {
-                                Print.Error("An known error occurred. " + e.Message);
+                                Printer.Error("An known error occurred. " + e.Message);
                                 continue;
                             }
                         }

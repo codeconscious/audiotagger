@@ -45,9 +45,10 @@ namespace AudioTagger
                 return (false, "No updates: " + Path.GetFileName(fileData.FileName), false);
             }
 
-            Print.FileData(fileData, "  • ", 1);
+            //Printer.FileData(fileData, "  • ", 1);
+            //Printer.Print()
 
-            Print.Message("Proposed updates:"); // TODO: Should not be shown when none.
+            Printer.Print("Proposed updates:"); // TODO: Should not be shown when none.
             foreach (var update in proposedUpdates)
                 Console.WriteLine(update);
 

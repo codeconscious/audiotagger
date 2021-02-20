@@ -12,13 +12,13 @@ namespace AudioTagger
         {
             if (string.IsNullOrWhiteSpace(filename))
             {
-                Print.Error("No filename was entered.");
+                Printer.Error("No filename was entered.");
                 return null;
             }
 
             if (!File.Exists(filename))
             {
-                Print.Error($"File \"{filename}\" was not found.");
+                Printer.Error($"File \"{filename}\" was not found.");
                 return null;
             }
 
