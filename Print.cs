@@ -32,13 +32,14 @@ namespace AudioTagger
                 Console.WriteLine();
         }
 
-        public static void Message(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "")
+        public static void Message(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
+                                   ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new ArgumentNullException(nameof(message), "Argument cannot be empty");
 
             PrependLines(prependLines);
-            Console.WriteLine(prependText + message);
+            PrintColor(prependText + message, fgColor, bgColor, true);
             AppendLines(appendLines);
 
             // if (appendLines > 0 || string.IsNullOrWhiteSpace(prependText + message))
@@ -46,7 +47,28 @@ namespace AudioTagger
         }
 
         public static void Error(string message) =>
-            Message(message, 1, 1, "ERROR: ");        
+            Message(message, 1, 1, "ERROR: ");
+
+        private static void PrintColor(string text, ConsoleColor? fgColor, ConsoleColor? bgColor = null, bool addLineBreak = false)
+        {
+            if (fgColor.HasValue)
+                Console.ForegroundColor = fgColor.Value;
+
+            if (bgColor.HasValue)
+                Console.BackgroundColor = bgColor.Value;
+
+            Console.Write(text);
+
+            if (addLineBreak)
+                Console.WriteLine();
+
+            Console.ResetColor();
+        }
+
+        private static void PrintText(string text, bool addLineBreak = false)
+        {
+            PrintColor(text, null, null, addLineBreak);
+        }
 
         // TODO: Move to the FileData class, probably.
         public static void FileData(FileData fileData, string prependLine = "  • ", byte prependLines = 0, byte appendLines = 0)
@@ -56,8 +78,8 @@ namespace AudioTagger
             var fileName = fileData.FileName;
             var fileNameBase = Path.GetFileNameWithoutExtension(fileName);
             var fileNameExt = Path.GetExtension(fileName);
-            PrintText(fileNameBase, ConsoleColor.Cyan);
-            PrintText(fileNameExt, ConsoleColor.DarkCyan, null, true);
+            PrintColor(fileNameBase, ConsoleColor.Cyan);
+            PrintColor(fileNameExt, ConsoleColor.DarkCyan, null, true);
 
             // JA characters are wider than EN, so the alignment is off.
             // TODO: Delete if not needed.
@@ -94,46 +116,22 @@ namespace AudioTagger
             // I just wanted to practice using a local method...
             static void TagDataWithHeader(string tagName, string tagData, string toPrepend = "")
             {
-                /* TODO: Remove Pastel-related code if the library will be removed. */
-                //var formattedTitle = title/*.Pastel(System.Drawing.Color.DimGray)*/;
                 var spacesToPrepend = 4;
-                var spacesToAppend = 11 - tagName.Length;
-                var separator = ": "/*.Pastel(System.Drawing.Color.DarkSlateGray)*/;
+                var spacesToAppend = 11 - tagName.Length; // TODO: Calcuate this instead
+                var separator = ": ";
 
                 PrintText(toPrepend);                
                 PrintText(new string(' ', spacesToPrepend));
-                PrintText(tagName, ConsoleColor.DarkGray);
+                PrintColor(tagName, ConsoleColor.DarkGray);
                 PrintText(new string(' ', spacesToAppend));
-                PrintText(separator, ConsoleColor.DarkGray);
+                PrintColor(separator, ConsoleColor.DarkGray);
                 PrintText(tagData, true);
             }
-        }
-
-        private static void PrintText(string text, ConsoleColor? fgColor, ConsoleColor? bgColor = null, bool addLineBreak = false)
-        {
-            if (fgColor.HasValue)
-                Console.ForegroundColor = fgColor.Value;
-
-            if (bgColor.HasValue)
-                Console.BackgroundColor = bgColor.Value;
-
-            Console.Write(text);
-
-            if (addLineBreak)
-                Console.WriteLine();
-
-            Console.ResetColor();
-        }
-
-        private static void PrintText(string text, bool addLineBreak = false)
-        {
-            PrintText(text, null, null, addLineBreak);
         }
 
         // TODO: Complete or delete
         //public static void UpdateData(UpdateableFields updates)
         //{
-
         //}
     }
 }

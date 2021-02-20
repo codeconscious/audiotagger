@@ -9,6 +9,7 @@ namespace AudioTagger
 {
     public static class Updater
     {
+        // TODO: Perhaps get some a file, and allow several regexes
         private const string _regex = @"(?'Artists'.+) [-–] (?'Title'[^\[\{]+)(?: ?\[(?'Year'\d{3,})\])?(?: ?\{(?'Genres'.+)\})?";
 
         public static (bool updatesDone, string message, bool cancel) UpdateTags(FileData fileData)
