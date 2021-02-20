@@ -8,5 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="TagLibSharp" Version="2.2.0" />
+    <PackageReference Include="Pastel" Version="2.1.0" />
   </ItemGroup>
 </Project>

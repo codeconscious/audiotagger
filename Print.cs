@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
+using Pastel;
 
 namespace AudioTagger
 {
@@ -55,7 +56,8 @@ namespace AudioTagger
             PrependLines(prepend);
 
             var header = $"\"{fileData.FileName}\"";
-            Console.WriteLine(header);
+            var formattedHeader = header.Pastel(System.Drawing.Color.LightGoldenrodYellow);
+            Console.WriteLine(formattedHeader);
 
             // JA characters are wider than EN, so the alignment is off.
             Console.WriteLine(new string('—', header.Length * 2));
@@ -90,8 +92,12 @@ namespace AudioTagger
             // I just wanted to practice using a local method...
             static void TagDataWithHeader(string title, string data, string prepend = "")
             {
+                var formattedTitle = title.Pastel(System.Drawing.Color.FromArgb(165, 229, 250));
+                var spacesToAdd = Math.Abs(_minTitleWidth) - title.Length;
+
                 Console.Write(prepend);
-                Console.Write(string.Format($"{title,_minTitleWidth}"));
+                //Console.Write($"{formattedTitle,_minTitleWidth}");
+                Console.Write(formattedTitle + new string(' ', spacesToAdd));
                 Console.WriteLine($"{_separator} {data}");
             }
         }
