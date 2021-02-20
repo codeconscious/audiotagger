@@ -26,6 +26,7 @@ namespace AudioTagger
                 Print.Message("  -v: View tags (default, optional)");
                 Print.Message("  -u: Update tags");
                 Print.Message("  -r: Rename files based on their tags (Coming soonish)", 0, 1);
+                // TODO: Add option to disable colors
                 
                 return;
             }
