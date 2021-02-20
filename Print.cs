@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Linq;
+using System.IO;
 
 namespace AudioTagger
 {
@@ -52,8 +53,11 @@ namespace AudioTagger
         {
             PrependLines(prependLines);
 
-            var header = $"\"{fileData.FileName}\"";
-            PrintText(header, ConsoleColor.DarkGreen, null, true);
+            var fileName = fileData.FileName;
+            var fileNameBase = Path.GetFileNameWithoutExtension(fileName);
+            var fileNameExt = Path.GetExtension(fileName);
+            PrintText(fileNameBase, ConsoleColor.Cyan);
+            PrintText(fileNameExt, ConsoleColor.DarkCyan, null, true);
 
             // JA characters are wider than EN, so the alignment is off.
             // TODO: Delete if not needed.
