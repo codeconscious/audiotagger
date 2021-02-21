@@ -93,14 +93,14 @@ namespace AudioTagger
         }
 
         // TODO: Move to the FileData class, probably.
-        public IList<OutputLines> GetTagsAsOutputLines()
+        public IList<OutputLine> GetTagsAsOutputLines()
         {
-            var lines = new List<OutputLines>();
+            var lines = new List<OutputLine>();
 
             var fileNameBase = System.IO.Path.GetFileNameWithoutExtension(FileName);
             var fileNameExt = System.IO.Path.GetExtension(FileName);
             lines.Add(
-                new OutputLines(
+                new OutputLine(
                     new LineSubString(fileNameBase, ConsoleColor.Cyan),
                     new LineSubString(fileNameExt, ConsoleColor.DarkCyan)));
 

@@ -23,26 +23,26 @@ namespace AudioTagger
         //}
     }
 
-    public class OutputLines
+    public class OutputLine
     {
         public List<LineSubString> Line { get; set; } = new List<LineSubString>();
 
-        public OutputLines()
+        public OutputLine()
         {
             //Line.Add(lineParts);
         }
 
-        public OutputLines(LineSubString lineParts)
+        public OutputLine(LineSubString lineParts)
         {
             Line = new List<LineSubString> { lineParts };
         }
 
-        public OutputLines(params LineSubString[] lineParts)
+        public OutputLine(params LineSubString[] lineParts)
         {
             Line = lineParts.ToList();
         }
 
-        public OutputLines(string text, ConsoleColor fgColor, ConsoleColor? bgColor = null)
+        public OutputLine(string text, ConsoleColor fgColor, ConsoleColor? bgColor = null)
         {
             Line.Add(new LineSubString(text, fgColor, bgColor));
         }

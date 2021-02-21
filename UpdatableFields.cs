@@ -52,9 +52,9 @@ namespace AudioTagger
             }
         }
 
-        public IList<OutputLines> GetUpdateOutput(FileData fileData)
+        public IList<OutputLine> GetUpdateOutput(FileData fileData)
         {
-            var updateOutput = new List<OutputLines>();
+            var updateOutput = new List<OutputLine>();
             var headerColor = ConsoleColor.DarkMagenta;
 
             if (Title != null && Title != fileData.Title)

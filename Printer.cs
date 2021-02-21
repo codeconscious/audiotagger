@@ -60,7 +60,7 @@ namespace AudioTagger
             AppendLines(appendLines);
         }
 
-        public static void Print(IList<OutputLines> lines, byte prependLines = 0, byte appendLines = 1)
+        public static void Print(IList<OutputLine> lines, byte prependLines = 0, byte appendLines = 1)
         {
             PrependLines(prependLines);
 
@@ -110,19 +110,19 @@ namespace AudioTagger
             Console.WriteLine();
         }
 
-        public static OutputLines TagDataWithHeader(string tagName, string tagData, string toPrepend = "", ConsoleColor headerColor = ConsoleColor.DarkGray)
+        public static OutputLine TagDataWithHeader(string tagName, string tagData, string prependLine = "", ConsoleColor headerColor = ConsoleColor.DarkGray)
         {
             var spacesToPrepend = 4;
-            var spacesToAppend = 11 - tagName.Length; // TODO: Calcuate this instead
-            var separator = ": ";
+            var spacesToAppend = 13 - tagName.Length; // TODO: Calcuate this instead
+            //var separator = ": ";
 
-            var lineOutput = new OutputLines();
+            var lineOutput = new OutputLine();
 
-            lineOutput.Add(toPrepend);
+            lineOutput.Add(prependLine);
             lineOutput.Add(new string(' ', spacesToPrepend));
             lineOutput.Add(tagName, headerColor);
             lineOutput.Add(new string(' ', spacesToAppend));
-            lineOutput.Add(separator, headerColor);
+            //lineOutput.Add(separator, headerColor);
             lineOutput.Add(tagData);
 
             return lineOutput;
