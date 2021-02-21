@@ -139,8 +139,6 @@ namespace AudioTagger
             if (!string.IsNullOrWhiteSpace(Comments))
                 lines.Add(Printer.TagDataWithHeader("Comment", Comments));
 
-            //lines.Add(new OutputLines());
-
             return lines;            
         }
     }
