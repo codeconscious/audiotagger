@@ -47,7 +47,7 @@ namespace AudioTagger
             //     _previousWasBlankLine = true;
         }
 
-        public static void Print(IList<LineSubString> lineParts)
+        public static void Print(IList<LineSubString> lineParts, bool addLineBreak = true)
         {
             if (!lineParts.Any())
                 return;
@@ -57,7 +57,8 @@ namespace AudioTagger
                 PrintColor(linePart.Text, linePart.FgColor, linePart.BgColor);
             }
 
-            PrintColor();
+            if (addLineBreak)
+                PrintColor();
         }
 
         public static void Print(IList<OutputLines> lines)

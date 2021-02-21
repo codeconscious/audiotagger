@@ -43,8 +43,19 @@ namespace AudioTagger
             foreach (var update in proposedUpdates)
                 Printer.Print(update.Line);
 
-            Console.WriteLine("Do you want to apply these updates to the file?");
-            Console.Write("Enter Y or N (or C to cancel):  ");
+            //Printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
+
+            Printer.Print(new List<LineSubString>
+            {
+                new LineSubString("Apply these updates? ", ConsoleColor.Yellow),
+                new LineSubString("Press "),
+                new LineSubString("Y", ConsoleColor.Magenta),
+                new LineSubString(" or "),
+                new LineSubString("N", ConsoleColor.Magenta),
+                new LineSubString(" (or "),
+                new LineSubString("C", ConsoleColor.Magenta),
+                new LineSubString(" to cancel):  "),
+            }, addLineBreak: false);
 
             var validInput = false;
             var shouldUpdate = false;
