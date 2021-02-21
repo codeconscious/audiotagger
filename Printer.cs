@@ -47,6 +47,11 @@ namespace AudioTagger
             //     _previousWasBlankLine = true;
         }
 
+        public static void Print(string message, ConsoleColor fgColor, ConsoleColor? bgColor = null)
+        {
+            Print(message, 0, 0, "", fgColor, bgColor);
+        }
+
         public static void Print(IList<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1)
         {
             PrependLines(prependLines);
@@ -137,5 +142,17 @@ namespace AudioTagger
         //public static void UpdateData(UpdateableFields updates)
         //{
         //}
+
+        public static char GetResultSymbol(OperationResultType type)
+        {
+            return type switch
+            {
+                OperationResultType.Cancelled => '×',
+                OperationResultType.Failure => '×',
+                OperationResultType.Neutral => '-',
+                OperationResultType.Success => '◯',
+                _ => '?'
+            };
+        }
     }
 }

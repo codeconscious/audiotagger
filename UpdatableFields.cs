@@ -55,7 +55,7 @@ namespace AudioTagger
         public IList<OutputLine> GetUpdateOutput(FileData fileData)
         {
             var updateOutput = new List<OutputLine>();
-            var headerColor = ConsoleColor.DarkMagenta;
+            var headerColor = ConsoleColor.White;
 
             if (Title != null && Title != fileData.Title)
                 updateOutput.Add(Printer.TagDataWithHeader("Title", Title, "", headerColor));

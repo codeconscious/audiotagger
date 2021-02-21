@@ -80,7 +80,7 @@ namespace AudioTagger
                             try
                             {
                                 //Printer.FileData(fileData, "", 0, 1);
-                                Printer.Print(fileData.GetTagsAsOutputLines());
+                                Printer.Print(fileData.GetTagOutput());
                             }
                             catch (TagLib.CorruptFileException e)
                             {
@@ -122,31 +122,15 @@ namespace AudioTagger
                     }
                 }
                 else // (mode == Mode.Update)
-                {
-                    foreach (var fileData in filesData)
+                {                    
+                    try
                     {
-                        if (fileData == null)
-                            Printer.Error("Skipped invalid file.");
-                        else
-                        {
-                            try
-                            {
-                                var (updatesDone, message, cancel) = Updater.UpdateTags(fileData);
-                                Printer.Print(message, 0, updatesDone ? 1 : 0, updatesDone ? "◯ " : "× ");
-                                if (cancel)
-                                    break;
-                            }
-                            catch (TagLib.CorruptFileException e)
-                            {
-                                Printer.Error("The file's tag metadata was corrupt or missing.  " + e.Message);
-                                continue;
-                            }
-                            catch (Exception e)
-                            {
-                                Printer.Error("An error occurred: " + e.Message);
-                                continue;
-                            }
-                        }
+                        Updater.UpdateTags(filesData);
+                    }
+                    catch (Exception e)
+                    {
+                        Printer.Error("An error occurred in updating: " + e.Message);
+                        continue;
                     }
                 }
             }            

@@ -16,9 +16,14 @@ namespace AudioTagger
             _tabLibFile = tabLibFile;
         }
 
-        public string FileName
+        public string FileNameFull
         {
             get => _fileName;
+        }
+
+        public string FileNameShort
+        {
+            get => System.IO.Path.GetFileName(_fileName);
         }
 
         public string Title
@@ -93,12 +98,12 @@ namespace AudioTagger
         }
 
         // TODO: Move to the FileData class, probably.
-        public IList<OutputLine> GetTagsAsOutputLines()
+        public IList<OutputLine> GetTagOutput()
         {
             var lines = new List<OutputLine>();
 
-            var fileNameBase = System.IO.Path.GetFileNameWithoutExtension(FileName);
-            var fileNameExt = System.IO.Path.GetExtension(FileName);
+            var fileNameBase = System.IO.Path.GetFileNameWithoutExtension(FileNameFull);
+            var fileNameExt = System.IO.Path.GetExtension(FileNameFull);
             lines.Add(
                 new OutputLine(
                     new LineSubString(fileNameBase, ConsoleColor.Cyan),

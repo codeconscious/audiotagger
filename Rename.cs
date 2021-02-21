@@ -12,8 +12,8 @@ namespace AudioTagger
     {        
         public static (bool wasDone, string message) RenameFile(FileData fileData)
         {
-            Printer.Print("Enter rename method...");
-            var fileName = fileData.FileName;
+            Printer.Print("Entered rename method...");
+            var fileName = fileData.FileNameFull;
 
             // Check mandatory fields
             if (string.IsNullOrWhiteSpace(fileData.Title))
