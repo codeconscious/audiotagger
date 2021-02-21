@@ -93,14 +93,14 @@ namespace AudioTagger
         }
 
         // TODO: Move to the FileData class, probably.
-        public LineOutputCollection GetTagsAsOutputLines()
+        public IList<OutputLines> GetTagsAsOutputLines()
         {
-            var lines = new LineOutputCollection();
+            var lines = new List<OutputLines>();
 
             var fileNameBase = System.IO.Path.GetFileNameWithoutExtension(FileName);
             var fileNameExt = System.IO.Path.GetExtension(FileName);
             lines.Add(
-                new LineOutput(
+                new OutputLines(
                     new LineSubString(fileNameBase, ConsoleColor.Cyan),
                     new LineSubString(fileNameExt, ConsoleColor.DarkCyan)));
 
@@ -139,7 +139,7 @@ namespace AudioTagger
             if (!string.IsNullOrWhiteSpace(Comments))
                 lines.Add(Printer.TagDataWithHeader("Comment", Comments));
 
-            lines.Add(new LineSubString(""));
+            //lines.Add(new OutputLines());
 
             return lines;            
         }

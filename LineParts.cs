@@ -23,26 +23,26 @@ namespace AudioTagger
         //}
     }
 
-    public class LineOutput
+    public class OutputLines
     {
         public List<LineSubString> Line { get; set; } = new List<LineSubString>();
 
-        public LineOutput()
+        public OutputLines()
         {
             //Line.Add(lineParts);
         }
 
-        public LineOutput(LineSubString lineParts)
+        public OutputLines(LineSubString lineParts)
         {
             Line = new List<LineSubString> { lineParts };
         }
 
-        public LineOutput(params LineSubString[] lineParts)
+        public OutputLines(params LineSubString[] lineParts)
         {
             Line = lineParts.ToList();
         }
 
-        public LineOutput(string text, ConsoleColor fgColor, ConsoleColor? bgColor = null)
+        public OutputLines(string text, ConsoleColor fgColor, ConsoleColor? bgColor = null)
         {
             Line.Add(new LineSubString(text, fgColor, bgColor));
         }
@@ -55,36 +55,6 @@ namespace AudioTagger
         public void Add(string text, ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
         {
             Line.Add(new LineSubString(text, fgColor, bgColor));
-        }
-    }
-
-    public class LineOutputCollection
-    {
-        public List<LineOutput> Lines { get; set; } = new List<LineOutput>();
-        
-        public LineOutputCollection()
-        {
-
-        }
-
-        public LineOutputCollection(LineSubString lineParts)
-        {
-            Lines.Add(new LineOutput(lineParts));
-        }
-
-        public void Add(LineOutput lineOutput)
-        {
-            Lines.Add(lineOutput);
-        }
-
-        public void Add(LineSubString lineParts)
-        {
-            Lines.Add(new LineOutput(lineParts));
-        }
-
-        public void Add(string text, ConsoleColor fgColor, ConsoleColor? bgColor = null)
-        {
-            Lines.Add(new LineOutput(text, fgColor, bgColor));
         }
     }
 }

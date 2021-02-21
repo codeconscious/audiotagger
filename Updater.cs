@@ -28,7 +28,7 @@ namespace AudioTagger
             if (foundTags == null || !foundTags.Any())
                 return (false, "No tag groups successfully found. (Check the filename format.)", false);
 
-            var updateables = new UpdateableFields(foundTags);
+            var updateables = new UpdatableFields(foundTags);
 
             var proposedUpdates = updateables.GetUpdateOutput(fileData);
 

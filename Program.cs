@@ -115,7 +115,7 @@ namespace AudioTagger
                             }
                             catch (Exception e)
                             {
-                                Printer.Error("An known error occurred." + e.Message);
+                                Printer.Error("An error occurred:" + e.Message);
                                 continue;
                             }
                         }
@@ -143,7 +143,7 @@ namespace AudioTagger
                             }
                             catch (Exception e)
                             {
-                                Printer.Error("An known error occurred. " + e.Message);
+                                Printer.Error("An error occurred: " + e.Message);
                                 continue;
                             }
                         }
