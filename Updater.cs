@@ -37,7 +37,7 @@ namespace AudioTagger
                 return (false, "No updates: " + Path.GetFileName(fileData.FileName), false);
             }
 
-            Printer.Print(fileData.GetTagsAsOutputLines());
+            Printer.Print(fileData.GetTagsAsOutputLines(), 1, 0);
 
             Printer.Print("Proposed updates:");
             foreach (var update in proposedUpdates)
@@ -55,7 +55,7 @@ namespace AudioTagger
                 new LineSubString(" (or "),
                 new LineSubString("C", ConsoleColor.Magenta),
                 new LineSubString(" to cancel):  "),
-            }, addLineBreak: false);
+            }, appendLines: 0);
 
             var validInput = false;
             var shouldUpdate = false;
@@ -77,31 +77,25 @@ namespace AudioTagger
                 }
             }
             while (!validInput);
-            Console.WriteLine();
 
             if (!shouldUpdate)
                 return (false, "No updates made", false);
 
-            //byte updatesMade = 0;
             if (updateables.Title != null && updateables.Title != fileData.Title)
             {
                 fileData.Title = updateables.Title;
-                //updatesMade++;
             }                
             if (updateables.Artists?.All(a => fileData.Artists.Contains(a)) == false)
             {
                 fileData.Artists = updateables.Artists;
-                //updatesMade++;
             }
             if (updateables.Year != null && updateables.Year != fileData.Year)
             {
                 fileData.Year = updateables.Year.Value;
-                //updatesMade++;
             }
             if (updateables.Genres?.All(a => fileData.Genres.Contains(a)) == false)
             {
                 fileData.Genres = updateables.Genres;
-                //updatesMade++;
             }
 
             fileData.SaveUpdates();

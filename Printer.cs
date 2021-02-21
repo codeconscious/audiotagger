@@ -34,10 +34,10 @@ namespace AudioTagger
         }
 
         public static void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
-                                 ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
+                                 ConsoleColor? fgColor = null, ConsoleColor? bgColor = null, bool addLineBreak = true)
         {
             if (string.IsNullOrWhiteSpace(message))
-                throw new ArgumentNullException(nameof(message), "Argument cannot be empty");
+                throw new ArgumentNullException(nameof(message), "Message cannot be empty");
 
             PrependLines(prependLines);
             PrintColor(prependText + message, fgColor, bgColor, true);
@@ -47,22 +47,23 @@ namespace AudioTagger
             //     _previousWasBlankLine = true;
         }
 
-        public static void Print(IList<LineSubString> lineParts, bool addLineBreak = true)
+        public static void Print(IList<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1)
         {
+            PrependLines(prependLines);
+
             if (!lineParts.Any())
                 return;
 
             foreach (var linePart in lineParts)
-            {
                 PrintColor(linePart.Text, linePart.FgColor, linePart.BgColor);
-            }
 
-            if (addLineBreak)
-                PrintColor();
+            AppendLines(appendLines);
         }
 
-        public static void Print(IList<OutputLines> lines)
+        public static void Print(IList<OutputLines> lines, byte prependLines = 0, byte appendLines = 1)
         {
+            PrependLines(prependLines);
+
             if (!lines.Any())
                 return; // TODO: Think about this.
 
@@ -77,7 +78,7 @@ namespace AudioTagger
                 }
             }
 
-            PrintColor();
+            AppendLines(appendLines);
         }
 
         public static void Error(string message) =>
