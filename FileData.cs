@@ -100,8 +100,8 @@ namespace AudioTagger
 
         public bool HasReplayGainData
         {
-            get => _tabLibFile.Tag.ReplayGainTrackGain > 0 ||
-                   _tabLibFile.Tag.ReplayGainAlbumGain > 0;
+            get => _tabLibFile.Tag.ReplayGainTrackGain != 0 ||
+                   _tabLibFile.Tag.ReplayGainAlbumGain != 0;
         }
 
         /// <summary>
