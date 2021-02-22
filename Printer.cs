@@ -8,15 +8,15 @@ namespace AudioTagger
 {
     public static class Printer
     {
-        private static bool _previousWasBlankLine;
+        //private static bool _previousWasBlankLine;
 
         private static void PrependLines(byte lines)
         {
             if (lines == 0)
                 return;
 
-            if (_previousWasBlankLine)
-                lines--;
+            //if (_previousWasBlankLine)
+            //    lines--;
 
             for (var prepend = 0; prepend < lines; prepend++)
                 Console.WriteLine();
@@ -27,7 +27,7 @@ namespace AudioTagger
             if (lines == 0)
                 return;
 
-            _previousWasBlankLine = true;
+            //_previousWasBlankLine = true;
 
             for (var append = 0; append < lines; append++)
                 Console.WriteLine();
