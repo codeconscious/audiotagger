@@ -94,7 +94,7 @@ namespace AudioTagger
 
                 if (!shouldUpdate)
                 {
-                    Printer.Print("No updates made", 0, 1, ResultSymbols.Neutral);
+                    Printer.Print("No updates made", 1, 1, ResultSymbols.Failure);
                     continue;
                 }
 
