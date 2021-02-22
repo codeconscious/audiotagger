@@ -18,7 +18,7 @@ namespace AudioTagger
 
     public class UpdatableFields
     {
-        public string[]? Artists { get; set; }
+        public string[]? Artists { get; private set; }
         public string? Title { get; set; }
         public uint? Year { get; set; }
         public string[]? Genres { get; set; }
@@ -56,15 +56,39 @@ namespace AudioTagger
         {
             var updateOutput = new List<OutputLine>();
             var headerColor = ConsoleColor.White;
+            var prependLineWith = "";
 
             if (Title != null && Title != fileData.Title)
-                updateOutput.Add(Printer.TagDataWithHeader("Title", Title, "", headerColor));
+                updateOutput.Add(
+                    Printer.TagDataWithHeader(
+                        "Title",
+                        Title.Trim(),
+                        prependLineWith,
+                        headerColor));
+
             if (Artists != null && !Artists.All(a => fileData.Artists.Contains(a)))
-                updateOutput.Add(Printer.TagDataWithHeader("Artists", string.Join("; ", Artists), "", headerColor));
+                updateOutput.Add(
+                    Printer.TagDataWithHeader(
+                        "Artists",
+                        string.Join("; ", Artists.Select(a => a.Trim()).ToArray()),
+                        prependLineWith,
+                        headerColor));
+
             if (Year != null && Year != fileData.Year)
-                updateOutput.Add(Printer.TagDataWithHeader("Year", Year.Value.ToString(CultureInfo.InvariantCulture), "", headerColor));
+                updateOutput.Add(
+                    Printer.TagDataWithHeader(
+                        "Year",
+                        Year.Value.ToString(CultureInfo.InvariantCulture),
+                        prependLineWith,
+                        headerColor));
+
             if (Genres != null && !Genres.All(a => fileData.Genres.Contains(a)))
-                updateOutput.Add(Printer.TagDataWithHeader("Genres", string.Join("; ", Genres), "", headerColor));
+                updateOutput.Add(
+                    Printer.TagDataWithHeader(
+                        "Genres",
+                        string.Join("; ", Genres.Select(g => g.Trim()).ToArray()),
+                        prependLineWith,
+                        headerColor));
 
             return updateOutput;
         }
