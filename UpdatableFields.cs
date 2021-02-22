@@ -31,12 +31,15 @@ namespace AudioTagger
             {
                 if (element.Name == "Title")
                 {
-                    Title = element.Value.Trim();
+                    Title = element.Value.Trim().Normalize();
                     Count++;
                 }
                 else if (element.Name == "Artists")
                 {
-                    Artists = element.Value.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    Artists = element.Value.Split(new[] { ";" },
+                                                  StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                           .Select(a => a.Normalize())
+                                           .ToArray();
                     Count++;
                 }
                 else if (element.Name == "Year")
@@ -46,7 +49,10 @@ namespace AudioTagger
                 }
                 else if (element.Name == "Genres")
                 {
-                    Genres = element.Value.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    Genres = element.Value.Split(new[] { ";" },
+                                                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                          .Select(g => g.Normalize())
+                                          .ToArray();
                     Count++;
                 }
             }
@@ -62,17 +68,19 @@ namespace AudioTagger
                 updateOutput.Add(
                     Printer.TagDataWithHeader(
                         "Title",
-                        Title.Trim(),
+                        Title,
                         prependLineWith,
                         headerColor));
 
             if (Artists != null && !Artists.All(a => fileData.Artists.Contains(a)))
+            {
                 updateOutput.Add(
                     Printer.TagDataWithHeader(
                         "Artists",
-                        string.Join("; ", Artists.Select(a => a.Trim()).ToArray()),
+                        string.Join("; ", Artists),
                         prependLineWith,
                         headerColor));
+            }
 
             if (Year != null && Year != fileData.Year)
                 updateOutput.Add(
@@ -86,11 +94,11 @@ namespace AudioTagger
                 updateOutput.Add(
                     Printer.TagDataWithHeader(
                         "Genres",
-                        string.Join("; ", Genres.Select(g => g.Trim()).ToArray()),
+                        string.Join("; ", Genres),
                         prependLineWith,
                         headerColor));
 
-            return updateOutput;
+            return updateOutput;            
         }
     }
 }

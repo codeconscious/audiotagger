@@ -28,20 +28,26 @@ namespace AudioTagger
 
         public string Title
         {
-            get => _tabLibFile.Tag.Title;
-            set => _tabLibFile.Tag.Title = value.Trim();
+            get => _tabLibFile.Tag.Title?.Normalize() ?? "";
+            set => _tabLibFile.Tag.Title = value.Trim().Normalize();
         }
 
         public string[] Artists
         {
-            get => _tabLibFile.Tag.Performers;
-            set => _tabLibFile.Tag.Performers = value.Where(a => !string.IsNullOrWhiteSpace(a)).ToArray();
+            get => _tabLibFile.Tag.Performers?.Select(a => a?.Normalize() ?? "")
+                                              .ToArray() ??
+                   Array.Empty<string>();
+
+            set => _tabLibFile.Tag.Performers =
+                value.Where(a => !string.IsNullOrWhiteSpace(a))
+                     .Select(a => a.Trim().Normalize())
+                     .ToArray();
         }
 
         public string Album
         {
-            get => _tabLibFile.Tag.Album;
-            set => _tabLibFile.Tag.Album = value.Trim();
+            get => _tabLibFile.Tag.Album?.Normalize() ?? "";
+            set => _tabLibFile.Tag.Album = value?.Trim()?.Normalize();
         }
 
         public uint Year
@@ -58,19 +64,28 @@ namespace AudioTagger
         public string[] Genres
         {
             get => _tabLibFile.Tag.Genres;
-            set => _tabLibFile.Tag.Genres = value;
+            set => _tabLibFile.Tag.Genres =
+                value?.Select(g => g?.Trim()?.Normalize() ?? "")?
+                     .ToArray()
+                ?? Array.Empty<string>();
         }
 
         public string[] Composers
         {
-            get => _tabLibFile.Tag.Composers;
-            set => _tabLibFile.Tag.Composers = value;
+            get => _tabLibFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize() ?? "")?
+                                             .ToArray()
+                ?? Array.Empty<string>();
+
+            set => _tabLibFile.Tag.Composers =
+                value?.Select(g => g?.Trim()?.Normalize())?
+                      .ToArray()
+                ?? Array.Empty<string>();
         }
 
         public string Comments
         {
-            get => _tabLibFile.Tag.Comment ?? "";
-            set => _tabLibFile.Tag.Comment = value.Trim();
+            get => _tabLibFile.Tag.Comment?.Trim()?.Normalize() ?? "";
+            set => _tabLibFile.Tag.Comment = value.Trim().Normalize();
         }
 
         public int BitRate
@@ -97,7 +112,6 @@ namespace AudioTagger
             _tabLibFile.Save();
         }
 
-        // TODO: Move to the FileData class, probably.
         public IList<OutputLine> GetTagOutput()
         {
             var lines = new List<OutputLine>();
