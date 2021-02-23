@@ -33,7 +33,6 @@ namespace AudioTagger
 
             var trimmedArgs = new Queue<string>(args.Select(a => a.Trim()));
 
-            // Set the action mode
             Mode mode;
             if (trimmedArgs.Peek().ToLowerInvariant() == "-u")
             {
@@ -56,7 +55,7 @@ namespace AudioTagger
 
                 if (!fileNames.Any())
                 {
-                    Printer.Error($"No filenames were found for \"{fileOrDirectoryPath}\"...");
+                    Printer.Error($"No files found in \"{fileOrDirectoryPath}\"...");
                     continue;
                 }
 
