@@ -138,7 +138,10 @@ namespace AudioTagger
             lines.Add(Printer.TagDataWithHeader("Album", Album));
             lines.Add(Printer.TagDataWithHeader("Year", Year.ToString()));
             lines.Add(Printer.TagDataWithHeader("Duration", Duration.ToString("m\\:ss")));
-            lines.Add(Printer.TagDataWithHeader("Genre(s)", string.Join(", ", Genres)));
+
+            var genreCount = Genres.Length;
+            lines.Add(Printer.TagDataWithHeader("Genre(s)", string.Join(", ", Genres) +
+                                                (genreCount > 1 ? $" ({genreCount})" : "")));
 
             var bitrate = BitRate.ToString();
             var sampleRate = SampleRate.ToString("#,##0");

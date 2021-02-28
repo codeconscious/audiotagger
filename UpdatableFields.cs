@@ -91,12 +91,15 @@ namespace AudioTagger
                         headerColor));
 
             if (Genres != null && !Genres.All(a => fileData.Genres.Contains(a)))
+            {
+                var genreCount = Genres.Length;
                 updateOutput.Add(
                     Printer.TagDataWithHeader(
                         "Genres",
-                        string.Join("; ", Genres),
+                        string.Join("; ", Genres) + (genreCount > 1 ? $" ({genreCount})" : ""),
                         prependLineWith,
                         headerColor));
+            }
 
             return updateOutput;            
         }
