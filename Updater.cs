@@ -125,7 +125,7 @@ namespace AudioTagger
                     continue;
                 }                
 
-                Printer.Print("Updates saved!", 1, 1, ResultSymbols.Success);
+                Printer.Print("Updates saved!", 1, 1, ResultSymbols.Success, ConsoleColor.DarkGreen);
             }
         }
     }
