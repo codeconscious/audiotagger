@@ -146,14 +146,19 @@ namespace AudioTagger
             var bitrate = BitRate.ToString();
             var sampleRate = SampleRate.ToString("#,##0");
             var hasReplayGain = HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
-            lines.Add(Printer.TagDataWithHeader("Quality", $"{bitrate}kbps | {sampleRate}kHz | {hasReplayGain}"));
-            //TagDataWithHeader(
-            //    "Quality",
-            //    new List<LineParts>
-            //    {
-            //        new LineParts(bitrate),
-            //    },
-            //    prependLine);
+
+            // Create formatted quality line            
+            const string genreSeparator = "    ";
+            lines.Add(Printer.TagDataWithHeader(
+                "Quality",
+                new List<LineSubString>
+                {
+                    new LineSubString(bitrate),
+                    new LineSubString(" kbps" + genreSeparator, ConsoleColor.DarkGray),
+                    new LineSubString(sampleRate),
+                    new LineSubString(" kHz" + genreSeparator, ConsoleColor.DarkGray),
+                    new LineSubString(hasReplayGain)
+                }));
 
             if (Composers?.Length > 0)
                 lines.Add(Printer.TagDataWithHeader($"Composers", string.Join("; ", Composers)));
