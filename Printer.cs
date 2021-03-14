@@ -34,7 +34,7 @@ namespace AudioTagger
         }
 
         public static void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
-                                 ConsoleColor? fgColor = null, ConsoleColor? bgColor = null, bool addLineBreak = true)
+                                 ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new ArgumentNullException(nameof(message), "Message cannot be empty");
@@ -84,6 +84,13 @@ namespace AudioTagger
             }
 
             AppendLines(appendLines);
+        }
+
+        public static void Print(string message, ResultType type, byte prependLines = 0,
+                                 byte appendLines = 0, string prependText = "")
+        {
+            Print(message, prependLines, appendLines, prependText,
+                  ResultsMap.Map[type].Color, null);
         }
 
         public static void Error(string message) =>
@@ -149,14 +156,14 @@ namespace AudioTagger
         //{
         //}
 
-        public static char GetResultSymbol(OperationResultType type)
+        public static char GetResultSymbol(ResultType type)
         {
             return type switch
             {
-                OperationResultType.Cancelled => '×',
-                OperationResultType.Failure => '×',
-                OperationResultType.Neutral => '-',
-                OperationResultType.Success => '◯',
+                ResultType.Cancelled => '×',
+                ResultType.Failure => '×',
+                ResultType.Neutral => '-',
+                ResultType.Success => '◯',
                 _ => '?'
             };
         }

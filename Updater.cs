@@ -20,8 +20,7 @@ namespace AudioTagger
             {
                 if (fileData == null)
                 {
-                    Printer.Print($"No file was submitted.", 0, 0,
-                                  ResultSymbols.Failure, ConsoleColor.DarkRed);
+                    Printer.Print($"No file was submitted.", ResultType.Failure);
                     continue;
                 }
 
@@ -30,7 +29,7 @@ namespace AudioTagger
                 if (match == null)
                 {
                     Printer.Print($"Could not parse tags for \"{fileData.FileNameShort}\".",
-                                  0, 0, ResultSymbols.Failure, ConsoleColor.DarkRed);
+                                  ResultType.Failure);
                     continue;
                 }
 
@@ -41,7 +40,7 @@ namespace AudioTagger
                 if (foundTags == null || !foundTags.Any())
                 {
                     Printer.Print($"Could not parse data for filename \"{fileData.FileNameShort}.\"",
-                                  0, 0, ResultSymbols.Failure, ConsoleColor.DarkRed);
+                                  ResultType.Failure);
                     continue;
                 }
 
@@ -52,7 +51,7 @@ namespace AudioTagger
                 if (proposedUpdates == null || !proposedUpdates.Any())
                 {
                     Printer.Print($"No updates needed for \"{fileData.FileNameShort}\".",
-                                  0, 0, ResultSymbols.Neutral, ConsoleColor.DarkGray);
+                                  ResultType.Neutral);
                     continue;
                 }
 
@@ -86,8 +85,8 @@ namespace AudioTagger
                         if (key == 'c')
                         {
                             Console.WriteLine();
-                            Printer.Print("All operations cancelled", 1, 1,
-                                          ResultSymbols.Cancelled, ConsoleColor.DarkRed);
+                            Printer.Print("All operations cancelled",
+                                          ResultType.Cancelled, 1, 1);
                             return;
                         }
 
@@ -99,7 +98,7 @@ namespace AudioTagger
 
                 if (!doUpdate)
                 {
-                    Printer.Print("No updates made", 1, 1, ResultSymbols.Failure);
+                    Printer.Print("No updates made", ResultType.Failure, 1, 1);
                     continue;
                 }
 
@@ -130,7 +129,7 @@ namespace AudioTagger
                     continue;
                 }                
 
-                Printer.Print("Updates saved", 1, 1, ResultSymbols.Success, ConsoleColor.DarkGreen);
+                Printer.Print("Updates saved", ResultType.Success, 1, 1);
             }
         }
     }

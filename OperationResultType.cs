@@ -1,6 +1,9 @@
-﻿namespace AudioTagger
+﻿using System;
+using System.Collections.Generic;
+
+namespace AudioTagger
 {
-    public enum OperationResultType
+    public enum ResultType
     {
         Neutral,
         Success,
@@ -9,12 +12,18 @@
         Unknown
     }
 
-    public class ResultSymbols
+    public record ResultProperties(ConsoleColor? Color, string Symbol = "");
+
+    public static class ResultsMap
     {
-        public static string Neutral { get { return "- " ; } }
-        public static string Success { get { return "◯ "; } }
-        public static string Failure { get { return "× "; } }
-        public static string Cancelled { get { return "＊ "; } }
-        public static string Unknown { get { return "? "; } }
+        public static IReadOnlyDictionary<ResultType, ResultProperties> Map =>
+            new Dictionary<ResultType, ResultProperties>
+            {
+                { ResultType.Neutral, new ResultProperties(null, "– ")},
+                { ResultType.Success, new ResultProperties(ConsoleColor.DarkGreen, "✔︎ ")},
+                { ResultType.Failure, new ResultProperties(ConsoleColor.DarkRed, "× ")},
+                { ResultType.Cancelled, new ResultProperties(ConsoleColor.DarkRed, "＊ ")},
+                { ResultType.Unknown, new ResultProperties(null, "? ")},
+            };
     }
 }

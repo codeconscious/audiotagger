@@ -142,11 +142,11 @@ namespace AudioTagger
         {
             Printer.Print("Audio tagger and (eventually) renamer");
             Printer.Print("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 0); // TODO: Decide on a name
-            Printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1);
+            Printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, 0);
             Printer.Print("Commands:");
             Printer.Print("  -v: View tags (default, optional)");
             Printer.Print("  -u: Update tags");
-            Printer.Print("  -r: Rename files based on their tags (Coming soonish)", 0, 1);
+            Printer.Print("  -r: Rename files based on their tags (Coming soonish)", 0, 1, 0);
             // TODO: Add option to disable colors
         }
     }
