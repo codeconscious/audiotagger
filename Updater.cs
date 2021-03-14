@@ -59,15 +59,15 @@ namespace AudioTagger
                 foreach (var update in proposedUpdates)
                     Printer.Print(update.Line);
 
-                Printer.Print(new List<LineSubString>
+                Printer.Print(new LineSubString[]
                 {
-                    new LineSubString("Press "),
-                    new LineSubString("Y", ConsoleColor.Magenta),
-                    new LineSubString(" or "),
-                    new LineSubString("N", ConsoleColor.Magenta),
-                    new LineSubString(" (or "),
-                    new LineSubString("C", ConsoleColor.Magenta),
-                    new LineSubString(" to cancel):  "),
+                    new ("Press "),
+                    new ("Y", ConsoleColor.Magenta),
+                    new (" or "),
+                    new ("N", ConsoleColor.Magenta),
+                    new (" (or "),
+                    new ("C", ConsoleColor.Magenta),
+                    new (" to cancel):  "),
                 }, appendLines: 0);
 
                 var validInput = false;
