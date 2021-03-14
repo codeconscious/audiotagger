@@ -23,7 +23,7 @@ namespace AudioTagger
                 { ResultType.Success, new ResultProperties(ConsoleColor.DarkGreen, "✔︎ ")},
                 { ResultType.Failure, new ResultProperties(ConsoleColor.DarkRed, "× ")},
                 { ResultType.Cancelled, new ResultProperties(ConsoleColor.DarkRed, "＊ ")},
-                { ResultType.Unknown, new ResultProperties(null, "? ")},
+                { ResultType.Unknown, new ResultProperties(ConsoleColor.DarkGray, "? ")},
             };
     }
 }
