@@ -78,7 +78,7 @@ namespace AudioTagger
                 var doUpdate = false;
                 do
                 {
-                    var keyInfo = Console.ReadKey();
+                    var keyInfo = Console.ReadKey(); // TODO: Hide invalid entries
                     var keyChar = char.ToLowerInvariant(keyInfo.KeyChar);
                     if (validKeys.Contains(keyChar))
                     {
@@ -102,7 +102,7 @@ namespace AudioTagger
                     continue;
                 }
 
-                // Determine the necessary updates
+                // Make the necessary updates
                 if (updateableFields.Title != null && updateableFields.Title != fileData.Title)
                 {
                     fileData.Title = updateableFields.Title;
@@ -124,9 +124,9 @@ namespace AudioTagger
                 {
                     fileData.SaveUpdates();
                 }
-                catch (TagLib.CorruptFileException e)
+                catch (TagLib.CorruptFileException ex)
                 {
-                    Printer.Error("The file's tag metadata was corrupt or missing. " + e.Message);
+                    Printer.Error("The file's tag metadata was corrupt or missing. " + ex.Message);
                     continue;
                 }                
 
