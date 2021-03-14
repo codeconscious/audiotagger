@@ -9,7 +9,7 @@ namespace AudioTagger
 {
     public static class Updater
     {
-        // TODO: Perhaps get some a file, and allow several regexes
+        // TODO: Allow several regexes
         private const string _regex = @"(?'Artists'.+) [-–] (?'Title'[^\[\{]+)(?: ?\[(?'Year'\d{3,})\])?(?: ?\{(?'Genres'.+)\})?";
 
         public static void UpdateTags(List<FileData?> filesData)
@@ -26,6 +26,7 @@ namespace AudioTagger
 
                 var match = Regex.Match(fileData.FileNameFull, _regex);
 
+                // If there are no matches, the regex and filename do not match.
                 if (match == null)
                 {
                     Printer.Print($"Could not parse tags for \"{fileData.FileNameShort}\".",
