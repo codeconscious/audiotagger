@@ -8,26 +8,11 @@ namespace AudioTagger
 {
     static class Program
     {
-        private static Func<string, bool> fileFilter =
-            new Func<string, bool>(
-                file =>
-                    file.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase) ||
-                    file.EndsWith(".ogg", StringComparison.InvariantCultureIgnoreCase) ||
-                    file.EndsWith(".m4a", StringComparison.InvariantCultureIgnoreCase));
-
         static void Main(string[] args)
         {
             if (args.Length == 0)
             {
-                Printer.Print("Audio tagger and renamer");
-                Printer.Print("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 0); // TODO: Decide on a name
-                Printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1);
-                Printer.Print("Commands:");
-                Printer.Print("  -v: View tags (default, optional)");
-                Printer.Print("  -u: Update tags");
-                Printer.Print("  -r: Rename files based on their tags (Coming soonish)", 0, 1);
-                // TODO: Add option to disable colors
-                
+                PrintInstructions();                
                 return;
             }
 
@@ -143,7 +128,7 @@ namespace AudioTagger
             {
                 return Directory
                     .EnumerateFiles(fileOrDirectoryPath, "*.*", SearchOption.TopDirectoryOnly)
-                    .Where(fileFilter)
+                    .Where(FileSelection.Filter)
                     .ToArray();
             }
             if (File.Exists(fileOrDirectoryPath))
@@ -151,6 +136,18 @@ namespace AudioTagger
 
             else
                 return Array.Empty<string>();
+        }
+
+        private static void PrintInstructions()
+        {
+            Printer.Print("Audio tagger and (eventually) renamer");
+            Printer.Print("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 0); // TODO: Decide on a name
+            Printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1);
+            Printer.Print("Commands:");
+            Printer.Print("  -v: View tags (default, optional)");
+            Printer.Print("  -u: Update tags");
+            Printer.Print("  -r: Rename files based on their tags (Coming soonish)", 0, 1);
+            // TODO: Add option to disable colors
         }
     }
 }
