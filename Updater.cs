@@ -73,16 +73,16 @@ namespace AudioTagger
                     new (" to cancel):  "),
                 }, appendLines: 0);
 
-                var validKeys = new List<char> { 'n', 'y', 'c' };
+                var validKeys = new List<char> { 'n', 'y', 'c' }.AsReadOnly();
                 var validInput = false;
                 var doUpdate = false;
                 do
                 {
                     var keyInfo = Console.ReadKey();
-                    var key = char.ToLowerInvariant(keyInfo.KeyChar);
-                    if (validKeys.Contains(key))
+                    var keyChar = char.ToLowerInvariant(keyInfo.KeyChar);
+                    if (validKeys.Contains(keyChar))
                     {
-                        if (key == 'c')
+                        if (keyChar == 'c')
                         {
                             Console.WriteLine();
                             Printer.Print("All operations cancelled",
@@ -90,7 +90,7 @@ namespace AudioTagger
                             return;
                         }
 
-                        doUpdate = key == 'y';
+                        doUpdate = keyChar == 'y';
                         validInput = true;
                     }
                 }
@@ -102,6 +102,7 @@ namespace AudioTagger
                     continue;
                 }
 
+                // Determine the necessary updates
                 if (updateableFields.Title != null && updateableFields.Title != fileData.Title)
                 {
                     fileData.Title = updateableFields.Title;
