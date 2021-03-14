@@ -20,7 +20,8 @@ namespace AudioTagger
             {
                 if (fileData == null)
                 {
-                    Printer.Print($"No file was submitted...", 0, 0, ResultSymbols.Failure, ConsoleColor.DarkRed);
+                    Printer.Print($"No file was submitted.", 0, 0,
+                                  ResultSymbols.Failure, ConsoleColor.DarkRed);
                     continue;
                 }
 
@@ -28,7 +29,8 @@ namespace AudioTagger
 
                 if (match == null)
                 {
-                    Printer.Print($"No regex match was found for \"{fileData.FileNameShort}\".", 0, 0, ResultSymbols.Failure, ConsoleColor.DarkRed);
+                    Printer.Print($"Could not parse tags for \"{fileData.FileNameShort}\".",
+                                  0, 0, ResultSymbols.Failure, ConsoleColor.DarkRed);
                     continue;
                 }
 
@@ -38,23 +40,25 @@ namespace AudioTagger
 
                 if (foundTags == null || !foundTags.Any())
                 {
-                    Printer.Print($"Could not parse data for filename \"{fileData.FileNameShort}.\"", 0, 0, ResultSymbols.Failure, ConsoleColor.DarkRed);
+                    Printer.Print($"Could not parse data for filename \"{fileData.FileNameShort}.\"",
+                                  0, 0, ResultSymbols.Failure, ConsoleColor.DarkRed);
                     continue;
                 }
 
-                var updateables = new UpdatableFields(foundTags);
+                var updateableFields = new UpdatableFields(foundTags);
 
-                var proposedUpdates = updateables.GetUpdateOutput(fileData);
+                var proposedUpdates = updateableFields.GetUpdateOutput(fileData);
 
                 if (proposedUpdates == null || !proposedUpdates.Any())
                 {
-                    Printer.Print($"No updates for \"{fileData.FileNameShort}\".", 0, 0, ResultSymbols.Neutral, ConsoleColor.DarkGray);
+                    Printer.Print($"No updates needed for \"{fileData.FileNameShort}\".",
+                                  0, 0, ResultSymbols.Neutral, ConsoleColor.DarkGray);
                     continue;
                 }
 
                 Printer.Print(fileData.GetTagOutput(), 1, 0);
 
-                Printer.Print("Apply the following proposed updates?", ConsoleColor.Yellow);
+                Printer.Print("Apply these updates?", ConsoleColor.Yellow);
 
                 foreach (var update in proposedUpdates)
                     Printer.Print(update.Line);
@@ -70,49 +74,50 @@ namespace AudioTagger
                     new (" to cancel):  "),
                 }, appendLines: 0);
 
+                var validKeys = new List<char> { 'n', 'y', 'c' };
                 var validInput = false;
-                var shouldUpdate = false;
+                var doUpdate = false;
                 do
                 {
-                    var reply = Console.ReadKey();
-                    if (reply.KeyChar == 'n' || reply.KeyChar == 'N' ||
-                        reply.KeyChar == 'y' || reply.KeyChar == 'Y' ||
-                        reply.KeyChar == 'c' || reply.KeyChar == 'C')
+                    var keyInfo = Console.ReadKey();
+                    var key = char.ToLowerInvariant(keyInfo.KeyChar);
+                    if (validKeys.Contains(key))
                     {
-                        if (reply.KeyChar == 'c' || reply.KeyChar == 'C')
+                        if (key == 'c')
                         {
                             Console.WriteLine();
-                            Printer.Print("All operations cancelled.", 1, 1, ResultSymbols.Cancelled, ConsoleColor.DarkRed);
+                            Printer.Print("All operations cancelled", 1, 1,
+                                          ResultSymbols.Cancelled, ConsoleColor.DarkRed);
                             return;
                         }
 
-                        shouldUpdate = reply.KeyChar == 'y' || reply.KeyChar == 'Y';
+                        doUpdate = key == 'y';
                         validInput = true;
                     }
                 }
                 while (!validInput);
 
-                if (!shouldUpdate)
+                if (!doUpdate)
                 {
                     Printer.Print("No updates made", 1, 1, ResultSymbols.Failure);
                     continue;
                 }
 
-                if (updateables.Title != null && updateables.Title != fileData.Title)
+                if (updateableFields.Title != null && updateableFields.Title != fileData.Title)
                 {
-                    fileData.Title = updateables.Title;
+                    fileData.Title = updateableFields.Title;
                 }                
-                if (updateables.Artists?.All(a => fileData.Artists.Contains(a)) == false)
+                if (updateableFields.Artists?.All(a => fileData.Artists.Contains(a)) == false)
                 {
-                    fileData.Artists = updateables.Artists;
+                    fileData.Artists = updateableFields.Artists;
                 }
-                if (updateables.Year != null && updateables.Year != fileData.Year)
+                if (updateableFields.Year != null && updateableFields.Year != fileData.Year)
                 {
-                    fileData.Year = updateables.Year.Value;
+                    fileData.Year = updateableFields.Year.Value;
                 }
-                if (updateables.Genres?.All(a => fileData.Genres.Contains(a)) == false)
+                if (updateableFields.Genres?.All(a => fileData.Genres.Contains(a)) == false)
                 {
-                    fileData.Genres = updateables.Genres;
+                    fileData.Genres = updateableFields.Genres;
                 }
 
                 try
@@ -121,11 +126,11 @@ namespace AudioTagger
                 }
                 catch (TagLib.CorruptFileException e)
                 {
-                    Printer.Error("The file's tag metadata was corrupt or missing.  " + e.Message);
+                    Printer.Error("The file's tag metadata was corrupt or missing. " + e.Message);
                     continue;
                 }                
 
-                Printer.Print("Updates saved!", 1, 1, ResultSymbols.Success, ConsoleColor.DarkGreen);
+                Printer.Print("Updates saved", 1, 1, ResultSymbols.Success, ConsoleColor.DarkGreen);
             }
         }
     }
