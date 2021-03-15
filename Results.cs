@@ -19,11 +19,11 @@ namespace AudioTagger
         public static IReadOnlyDictionary<ResultType, ResultProperties> Map =>
             new Dictionary<ResultType, ResultProperties>
             {
-                { ResultType.Neutral, new ResultProperties(null, "– ")},
+                { ResultType.Neutral, new ResultProperties(ConsoleColor.DarkGray, "– ")},
                 { ResultType.Success, new ResultProperties(ConsoleColor.DarkGreen, "✔︎ ")},
                 { ResultType.Failure, new ResultProperties(ConsoleColor.DarkRed, "× ")},
                 { ResultType.Cancelled, new ResultProperties(ConsoleColor.DarkRed, "＊ ")},
-                { ResultType.Unknown, new ResultProperties(ConsoleColor.DarkGray, "? ")},
+                { ResultType.Unknown, new ResultProperties(ConsoleColor.Blue, "? ")},
             };
     }
 }
