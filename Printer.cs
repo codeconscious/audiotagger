@@ -15,9 +15,6 @@ namespace AudioTagger
             if (lines == 0)
                 return;
 
-            //if (_previousWasBlankLine)
-            //    lines--;
-
             for (var prepend = 0; prepend < lines; prepend++)
                 Console.WriteLine();
         }
@@ -26,8 +23,6 @@ namespace AudioTagger
         {
             if (lines == 0)
                 return;
-
-            //_previousWasBlankLine = true;
 
             for (var append = 0; append < lines; append++)
                 Console.WriteLine();
@@ -42,14 +37,6 @@ namespace AudioTagger
             PrependLines(prependLines);
             PrintColor(prependText + message, fgColor, bgColor, true);
             AppendLines(appendLines);
-
-            // if (appendLines > 0 || string.IsNullOrWhiteSpace(prependText + message))
-            //     _previousWasBlankLine = true;
-        }
-
-        public static void Print(string message, ConsoleColor fgColor, ConsoleColor? bgColor = null)
-        {
-            Print(message, 0, 0, "", fgColor, bgColor);
         }
 
         public static void Print(IList<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1)
@@ -87,9 +74,9 @@ namespace AudioTagger
         }
 
         public static void Print(string message, ResultType type, byte prependLines = 0,
-                                 byte appendLines = 0, string prependText = "")
+                                 byte appendLines = 0)
         {
-            Print(message, prependLines, appendLines, prependText,
+            Print(message, prependLines, appendLines, GetResultSymbol(type) + " ",
                   ResultsMap.Map[type].Color, null);
         }
 

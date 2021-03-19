@@ -8,23 +8,21 @@ namespace AudioTagger
 {
     public static class Parser
     {
-        public static FileData? GetFileDataOrNull(string filename)
+        public static FileData GetFileData(string filePath)
         {
-            if (string.IsNullOrWhiteSpace(filename))
+            if (string.IsNullOrWhiteSpace(filePath))
             {
-                Printer.Error("No filename was entered.");
-                return null;
+                throw new ArgumentNullException(nameof(filePath));
             }
 
-            if (!File.Exists(filename))
+            if (!File.Exists(filePath))
             {
-                Printer.Error($"File \"{filename}\" was not found.");
-                return null;
+                throw new FileNotFoundException(nameof(filePath));
             }
 
-            var taggedFile = TagLib.File.Create(filename);
+            var taggedFile = TagLib.File.Create(filePath);
 
-            return new FileData(Path.GetFileName(filename), taggedFile);
+            return new FileData(filePath, taggedFile);
         }
     }
 }

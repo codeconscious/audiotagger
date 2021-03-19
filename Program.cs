@@ -12,141 +12,98 @@ namespace AudioTagger
         {
             if (args.Length == 0)
             {
-                PrintInstructions();                
+                PrintInstructions();
                 return;
             }
 
             var trimmedArgs = new Queue<string>(args.Select(a => a.Trim()));
 
-            Mode mode;
-            if (trimmedArgs.Peek().ToLowerInvariant() == "-u")
+            IPathProcessor? processor = ProcessorFactory(trimmedArgs.Dequeue());
+
+            if (processor == null)
             {
-                mode = Mode.Update;
-                trimmedArgs.Dequeue();
-            }
-            else if (trimmedArgs.Peek().ToLowerInvariant() == "-r")
-            {
-                mode = Mode.Rename;
-                trimmedArgs.Dequeue();
-            }
-            else
-            {
-                mode = Mode.View;
+                PrintInstructions();
+                return;
             }
 
-            foreach (var fileOrDirectoryPath in trimmedArgs)
+            foreach (var path in trimmedArgs)
             {
-                var fileNames = PopulateFileNames(fileOrDirectoryPath);
-
-                if (!fileNames.Any())
+                IReadOnlyCollection<FileData> filesData;
+                try
                 {
-                    Printer.Error($"No files found in \"{fileOrDirectoryPath}\"...");
+                    filesData = PopulateFileData(path);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Printer.Error($"Path \"{path}\" could not be fully parsed. ERROR: " + ex.Message);
+                    continue;
+                }                
+
+                if (!filesData.Any())
+                {
+                    Printer.Error($"No files found at \"{path}\".");
                     continue;
                 }
 
-                var filesData = new List<FileData?>();
-                foreach (var filename in fileNames)
-                {
-                    //Console.WriteLine($"Found \"{filename}\"");
-                    filesData.Add(Parser.GetFileDataOrNull(filename));
-                }
-
-                //filesData.Sort();
-
-                if (mode == Mode.View)
-                {
-                    foreach (var fileData in filesData)
-                    {
-                        if (fileData == null)
-                            Printer.Error($"Skipped invalid file..."); // TODO: Refactor identical checks
-                        else
-                        {
-                            try
-                            {
-                                //Printer.FileData(fileData, "", 0, 1);
-                                Printer.Print(fileData.GetTagOutput());
-                            }
-                            catch (TagLib.CorruptFileException e)
-                            {
-                                Printer.Error("The file's tag metadata was corrupt or missing." + e.Message);
-                                continue;
-                            }
-                            catch (Exception e)
-                            {
-                                Printer.Error("An unknown error occurred." + e.Message);
-                                continue;
-                            }
-                        }
-                    }
-                }
-                else if (mode == Mode.Rename)
-                {
-                    foreach (var fileData in filesData)
-                    {
-                        if (fileData == null)
-                            Printer.Error($"Skipped invalid file...");
-                        else
-                        {
-                            try
-                            {
-                                var (wasDone, message) = Renamer.RenameFile(fileData);
-                                Printer.Print(wasDone ? "◯ " : "× " + message);
-                            }
-                            catch (TagLib.CorruptFileException e)
-                            {
-                                Printer.Error("The file's tag metadata was corrupt or missing." + e.Message);
-                                continue;
-                            }
-                            catch (Exception e)
-                            {
-                                Printer.Error("An error occurred:" + e.Message);
-                                continue;
-                            }
-                        }
-                    }
-                }
-                else // (mode == Mode.Update)
-                {                    
-                    try
-                    {
-                        Updater.UpdateTags(filesData);
-                    }
-                    catch (Exception e)
-                    {
-                        Printer.Error("An error occurred in updating: " + e.Message);
-                        continue;
-                    }
-                }
-            }            
-
-            //Console.WriteLine();
+                processor.Start(filesData);
+            }
         }
 
-        private static string[] PopulateFileNames(string fileOrDirectoryPath)
+        private static IPathProcessor? ProcessorFactory(string modeArg)
         {
-            if (Directory.Exists(fileOrDirectoryPath))
+            return modeArg.ToLowerInvariant() switch
             {
-                return Directory
-                    .EnumerateFiles(fileOrDirectoryPath, "*.*", SearchOption.TopDirectoryOnly)
-                    .Where(FileSelection.Filter)
-                    .ToArray();
-            }
-            if (File.Exists(fileOrDirectoryPath))
-                return new string[] { fileOrDirectoryPath };
+                "-u" or "--update" => new TagUpdater(),
+                "-r" or "--rename" => new FileRenamer(),
+                "-v" or "--view" => new TagViewer(),
+                _ => null
+            };
+        }
 
-            else
-                return Array.Empty<string>();
+        /// <summary>
+        /// Get a list of FileData objects.
+        /// </summary>
+        /// <param name="path">A directory or file path</param>
+        /// <returns></returns>
+        private static List<FileData> PopulateFileData(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                var filesData = new List<FileData>();
+
+                var fileNames = Directory.EnumerateFiles(path,
+                                                         "*.*",
+                                                         SearchOption.TopDirectoryOnly) // TODO: Make option
+                                         .Where(FileSelection.Filter)
+                                         .ToArray();
+
+                foreach (var fileName in fileNames)
+                {
+                    filesData.Add(Parser.GetFileData(fileName));
+                }
+
+                //filesData.Sort(); // Ref: https://stackoverflow.com/a/1658749/11767771
+
+                return filesData;
+            }
+
+            if (File.Exists(path))
+            {
+                return new List<FileData> { Parser.GetFileData(path) };
+            }
+
+            throw new InvalidOperationException($"The path \"{path}\" was invalid.");
         }
 
         private static void PrintInstructions()
         {
             Printer.Print("Audio tagger and (eventually) renamer");
-            Printer.Print("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 0); // TODO: Decide on a name
-            Printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, 0);
+            Printer.Print("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 1, ""); // TODO: Decide on a name
+            Printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
             Printer.Print("Commands:");
-            Printer.Print("  -v: View tags (default, optional)");
-            Printer.Print("  -u: Update tags");
-            Printer.Print("  -r: Rename files based on their tags (Coming soonish)", 0, 1, 0);
+            Printer.Print("   -v or --view   : View tags");
+            Printer.Print("   -u or --update : Update tags");
+            Printer.Print("   -r or --rename : Rename files based on tags (Coming soonish)");
             // TODO: Add option to disable colors
         }
     }

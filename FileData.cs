@@ -7,38 +7,36 @@ namespace AudioTagger
 {
     public class FileData
     {
-        private string _fileName;
-        private File _tabLibFile;
+        public string Path { get; private set; }
+        private readonly File _taggedFile; // Tag data (Rename)
 
-        public FileData(string fileName, File tabLibFile)
+        public FileData(string filePath, File tabLibFile)
         {
-            _fileName = fileName;
-            _tabLibFile = tabLibFile;
+            if (!System.IO.File.Exists(filePath))
+                throw new System.IO.FileNotFoundException(nameof(filePath));
+
+            Path = filePath;
+            _taggedFile = tabLibFile;
         }
 
-        public string FileNameFull
+        public string FileNameOnly
         {
-            get => _fileName;
-        }
-
-        public string FileNameShort
-        {
-            get => System.IO.Path.GetFileName(_fileName);
+            get => System.IO.Path.GetFileName(Path);
         }
 
         public string Title
         {
-            get => _tabLibFile.Tag.Title?.Normalize() ?? "";
-            set => _tabLibFile.Tag.Title = value.Trim().Normalize();
+            get => _taggedFile.Tag.Title?.Normalize() ?? "";
+            set => _taggedFile.Tag.Title = value.Trim().Normalize();
         }
 
         public string[] Artists
         {
-            get => _tabLibFile.Tag.Performers?.Select(a => a?.Normalize() ?? "")
+            get => _taggedFile.Tag.Performers?.Select(a => a?.Normalize() ?? "")
                                               .ToArray() ??
                    Array.Empty<string>();
 
-            set => _tabLibFile.Tag.Performers =
+            set => _taggedFile.Tag.Performers =
                 value.Where(a => !string.IsNullOrWhiteSpace(a))
                      .Select(a => a.Trim().Normalize())
                      .ToArray();
@@ -46,25 +44,25 @@ namespace AudioTagger
 
         public string Album
         {
-            get => _tabLibFile.Tag.Album?.Normalize() ?? "";
-            set => _tabLibFile.Tag.Album = value?.Trim()?.Normalize();
+            get => _taggedFile.Tag.Album?.Normalize() ?? "";
+            set => _taggedFile.Tag.Album = value?.Trim()?.Normalize();
         }
 
         public uint Year
         {
-            get => _tabLibFile.Tag.Year;
-            set => _tabLibFile.Tag.Year = value;
+            get => _taggedFile.Tag.Year;
+            set => _taggedFile.Tag.Year = value;
         }
 
         public TimeSpan Duration
         {
-            get => _tabLibFile.Properties.Duration;
+            get => _taggedFile.Properties.Duration;
         }
 
         public string[] Genres
         {
-            get => _tabLibFile.Tag.Genres;
-            set => _tabLibFile.Tag.Genres =
+            get => _taggedFile.Tag.Genres;
+            set => _taggedFile.Tag.Genres =
                 value?.Select(g => g?.Trim()?.Normalize() ?? "")?
                      .ToArray()
                 ?? Array.Empty<string>();
@@ -72,11 +70,11 @@ namespace AudioTagger
 
         public string[] Composers
         {
-            get => _tabLibFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize() ?? "")?
+            get => _taggedFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize() ?? "")?
                                              .ToArray()
                 ?? Array.Empty<string>();
 
-            set => _tabLibFile.Tag.Composers =
+            set => _taggedFile.Tag.Composers =
                 value?.Select(g => g?.Trim()?.Normalize())?
                       .ToArray()
                 ?? Array.Empty<string>();
@@ -84,24 +82,24 @@ namespace AudioTagger
 
         public string Comments
         {
-            get => _tabLibFile.Tag.Comment?.Trim()?.Normalize() ?? "";
-            set => _tabLibFile.Tag.Comment = value.Trim().Normalize();
+            get => _taggedFile.Tag.Comment?.Trim()?.Normalize() ?? "";
+            set => _taggedFile.Tag.Comment = value.Trim().Normalize();
         }
 
         public int BitRate
         {
-            get => _tabLibFile.Properties.AudioBitrate;
+            get => _taggedFile.Properties.AudioBitrate;
         }
 
         public int SampleRate
         {
-            get => _tabLibFile.Properties.AudioSampleRate;
+            get => _taggedFile.Properties.AudioSampleRate;
         }
 
         public bool HasReplayGainData
         {
-            get => _tabLibFile.Tag.ReplayGainTrackGain != 0 ||
-                   _tabLibFile.Tag.ReplayGainAlbumGain != 0;
+            get => _taggedFile.Tag.ReplayGainTrackGain != 0 ||
+                   _taggedFile.Tag.ReplayGainAlbumGain != 0;
         }
 
         /// <summary>
@@ -109,15 +107,15 @@ namespace AudioTagger
         /// </summary>
         public void SaveUpdates()
         {
-            _tabLibFile.Save();
+            _taggedFile.Save();
         }
 
-        public IList<OutputLine> GetTagOutput()
+        public IList<OutputLine> GetTagPrintedLines()
         {
             var lines = new List<OutputLine>();
 
-            var fileNameBase = System.IO.Path.GetFileNameWithoutExtension(FileNameFull);
-            var fileNameExt = System.IO.Path.GetExtension(FileNameFull);
+            var fileNameBase = System.IO.Path.GetFileNameWithoutExtension(Path);
+            var fileNameExt = System.IO.Path.GetExtension(Path);
             lines.Add(
                 new OutputLine(
                     new LineSubString(fileNameBase, ConsoleColor.Cyan),

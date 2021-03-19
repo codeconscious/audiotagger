@@ -8,12 +8,39 @@ using System.Globalization;
 
 namespace AudioTagger
 {
-    public static class Renamer
-    {        
+    public class FileRenamer : IPathProcessor
+    {
+        public void Start(IReadOnlyCollection<FileData> filesData)
+        {
+            foreach (var fileData in filesData)
+            {
+                if (fileData == null)
+                    Printer.Error($"Skipped invalid file...");
+                else
+                {
+                    try
+                    {
+                        var (wasDone, message) = RenameFile(fileData);
+                        Printer.Print(wasDone ? "◯ " : "× " + message); // TODO: Refactor
+                    }
+                    catch (TagLib.CorruptFileException e)
+                    {
+                        Printer.Error("The file's tag metadata was corrupt or missing." + e.Message);
+                        continue;
+                    }
+                    catch (Exception e)
+                    {
+                        Printer.Error("An error occurred:" + e.Message);
+                        continue;
+                    }
+                }
+            }
+        }
+
         public static (bool wasDone, string message) RenameFile(FileData fileData)
         {
             Printer.Print("Entered rename method...");
-            var fileName = fileData.FileNameFull;
+            var fileName = fileData.Path;
 
             // Check mandatory fields
             if (string.IsNullOrWhiteSpace(fileData.Title))
