@@ -119,7 +119,7 @@ namespace AudioTagger
 
             if (!doUpdate)
             {
-                Printer.Print("No updates made", ResultType.Failure, 1, 1);
+                Printer.Print("No updates made", ResultType.Neutral, 1, 1);
                 return shouldCancel;
             }
 
@@ -147,7 +147,7 @@ namespace AudioTagger
             }
             catch (TagLib.CorruptFileException ex)
             {
-                Printer.Error("The file's tag metadata was corrupt or missing. " + ex.Message);
+                Printer.Error("Saving failed: " + ex.Message);
                 return shouldCancel;
             }                
 
