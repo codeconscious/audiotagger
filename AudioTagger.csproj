@@ -5,6 +5,9 @@
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable> 
   </PropertyGroup>
+  <PropertyGroup>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="TagLibSharp" Version="2.2.0" />

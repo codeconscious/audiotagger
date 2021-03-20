@@ -12,6 +12,29 @@ namespace AudioTagger
         public void Start(IReadOnlyCollection<FileData> filesData)
         {
             bool isCancelled = false;
+
+            const string regexFileName = "FileNameRegexes.txt";
+            RegexCollection regexes;
+            try
+            {
+                regexes = new RegexCollection(regexFileName);
+            }
+            catch (FileNotFoundException)
+            {
+                Printer.Print($"Regex file \"regexFileName\" not found!", ResultType.Failure);
+                return;
+            }
+            catch (Exception ex)
+            {
+                Printer.Print($"Update error. Cannot continue. {ex.Message}", ResultType.Failure);
+                return;
+            }
+
+            if (regexes == null || !regexes.Regexes.Any())
+            {
+                Printer.Print($"No regexes found. Cannot continue.", ResultType.Failure);
+                return;
+            }
             
             foreach (var fileData in filesData)
             {
@@ -20,11 +43,12 @@ namespace AudioTagger
                     if (isCancelled)
                         break;
 
-                    isCancelled = UpdateTags(fileData);
+                    isCancelled = UpdateTags(fileData, regexes);
                 }
                 catch (Exception e)
                 {
                     Printer.Error("An error occurred in updating: " + e.Message);
+                    Console.WriteLine(e.StackTrace);
                     continue;
                 }
             }            
@@ -36,9 +60,8 @@ namespace AudioTagger
         /// </summary>
         /// <param name="fileData"></param>
         /// <returns>A bool indicating whether or not the following file should be processed.</returns>
-        private static bool UpdateTags(FileData fileData)
+        private static bool UpdateTags(FileData fileData, RegexCollection regexes)
         {
-            var regexes = new RegexCollection("FileNameRegexes.txt");
             var shouldCancel = false;
 
             // This check needs to be handled earlier and better.

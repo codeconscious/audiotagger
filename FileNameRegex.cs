@@ -15,7 +15,7 @@ namespace AudioTagger
         {
             // Check if file exists
             if (!File.Exists(sourceFile))
-                throw new FileNotFoundException(nameof(sourceFile), sourceFile);
+                throw new FileNotFoundException($"\"{nameof(sourceFile)}\" missing", sourceFile);
 
             var fileLines = File.ReadAllLines(sourceFile, Encoding.UTF8)
                             ?? Array.Empty<string>();
