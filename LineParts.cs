@@ -16,11 +16,6 @@ namespace AudioTagger
             FgColor = fgColor;
             BgColor = bgColor;
         }
-
-        //public LineParts(string text)
-        //{
-        //    Text = text;
-        //}
     }
 
     public class OutputLine
