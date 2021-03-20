@@ -29,12 +29,12 @@ namespace AudioTagger
         {
             foreach (var element in regexElements)
             {
-                if (element.Name == "Title")
+                if (element.Name == "title")
                 {
                     Title = element.Value.Trim().Normalize();
                     Count++;
                 }
-                else if (element.Name == "Artists")
+                else if (element.Name == "artists")
                 {
                     Artists = element.Value.Split(new[] { ";" },
                                                   StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -42,12 +42,12 @@ namespace AudioTagger
                                            .ToArray();
                     Count++;
                 }
-                else if (element.Name == "Year")
+                else if (element.Name == "year")
                 {
                     Year = uint.TryParse(element.Value, out var parsed) ? parsed : 0;
                     Count++;
                 }
-                else if (element.Name == "Genres")
+                else if (element.Name == "genres")
                 {
                     Genres = element.Value.Split(new[] { ";" },
                                                  StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
