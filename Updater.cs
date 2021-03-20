@@ -105,39 +105,21 @@ namespace AudioTagger
             foreach (var update in proposedUpdates)
                 Printer.Print(update.Line);
 
-            var question = new LineSubString[]
-            {
-                new ("Press "),
-                new ("Y", ConsoleColor.Magenta),
-                new (" or "),
-                new ("N", ConsoleColor.Magenta),
-                new (" (or "),
-                new ("C", ConsoleColor.Magenta),
-                new (" to cancel):  "),
-            };
+            var response = ResponseHandler.AskUserYesNoCancel();
 
-            var allowedResponses = new Dictionary<char, UserReponse>
-            {
-                { 'y', UserReponse.Yes },
-                { 'n', UserReponse.No },
-                { 'c', UserReponse.Cancel }
-            };
-
-            var response = ResponseHandler.GetUserResponse(question, allowedResponses);
-
-            if (response == UserReponse.None)
+            if (response == UserResponse.None)
             {
                 Printer.Print("Error reading user input. Skipping this file...", ResultType.Failure);
                 return shouldCancel;
             }
 
-            if (response == UserReponse.Cancel)
+            if (response == UserResponse.Cancel)
             {
                 Printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
                 return true;
             }
 
-            if (response == UserReponse.No)
+            if (response == UserResponse.No)
             {
                 Printer.Print("No updates made", ResultType.Neutral, 0, 1);
                 return shouldCancel;
