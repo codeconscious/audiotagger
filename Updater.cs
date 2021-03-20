@@ -13,6 +13,7 @@ namespace AudioTagger
         {
             bool isCancelled = false;
 
+            // Get regexes
             const string regexFileName = "FileNameRegexes.txt";
             RegexCollection regexes;
             try
@@ -35,7 +36,8 @@ namespace AudioTagger
                 Printer.Print($"No regexes found. Cannot continue.", ResultType.Failure);
                 return;
             }
-            
+
+            // Process each file
             foreach (var fileData in filesData)
             {
                 try
@@ -54,22 +56,15 @@ namespace AudioTagger
             }            
         }
 
-        // TODO: Needs to be shorter.
         /// <summary>
         /// Update the tags of a specified file, if necessary.
         /// </summary>
         /// <param name="fileData"></param>
-        /// <returns>A bool indicating whether or not the following file should be processed.</returns>
+        /// <param name="regexes"></param>
+        /// <returns>A bool indicating whether the following file should be processed.</returns>
         private static bool UpdateTags(FileData fileData, RegexCollection regexes)
         {
             var shouldCancel = false;
-
-            // This check needs to be handled earlier and better.
-            if (fileData == null)
-            {
-                Printer.Print($"No file was submitted.", ResultType.Failure);
-                return shouldCancel;
-            }
 
             var match = regexes.GetFirstMatch(fileData);
 
@@ -81,18 +76,18 @@ namespace AudioTagger
                 return shouldCancel;
             }
 
-            var foundTags = match.Groups
+            var matchedTags = match.Groups
                                  .OfType<Group>()
                                  .Where(g => g.Success);
 
-            if (foundTags == null || !foundTags.Any())
+            if (matchedTags == null || !matchedTags.Any())
             {
                 Printer.Print($"Could not parse data for filename \"{fileData.FileNameOnly}.\"",
                                 ResultType.Failure);
                 return shouldCancel;
             }
 
-            var updateableFields = new UpdatableFields(foundTags);
+            var updateableFields = new UpdatableFields(matchedTags);
 
             var proposedUpdates = updateableFields.GetUpdateOutput(fileData);
 
@@ -110,7 +105,7 @@ namespace AudioTagger
             foreach (var update in proposedUpdates)
                 Printer.Print(update.Line);
 
-            Printer.Print(new LineSubString[]
+            var question = new LineSubString[]
             {
                 new ("Press "),
                 new ("Y", ConsoleColor.Magenta),
@@ -119,39 +114,36 @@ namespace AudioTagger
                 new (" (or "),
                 new ("C", ConsoleColor.Magenta),
                 new (" to cancel):  "),
-            }, appendLines: 0);
+            };
 
-            var validKeys = new List<char> { 'n', 'y', 'c' }.AsReadOnly();
-            var validInput = false;
-            var doUpdate = false;
-            do
+            var allowedResponses = new Dictionary<char, UserReponse>
             {
-                var keyInfo = Console.ReadKey(); // TODO: Hide invalid entries
-                var keyChar = char.ToLowerInvariant(keyInfo.KeyChar);
-                if (validKeys.Contains(keyChar))
-                {
-                    if (keyChar == 'c')
-                    {
-                        Console.WriteLine();
-                        Printer.Print("All operations cancelled",
-                                        ResultType.Cancelled, 1, 1);
-                        shouldCancel = true;
-                        return shouldCancel;
-                    }
+                { 'y', UserReponse.Yes },
+                { 'n', UserReponse.No },
+                { 'c', UserReponse.Cancel }
+            };
 
-                    doUpdate = keyChar == 'y';
-                    validInput = true;
-                }
-            }
-            while (!validInput);
+            var response = ResponseHandler.GetUserResponse(question, allowedResponses);
 
-            if (!doUpdate)
+            if (response == UserReponse.None)
             {
-                Printer.Print("No updates made", ResultType.Neutral, 1, 1);
+                Printer.Print("Error reading user input. Skipping this file...", ResultType.Failure);
                 return shouldCancel;
             }
 
-            // Make the necessary updates
+            if (response == UserReponse.Cancel)
+            {
+                Printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
+                return true;
+            }
+
+            if (response == UserReponse.No)
+            {
+                Printer.Print("No updates made", ResultType.Neutral, 0, 1);
+                return shouldCancel;
+            }
+
+            // Make the necessary tag updates
             UpdateFileTags(fileData, updateableFields);
 
             try
@@ -164,9 +156,11 @@ namespace AudioTagger
                 return shouldCancel;
             }
 
-            Printer.Print("Updates saved", ResultType.Success, 1, 1);
+            Printer.Print("Updates saved", ResultType.Success, 0, 1);
             return shouldCancel;
         }
+
+        
 
         /// <summary>
         /// Update file tags where they differ from filename data.
