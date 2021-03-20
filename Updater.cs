@@ -40,7 +40,7 @@ namespace AudioTagger
         {
             var regexes = new RegexCollection("FileNameRegexes.txt");
             var shouldCancel = false;
-            
+
             // This check needs to be handled earlier and better.
             if (fileData == null)
             {
@@ -48,7 +48,7 @@ namespace AudioTagger
                 return shouldCancel;
             }
 
-            var match = regexes.GetFirstMatch(fileData);                
+            var match = regexes.GetFirstMatch(fileData);
 
             // If there are no regex matches against the filename, we cannot continue.
             if (match == null)
@@ -129,6 +129,29 @@ namespace AudioTagger
             }
 
             // Make the necessary updates
+            UpdateFileTags(fileData, updateableFields);
+
+            try
+            {
+                fileData.SaveUpdates();
+            }
+            catch (TagLib.CorruptFileException ex)
+            {
+                Printer.Error("Saving failed: " + ex.Message);
+                return shouldCancel;
+            }
+
+            Printer.Print("Updates saved", ResultType.Success, 1, 1);
+            return shouldCancel;
+        }
+
+        /// <summary>
+        /// Update file tags where they differ from filename data.
+        /// </summary>
+        /// <param name="fileData"></param>
+        /// <param name="updateableFields"></param>
+        private static void UpdateFileTags(FileData fileData, UpdatableFields updateableFields)
+        {
             if (updateableFields.Title != null && updateableFields.Title != fileData.Title)
             {
                 fileData.Title = updateableFields.Title;
@@ -149,19 +172,6 @@ namespace AudioTagger
             {
                 fileData.Genres = updateableFields.Genres;
             }
-
-            try
-            {
-                fileData.SaveUpdates();
-            }
-            catch (TagLib.CorruptFileException ex)
-            {
-                Printer.Error("Saving failed: " + ex.Message);
-                return shouldCancel;
-            }                
-
-            Printer.Print("Updates saved", ResultType.Success, 1, 1);
-            return shouldCancel;
         }
     }
 }
