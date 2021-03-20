@@ -107,12 +107,6 @@ namespace AudioTagger
 
             var response = ResponseHandler.AskUserYesNoCancel();
 
-            if (response == UserResponse.None)
-            {
-                Printer.Print("Error reading user input. Skipping this file...", ResultType.Failure);
-                return shouldCancel;
-            }
-
             if (response == UserResponse.Cancel)
             {
                 Printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
@@ -125,7 +119,7 @@ namespace AudioTagger
                 return shouldCancel;
             }
 
-            // Make the necessary tag updates
+            // Make the needed tag updates
             UpdateFileTags(fileData, updateableFields);
 
             try
@@ -141,8 +135,6 @@ namespace AudioTagger
             Printer.Print("Updates saved", ResultType.Success, 0, 1);
             return shouldCancel;
         }
-
-        
 
         /// <summary>
         /// Update file tags where they differ from filename data.
