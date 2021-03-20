@@ -23,10 +23,12 @@ namespace AudioTagger
 
             var validInput = false;
 
+            // Take no action until a valid key is pressed.
             do
             {
                 var keyInfo = Console.ReadKey(true);
                 var keyChar = char.ToLowerInvariant(keyInfo.KeyChar);
+
                 if (allowedResponses.ContainsKey(keyChar))
                 {
                     return allowedResponses[keyChar];
@@ -34,7 +36,7 @@ namespace AudioTagger
             }
             while (!validInput);
 
-            return UserResponse.None; // Perhaps throw an exception since this should never be hit.
+            return UserResponse.None; // For the compiler only. Should never be hit.
         }
 
         /// <summary>
