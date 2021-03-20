@@ -12,6 +12,7 @@ namespace AudioTagger
     {
         Artists,
         Title,
+        Album,
         Year,
         Genres
     }
@@ -20,6 +21,7 @@ namespace AudioTagger
     {
         public string[]? Artists { get; private set; }
         public string? Title { get; set; }
+        public string? Album { get; set; }
         public uint? Year { get; set; }
         public string[]? Genres { get; set; }
 
@@ -42,9 +44,9 @@ namespace AudioTagger
                                            .ToArray();
                     Count++;
                 }
-                else if (element.Name == "year")
+                else if (element.Name == "album")
                 {
-                    Year = uint.TryParse(element.Value, out var parsed) ? parsed : 0;
+                    Album = element.Value.Trim().Normalize();
                     Count++;
                 }
                 else if (element.Name == "genres")
@@ -53,6 +55,11 @@ namespace AudioTagger
                                                  StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                                           .Select(g => g.Normalize())
                                           .ToArray();
+                    Count++;
+                }
+                else if (element.Name == "year")
+                {
+                    Year = uint.TryParse(element.Value, out var parsed) ? parsed : 0;
                     Count++;
                 }
             }
@@ -64,14 +71,6 @@ namespace AudioTagger
             var headerColor = ConsoleColor.White;
             var prependLineWith = "";
 
-            if (Title != null && Title != fileData.Title)
-                updateOutput.Add(
-                    Printer.TagDataWithHeader(
-                        "Title",
-                        Title,
-                        prependLineWith,
-                        headerColor));
-
             if (Artists != null && !Artists.All(a => fileData.Artists.Contains(a)))
             {
                 updateOutput.Add(
@@ -81,6 +80,22 @@ namespace AudioTagger
                         prependLineWith,
                         headerColor));
             }
+
+            if (Title != null && Title != fileData.Title)
+                updateOutput.Add(
+                    Printer.TagDataWithHeader(
+                        "Title",
+                        Title,
+                        prependLineWith,
+                        headerColor));
+
+            if (Album != null && Album != fileData.Album)
+                updateOutput.Add(
+                    Printer.TagDataWithHeader(
+                        "Album",
+                        Album,
+                        prependLineWith,
+                        headerColor));
 
             if (Year != null && Year != fileData.Year)
                 updateOutput.Add(

@@ -31,6 +31,11 @@ namespace AudioTagger
         }
 
         // TODO: Needs to be shorter.
+        /// <summary>
+        /// Update the tags of a specified file, if necessary.
+        /// </summary>
+        /// <param name="fileData"></param>
+        /// <returns>A bool indicating whether or not the following file should be processed.</returns>
         private static bool UpdateTags(FileData fileData)
         {
             var regexes = new RegexCollection("FileNameRegexes.txt");
@@ -45,11 +50,11 @@ namespace AudioTagger
 
             var match = regexes.GetFirstMatch(fileData);                
 
-            // If there are no matches, we cannot continue.
+            // If there are no regex matches against the filename, we cannot continue.
             if (match == null)
             {
                 Printer.Print($"Could not parse tags for \"{fileData.FileNameOnly}\".",
-                                ResultType.Failure);
+                              ResultType.Failure);
                 return shouldCancel;
             }
 
@@ -127,7 +132,11 @@ namespace AudioTagger
             if (updateableFields.Title != null && updateableFields.Title != fileData.Title)
             {
                 fileData.Title = updateableFields.Title;
-            }                
+            }
+            if (updateableFields.Album != null && updateableFields.Album != fileData.Album)
+            {
+                fileData.Album = updateableFields.Album;
+            }
             if (updateableFields.Artists?.All(a => fileData.Artists.Contains(a)) == false)
             {
                 fileData.Artists = updateableFields.Artists;
