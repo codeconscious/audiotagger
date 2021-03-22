@@ -13,31 +13,7 @@ namespace AudioTagger
         {
             bool isCancelled = false;
 
-            // Get regexes
-            const string regexFileName = "FileNameRegexes.txt";
-            RegexCollection regexes;
-            try
-            {
-                regexes = new RegexCollection(regexFileName);
-            }
-            catch (FileNotFoundException)
-            {
-                Printer.Print($"Regex file \"regexFileName\" not found!", ResultType.Failure);
-                return;
-            }
-            catch (Exception ex)
-            {
-                Printer.Print($"Update error. Cannot continue. {ex.Message}", ResultType.Failure);
-                return;
-            }
-
-            if (regexes == null || !regexes.Regexes.Any())
-            {
-                Printer.Print($"No regexes found. Cannot continue.", ResultType.Failure);
-                return;
-            }
-
-            // Process each file
+           // Process each file
             foreach (var fileData in filesData)
             {
                 try
@@ -45,7 +21,7 @@ namespace AudioTagger
                     if (isCancelled)
                         break;
 
-                    isCancelled = UpdateTags(fileData, regexes);
+                    isCancelled = UpdateTags(fileData);
                 }
                 catch (Exception e)
                 {
@@ -62,11 +38,11 @@ namespace AudioTagger
         /// <param name="fileData"></param>
         /// <param name="regexes"></param>
         /// <returns>A bool indicating whether the following file should be processed.</returns>
-        private static bool UpdateTags(FileData fileData, RegexCollection regexes)
+        private static bool UpdateTags(FileData fileData)
         {
             var shouldCancel = false;
 
-            var match = regexes.GetFirstMatch(fileData);
+            var match = RegexCollection.GetFirstMatch(fileData);
 
             // If there are no regex matches against the filename, we cannot continue.
             if (match == null)
@@ -94,7 +70,7 @@ namespace AudioTagger
             if (proposedUpdates == null || !proposedUpdates.Any())
             {
                 Printer.Print($"No updates needed for \"{fileData.FileNameOnly}\".",
-                                ResultType.Neutral);
+                              ResultType.Neutral);
                 return shouldCancel;
             }
 
