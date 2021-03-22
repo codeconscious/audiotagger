@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace AudioTagger
@@ -11,15 +12,37 @@ namespace AudioTagger
         Cancel
     }
 
+    public record KeyResponse
+    {
+        public char Key { get; init; }
+        public UserResponse Response { get; init; }
+
+        public KeyResponse(char key, UserResponse response)
+        {
+            Key = char.ToLowerInvariant(key);
+            Response = response;
+        }
+    }
+
     public static class ResponseHandler
     {
         /// <summary>
         /// Ask the user a question that they can answer with a single keystroke.
         /// </summary>
-        public static UserResponse AskUserQuestion(IList<LineSubString> question,
-                                                  IReadOnlyDictionary<char, UserResponse> allowedResponses)
+        public static UserResponse AskUserQuestion(IReadOnlyList<LineSubString> question,
+                                                   IReadOnlyList<KeyResponse> allowedResponses)
         {
-            Printer.Print(question);
+            if (!question.Any())
+                throw new ArgumentException(
+                    "Question data must be provided",
+                    nameof(question));
+
+            if (!allowedResponses.Any())
+                throw new ArgumentException(
+                    "At least one allowed response must be provided",
+                    nameof(allowedResponses));
+
+            Printer.Print(question);            
 
             var validInput = false;
 
@@ -29,10 +52,15 @@ namespace AudioTagger
                 var keyInfo = Console.ReadKey(true);
                 var keyChar = char.ToLowerInvariant(keyInfo.KeyChar);
 
-                if (allowedResponses.ContainsKey(keyChar))
-                {
-                    return allowedResponses[keyChar];
-                }
+                KeyResponse? relevantKeyResponse =
+                    allowedResponses
+                        .Where(r => r.Key == keyChar)?
+                        .FirstOrDefault();
+
+                if (relevantKeyResponse == null)
+                    continue;
+
+                return relevantKeyResponse.Response;
             }
             while (!validInput);
 
@@ -56,14 +84,14 @@ namespace AudioTagger
                 new (" to cancel):  "),
             };
 
-            var allowedResponses = new Dictionary<char, UserResponse>
+            var allowedResponses = new List<KeyResponse>
             {
-                { 'y', UserResponse.Yes },
-                { 'n', UserResponse.No },
-                { 'c', UserResponse.Cancel }
+                new KeyResponse('y', UserResponse.Yes),
+                new KeyResponse('n', UserResponse.No),
+                new KeyResponse('c', UserResponse.Cancel)
             };
 
             return AskUserQuestion(question, allowedResponses);
         }
-    }    
+    }
 }

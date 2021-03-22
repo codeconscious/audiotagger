@@ -39,7 +39,7 @@ namespace AudioTagger
             AppendLines(appendLines);
         }
 
-        public static void Print(IList<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1)
+        public static void Print(IReadOnlyList<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1)
         {
             PrependLines(prependLines);
 
