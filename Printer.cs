@@ -52,7 +52,7 @@ namespace AudioTagger
             AppendLines(appendLines);
         }
 
-        public static void Print(IList<OutputLine> lines, byte prependLines = 0, byte appendLines = 1)
+        public static void Print(IReadOnlyList<OutputLine> lines, byte prependLines = 0, byte appendLines = 1)
         {
             PrependLines(prependLines);
 
@@ -88,7 +88,9 @@ namespace AudioTagger
             PrintColor(lineParts.Text, lineParts.FgColor, lineParts.BgColor);
         }
 
-        private static void PrintColor(string text, ConsoleColor? fgColor, ConsoleColor? bgColor = null, bool addLineBreak = false)
+        private static void PrintColor(string text, ConsoleColor? fgColor,
+                                       ConsoleColor? bgColor = null,
+                                       bool addLineBreak = false)
         {
             if (fgColor.HasValue)
                 Console.ForegroundColor = fgColor.Value;
@@ -109,7 +111,9 @@ namespace AudioTagger
             Console.WriteLine();
         }
 
-        public static OutputLine TagDataWithHeader(string tagName, IList<LineSubString> tagData, string prependLine = "", ConsoleColor headerColor = ConsoleColor.DarkGray)
+        public static OutputLine TagDataWithHeader(string tagName, IReadOnlyList<LineSubString> tagData,
+                                                   string prependLine = "",
+                                                   ConsoleColor headerColor = ConsoleColor.DarkGray)
         {
             var spacesToPrepend = 4;
             var spacesToAppend = 13 - tagName.Length; // TODO: Calculate this instead
@@ -128,9 +132,18 @@ namespace AudioTagger
             return lineOutput;
         }
 
-        public static OutputLine TagDataWithHeader(string tagName, string tagData, string prependLine = "", ConsoleColor headerColor = ConsoleColor.DarkGray)
+        public static OutputLine TagDataWithHeader(string tagName, string tagData,
+                                                   string prependLine = "",
+                                                   ConsoleColor headerColor = ConsoleColor.DarkGray)
         {
-            return TagDataWithHeader(tagName, new List<LineSubString> { new LineSubString(tagData) }, prependLine, headerColor);
+            return TagDataWithHeader(
+                tagName,
+                new List<LineSubString>
+                {
+                    new LineSubString(tagData)
+                },
+                prependLine,
+                headerColor);
         }
 
         //private static void PrintColor(string text, bool addLineBreak = false)
