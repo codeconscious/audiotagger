@@ -14,11 +14,11 @@ namespace AudioTagger
                     Printer.Print(file.GetTagPrintedLines());
 
                     if (file.AlbumArt.Length > 0)
-                        Graphics.ConsoleWriteImage(file.AlbumArt);                    
+                        Graphics.ConsoleWriteImage(file.AlbumArt);
                 }
                 catch (TagLib.CorruptFileException e)
                 {
-                    Printer.Error("The file's tag metadata was corrupt or missing." + e.Message);
+                    Printer.Error("The file's tag metadata was corrupt or missing: " + e.Message);
                     continue;
                 }
                 catch (Exception e)
