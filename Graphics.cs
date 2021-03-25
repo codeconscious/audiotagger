@@ -9,21 +9,25 @@ namespace AudioTagger
     {
         public static void ConsoleWriteImage(byte[] bytes)
         {
-            Bitmap bmp;
+            Bitmap bitmap;
             using (var ms = new MemoryStream(bytes))
             {
-                bmp = new Bitmap(ms);
+                bitmap = new Bitmap(ms);
             }
 
-            ConsoleWriteImage(bmp);
+            ConsoleWriteImage(bitmap);
         }
 
+        // Reference: https://www.hanselman.com/blog/how-do-you-use-systemdrawing-in-net-core
         // Source: https://stackoverflow.com/a/33689107/11767771
-        public static void ConsoleWriteImage(Bitmap bmpSrc)
+        public static void ConsoleWriteImage(Bitmap bitmap)
         {
             int maxSize = 20; // 39;
-            decimal percent = Math.Min(decimal.Divide(maxSize, bmpSrc.Width), decimal.Divide(maxSize, bmpSrc.Height));
-            Size resSize = new Size((int)(bmpSrc.Width * percent), (int)(bmpSrc.Height * percent));
+
+            decimal percent = Math.Min(decimal.Divide(maxSize, bitmap.Width), decimal.Divide(maxSize, bitmap.Height));
+            
+            Size resSize = new Size((int)(bitmap.Width * percent), (int)(bitmap.Height * percent));
+            
             Func<System.Drawing.Color, int> ToConsoleColor = c =>
             {
                 int index = (c.R > 128 | c.G > 128 | c.B > 128) ? 8 : 0;
@@ -32,8 +36,10 @@ namespace AudioTagger
                 index |= (c.B > 64) ? 1 : 0;
                 return index;
             };
-            Bitmap bmpMin = new Bitmap(bmpSrc, resSize.Width, resSize.Height);
-            Bitmap bmpMax = new Bitmap(bmpSrc, resSize.Width * 2, resSize.Height * 2);
+
+            Bitmap bmpMin = new Bitmap(bitmap, resSize.Width, resSize.Height);
+            Bitmap bmpMax = new Bitmap(bitmap, resSize.Width * 2, resSize.Height * 2);
+            
             for (int i = 0; i < resSize.Height; i++)
             {
                 for (int j = 0; j < resSize.Width; j++)
