@@ -1,11 +1,7 @@
 using System;
-using System.Text;
 using System.Linq;
 using System.IO;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using SixLabors.ImageSharp.Drawing;
 
 namespace AudioTagger
 {
