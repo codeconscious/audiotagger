@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.IO;
 
 namespace AudioTagger
 {
@@ -15,6 +12,9 @@ namespace AudioTagger
                 try
                 {
                     Printer.Print(file.GetTagPrintedLines());
+
+                    if (file.AlbumArt.Length > 0)
+                        Graphics.ConsoleWriteImage(file.AlbumArt);                    
                 }
                 catch (TagLib.CorruptFileException e)
                 {
@@ -23,7 +23,7 @@ namespace AudioTagger
                 }
                 catch (Exception e)
                 {
-                    Printer.Error("An unknown error occurred." + e.Message);
+                    Printer.Error("An unknown error occurred: " + e.Message);
                     continue;
                 }
             }

@@ -102,6 +102,19 @@ namespace AudioTagger
                    _taggedFile.Tag.ReplayGainAlbumGain != 0;
         }
 
+        public byte[] AlbumArt
+        {
+           get
+           {
+                var albumData = _taggedFile.Tag?.Pictures;
+
+                return albumData == null || albumData.Length == 0
+                    ? Array.Empty<byte>()
+                    : _taggedFile.Tag?.Pictures[0]?.Data?.Data
+                      ?? Array.Empty<byte>();
+           }
+        }
+
         /// <summary>
         /// Save any updated tag data to the file.
         /// </summary>
