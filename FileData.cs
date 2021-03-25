@@ -102,6 +102,8 @@ namespace AudioTagger
                    _taggedFile.Tag.ReplayGainAlbumGain != 0;
         }
 
+        // The embedded image for the album, represented as an array of bytes or,
+        // if none, an empty array.
         public byte[] AlbumArt
         {
            get
@@ -110,8 +112,7 @@ namespace AudioTagger
 
                 return albumData == null || albumData.Length == 0
                     ? Array.Empty<byte>()
-                    : _taggedFile.Tag?.Pictures[0]?.Data?.Data
-                      ?? Array.Empty<byte>();
+                    : _taggedFile.Tag?.Pictures[0]?.Data?.Data ?? Array.Empty<byte>();
            }
         }
 
