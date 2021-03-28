@@ -19,11 +19,11 @@ namespace AudioTagger
 
     public class UpdatableFields
     {
-        public string[]? Artists { get; private set; }
-        public string? Title { get; set; }
-        public string? Album { get; set; }
-        public uint? Year { get; set; }
-        public string[]? Genres { get; set; }
+        public string[]? Artists { get; }
+        public string? Title { get; }
+        public string? Album { get; }
+        public uint? Year { get; }
+        public string[]? Genres { get; }
 
         public byte Count { get; }
 
@@ -68,10 +68,10 @@ namespace AudioTagger
         public IList<OutputLine> GetUpdateOutput(FileData fileData)
         {
             var updateOutput = new List<OutputLine>();
-            var headerColor = ConsoleColor.White;
-            var prependLineWith = "";
+            const ConsoleColor headerColor = ConsoleColor.White;
+            const string prependLineWith = "";
 
-            if (Artists != null && !Artists.All(a => fileData.Artists.Contains(a)))
+            if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
             {
                 updateOutput.Add(
                     Printer.TagDataWithHeader(
@@ -82,30 +82,36 @@ namespace AudioTagger
             }
 
             if (Title != null && Title != fileData.Title)
+            {
                 updateOutput.Add(
                     Printer.TagDataWithHeader(
                         "Title",
                         Title,
                         prependLineWith,
                         headerColor));
+            }
 
             if (Album != null && Album != fileData.Album)
+            {
                 updateOutput.Add(
                     Printer.TagDataWithHeader(
                         "Album",
                         Album,
                         prependLineWith,
                         headerColor));
+            }
 
             if (Year != null && Year != fileData.Year)
+            {
                 updateOutput.Add(
                     Printer.TagDataWithHeader(
                         "Year",
                         Year.Value.ToString(CultureInfo.InvariantCulture),
                         prependLineWith,
                         headerColor));
+            }
 
-            if (Genres != null && !Genres.All(a => fileData.Genres.Contains(a)))
+            if (Genres?.All(a => fileData.Genres.Contains(a)) == false)
             {
                 var genreCount = Genres.Length;
                 updateOutput.Add(
@@ -116,7 +122,7 @@ namespace AudioTagger
                         headerColor));
             }
 
-            return updateOutput;            
+            return updateOutput;
         }
     }
 }
