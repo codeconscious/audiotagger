@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace AudioTagger
 {
-    static class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             if (args.Length == 0)
             {
@@ -37,7 +37,7 @@ namespace AudioTagger
                 {
                     Printer.Error($"Path \"{path}\" could not be fully parsed. ERROR: " + ex.Message);
                     continue;
-                }                
+                }
 
                 if (!filesData.Any())
                 {
@@ -88,9 +88,7 @@ namespace AudioTagger
             }
 
             if (File.Exists(path))
-            {
                 return new List<FileData> { Parser.GetFileData(path) };
-            }
 
             throw new InvalidOperationException($"The path \"{path}\" was invalid.");
         }
@@ -105,6 +103,7 @@ namespace AudioTagger
             Printer.Print("   -u or --update : Update tags");
             Printer.Print("   -r or --rename : Rename files based on tags (Coming soonish)");
             // TODO: Add option to disable colors
+            // TODO: Make album art opt-in
         }
     }
 }
