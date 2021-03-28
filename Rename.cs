@@ -15,7 +15,9 @@ namespace AudioTagger
             foreach (var fileData in filesData)
             {
                 if (fileData == null)
+                {
                     Printer.Error($"Skipped invalid file...");
+                }
                 else
                 {
                     try
@@ -25,12 +27,12 @@ namespace AudioTagger
                     }
                     catch (TagLib.CorruptFileException e)
                     {
-                        Printer.Error("The file's tag metadata was corrupt or missing." + e.Message);
+                        Printer.Error("The file's tag metadata was corrupt or missing: " + e.Message);
                         continue;
                     }
                     catch (Exception e)
                     {
-                        Printer.Error("An error occurred:" + e.Message);
+                        Printer.Error("An error occurred: " + e.Message);
                         continue;
                     }
                 }
@@ -55,7 +57,7 @@ namespace AudioTagger
 
             if (!string.IsNullOrWhiteSpace(artist))
                 newFileName.Append(artist + " - ");
-            
+
             newFileName.Append(title);
 
             if (!string.IsNullOrWhiteSpace(year))
@@ -69,7 +71,7 @@ namespace AudioTagger
             Printer.Print("NEW: " + newFileName.ToString());
             if (fileName.Equals(newFileName.ToString()))
                 Printer.Print("(No changes)");
-            
+
             Console.Read();
 
             return (false, "Testing only");
