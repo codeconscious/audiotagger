@@ -8,7 +8,7 @@ using System.Configuration;
 
 namespace AudioTagger
 {
-    public class RegexCollection
+    public static class RegexCollection
     {
         // The regexes used for reading tags from names. Ultimately, this should be in a setting or file.
         public static List<string> Regexes => new()
