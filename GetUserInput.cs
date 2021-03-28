@@ -33,21 +33,23 @@ namespace AudioTagger
                                                    IReadOnlyList<KeyResponse> allowedResponses)
         {
             if (!question.Any())
+            {
                 throw new ArgumentException(
                     "Question data must be provided",
                     nameof(question));
+            }
 
             if (!allowedResponses.Any())
+            {
                 throw new ArgumentException(
                     "At least one allowed response must be provided",
                     nameof(allowedResponses));
+            }
 
-            Printer.Print(question);            
-
-            var validInput = false;
+            Printer.Print(question);
 
             // Take no action until a valid key is pressed.
-            do
+            while (true)
             {
                 var keyInfo = Console.ReadKey(true);
                 var keyChar = char.ToLowerInvariant(keyInfo.KeyChar);
@@ -62,9 +64,6 @@ namespace AudioTagger
 
                 return relevantKeyResponse.Response;
             }
-            while (!validInput);
-
-            return UserResponse.None; // For the compiler only. Should never be hit.
         }
 
         /// <summary>
