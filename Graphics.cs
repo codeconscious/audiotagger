@@ -19,11 +19,9 @@ namespace AudioTagger
         }
 
         /// <summary>
-        /// Print an approximation of an image to the console.
+        /// Print an approximation of an image to the console at a specific width.
         /// Prints nothing on unsupported platforms.
         /// </summary>
-        /// <see cref="https://www.hanselman.com/blog/how-do-you-use-systemdrawing-in-net-core"/>
-        /// <seealso cref="https://stackoverflow.com/a/33689107/11767771"/>
         /// <param name="bytes">An array of bytes corrresponding to an image.</param>
         private static void ConsoleWriteImage(byte[] bytes, int maxWidth)
         {
@@ -38,21 +36,21 @@ namespace AudioTagger
         }
 
         /// <summary>
-        /// Print an approximation of an image to the console.
+        /// Print an approximation of an image to the console at a specific width.
         /// Does nothing on unsupported platforms.
         /// </summary>
         /// <see cref="https://www.hanselman.com/blog/how-do-you-use-systemdrawing-in-net-core"/>
         /// <seealso cref="https://stackoverflow.com/a/33689107/11767771"/>
-        /// <param name="bitmap"></param>
-        private static void ConsoleWriteImage(Bitmap bitmap, int maxWidth)
+        /// <param name="imageBmp"></param>
+        private static void ConsoleWriteImage(Bitmap imageBmp, int maxWidth)
         {
             try
             {
-                var percent = Math.Min(decimal.Divide(maxWidth, bitmap.Width),
-                                       decimal.Divide(maxWidth, bitmap.Height));
+                var percent = Math.Min(decimal.Divide(maxWidth, imageBmp.Width),
+                                       decimal.Divide(maxWidth, imageBmp.Height));
 
-                var resSize = new Size((int)(bitmap.Width * percent),
-                                       (int)(bitmap.Height * percent));
+                var resSize = new Size((int)(imageBmp.Width * percent),
+                                       (int)(imageBmp.Height * percent));
 
                 static int ToConsoleColor(Color c)
                 {
@@ -63,7 +61,7 @@ namespace AudioTagger
                     return index;
                 }
 
-                var bmp = new Bitmap(bitmap, resSize.Width * 2, resSize.Height * 2);
+                var bmp = new Bitmap(imageBmp, resSize.Width * 2, resSize.Height * 2);
 
                 for (int i = 0; i < resSize.Height; i++)
                 {
@@ -76,8 +74,6 @@ namespace AudioTagger
                         Console.ForegroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2 + 1, i * 2));
                         Console.BackgroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2 + 1, i * 2 + 1));
                         Console.Write("▀");
-
-                        
                     }
 
                     Console.ResetColor();
@@ -100,7 +96,8 @@ namespace AudioTagger
         /// <returns>A valid image width.</returns>
         private static int GetValidImageWidth(byte? desiredMaxSize)
         {
-            // Division by 2 is needed because images with a width of 60 fits on a console of width 120.
+            // Division by 2 is needed because images with a width of 60
+            // fit precisely on a console of width 120.
             var maxPossibleSize = (int)Math.Floor(Console.WindowWidth / 2f);
 
             return desiredMaxSize == null || desiredMaxSize.Value > maxPossibleSize
