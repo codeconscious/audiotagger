@@ -5,19 +5,28 @@ using System.Drawing;
 
 namespace AudioTagger
 {
-    public class Graphics
+    public static class Graphics
     {
+        /// <summary>
+        /// Print an approximation of an image to the console.
+        /// Prints nothing on unsupported platforms.
+        /// </summary>
+        public static void ConsoleWriteImage(byte[] bytes, byte? desiredMaxWidth = null)
+        {
+            var maxWidth = GetValidImageWidth(desiredMaxWidth);
+
+            ConsoleWriteImage(bytes, maxWidth);
+        }
+
         /// <summary>
         /// Print an approximation of an image to the console.
         /// Prints nothing on unsupported platforms.
         /// </summary>
         /// <see cref="https://www.hanselman.com/blog/how-do-you-use-systemdrawing-in-net-core"/>
         /// <seealso cref="https://stackoverflow.com/a/33689107/11767771"/>
-        /// <param name="bytes"></param>
-        public static void ConsoleWriteImage(byte[] bytes, byte? desiredMaxSize = null)
+        /// <param name="bytes">An array of bytes corrresponding to an image.</param>
+        private static void ConsoleWriteImage(byte[] bytes, int maxWidth)
         {
-            var maxSize = GetValidMaxWidth(desiredMaxSize);
-
             try
             {
                 Bitmap bitmap;
@@ -27,8 +36,7 @@ namespace AudioTagger
                     bitmap = new Bitmap(ms);
                 }
 
-                // TODO: Refactor the methods to avoid this cast.
-                ConsoleWriteImage(bitmap, (byte?) maxSize);
+                ConsoleWriteImage(bitmap, maxWidth);
             }
             catch
             {
@@ -43,15 +51,15 @@ namespace AudioTagger
         /// <see cref="https://www.hanselman.com/blog/how-do-you-use-systemdrawing-in-net-core"/>
         /// <seealso cref="https://stackoverflow.com/a/33689107/11767771"/>
         /// <param name="bitmap"></param>
-        public static void ConsoleWriteImage(Bitmap bitmap, byte? desiredMaxSize = null)
+        private static void ConsoleWriteImage(Bitmap bitmap, int maxWidth)
         {
-            var maxSize = GetValidMaxWidth(desiredMaxSize);
-
             try
             {
-                var percent = Math.Min(decimal.Divide(maxSize, bitmap.Width), decimal.Divide(maxSize, bitmap.Height));
-            
-                var resSize = new Size((int)(bitmap.Width * percent), (int)(bitmap.Height * percent));
+                var percent = Math.Min(decimal.Divide(maxWidth, bitmap.Width),
+                                       decimal.Divide(maxWidth, bitmap.Height));
+
+                var resSize = new Size((int)(bitmap.Width * percent),
+                                       (int)(bitmap.Height * percent));
 
                 static int ToConsoleColor(Color c)
                 {
@@ -64,7 +72,7 @@ namespace AudioTagger
 
                 var bmpMin = new Bitmap(bitmap, resSize.Width, resSize.Height);
                 var bmpMax = new Bitmap(bitmap, resSize.Width * 2, resSize.Height * 2);
-            
+
                 for (int i = 0; i < resSize.Height; i++)
                 {
                     for (int j = 0; j < resSize.Width; j++)
@@ -88,16 +96,18 @@ namespace AudioTagger
                 // The platform is unsupported, so do nothing. (Look into libgdiplus or other options.)
             }
 
-            Console.WriteLine();            
+            Console.WriteLine();
         }
 
         /// <summary>
         /// Gets a valid maximum size for the width of the image.
+        /// Intended to be used for printing images to the console.
         /// </summary>
         /// <param name="desiredMaxSize"></param>
-        /// <returns></returns>
-        private static int GetValidMaxWidth(byte? desiredMaxSize)
+        /// <returns>A valid image width.</returns>
+        private static int GetValidImageWidth(byte? desiredMaxSize)
         {
+            // Division by 2 is needed because images with a width of 60 fits on a console of width 120.
             var maxPossibleSize = (int)Math.Floor(Console.WindowWidth / 2f);
 
             return desiredMaxSize == null || desiredMaxSize.Value > maxPossibleSize

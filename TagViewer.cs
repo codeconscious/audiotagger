@@ -13,6 +13,7 @@ namespace AudioTagger
                 {
                     Printer.Print(file.GetTagPrintedLines());
 
+                    // TODO: Check ahead of time if images are supported.
                     if (file.AlbumArt.Length > 0)
                         Graphics.ConsoleWriteImage(file.AlbumArt);
                 }
@@ -27,6 +28,6 @@ namespace AudioTagger
                     continue;
                 }
             }
-        }        
+        }
     }
 }
