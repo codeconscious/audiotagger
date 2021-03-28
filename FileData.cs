@@ -7,7 +7,7 @@ namespace AudioTagger
 {
     public class FileData
     {
-        public string Path { get; private set; }
+        public string Path { get; }
         private readonly File _taggedFile; // Tag data (Rename)
 
         public FileData(string filePath, File tabLibFile)
@@ -33,8 +33,8 @@ namespace AudioTagger
         public string[] Artists
         {
             get => _taggedFile.Tag.Performers?.Select(a => a?.Normalize() ?? "")
-                                              .ToArray() ??
-                   Array.Empty<string>();
+                                              .ToArray()
+                    ?? Array.Empty<string>();
 
             set => _taggedFile.Tag.Performers =
                 value.Where(a => !string.IsNullOrWhiteSpace(a))
@@ -72,12 +72,12 @@ namespace AudioTagger
         {
             get => _taggedFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize() ?? "")?
                                              .ToArray()
-                ?? Array.Empty<string>();
+                    ?? Array.Empty<string>();
 
-            set => _taggedFile.Tag.Composers =
-                value?.Select(g => g?.Trim()?.Normalize())?
-                      .ToArray()
-                ?? Array.Empty<string>();
+            set => _taggedFile.Tag.Composers = value?.Select(g => g?.Trim()?
+                                                                    .Normalize())?
+                                                     .ToArray()
+                                               ?? Array.Empty<string>();
         }
 
         public string Comments
@@ -135,16 +135,6 @@ namespace AudioTagger
                     new LineSubString(fileNameBase, ConsoleColor.Cyan),
                     new LineSubString(fileNameExt, ConsoleColor.DarkCyan)));
 
-            // JA characters are wider than EN, so the alignment is off.
-            // TODO: Delete if not needed.
-            // Console.WriteLine(new string('—', header.Length * 2));
-            // var separator = new StringBuilder();
-            // foreach (var ch in header)
-            // {
-            //     separator.Append(ch > 256 ? '―' : '–');
-            // }
-            // Console.WriteLine(separator.ToString());
-
             lines.Add(Printer.TagDataWithHeader("Title", Title));
             lines.Add(Printer.TagDataWithHeader("Artist(s)", string.Join(", ", Artists)));
             lines.Add(Printer.TagDataWithHeader("Album", Album));
@@ -159,7 +149,7 @@ namespace AudioTagger
             var sampleRate = SampleRate.ToString("#,##0");
             var hasReplayGain = HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
 
-            // Create formatted quality line            
+            // Create formatted quality line
             const string genreSeparator = "    ";
             lines.Add(Printer.TagDataWithHeader(
                 "Quality",
@@ -178,7 +168,7 @@ namespace AudioTagger
             if (!string.IsNullOrWhiteSpace(Comments))
                 lines.Add(Printer.TagDataWithHeader("Comment", Comments));
 
-            return lines;            
+            return lines;
         }
     }
 }
