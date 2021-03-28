@@ -71,7 +71,7 @@ namespace AudioTagger
         /// </summary>
         /// <param name="path">A directory or file path</param>
         /// <returns></returns>
-        private static List<FileData> PopulateFileData(string path)
+        private static IReadOnlyCollection<FileData> PopulateFileData(string path)
         {
             if (Directory.Exists(path))
             {
@@ -88,9 +88,10 @@ namespace AudioTagger
                     filesData.Add(Parser.GetFileData(fileName));
                 }
 
-                //filesData.Sort(); // Ref: https://stackoverflow.com/a/1658749/11767771
-
-                return filesData;
+                return filesData/*.OrderBy(f => f.Artists)
+                                .ThenBy(f => f.Title)
+                                .AsEnumerable()
+                                .ToList()*/;
             }
 
             if (File.Exists(path))
