@@ -70,19 +70,18 @@ namespace AudioTagger
                     return index;
                 }
 
-                var bmpMin = new Bitmap(bitmap, resSize.Width, resSize.Height);
-                var bmpMax = new Bitmap(bitmap, resSize.Width * 2, resSize.Height * 2);
+                var bmp = new Bitmap(bitmap, resSize.Width * 2, resSize.Height * 2);
 
                 for (int i = 0; i < resSize.Height; i++)
                 {
                     for (int j = 0; j < resSize.Width; j++)
                     {
-                        Console.ForegroundColor = (ConsoleColor)ToConsoleColor(bmpMax.GetPixel(j * 2, i * 2));
-                        Console.BackgroundColor = (ConsoleColor)ToConsoleColor(bmpMax.GetPixel(j * 2, i * 2 + 1));
+                        Console.ForegroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2, i * 2));
+                        Console.BackgroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2, i * 2 + 1));
                         Console.Write("▀");
 
-                        Console.ForegroundColor = (ConsoleColor)ToConsoleColor(bmpMax.GetPixel(j * 2 + 1, i * 2));
-                        Console.BackgroundColor = (ConsoleColor)ToConsoleColor(bmpMax.GetPixel(j * 2 + 1, i * 2 + 1));
+                        Console.ForegroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2 + 1, i * 2));
+                        Console.BackgroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2 + 1, i * 2 + 1));
                         Console.Write("▀");
 
                         
