@@ -27,21 +27,14 @@ namespace AudioTagger
         /// <param name="bytes">An array of bytes corrresponding to an image.</param>
         private static void ConsoleWriteImage(byte[] bytes, int maxWidth)
         {
-            try
-            {
-                Bitmap bitmap;
+            Bitmap bitmap;
 
-                using (var ms = new MemoryStream(bytes))
-                {
-                    bitmap = new Bitmap(ms);
-                }
-
-                ConsoleWriteImage(bitmap, maxWidth);
-            }
-            catch
+            using (var ms = new MemoryStream(bytes))
             {
-                // The platform is unsupported, so do nothing.
+                bitmap = new Bitmap(ms);
             }
+
+            ConsoleWriteImage(bitmap, maxWidth);
         }
 
         /// <summary>
