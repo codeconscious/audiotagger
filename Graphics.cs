@@ -85,9 +85,10 @@ namespace AudioTagger
                         Console.BackgroundColor = (ConsoleColor)ToConsoleColor(bmpMax.GetPixel(j * 2 + 1, i * 2 + 1));
                         Console.Write("▀");
 
-                        Console.ResetColor();
+                        
                     }
 
+                    Console.ResetColor();
                     Console.WriteLine();
                 }
             }
