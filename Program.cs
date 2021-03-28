@@ -26,6 +26,12 @@ namespace AudioTagger
                 return;
             }
 
+            if (!trimmedArgs.Any())
+            {
+                Printer.Error($"At least one file or directory path to work on must be provided.");
+                return;
+            }
+
             foreach (var path in trimmedArgs)
             {
                 IReadOnlyCollection<FileData> filesData;
@@ -35,7 +41,7 @@ namespace AudioTagger
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Printer.Error($"Path \"{path}\" could not be fully parsed. ERROR: " + ex.Message);
+                    Printer.Error($"Path \"{path}\" could not be fully parsed: " + ex.Message);
                     continue;
                 }
 
