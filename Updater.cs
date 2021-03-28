@@ -29,18 +29,18 @@ namespace AudioTagger
                     Console.WriteLine(e.StackTrace);
                     continue;
                 }
-            }            
+            }
         }
 
         /// <summary>
         /// Update the tags of a specified file, if necessary.
         /// </summary>
         /// <param name="fileData"></param>
-        /// <param name="regexes"></param>
         /// <returns>A bool indicating whether the following file should be processed.</returns>
         private static bool UpdateTags(FileData fileData)
         {
-            var shouldCancel = false;
+            // TODO: Refactor so this isn't needed.
+            const bool shouldCancel = false;
 
             var match = RegexCollection.GetFirstMatch(fileData);
 
@@ -53,10 +53,10 @@ namespace AudioTagger
             }
 
             var matchedTags = match.Groups
-                                 .OfType<Group>()
-                                 .Where(g => g.Success);
+                                   .OfType<Group>()
+                                   .Where(g => g.Success);
 
-            if (matchedTags == null || !matchedTags.Any())
+            if (matchedTags?.Any() != true)
             {
                 Printer.Print($"Could not parse data for filename \"{fileData.FileNameOnly}.\"",
                                 ResultType.Failure);
@@ -67,7 +67,7 @@ namespace AudioTagger
 
             var proposedUpdates = updateableFields.GetUpdateOutput(fileData);
 
-            if (proposedUpdates == null || !proposedUpdates.Any())
+            if (proposedUpdates?.Any() != true)
             {
                 Printer.Print($"No updates needed for \"{fileData.FileNameOnly}\".",
                               ResultType.Neutral);
@@ -123,18 +123,22 @@ namespace AudioTagger
             {
                 fileData.Title = updateableFields.Title;
             }
+
             if (updateableFields.Album != null && updateableFields.Album != fileData.Album)
             {
                 fileData.Album = updateableFields.Album;
             }
+
             if (updateableFields.Artists?.All(a => fileData.Artists.Contains(a)) == false)
             {
                 fileData.Artists = updateableFields.Artists;
             }
+
             if (updateableFields.Year != null && updateableFields.Year != fileData.Year)
             {
                 fileData.Year = updateableFields.Year.Value;
             }
+
             if (updateableFields.Genres?.All(a => fileData.Genres.Contains(a)) == false)
             {
                 fileData.Genres = updateableFields.Genres;
