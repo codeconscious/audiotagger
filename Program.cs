@@ -73,7 +73,7 @@ namespace AudioTagger
         /// <returns></returns>
         private static IReadOnlyCollection<FileData> PopulateFileData(string path)
         {
-            if (Directory.Exists(path))
+            if (Directory.Exists(path)) // i.e., the path is a directory
             {
                 var filesData = new List<FileData>();
 
@@ -85,7 +85,7 @@ namespace AudioTagger
 
                 foreach (var fileName in fileNames)
                 {
-                    filesData.Add(Parser.GetFileData(fileName));
+                    filesData.Add(Parser.CreateFileData(fileName));
                 }
 
                 return filesData/*.OrderBy(f => f.Artists)
@@ -94,8 +94,10 @@ namespace AudioTagger
                                 .ToList()*/;
             }
 
-            if (File.Exists(path))
-                return new List<FileData> { Parser.GetFileData(path) };
+            if (File.Exists(path)) // i.e., the path is a file
+            {
+                return new List<FileData> { Parser.CreateFileData(path) };
+            }
 
             throw new InvalidOperationException($"The path \"{path}\" was invalid.");
         }
