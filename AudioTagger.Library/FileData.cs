@@ -123,52 +123,5 @@ namespace AudioTagger
         {
             _taggedFile.Save();
         }
-
-        public IList<OutputLine> GetTagPrintedLines()
-        {
-            var lines = new List<OutputLine>();
-
-            var fileNameBase = System.IO.Path.GetFileNameWithoutExtension(Path);
-            var fileNameExt = System.IO.Path.GetExtension(Path);
-            lines.Add(
-                new OutputLine(
-                    new LineSubString(fileNameBase, ConsoleColor.Cyan),
-                    new LineSubString(fileNameExt, ConsoleColor.DarkCyan)));
-
-            lines.Add(Printer.TagDataWithHeader("Title", Title));
-            lines.Add(Printer.TagDataWithHeader("Artist(s)", string.Join(", ", Artists)));
-            lines.Add(Printer.TagDataWithHeader("Album", Album));
-            lines.Add(Printer.TagDataWithHeader("Year", Year.ToString()));
-            lines.Add(Printer.TagDataWithHeader("Duration", Duration.ToString("m\\:ss")));
-
-            var genreCount = Genres.Length;
-            lines.Add(Printer.TagDataWithHeader("Genre(s)", string.Join(", ", Genres) +
-                                                (genreCount > 1 ? $" ({genreCount})" : "")));
-
-            var bitrate = BitRate.ToString();
-            var sampleRate = SampleRate.ToString("#,##0");
-            var hasReplayGain = HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
-
-            // Create formatted quality line
-            const string genreSeparator = "    ";
-            lines.Add(Printer.TagDataWithHeader(
-                "Quality",
-                new List<LineSubString>
-                {
-                    new LineSubString(bitrate),
-                    new LineSubString(" kbps" + genreSeparator, ConsoleColor.DarkGray),
-                    new LineSubString(sampleRate),
-                    new LineSubString(" kHz" + genreSeparator, ConsoleColor.DarkGray),
-                    new LineSubString(hasReplayGain)
-                }));
-
-            if (Composers?.Length > 0)
-                lines.Add(Printer.TagDataWithHeader($"Composers", string.Join("; ", Composers)));
-
-            if (!string.IsNullOrWhiteSpace(Comments))
-                lines.Add(Printer.TagDataWithHeader("Comment", Comments));
-
-            return lines;
-        }
     }
 }

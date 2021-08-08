@@ -9,7 +9,7 @@ namespace AudioTagger
 {
     public class TagUpdater : IPathProcessor
     {
-        public void Start(IReadOnlyCollection<FileData> filesData)
+        public void Start(IReadOnlyCollection<FileData> filesData, IPrinter printer)
         {
             bool isCancelled = false;
 
@@ -21,7 +21,7 @@ namespace AudioTagger
                     if (isCancelled)
                         break;
 
-                    isCancelled = UpdateTags(fileData);
+                    isCancelled = UpdateTags(fileData, printer);
                 }
                 catch (Exception e)
                 {
@@ -37,7 +37,7 @@ namespace AudioTagger
         /// </summary>
         /// <param name="fileData"></param>
         /// <returns>A bool indicating whether the following file should be processed.</returns>
-        private static bool UpdateTags(FileData fileData)
+        private static bool UpdateTags(FileData fileData, IPrinter printer)
         {
             // TODO: Refactor so this isn't needed.
             const bool shouldCancel = false;
@@ -47,7 +47,7 @@ namespace AudioTagger
             // If there are no regex matches against the filename, we cannot continue.
             if (match == null)
             {
-                Printer.Print($"Could not parse tags for \"{fileData.FileNameOnly}\".",
+                printer.Print($"Could not parse tags for \"{fileData.FileNameOnly}\".",
                               ResultType.Failure);
                 return shouldCancel;
             }
@@ -58,25 +58,25 @@ namespace AudioTagger
 
             if (matchedTags?.Any() != true)
             {
-                Printer.Print($"Could not parse data for filename \"{fileData.FileNameOnly}.\"",
+                printer.Print($"Could not parse data for filename \"{fileData.FileNameOnly}.\"",
                                 ResultType.Failure);
                 return shouldCancel;
             }
 
             var updateableFields = new UpdatableFields(matchedTags);
 
-            var proposedUpdates = updateableFields.GetUpdateOutput(fileData);
+            var proposedUpdates = updateableFields.GetUpdateOutput(fileData, printer);
 
             if (proposedUpdates?.Any() != true)
             {
-                Printer.Print($"No updates needed for \"{fileData.FileNameOnly}\".",
+                printer.Print($"No updates needed for \"{fileData.FileNameOnly}\".",
                               ResultType.Neutral);
                 return shouldCancel;
             }
 
-            Printer.Print(fileData.GetTagPrintedLines(), 1, 0);
+            Printer.GetTagPrintedLines(fileData); //, 1, 0);
 
-            Printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
+            printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
 
             foreach (var update in proposedUpdates)
                 Printer.Print(update.Line);

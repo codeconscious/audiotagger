@@ -10,38 +10,38 @@ namespace AudioTagger
 {
     public class FileRenamer : IPathProcessor
     {
-        public void Start(IReadOnlyCollection<FileData> filesData)
+        public void Start(IReadOnlyCollection<FileData> filesData, IPrinter printer)
         {
             foreach (var fileData in filesData)
             {
                 if (fileData == null)
                 {
-                    Printer.Error($"Skipped invalid file...");
+                    printer.Error($"Skipped invalid file...");
                 }
                 else
                 {
                     try
                     {
-                        var (wasDone, message) = RenameFile(fileData);
-                        Printer.Print(wasDone ? "◯ " : "× " + message); // TODO: Refactor
+                        var (wasDone, message) = RenameFile(fileData, printer);
+                        printer.Print(wasDone ? "◯ " : "× " + message); // TODO: Refactor
                     }
                     catch (TagLib.CorruptFileException e)
                     {
-                        Printer.Error("The file's tag metadata was corrupt or missing: " + e.Message);
+                        printer.Error("The file's tag metadata was corrupt or missing: " + e.Message);
                         continue;
                     }
                     catch (Exception e)
                     {
-                        Printer.Error("An error occurred: " + e.Message);
+                        printer.Error("An error occurred: " + e.Message);
                         continue;
                     }
                 }
             }
         }
 
-        public static (bool wasDone, string message) RenameFile(FileData fileData)
+        public static (bool wasDone, string message) RenameFile(FileData fileData, IPrinter printer)
         {
-            Printer.Print("Entered rename method...");
+            printer.Print("Entered rename method...");
             var fileName = fileData.Path;
 
             // Check mandatory fields
@@ -66,11 +66,11 @@ namespace AudioTagger
             if (!string.IsNullOrWhiteSpace(genre))
                 newFileName.Append($" {{genre}}");
 
-            Printer.Print("Rename file:");
-            Printer.Print("OLD: " + fileName);
-            Printer.Print("NEW: " + newFileName.ToString());
+            printer.Print("Rename file:");
+            printer.Print("OLD: " + fileName);
+            printer.Print("NEW: " + newFileName.ToString());
             if (fileName.Equals(newFileName.ToString()))
-                Printer.Print("(No changes)");
+                printer.Print("(No changes)");
 
             Console.Read();
 

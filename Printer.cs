@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace AudioTagger
 {
-    public static class Printer
+    public class Printer
     {
         //private static bool _previousWasBlankLine;
 
@@ -166,6 +166,53 @@ namespace AudioTagger
                 ResultType.Success => '◯',
                 _ => '?'
             };
+        }
+
+        public static IList<OutputLine> GetTagPrintedLines(FileData fileData)
+        {
+            var lines = new List<OutputLine>();
+
+            var fileNameBase = System.IO.Path.GetFileNameWithoutExtension(fileData.Path);
+            var fileNameExt = System.IO.Path.GetExtension(fileData.Path);
+            lines.Add(
+                new OutputLine(
+                    new LineSubString(fileNameBase, ConsoleColor.Cyan),
+                    new LineSubString(fileNameExt, ConsoleColor.DarkCyan)));
+
+            lines.Add(Printer.TagDataWithHeader("Title", fileData.Title));
+            lines.Add(Printer.TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)));
+            lines.Add(Printer.TagDataWithHeader("Album", fileData.Album));
+            lines.Add(Printer.TagDataWithHeader("Year", fileData.Year.ToString()));
+            lines.Add(Printer.TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss")));
+
+            var genreCount = fileData.Genres.Length;
+            lines.Add(Printer.TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
+                                                (genreCount > 1 ? $" ({genreCount})" : "")));
+
+            var bitrate = fileData.BitRate.ToString();
+            var sampleRate = fileData.SampleRate.ToString("#,##0");
+            var hasReplayGain = fileData.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
+
+            // Create formatted quality line
+            const string genreSeparator = "    ";
+            lines.Add(Printer.TagDataWithHeader(
+                "Quality",
+                new List<LineSubString>
+                {
+                    new LineSubString(bitrate),
+                    new LineSubString(" kbps" + genreSeparator, ConsoleColor.DarkGray),
+                    new LineSubString(sampleRate),
+                    new LineSubString(" kHz" + genreSeparator, ConsoleColor.DarkGray),
+                    new LineSubString(hasReplayGain)
+                }));
+
+            if (fileData.Composers?.Length > 0)
+                lines.Add(Printer.TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers)));
+
+            if (!string.IsNullOrWhiteSpace(fileData.Comments))
+                lines.Add(Printer.TagDataWithHeader("Comment", fileData.Comments));
+
+            return lines;
         }
     }
 }
