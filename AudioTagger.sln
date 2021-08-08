@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.808.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioTagger", "AudioTagger.csproj", "{BE95D42D-81F3-42B0-9D7A-A9008E8A2440}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioTagger.Console", "AudioTagger.Console.csproj", "{BE95D42D-81F3-42B0-9D7A-A9008E8A2440}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioTagger.Library", "AudioTagger.Library\AudioTagger.Library.csproj", "{8A406F5C-F30C-4117-BE36-A8B7E1C204C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{BE95D42D-81F3-42B0-9D7A-A9008E8A2440}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE95D42D-81F3-42B0-9D7A-A9008E8A2440}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE95D42D-81F3-42B0-9D7A-A9008E8A2440}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A406F5C-F30C-4117-BE36-A8B7E1C204C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A406F5C-F30C-4117-BE36-A8B7E1C204C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A406F5C-F30C-4117-BE36-A8B7E1C204C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A406F5C-F30C-4117-BE36-A8B7E1C204C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

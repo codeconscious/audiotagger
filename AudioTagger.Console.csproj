@@ -20,4 +20,7 @@
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
     <PackageReference Include="runtime.osx.10.10-x64.CoreCompat.System.Drawing" Version="5.8.64" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="AudioTagger.Library\AudioTagger.Library.csproj" />
+  </ItemGroup>
 </Project>
