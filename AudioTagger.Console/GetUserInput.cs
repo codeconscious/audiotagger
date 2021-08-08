@@ -30,7 +30,8 @@ namespace AudioTagger
         /// Ask the user a question that they can answer with a single keystroke.
         /// </summary>
         public static UserResponse AskUserQuestion(IReadOnlyList<LineSubString> question,
-                                                   IReadOnlyList<KeyResponse> allowedResponses)
+                                                   IReadOnlyList<KeyResponse> allowedResponses,
+                                                   IPrinter printer)
         {
             if (!question.Any())
             {
@@ -46,7 +47,7 @@ namespace AudioTagger
                     nameof(allowedResponses));
             }
 
-            Printer.Print(question);
+            printer.Print(question);
 
             // Take no action until a valid key is pressed.
             while (true)
@@ -70,7 +71,7 @@ namespace AudioTagger
         /// Ask the user a question to which they can answer Yes, No, or Cancel with a single keystroke.
         /// </summary>
         /// <returns></returns>
-        public static UserResponse AskUserYesNoCancel()
+        public static UserResponse AskUserYesNoCancel(IPrinter printer)
         {
             var question = new LineSubString[]
             {
@@ -90,7 +91,7 @@ namespace AudioTagger
                 new KeyResponse('c', UserResponse.Cancel)
             };
 
-            return AskUserQuestion(question, allowedResponses);
+            return AskUserQuestion(question, allowedResponses, printer);
         }
     }
 }

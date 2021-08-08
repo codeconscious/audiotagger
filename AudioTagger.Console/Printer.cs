@@ -6,11 +6,11 @@ using System.Collections.Generic;
 
 namespace AudioTagger
 {
-    public class Printer
+    public class Printer : IPrinter
     {
         //private static bool _previousWasBlankLine;
 
-        private static void PrependLines(byte lines)
+        private void PrependLines(byte lines)
         {
             if (lines == 0)
                 return;
@@ -19,7 +19,7 @@ namespace AudioTagger
                 Console.WriteLine();
         }
 
-        private static void AppendLines(byte lines)
+        private void AppendLines(byte lines)
         {
             if (lines == 0)
                 return;
@@ -28,7 +28,7 @@ namespace AudioTagger
                 Console.WriteLine();
         }
 
-        public static void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
+        public void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
                                  ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
         {
             if (string.IsNullOrWhiteSpace(message))
@@ -39,7 +39,7 @@ namespace AudioTagger
             AppendLines(appendLines);
         }
 
-        public static void Print(IReadOnlyList<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1)
+        public void Print(IReadOnlyList<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1)
         {
             PrependLines(prependLines);
 
@@ -52,7 +52,7 @@ namespace AudioTagger
             AppendLines(appendLines);
         }
 
-        public static void Print(IList<OutputLine> lines, byte prependLines = 0, byte appendLines = 1)
+        public void Print(IList<OutputLine> lines, byte prependLines = 0, byte appendLines = 1)
         {
             PrependLines(prependLines);
 
@@ -73,22 +73,22 @@ namespace AudioTagger
             AppendLines(appendLines);
         }
 
-        public static void Print(string message, ResultType type, byte prependLines = 0,
+        public void Print(string message, ResultType type, byte prependLines = 0,
                                  byte appendLines = 0)
         {
             Print(message, prependLines, appendLines, GetResultSymbol(type) + " ",
                   ResultsMap.Map[type].Color, null);
         }
 
-        public static void Error(string message) =>
+        public void Error(string message) =>
             Print(message, 1, 1, "ERROR: ");
 
-        private static void PrintColor(LineSubString lineParts)
+        private void PrintColor(LineSubString lineParts)
         {
             PrintColor(lineParts.Text, lineParts.FgColor, lineParts.BgColor);
         }
 
-        private static void PrintColor(string text, ConsoleColor? fgColor,
+        private void PrintColor(string text, ConsoleColor? fgColor,
                                        ConsoleColor? bgColor = null,
                                        bool addLineBreak = false)
         {
@@ -106,12 +106,12 @@ namespace AudioTagger
             Console.ResetColor();
         }
 
-        private static void PrintColor()
+        private void PrintColor()
         {
             Console.WriteLine();
         }
 
-        public static OutputLine TagDataWithHeader(string tagName, IReadOnlyList<LineSubString> tagData,
+        public OutputLine TagDataWithHeader(string tagName, IReadOnlyList<LineSubString> tagData,
                                                    string prependLine = "",
                                                    ConsoleColor headerColor = ConsoleColor.DarkGray)
         {
@@ -132,7 +132,7 @@ namespace AudioTagger
             return lineOutput;
         }
 
-        public static OutputLine TagDataWithHeader(string tagName, string tagData,
+        public OutputLine TagDataWithHeader(string tagName, string tagData,
                                                    string prependLine = "",
                                                    ConsoleColor headerColor = ConsoleColor.DarkGray)
         {
@@ -156,7 +156,7 @@ namespace AudioTagger
         //{
         //}
 
-        public static char GetResultSymbol(ResultType type)
+        public char GetResultSymbol(ResultType type)
         {
             return type switch
             {
@@ -168,7 +168,7 @@ namespace AudioTagger
             };
         }
 
-        public static IList<OutputLine> GetTagPrintedLines(FileData fileData)
+        public IList<OutputLine> GetTagPrintedLines(FileData fileData)
         {
             var lines = new List<OutputLine>();
 
@@ -179,14 +179,14 @@ namespace AudioTagger
                     new LineSubString(fileNameBase, ConsoleColor.Cyan),
                     new LineSubString(fileNameExt, ConsoleColor.DarkCyan)));
 
-            lines.Add(Printer.TagDataWithHeader("Title", fileData.Title));
-            lines.Add(Printer.TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)));
-            lines.Add(Printer.TagDataWithHeader("Album", fileData.Album));
-            lines.Add(Printer.TagDataWithHeader("Year", fileData.Year.ToString()));
-            lines.Add(Printer.TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss")));
+            lines.Add(TagDataWithHeader("Title", fileData.Title));
+            lines.Add(TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)));
+            lines.Add(TagDataWithHeader("Album", fileData.Album));
+            lines.Add(TagDataWithHeader("Year", fileData.Year.ToString()));
+            lines.Add(TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss")));
 
             var genreCount = fileData.Genres.Length;
-            lines.Add(Printer.TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
+            lines.Add(TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
                                                 (genreCount > 1 ? $" ({genreCount})" : "")));
 
             var bitrate = fileData.BitRate.ToString();
@@ -195,7 +195,7 @@ namespace AudioTagger
 
             // Create formatted quality line
             const string genreSeparator = "    ";
-            lines.Add(Printer.TagDataWithHeader(
+            lines.Add(TagDataWithHeader(
                 "Quality",
                 new List<LineSubString>
                 {
@@ -207,10 +207,10 @@ namespace AudioTagger
                 }));
 
             if (fileData.Composers?.Length > 0)
-                lines.Add(Printer.TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers)));
+                lines.Add(TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers)));
 
             if (!string.IsNullOrWhiteSpace(fileData.Comments))
-                lines.Add(Printer.TagDataWithHeader("Comment", fileData.Comments));
+                lines.Add(TagDataWithHeader("Comment", fileData.Comments));
 
             return lines;
         }

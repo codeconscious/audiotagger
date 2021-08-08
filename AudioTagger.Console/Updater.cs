@@ -25,7 +25,7 @@ namespace AudioTagger
                 }
                 catch (Exception e)
                 {
-                    Printer.Error("An error occurred in updating: " + e.Message);
+                    printer.Error("An error occurred in updating: " + e.Message);
                     Console.WriteLine(e.StackTrace);
                     continue;
                 }
@@ -74,24 +74,24 @@ namespace AudioTagger
                 return shouldCancel;
             }
 
-            Printer.GetTagPrintedLines(fileData); //, 1, 0);
+            printer.GetTagPrintedLines(fileData); //, 1, 0);
 
             printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
 
             foreach (var update in proposedUpdates)
-                Printer.Print(update.Line);
+                printer.Print(update.Line);
 
-            var response = ResponseHandler.AskUserYesNoCancel();
+            var response = ResponseHandler.AskUserYesNoCancel(printer);
 
             if (response == UserResponse.Cancel)
             {
-                Printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
+                printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
                 return true;
             }
 
             if (response == UserResponse.No)
             {
-                Printer.Print("No updates made", ResultType.Neutral, 0, 1);
+                printer.Print("No updates made", ResultType.Neutral, 0, 1);
                 return shouldCancel;
             }
 
@@ -104,11 +104,11 @@ namespace AudioTagger
             }
             catch (TagLib.CorruptFileException ex)
             {
-                Printer.Error("Saving failed: " + ex.Message);
+                printer.Error("Saving failed: " + ex.Message);
                 return shouldCancel;
             }
 
-            Printer.Print("Updates saved", ResultType.Success, 0, 1);
+            printer.Print("Updates saved", ResultType.Success, 0, 1);
             return shouldCancel;
         }
 

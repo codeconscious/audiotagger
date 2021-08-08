@@ -19,12 +19,12 @@ namespace AudioTagger
                 }
                 catch (TagLib.CorruptFileException e)
                 {
-                    Printer.Error("The file's tag metadata was corrupt or missing: " + e.Message);
+                    printer.Error("The file's tag metadata was corrupt or missing: " + e.Message);
                     continue;
                 }
                 catch (Exception e)
                 {
-                    Printer.Error("An unknown error occurred: " + e.Message);
+                    printer.Error("An unknown error occurred: " + e.Message);
                     continue;
                 }
             }

@@ -10,9 +10,11 @@ namespace AudioTagger
     {
         public static void Main(string[] args)
         {
+            IPrinter printer = new Printer();
+
             if (args.Length == 0)
             {
-                PrintInstructions();
+                PrintInstructions(printer);
                 return;
             }
 
@@ -22,13 +24,13 @@ namespace AudioTagger
 
             if (processor == null)
             {
-                PrintInstructions();
+                PrintInstructions(printer);
                 return;
             }
 
             if (!trimmedArgs.Any())
             {
-                Printer.Error($"At least one file or directory path to work on must be provided.");
+                printer.Error($"At least one file or directory path to work on must be provided.");
                 return;
             }
 
@@ -41,17 +43,17 @@ namespace AudioTagger
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Printer.Error($"Path \"{path}\" could not be fully parsed: " + ex.Message);
+                    printer.Error($"Path \"{path}\" could not be fully parsed: " + ex.Message);
                     continue;
                 }
 
                 if (!filesData.Any())
                 {
-                    Printer.Error($"No files found at \"{path}\".");
+                    printer.Error($"No files found at \"{path}\".");
                     continue;
                 }
 
-                processor.Start(filesData);
+                processor.Start(filesData, printer);
             }
         }
 
@@ -102,15 +104,15 @@ namespace AudioTagger
             throw new InvalidOperationException($"The path \"{path}\" was invalid.");
         }
 
-        private static void PrintInstructions()
+        private static void PrintInstructions(IPrinter printer)
         {
-            Printer.Print("Audio tagger and (eventually) renamer");
-            Printer.Print("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 1, ""); // TODO: Decide on a name
-            Printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
-            Printer.Print("Commands:");
-            Printer.Print("   -v or --view   : View tags");
-            Printer.Print("   -u or --update : Update tags");
-            Printer.Print("   -r or --rename : Rename files based on tags (Coming soonish)");
+            printer.Print("Audio tagger and (eventually) renamer");
+            printer.Print("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 1, ""); // TODO: Decide on a name
+            printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
+            printer.Print("Commands:");
+            printer.Print("   -v or --view   : View tags");
+            printer.Print("   -u or --update : Update tags");
+            printer.Print("   -r or --rename : Rename files based on tags (Coming soonish)");
             // TODO: Add option to disable colors
             // TODO: Make album art opt-in
         }
