@@ -1,12 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Collections;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace AudioTagger
 {
-    public static class MediaFileParser
+    public static class MediaFileFactory
     {
         public static MediaFile CreateFileData(string filePath)
         {
