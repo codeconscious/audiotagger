@@ -5,7 +5,7 @@ namespace AudioTagger
 {
     public class TagViewer : IPathProcessor
     {
-        public void Start(IReadOnlyCollection<FileData> filesData, IPrinter printer)
+        public void Start(IReadOnlyCollection<AudioFile> filesData, IPrinter printer)
         {
             foreach (var file in filesData)
             {

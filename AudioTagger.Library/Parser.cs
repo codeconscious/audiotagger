@@ -8,7 +8,7 @@ namespace AudioTagger
 {
     public static class Parser
     {
-        public static FileData CreateFileData(string filePath)
+        public static AudioFile CreateFileData(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -22,7 +22,7 @@ namespace AudioTagger
 
             var taggedFile = TagLib.File.Create(filePath);
 
-            return new FileData(filePath, taggedFile);
+            return new AudioFile(filePath, taggedFile);
         }
     }
 }

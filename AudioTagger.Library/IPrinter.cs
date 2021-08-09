@@ -18,7 +18,7 @@ namespace AudioTagger
 
         char GetResultSymbol(ResultType type);
 
-        IList<OutputLine> GetTagPrintedLines(FileData fileData);
+        IList<OutputLine> GetTagPrintedLines(AudioFile fileData);
 
         OutputLine TagDataWithHeader(string tagName, IReadOnlyList<LineSubString> tagData,
                                      string prependLine = "",

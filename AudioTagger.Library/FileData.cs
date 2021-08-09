@@ -5,12 +5,12 @@ using TagLib;
 
 namespace AudioTagger
 {
-    public class FileData
+    public class AudioFile
     {
         public string Path { get; }
         private readonly File _taggedFile; // Tag data (Rename)
 
-        public FileData(string filePath, File tabLibFile)
+        public AudioFile(string filePath, File tabLibFile)
         {
             if (!System.IO.File.Exists(filePath))
                 throw new System.IO.FileNotFoundException(nameof(filePath));
@@ -129,11 +129,11 @@ namespace AudioTagger
         /// </summary>
         /// <param name="path">A directory or file path</param>
         /// <returns></returns>
-        public static IReadOnlyCollection<FileData> PopulateFileData(string path)
+        public static IReadOnlyCollection<AudioFile> PopulateFileData(string path)
         {
             if (System.IO.Directory.Exists(path)) // i.e., the path is a directory
             {
-                var filesData = new List<FileData>();
+                var filesData = new List<AudioFile>();
 
                 var fileNames = System.IO.Directory.EnumerateFiles(path,
                                                                    "*.*",
@@ -154,7 +154,7 @@ namespace AudioTagger
 
             if (System.IO.File.Exists(path)) // i.e., the path is a file
             {
-                return new List<FileData> { Parser.CreateFileData(path) };
+                return new List<AudioFile> { Parser.CreateFileData(path) };
             }
 
             throw new InvalidOperationException($"The path \"{path}\" was invalid.");

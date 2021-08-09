@@ -21,7 +21,7 @@ namespace AudioTagger
         /// Returns the first found regex matches for a filename, or null if none.
         /// </summary>
         /// <returns></returns>
-        public static Match? GetFirstMatch(FileData fileData)
+        public static Match? GetFirstMatch(AudioFile fileData)
         {
             foreach (var regexText in Regexes)
             {
