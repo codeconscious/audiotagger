@@ -17,7 +17,5 @@ namespace AudioTagger
         void Error(string message);
 
         char GetResultSymbol(ResultType type);
-
-        IList<OutputLine> GetTagPrintedLines(MediaFile fileData);
     }
 }

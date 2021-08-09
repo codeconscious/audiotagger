@@ -134,53 +134,5 @@ namespace AudioTagger
                 _ => '?'
             };
         }
-
-        public IList<OutputLine> GetTagPrintedLines(MediaFile fileData)
-        {
-            var lines = new List<OutputLine>();
-
-            var fileNameBase = System.IO.Path.GetFileNameWithoutExtension(fileData.Path);
-            var fileNameExt = System.IO.Path.GetExtension(fileData.Path);
-            lines.Add(
-                new OutputLine(
-                    new LineSubString(fileNameBase, ConsoleColor.Cyan),
-                    new LineSubString(fileNameExt, ConsoleColor.DarkCyan)));
-
-            lines.Add(OutputLine.TagDataWithHeader("Title", fileData.Title));
-            lines.Add(OutputLine.TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)));
-            lines.Add(OutputLine.TagDataWithHeader("Album", fileData.Album));
-            lines.Add(OutputLine.TagDataWithHeader("Year", fileData.Year.ToString()));
-            lines.Add(OutputLine.TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss")));
-
-            var genreCount = fileData.Genres.Length;
-            lines.Add(OutputLine.TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
-                                                (genreCount > 1 ? $" ({genreCount})" : "")));
-
-            var bitrate = fileData.BitRate.ToString();
-            var sampleRate = fileData.SampleRate.ToString("#,##0");
-            var hasReplayGain = fileData.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
-
-            // Create formatted quality line
-            const string genreSeparator = "    ";
-            lines.Add(
-                OutputLine.TagDataWithHeader(
-                    "Quality",
-                    new List<LineSubString>
-                    {
-                        new LineSubString(bitrate),
-                        new LineSubString(" kbps" + genreSeparator, ConsoleColor.DarkGray),
-                        new LineSubString(sampleRate),
-                        new LineSubString(" kHz" + genreSeparator, ConsoleColor.DarkGray),
-                        new LineSubString(hasReplayGain)
-                    }));
-
-            if (fileData.Composers?.Length > 0)
-                lines.Add(OutputLine.TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers)));
-
-            if (!string.IsNullOrWhiteSpace(fileData.Comments))
-                lines.Add(OutputLine.TagDataWithHeader("Comment", fileData.Comments));
-
-            return lines;
-        }
     }
 }

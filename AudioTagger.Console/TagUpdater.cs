@@ -75,10 +75,10 @@ namespace AudioTagger
             }
 
             // printer.Print("Current file: " + mediaFile.FileNameOnly);
-            var viewer = new TagViewer();
-            viewer.Start(new List<MediaFile> { mediaFile }, printer);
+            // var viewer = new TagViewer();
+            // viewer.Start(new List<MediaFile> { mediaFile }, printer);
 
-            printer.GetTagPrintedLines(mediaFile); //, 1, 0);
+            printer.Print(OutputLine.GetTagPrintedLines(mediaFile), 1, 0);
 
             // Ask the user whether to make the updates.
             printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);

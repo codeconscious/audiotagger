@@ -5,18 +5,18 @@ namespace AudioTagger
 {
     public class TagViewer : IPathProcessor
     {
-        public void Start(IReadOnlyCollection<MediaFile> filesData, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
         {
-            foreach (var file in filesData)
+            foreach (var mediaFile in mediaFiles)
             {
                 try
                 {
-                    printer.GetTagPrintedLines(file);
+                    printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
                     // foreach (var line in )
 
                     // TODO: Check ahead of time if images are supported.
-                    if (file.AlbumArt.Length > 0)
-                        Graphics.ConsoleWriteImage(file.AlbumArt);
+                    if (mediaFile.AlbumArt.Length > 0)
+                        Graphics.ConsoleWriteImage(mediaFile.AlbumArt);
                 }
                 catch (TagLib.CorruptFileException e)
                 {
