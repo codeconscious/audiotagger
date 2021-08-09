@@ -123,5 +123,41 @@ namespace AudioTagger
         {
             _taggedFile.Save();
         }
+
+        /// <summary>
+        /// Get a list of FileData objects.
+        /// </summary>
+        /// <param name="path">A directory or file path</param>
+        /// <returns></returns>
+        public static IReadOnlyCollection<FileData> PopulateFileData(string path)
+        {
+            if (System.IO.Directory.Exists(path)) // i.e., the path is a directory
+            {
+                var filesData = new List<FileData>();
+
+                var fileNames = System.IO.Directory.EnumerateFiles(path,
+                                                                   "*.*",
+                                                                   System.IO.SearchOption.TopDirectoryOnly) // TODO: Make option
+                                                   .Where(FileSelection.Filter)
+                                                   .ToArray();
+
+                foreach (var fileName in fileNames)
+                {
+                    filesData.Add(Parser.CreateFileData(fileName));
+                }
+
+                return filesData/*.OrderBy(f => f.Artists)
+                                .ThenBy(f => f.Title)
+                                .AsEnumerable()
+                                .ToList()*/;
+            }
+
+            if (System.IO.File.Exists(path)) // i.e., the path is a file
+            {
+                return new List<FileData> { Parser.CreateFileData(path) };
+            }
+
+            throw new InvalidOperationException($"The path \"{path}\" was invalid.");
+        }
     }
 }
