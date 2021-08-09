@@ -112,7 +112,8 @@ namespace AudioTagger
 
                 return albumData == null || albumData.Length == 0
                     ? Array.Empty<byte>()
-                    : _taggedFile.Tag?.Pictures[0]?.Data?.Data ?? Array.Empty<byte>();
+                    : _taggedFile.Tag?.Pictures[0]?.Data?.Data
+                      ?? Array.Empty<byte>();
            }
         }
 
@@ -125,28 +126,32 @@ namespace AudioTagger
         }
 
         /// <summary>
-        /// Get a list of FileData objects.
+        /// Given a folder or file path, returns a list of AudioFile for each file.
+        /// Thus, a path to a file will always return a collection of one item,
+        /// and a path to a folder will return an AudioFile for each file within that folder.
         /// </summary>
         /// <param name="path">A directory or file path</param>
         /// <returns></returns>
-        public static IReadOnlyCollection<AudioFile> PopulateFileData(string path)
+        public static IReadOnlyCollection<AudioFile> PopulateFileData(string path, bool searchSubDirectories = false)
         {
             if (System.IO.Directory.Exists(path)) // i.e., the path is a directory
             {
-                var filesData = new List<AudioFile>();
+                var audioFiles = new List<AudioFile>();
 
                 var fileNames = System.IO.Directory.EnumerateFiles(path,
                                                                    "*.*",
-                                                                   System.IO.SearchOption.TopDirectoryOnly) // TODO: Make option
+                                                                   searchSubDirectories
+                                                                        ? System.IO.SearchOption.AllDirectories
+                                                                        : System.IO.SearchOption.TopDirectoryOnly)
                                                    .Where(FileSelection.Filter)
                                                    .ToArray();
 
                 foreach (var fileName in fileNames)
                 {
-                    filesData.Add(Parser.CreateFileData(fileName));
+                    audioFiles.Add(Parser.CreateFileData(fileName));
                 }
 
-                return filesData/*.OrderBy(f => f.Artists)
+                return audioFiles/*.OrderBy(f => f.Artists)
                                 .ThenBy(f => f.Title)
                                 .AsEnumerable()
                                 .ToList()*/;
