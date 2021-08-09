@@ -9,24 +9,24 @@ namespace AudioTagger
 {
     public class TagUpdater : IPathProcessor
     {
-        public void Start(IReadOnlyCollection<MediaFile> filesData, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
         {
             bool isCancelled = false;
 
-           // Process each file
-            foreach (var fileData in filesData)
+            // Process each file
+            foreach (var mediaFile in mediaFiles)
             {
                 try
                 {
                     if (isCancelled)
                         break;
 
-                    isCancelled = UpdateTags(fileData, printer);
+                    isCancelled = UpdateTags(mediaFile, printer);
                 }
                 catch (Exception e)
                 {
                     printer.Error("An error occurred in updating: " + e.Message);
-                    Console.WriteLine(e.StackTrace);
+                    printer.Print(e.StackTrace ?? "Stack trace not found.");
                     continue;
                 }
             }
@@ -35,19 +35,19 @@ namespace AudioTagger
         /// <summary>
         /// Update the tags of a specified file, if necessary.
         /// </summary>
-        /// <param name="fileData"></param>
+        /// <param name="mediaFile"></param>
         /// <returns>A bool indicating whether the following file should be processed.</returns>
-        private static bool UpdateTags(MediaFile fileData, IPrinter printer)
+        private static bool UpdateTags(MediaFile mediaFile, IPrinter printer)
         {
-            // TODO: Refactor so this isn't needed.
+            // TODO: Refactor cancellation so this isn't needed.
             const bool shouldCancel = false;
 
-            var match = RegexCollection.GetFirstMatch(fileData);
+            var match = RegexCollection.GetFirstMatch(mediaFile);
 
             // If there are no regex matches against the filename, we cannot continue.
             if (match == null)
             {
-                printer.Print($"Could not parse tags for \"{fileData.FileNameOnly}\".",
+                printer.Print($"Could not parse tags for \"{mediaFile.FileNameOnly}\".",
                               ResultType.Failure);
                 return shouldCancel;
             }
@@ -58,23 +58,23 @@ namespace AudioTagger
 
             if (matchedTags?.Any() != true)
             {
-                printer.Print($"Could not parse data for filename \"{fileData.FileNameOnly}.\"",
+                printer.Print($"Could not parse data for filename \"{mediaFile.FileNameOnly}.\"",
                                 ResultType.Failure);
                 return shouldCancel;
             }
 
             var updateableFields = new UpdatableFields(matchedTags);
 
-            var proposedUpdates = updateableFields.GetUpdateOutput(fileData, printer);
+            var proposedUpdates = updateableFields.GetUpdateOutput(mediaFile, printer);
 
             if (proposedUpdates?.Any() != true)
             {
-                printer.Print($"No updates needed for \"{fileData.FileNameOnly}\".",
+                printer.Print($"No updates needed for \"{mediaFile.FileNameOnly}\".",
                               ResultType.Neutral);
                 return shouldCancel;
             }
 
-            printer.GetTagPrintedLines(fileData); //, 1, 0);
+            printer.GetTagPrintedLines(mediaFile); //, 1, 0);
 
             printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
 
@@ -96,11 +96,11 @@ namespace AudioTagger
             }
 
             // Make the needed tag updates
-            UpdateFileTags(fileData, updateableFields);
+            UpdateFileTags(mediaFile, updateableFields);
 
             try
             {
-                fileData.SaveUpdates();
+                mediaFile.SaveUpdates();
             }
             catch (TagLib.CorruptFileException ex)
             {
