@@ -18,9 +18,9 @@ namespace AudioTagger
                 return;
             }
 
-            var trimmedArgs = new Queue<string>(args.Select(a => a.Trim()));
+            var queuedArgs = new Queue<string>(args.Select(a => a.Trim()));
 
-            IPathProcessor? processor = ProcessorFactory(trimmedArgs.Dequeue());
+            IPathProcessor? processor = ProcessorFactory(queuedArgs.Dequeue());
 
             if (processor == null)
             {
@@ -28,13 +28,13 @@ namespace AudioTagger
                 return;
             }
 
-            if (!trimmedArgs.Any())
+            if (!queuedArgs.Any())
             {
                 printer.Error($"At least one file or directory path to work on must be provided.");
                 return;
             }
 
-            foreach (var path in trimmedArgs)
+            foreach (var path in queuedArgs)
             {
                 IReadOnlyCollection<FileData> filesData;
                 try
@@ -57,13 +57,18 @@ namespace AudioTagger
             }
         }
 
+        /// <summary>
+        /// Get the correct operation from the argument passed in.
+        /// </summary>
+        /// <param name="modeArg"></param>
+        /// <returns></returns>
         private static IPathProcessor? ProcessorFactory(string modeArg)
         {
             return modeArg.ToLowerInvariant() switch
             {
+                "-v" or "--view" => new TagViewer(),
                 "-u" or "--update" => new TagUpdater(),
                 "-r" or "--rename" => new FileRenamer(),
-                "-v" or "--view" => new TagViewer(),
                 _ => null
             };
         }
