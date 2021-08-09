@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -33,9 +31,8 @@ namespace AudioTagger
         }
 
         /// <summary>
-        /// Update the tags of a specified file, if necessary.
+        /// Make proposed tag updates to the specified file if the user agrees.
         /// </summary>
-        /// <param name="mediaFile"></param>
         /// <returns>A bool indicating whether the following file should be processed.</returns>
         private static bool UpdateTags(MediaFile mediaFile, IPrinter printer)
         {
@@ -65,7 +62,7 @@ namespace AudioTagger
 
             var updateableFields = new UpdatableFields(matchedTags);
 
-            var proposedUpdates = updateableFields.GetUpdateOutput(mediaFile, printer);
+            var proposedUpdates = updateableFields.GetUpdateOutput(mediaFile);
 
             if (proposedUpdates?.Any() != true)
             {
@@ -74,13 +71,10 @@ namespace AudioTagger
                 return shouldCancel;
             }
 
-            // printer.Print("Current file: " + mediaFile.FileNameOnly);
-            // var viewer = new TagViewer();
-            // viewer.Start(new List<MediaFile> { mediaFile }, printer);
-
+            // Print the current tag data.
             printer.Print(OutputLine.GetTagPrintedLines(mediaFile), 1, 0);
 
-            // Ask the user whether to make the updates.
+            // Show the proposed updates and ask the user to confirm.
             printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
             foreach (var update in proposedUpdates)
                 printer.Print(update.Line);
@@ -99,9 +93,8 @@ namespace AudioTagger
                 return shouldCancel;
             }
 
-            // Make the needed tag updates
+            // Make the tag updates
             UpdateFileTags(mediaFile, updateableFields);
-
             try
             {
                 mediaFile.SaveUpdates();
@@ -117,7 +110,7 @@ namespace AudioTagger
         }
 
         /// <summary>
-        /// Update file tags where they differ from filename data.
+        /// Update file tags where they differ from parsed filename data.
         /// </summary>
         /// <param name="fileData"></param>
         /// <param name="updateableFields"></param>

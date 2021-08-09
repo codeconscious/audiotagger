@@ -12,7 +12,6 @@ namespace AudioTagger
                 try
                 {
                     printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
-                    // foreach (var line in )
 
                     // TODO: Check ahead of time if images are supported.
                     if (mediaFile.AlbumArt.Length > 0)

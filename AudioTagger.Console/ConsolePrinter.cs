@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Text;
 using System.Linq;
-using System.IO;
 using System.Collections.Generic;
 
 namespace AudioTagger
@@ -106,22 +104,11 @@ namespace AudioTagger
             Console.ResetColor();
         }
 
+        // TODO: Check whether we can delete this.
         private void PrintColor()
         {
             Console.WriteLine();
         }
-
-
-
-        //private static void PrintColor(string text, bool addLineBreak = false)
-        //{
-        //    PrintColor(text, null, null, addLineBreak);
-        //}
-
-        // TODO: Complete or delete
-        //public static void UpdateData(UpdateableFields updates)
-        //{
-        //}
 
         public char GetResultSymbol(ResultType type)
         {

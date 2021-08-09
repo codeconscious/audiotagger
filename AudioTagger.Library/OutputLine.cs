@@ -8,6 +8,7 @@ namespace AudioTagger
     {
         public List<LineSubString> Line { get; set; } = new List<LineSubString>();
 
+        // TODO: Can we delete this?
         public OutputLine()
         {
             //Line.Add(lineParts);
@@ -84,14 +85,14 @@ namespace AudioTagger
                     new LineSubString(fileNameBase, ConsoleColor.Cyan),
                     new LineSubString(fileNameExt, ConsoleColor.DarkCyan)));
 
-            lines.Add(OutputLine.TagDataWithHeader("Title", fileData.Title));
-            lines.Add(OutputLine.TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)));
-            lines.Add(OutputLine.TagDataWithHeader("Album", fileData.Album));
-            lines.Add(OutputLine.TagDataWithHeader("Year", fileData.Year.ToString()));
-            lines.Add(OutputLine.TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss")));
+            lines.Add(TagDataWithHeader("Title", fileData.Title));
+            lines.Add(TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)));
+            lines.Add(TagDataWithHeader("Album", fileData.Album));
+            lines.Add(TagDataWithHeader("Year", fileData.Year.ToString()));
+            lines.Add(TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss")));
 
             var genreCount = fileData.Genres.Length;
-            lines.Add(OutputLine.TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
+            lines.Add(TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
                                                 (genreCount > 1 ? $" ({genreCount})" : "")));
 
             var bitrate = fileData.BitRate.ToString();
@@ -101,7 +102,7 @@ namespace AudioTagger
             // Create formatted quality line
             const string genreSeparator = "    ";
             lines.Add(
-                OutputLine.TagDataWithHeader(
+                TagDataWithHeader(
                     "Quality",
                     new List<LineSubString>
                     {
@@ -113,10 +114,10 @@ namespace AudioTagger
                     }));
 
             if (fileData.Composers?.Length > 0)
-                lines.Add(OutputLine.TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers)));
+                lines.Add(TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers)));
 
             if (!string.IsNullOrWhiteSpace(fileData.Comments))
-                lines.Add(OutputLine.TagDataWithHeader("Comment", fileData.Comments));
+                lines.Add(TagDataWithHeader("Comment", fileData.Comments));
 
             return lines;
         }

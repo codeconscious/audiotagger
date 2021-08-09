@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace AudioTagger
 {
+    // Perhaps a good candidate for a record?
     public class LineSubString
     {
         public string Text { get; set; }
