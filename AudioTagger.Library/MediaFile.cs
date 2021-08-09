@@ -149,7 +149,7 @@ namespace AudioTagger
 
                 foreach (var fileName in fileNames)
                 {
-                    mediaFiles.Add(MediaFileParser.CreateFileData(fileName));
+                    mediaFiles.Add(MediaFileFactory.CreateFileData(fileName));
                 }
 
                 return mediaFiles/*.OrderBy(f => f.Artists)
@@ -160,7 +160,7 @@ namespace AudioTagger
 
             if (System.IO.File.Exists(path)) // i.e., the path is a file
             {
-                return new List<MediaFile> { MediaFileParser.CreateFileData(path) };
+                return new List<MediaFile> { MediaFileFactory.CreateFileData(path) };
             }
 
             throw new InvalidOperationException($"The path \"{path}\" was invalid.");
