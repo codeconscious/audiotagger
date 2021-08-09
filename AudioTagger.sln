@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioTagger.Library", "Audi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioTagger.Console", "AudioTagger.Console\AudioTagger.Console.csproj", "{043B37EC-9A69-4F70-B240-0AE268189350}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioTagger.Tests", "AudioTagger.Tests\AudioTagger.Tests.csproj", "{C1C64CA9-22A5-4553-ADB2-F2FEA6489019}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{043B37EC-9A69-4F70-B240-0AE268189350}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{043B37EC-9A69-4F70-B240-0AE268189350}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{043B37EC-9A69-4F70-B240-0AE268189350}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1C64CA9-22A5-4553-ADB2-F2FEA6489019}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1C64CA9-22A5-4553-ADB2-F2FEA6489019}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1C64CA9-22A5-4553-ADB2-F2FEA6489019}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1C64CA9-22A5-4553-ADB2-F2FEA6489019}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
