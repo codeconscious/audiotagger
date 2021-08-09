@@ -74,7 +74,7 @@ namespace AudioTagger
             if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
             {
                 updateOutput.Add(
-                    printer.TagDataWithHeader(
+                    OutputLine.TagDataWithHeader(
                         "Artists",
                         string.Join("; ", Artists),
                         prependLineWith,
@@ -84,7 +84,7 @@ namespace AudioTagger
             if (Title != null && Title != fileData.Title)
             {
                 updateOutput.Add(
-                    printer.TagDataWithHeader(
+                    OutputLine.TagDataWithHeader(
                         "Title",
                         Title,
                         prependLineWith,
@@ -94,7 +94,7 @@ namespace AudioTagger
             if (Album != null && Album != fileData.Album)
             {
                 updateOutput.Add(
-                    printer.TagDataWithHeader(
+                    OutputLine.TagDataWithHeader(
                         "Album",
                         Album,
                         prependLineWith,
@@ -104,7 +104,7 @@ namespace AudioTagger
             if (Year != null && Year != fileData.Year)
             {
                 updateOutput.Add(
-                    printer.TagDataWithHeader(
+                    OutputLine.TagDataWithHeader(
                         "Year",
                         Year.Value.ToString(CultureInfo.InvariantCulture),
                         prependLineWith,
@@ -115,7 +115,7 @@ namespace AudioTagger
             {
                 var genreCount = Genres.Length;
                 updateOutput.Add(
-                    printer.TagDataWithHeader(
+                    OutputLine.TagDataWithHeader(
                         "Genres",
                         string.Join("; ", Genres) + (genreCount > 1 ? $" ({genreCount})" : ""),
                         prependLineWith,

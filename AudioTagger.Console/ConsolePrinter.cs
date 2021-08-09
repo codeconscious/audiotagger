@@ -111,40 +111,7 @@ namespace AudioTagger
             Console.WriteLine();
         }
 
-        public OutputLine TagDataWithHeader(string tagName, IReadOnlyList<LineSubString> tagData,
-                                                   string prependLine = "",
-                                                   ConsoleColor headerColor = ConsoleColor.DarkGray)
-        {
-            var spacesToPrepend = 4;
-            var spacesToAppend = 13 - tagName.Length; // TODO: Calculate this instead
-            //var separator = ": ";
 
-            var lineOutput = new OutputLine();
-
-            lineOutput.Add(prependLine);
-            lineOutput.Add(new string(' ', spacesToPrepend));
-            lineOutput.Add(tagName, headerColor);
-            lineOutput.Add(new string(' ', spacesToAppend));
-
-            foreach (var part in tagData)
-                lineOutput.Add(part);
-
-            return lineOutput;
-        }
-
-        public OutputLine TagDataWithHeader(string tagName, string tagData,
-                                                   string prependLine = "",
-                                                   ConsoleColor headerColor = ConsoleColor.DarkGray)
-        {
-            return TagDataWithHeader(
-                tagName,
-                new List<LineSubString>
-                {
-                    new LineSubString(tagData)
-                },
-                prependLine,
-                headerColor);
-        }
 
         //private static void PrintColor(string text, bool addLineBreak = false)
         //{
@@ -179,14 +146,14 @@ namespace AudioTagger
                     new LineSubString(fileNameBase, ConsoleColor.Cyan),
                     new LineSubString(fileNameExt, ConsoleColor.DarkCyan)));
 
-            lines.Add(TagDataWithHeader("Title", fileData.Title));
-            lines.Add(TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)));
-            lines.Add(TagDataWithHeader("Album", fileData.Album));
-            lines.Add(TagDataWithHeader("Year", fileData.Year.ToString()));
-            lines.Add(TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss")));
+            lines.Add(OutputLine.TagDataWithHeader("Title", fileData.Title));
+            lines.Add(OutputLine.TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)));
+            lines.Add(OutputLine.TagDataWithHeader("Album", fileData.Album));
+            lines.Add(OutputLine.TagDataWithHeader("Year", fileData.Year.ToString()));
+            lines.Add(OutputLine.TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss")));
 
             var genreCount = fileData.Genres.Length;
-            lines.Add(TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
+            lines.Add(OutputLine.TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
                                                 (genreCount > 1 ? $" ({genreCount})" : "")));
 
             var bitrate = fileData.BitRate.ToString();
@@ -195,22 +162,23 @@ namespace AudioTagger
 
             // Create formatted quality line
             const string genreSeparator = "    ";
-            lines.Add(TagDataWithHeader(
-                "Quality",
-                new List<LineSubString>
-                {
-                    new LineSubString(bitrate),
-                    new LineSubString(" kbps" + genreSeparator, ConsoleColor.DarkGray),
-                    new LineSubString(sampleRate),
-                    new LineSubString(" kHz" + genreSeparator, ConsoleColor.DarkGray),
-                    new LineSubString(hasReplayGain)
-                }));
+            lines.Add(
+                OutputLine.TagDataWithHeader(
+                    "Quality",
+                    new List<LineSubString>
+                    {
+                        new LineSubString(bitrate),
+                        new LineSubString(" kbps" + genreSeparator, ConsoleColor.DarkGray),
+                        new LineSubString(sampleRate),
+                        new LineSubString(" kHz" + genreSeparator, ConsoleColor.DarkGray),
+                        new LineSubString(hasReplayGain)
+                    }));
 
             if (fileData.Composers?.Length > 0)
-                lines.Add(TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers)));
+                lines.Add(OutputLine.TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers)));
 
             if (!string.IsNullOrWhiteSpace(fileData.Comments))
-                lines.Add(TagDataWithHeader("Comment", fileData.Comments));
+                lines.Add(OutputLine.TagDataWithHeader("Comment", fileData.Comments));
 
             return lines;
         }

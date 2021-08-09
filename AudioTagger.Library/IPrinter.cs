@@ -19,13 +19,5 @@ namespace AudioTagger
         char GetResultSymbol(ResultType type);
 
         IList<OutputLine> GetTagPrintedLines(MediaFile fileData);
-
-        OutputLine TagDataWithHeader(string tagName, IReadOnlyList<LineSubString> tagData,
-                                     string prependLine = "",
-                                     ConsoleColor headerColor = ConsoleColor.DarkGray);
-
-        OutputLine TagDataWithHeader(string tagName, string tagData,
-                                     string prependLine = "",
-                                     ConsoleColor headerColor = ConsoleColor.DarkGray);
     }
 }
