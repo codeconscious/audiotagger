@@ -21,9 +21,9 @@ namespace AudioTagger
             var queuedArgs = new Queue<string>(args.Select(a => a.Trim()));
 
             // Select the desired operation using the first variable.
-            IPathProcessor? processor = OperationFactory(queuedArgs.Dequeue());
+            IPathProcessor? operation = OperationFactory(queuedArgs.Dequeue());
 
-            if (processor == null)
+            if (operation == null)
             {
                 PrintInstructions(printer);
                 return;
@@ -31,7 +31,7 @@ namespace AudioTagger
 
             if (!queuedArgs.Any())
             {
-                printer.Error("At least one file or directory path to work on must be provided.");
+                printer.Error("At least one file or directory path to process must be provided.");
                 return;
             }
 
@@ -54,7 +54,7 @@ namespace AudioTagger
                     continue;
                 }
 
-                processor.Start(filesData, printer);
+                operation.Start(filesData, printer);
             }
         }
 
