@@ -5,12 +5,12 @@ using TagLib;
 
 namespace AudioTagger
 {
-    public class AudioFile
+    public class MediaFile
     {
         public string Path { get; }
         private readonly File _taggedFile; // Tag data (Rename)
 
-        public AudioFile(string filePath, File tabLibFile)
+        public MediaFile(string filePath, File tabLibFile)
         {
             if (!System.IO.File.Exists(filePath))
                 throw new System.IO.FileNotFoundException(nameof(filePath));
@@ -37,9 +37,9 @@ namespace AudioTagger
                     ?? Array.Empty<string>();
 
             set => _taggedFile.Tag.Performers =
-                value.Where(a => !string.IsNullOrWhiteSpace(a))
-                     .Select(a => a.Trim().Normalize())
-                     .ToArray();
+                        value.Where(a => !string.IsNullOrWhiteSpace(a))
+                            .Select(a => a.Trim().Normalize())
+                            .ToArray();
         }
 
         public string Album
@@ -63,9 +63,9 @@ namespace AudioTagger
         {
             get => _taggedFile.Tag.Genres;
             set => _taggedFile.Tag.Genres =
-                value?.Select(g => g?.Trim()?.Normalize() ?? "")?
-                     .ToArray()
-                ?? Array.Empty<string>();
+                        value?.Select(g => g?.Trim()?.Normalize() ?? "")?
+                            .ToArray()
+                        ?? Array.Empty<string>();
         }
 
         public string[] Composers
@@ -96,6 +96,7 @@ namespace AudioTagger
             get => _taggedFile.Properties.AudioSampleRate;
         }
 
+        // TODO: Verify this is working correctly.
         public bool HasReplayGainData
         {
             get => _taggedFile.Tag.ReplayGainTrackGain != 0 ||
@@ -118,7 +119,7 @@ namespace AudioTagger
         }
 
         /// <summary>
-        /// Save any updated tag data to the file.
+        /// Save updated tag data to the file.
         /// </summary>
         public void SaveUpdates()
         {
@@ -132,11 +133,11 @@ namespace AudioTagger
         /// </summary>
         /// <param name="path">A directory or file path</param>
         /// <returns></returns>
-        public static IReadOnlyCollection<AudioFile> PopulateFileData(string path, bool searchSubDirectories = false)
+        public static IReadOnlyCollection<MediaFile> PopulateFileData(string path, bool searchSubDirectories = false)
         {
             if (System.IO.Directory.Exists(path)) // i.e., the path is a directory
             {
-                var audioFiles = new List<AudioFile>();
+                var audioFiles = new List<MediaFile>();
 
                 var fileNames = System.IO.Directory.EnumerateFiles(path,
                                                                    "*.*",
@@ -148,7 +149,7 @@ namespace AudioTagger
 
                 foreach (var fileName in fileNames)
                 {
-                    audioFiles.Add(Parser.CreateFileData(fileName));
+                    audioFiles.Add(MediaFileParser.CreateFileData(fileName));
                 }
 
                 return audioFiles/*.OrderBy(f => f.Artists)
@@ -159,7 +160,7 @@ namespace AudioTagger
 
             if (System.IO.File.Exists(path)) // i.e., the path is a file
             {
-                return new List<AudioFile> { Parser.CreateFileData(path) };
+                return new List<MediaFile> { MediaFileParser.CreateFileData(path) };
             }
 
             throw new InvalidOperationException($"The path \"{path}\" was invalid.");

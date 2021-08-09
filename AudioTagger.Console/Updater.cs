@@ -9,7 +9,7 @@ namespace AudioTagger
 {
     public class TagUpdater : IPathProcessor
     {
-        public void Start(IReadOnlyCollection<AudioFile> filesData, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> filesData, IPrinter printer)
         {
             bool isCancelled = false;
 
@@ -37,7 +37,7 @@ namespace AudioTagger
         /// </summary>
         /// <param name="fileData"></param>
         /// <returns>A bool indicating whether the following file should be processed.</returns>
-        private static bool UpdateTags(AudioFile fileData, IPrinter printer)
+        private static bool UpdateTags(MediaFile fileData, IPrinter printer)
         {
             // TODO: Refactor so this isn't needed.
             const bool shouldCancel = false;
@@ -117,7 +117,7 @@ namespace AudioTagger
         /// </summary>
         /// <param name="fileData"></param>
         /// <param name="updateableFields"></param>
-        private static void UpdateFileTags(AudioFile fileData, UpdatableFields updateableFields)
+        private static void UpdateFileTags(MediaFile fileData, UpdatableFields updateableFields)
         {
             if (updateableFields.Title != null && updateableFields.Title != fileData.Title)
             {

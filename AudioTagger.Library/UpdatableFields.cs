@@ -65,7 +65,7 @@ namespace AudioTagger
             }
         }
 
-        public IList<OutputLine> GetUpdateOutput(AudioFile fileData, IPrinter printer)
+        public IList<OutputLine> GetUpdateOutput(MediaFile fileData, IPrinter printer)
         {
             var updateOutput = new List<OutputLine>();
             const ConsoleColor headerColor = ConsoleColor.White;

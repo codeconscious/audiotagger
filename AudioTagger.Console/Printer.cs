@@ -168,7 +168,7 @@ namespace AudioTagger
             };
         }
 
-        public IList<OutputLine> GetTagPrintedLines(AudioFile fileData)
+        public IList<OutputLine> GetTagPrintedLines(MediaFile fileData)
         {
             var lines = new List<OutputLine>();
 

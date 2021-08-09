@@ -37,10 +37,10 @@ namespace AudioTagger
 
             foreach (var path in queuedArgs)
             {
-                IReadOnlyCollection<AudioFile> filesData;
+                IReadOnlyCollection<MediaFile> filesData;
                 try
                 {
-                    filesData = AudioFile.PopulateFileData(path);
+                    filesData = MediaFile.PopulateFileData(path);
                 }
                 catch (InvalidOperationException ex)
                 {

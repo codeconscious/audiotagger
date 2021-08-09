@@ -10,7 +10,7 @@ namespace AudioTagger
 {
     public class FileRenamer : IPathProcessor
     {
-        public void Start(IReadOnlyCollection<AudioFile> filesData, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> filesData, IPrinter printer)
         {
             foreach (var fileData in filesData)
             {
@@ -39,7 +39,7 @@ namespace AudioTagger
             }
         }
 
-        public static (bool wasDone, string message) RenameFile(AudioFile fileData, IPrinter printer)
+        public static (bool wasDone, string message) RenameFile(MediaFile fileData, IPrinter printer)
         {
             printer.Print("Entered rename method...");
             var fileName = fileData.Path;

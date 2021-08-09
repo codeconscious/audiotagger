@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace AudioTagger
 {
-    public static class Parser
+    public static class MediaFileParser
     {
-        public static AudioFile CreateFileData(string filePath)
+        public static MediaFile CreateFileData(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -22,7 +22,7 @@ namespace AudioTagger
 
             var taggedFile = TagLib.File.Create(filePath);
 
-            return new AudioFile(filePath, taggedFile);
+            return new MediaFile(filePath, taggedFile);
         }
     }
 }
