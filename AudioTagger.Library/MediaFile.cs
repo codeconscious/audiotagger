@@ -137,7 +137,7 @@ namespace AudioTagger
         {
             if (System.IO.Directory.Exists(path)) // i.e., the path is a directory
             {
-                var audioFiles = new List<MediaFile>();
+                var mediaFiles = new List<MediaFile>();
 
                 var fileNames = System.IO.Directory.EnumerateFiles(path,
                                                                    "*.*",
@@ -149,10 +149,10 @@ namespace AudioTagger
 
                 foreach (var fileName in fileNames)
                 {
-                    audioFiles.Add(MediaFileParser.CreateFileData(fileName));
+                    mediaFiles.Add(MediaFileParser.CreateFileData(fileName));
                 }
 
-                return audioFiles/*.OrderBy(f => f.Artists)
+                return mediaFiles/*.OrderBy(f => f.Artists)
                                 .ThenBy(f => f.Title)
                                 .AsEnumerable()
                                 .ToList()*/;
