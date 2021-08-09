@@ -10,7 +10,7 @@ namespace AudioTagger
     {
         public static void Main(string[] args)
         {
-            IPrinter printer = new Printer();
+            IPrinter printer = new ConsolePrinter();
 
             if (args.Length == 0)
             {
@@ -20,7 +20,8 @@ namespace AudioTagger
 
             var queuedArgs = new Queue<string>(args.Select(a => a.Trim()));
 
-            IPathProcessor? processor = ProcessorFactory(queuedArgs.Dequeue());
+            // Select the desired operation using the first variable.
+            IPathProcessor? processor = OperationFactory(queuedArgs.Dequeue());
 
             if (processor == null)
             {
@@ -30,7 +31,7 @@ namespace AudioTagger
 
             if (!queuedArgs.Any())
             {
-                printer.Error($"At least one file or directory path to work on must be provided.");
+                printer.Error("At least one file or directory path to work on must be provided.");
                 return;
             }
 
@@ -62,7 +63,7 @@ namespace AudioTagger
         /// </summary>
         /// <param name="modeArg"></param>
         /// <returns></returns>
-        private static IPathProcessor? ProcessorFactory(string modeArg)
+        private static IPathProcessor? OperationFactory(string modeArg)
         {
             return modeArg.ToLowerInvariant() switch
             {

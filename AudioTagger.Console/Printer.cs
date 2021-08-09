@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace AudioTagger
 {
-    public class Printer : IPrinter
+    public class ConsolePrinter : IPrinter
     {
         //private static bool _previousWasBlankLine;
 
@@ -125,7 +125,7 @@ namespace AudioTagger
             lineOutput.Add(new string(' ', spacesToPrepend));
             lineOutput.Add(tagName, headerColor);
             lineOutput.Add(new string(' ', spacesToAppend));
-            
+
             foreach (var part in tagData)
                 lineOutput.Add(part);
 
@@ -149,7 +149,7 @@ namespace AudioTagger
         //private static void PrintColor(string text, bool addLineBreak = false)
         //{
         //    PrintColor(text, null, null, addLineBreak);
-        //}        
+        //}
 
         // TODO: Complete or delete
         //public static void UpdateData(UpdateableFields updates)
