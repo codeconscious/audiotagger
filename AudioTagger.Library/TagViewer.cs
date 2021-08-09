@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AudioTagger.Console
+namespace AudioTagger
 {
     public partial class TagViewer : IPathProcessor
     {
@@ -12,10 +12,6 @@ namespace AudioTagger.Console
                 try
                 {
                     printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
-
-                    // TODO: Check ahead of time if images are supported.
-                    if (mediaFile.AlbumArt.Length > 0)
-                        Graphics.ConsoleWriteImage(mediaFile.AlbumArt);
                 }
                 catch (TagLib.CorruptFileException e)
                 {

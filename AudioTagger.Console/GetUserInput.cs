@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace AudioTagger
+namespace AudioTagger.Console
 {
     public enum UserResponse
     {
@@ -52,7 +52,7 @@ namespace AudioTagger
             // Take no action until a valid key is pressed.
             while (true)
             {
-                var keyInfo = Console.ReadKey(true);
+                var keyInfo = System.Console.ReadKey(true);
                 var keyChar = char.ToLowerInvariant(keyInfo.KeyChar);
 
                 KeyResponse? relevantKeyResponse =

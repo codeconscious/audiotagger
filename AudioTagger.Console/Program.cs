@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace AudioTagger
+namespace AudioTagger.Console
 {
     public static class Program
     {

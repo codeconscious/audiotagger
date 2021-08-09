@@ -2,8 +2,9 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Drawing;
+using static System.Console;
 
-namespace AudioTagger
+namespace AudioTagger.Console
 {
     public static class Graphics
     {
@@ -67,17 +68,17 @@ namespace AudioTagger
                 {
                     for (int j = 0; j < resSize.Width; j++)
                     {
-                        Console.ForegroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2, i * 2));
-                        Console.BackgroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2, i * 2 + 1));
-                        Console.Write("▀");
+                        ForegroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2, i * 2));
+                        BackgroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2, i * 2 + 1));
+                        Write("▀");
 
-                        Console.ForegroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2 + 1, i * 2));
-                        Console.BackgroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2 + 1, i * 2 + 1));
-                        Console.Write("▀");
+                        ForegroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2 + 1, i * 2));
+                        BackgroundColor = (ConsoleColor)ToConsoleColor(bmp.GetPixel(j * 2 + 1, i * 2 + 1));
+                        Write("▀");
                     }
 
-                    Console.ResetColor();
-                    Console.WriteLine();
+                    ResetColor();
+                    WriteLine();
                 }
             }
             catch
@@ -85,7 +86,7 @@ namespace AudioTagger
                 // The platform is unsupported, so do nothing. (Look into libgdiplus or other options.)
             }
 
-            Console.WriteLine();
+            WriteLine();
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace AudioTagger
         {
             // Division by 2 is needed because images with a width of 60
             // fit precisely on a console of width 120.
-            var maxPossibleSize = (int)Math.Floor(Console.WindowWidth / 2f);
+            var maxPossibleSize = (int)Math.Floor(WindowWidth / 2f);
 
             return desiredMaxSize == null || desiredMaxSize.Value > maxPossibleSize
                 ? maxPossibleSize

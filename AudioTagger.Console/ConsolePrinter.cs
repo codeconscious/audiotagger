@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using static System.Console;
 
-namespace AudioTagger
+namespace AudioTagger.Console
 {
     public class ConsolePrinter : IPrinter
     {
@@ -14,7 +15,7 @@ namespace AudioTagger
                 return;
 
             for (var prepend = 0; prepend < lines; prepend++)
-                Console.WriteLine();
+                WriteLine();
         }
 
         private void AppendLines(byte lines)
@@ -23,7 +24,7 @@ namespace AudioTagger
                 return;
 
             for (var append = 0; append < lines; append++)
-                Console.WriteLine();
+                WriteLine();
         }
 
         public void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
@@ -91,23 +92,23 @@ namespace AudioTagger
                                        bool addLineBreak = false)
         {
             if (fgColor.HasValue)
-                Console.ForegroundColor = fgColor.Value;
+                System.Console.ForegroundColor = fgColor.Value;
 
             if (bgColor.HasValue)
-                Console.BackgroundColor = bgColor.Value;
+                BackgroundColor = bgColor.Value;
 
-            Console.Write(text);
+            Write(text);
 
             if (addLineBreak)
-                Console.WriteLine();
+                WriteLine();
 
-            Console.ResetColor();
+            ResetColor();
         }
 
         // TODO: Check whether we can delete this.
         private void PrintColor()
         {
-            Console.WriteLine();
+            WriteLine();
         }
 
         public char GetResultSymbol(ResultType type)

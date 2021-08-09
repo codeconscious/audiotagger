@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace AudioTagger
+namespace AudioTagger.Console
 {
     public class TagUpdater : IPathProcessor
     {
