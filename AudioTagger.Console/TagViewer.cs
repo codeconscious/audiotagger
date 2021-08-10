@@ -14,8 +14,8 @@ namespace AudioTagger.Console
                     printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
 
                     // TODO: Check ahead of time if images are supported.
-                    if (mediaFile.AlbumArt.Length > 0)
-                        Graphics.ConsoleWriteImage(mediaFile.AlbumArt);
+                    //if (mediaFile.AlbumArt.Length > 0)
+                    //    Graphics.ConsoleWriteImage(mediaFile.AlbumArt);
                 }
                 catch (TagLib.CorruptFileException e)
                 {
