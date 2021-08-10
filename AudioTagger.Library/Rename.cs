@@ -1,14 +1,12 @@
 using System;
 using System.IO;
-using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 
 namespace AudioTagger
 {
-    public class FileRenamer : IPathProcessor
+    public class FileRenamer : IPathOperation
     {
         public void Start(IReadOnlyCollection<MediaFile> filesData, IPrinter printer)
         {
