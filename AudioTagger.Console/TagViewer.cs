@@ -5,7 +5,7 @@ namespace AudioTagger.Console
 {
     public partial class TagViewer : IPathProcessor
     {
-        public virtual void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
         {
             foreach (var mediaFile in mediaFiles)
             {
