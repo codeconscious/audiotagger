@@ -19,7 +19,7 @@ namespace AudioTagger.Console
             var queuedArgs = new Queue<string>(args.Select(a => a.Trim()));
 
             // Select the desired operation using the first variable.
-            IPathProcessor? operation = OperationFactory(queuedArgs.Dequeue());
+            IPathOperation? operation = OperationFactory(queuedArgs.Dequeue());
 
             if (operation == null)
             {
@@ -61,7 +61,7 @@ namespace AudioTagger.Console
         /// </summary>
         /// <param name="modeArg"></param>
         /// <returns></returns>
-        private static IPathProcessor? OperationFactory(string modeArg)
+        private static IPathOperation? OperationFactory(string modeArg)
         {
             return modeArg.ToLowerInvariant() switch
             {

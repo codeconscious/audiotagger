@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace AudioTagger.Console
 {
-    public class TagUpdater : IPathProcessor
+    public class TagUpdater : IPathOperation
     {
         public void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
         {

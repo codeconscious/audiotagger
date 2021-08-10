@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AudioTagger.Console
 {
-    public partial class TagViewer : IPathProcessor
+    public partial class TagViewer : IPathOperation
     {
         public void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
         {
