@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using TagLib;
+﻿using TagLib;
 
 namespace AudioTagger
 {
     public class MediaFile
     {
         public string Path { get; }
-        private readonly File _taggedFile; // Tag data (Rename)
+        private readonly TagLib.File _taggedFile; // Tag data (Rename)
 
-        public MediaFile(string filePath, File tabLibFile)
+        public MediaFile(string filePath, TagLib.File tabLibFile)
         {
             if (!System.IO.File.Exists(filePath))
                 throw new System.IO.FileNotFoundException(nameof(filePath));
