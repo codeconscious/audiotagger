@@ -13,7 +13,7 @@ namespace AudioTagger
         // The regexes used for reading tags from names. Ultimately, this should be in a setting or file.
         public static List<string> Regexes => new()
         {
-            @"(?:^(?'artists'.+?) - ?)? ?(?:(?'album'.+?) - ?)?(?:(?'trackNo'\d+?) - ?)? (?:(?'title'.+?[^\[\{]))(?: ?\[(?'year'\d{3,})\])?(?: ?\{(?'genres'.+?)\})?(?=\..+)",
+            @"(?:^(?'artists'.+?) - ?)? ?(?:(?'album'.+?) - ?)?(?:(?'trackNo'\d+?) - ?)? (?:(?'title'.+?[^\[\{])) (?: ?\[(?'year'\d{3,})\])?(?: ?\{(?'genres'.+?)\})?(?=\..+)",
             @"(?'artists'.+) [-–] (?'title'[^\[\{]+)(?: ?\[(?'year'\d{3,})\])?(?: ?\{(?'genres'.+)\})?"
         };
 
