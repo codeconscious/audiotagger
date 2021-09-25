@@ -23,7 +23,7 @@ namespace AudioTagger.Console
                 }
                 catch (Exception e)
                 {
-                    printer.Error("An error occurred in updating: " + e.Message);
+                    printer.Error($"Error updating {mediaFile.FileNameOnly}: {e.Message}");
                     printer.Print(e.StackTrace ?? "Stack trace not found.");
                     continue;
                 }
