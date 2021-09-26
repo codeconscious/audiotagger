@@ -19,10 +19,10 @@
 
             if (FgColor.HasValue)
             {
-                sb.Append("[" + ConvertToSpectreColor(FgColor.Value));
+                sb.Append("[" + Utilities.ConvertToSpectreColor(FgColor.Value));
 
                 if (BgColor.HasValue)
-                    sb.Append(" on " + ConvertToSpectreColor(BgColor.Value));
+                    sb.Append(" on " + Utilities.ConvertToSpectreColor(BgColor.Value));
 
                 sb.Append(']');
             }
@@ -32,25 +32,8 @@
             if (FgColor.HasValue)
                 sb.Append("[/]");
 
-            // Console.WriteLine("> " + sb.ToString());
             return sb.ToString();
 
-        }
-
-        private static string ConvertToSpectreColor(ConsoleColor color)
-        {
-            return color switch
-            {
-                ConsoleColor.Red => "red",
-                ConsoleColor.Yellow => "yellow",
-                ConsoleColor.Blue => "blue",
-                ConsoleColor.Green => "green",
-                ConsoleColor.Cyan => "cyan",
-                ConsoleColor.Magenta => "magenta",
-                ConsoleColor.Gray => "silver",
-                ConsoleColor.DarkGray => "grey",
-                _ => "white"
-            };
         }
     }
 }
