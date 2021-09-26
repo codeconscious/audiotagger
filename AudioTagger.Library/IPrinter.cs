@@ -17,5 +17,7 @@ namespace AudioTagger
         void Error(string message);
 
         char GetResultSymbol(ResultType type);
+
+        void PrintDivider(string? text);
     }
 }

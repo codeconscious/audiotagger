@@ -71,6 +71,8 @@ namespace AudioTagger.Console
                 return shouldCancel;
             }
 
+            printer.PrintDivider(mediaFile.FileNameOnly);
+
             // Print the current tag data.
             printer.Print(OutputLine.GetTagPrintedLines(mediaFile), 1, 0);
 

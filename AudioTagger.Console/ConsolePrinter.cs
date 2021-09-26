@@ -122,5 +122,32 @@ namespace AudioTagger.Console
                 _ => '?'
             };
         }
+
+        public void PrintDivider(string? text)
+        {
+            const char dividerChar = '-';
+
+            var textLength = text?.Length ?? 0;
+            var screenWidth = System.Console.WindowWidth;
+
+            var diff = screenWidth - textLength;
+
+            // If the text is wider than the screen, or close to it.
+            if (diff <= 5)
+            {
+                WriteLine(new string(dividerChar, screenWidth - 1));
+
+                if (textLength > 0)
+                    WriteLine(text);
+            }
+            else
+            {
+                Write(new string(dividerChar, 2) + " ");
+                Write(text);
+                Write(" " + new string(dividerChar, diff - 4));
+            }
+
+            // WriteLine("");
+        }
     }
 }

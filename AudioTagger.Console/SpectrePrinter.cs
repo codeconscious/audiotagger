@@ -128,5 +128,15 @@ namespace AudioTagger.Console
                 _ => '?'
             };
         }
+
+        public void PrintDivider(string? text)
+        {
+            // TODO: Needs to be a method somewhere.
+            var cleanedText = text?.Replace("[", "[[").Replace("]", "]]") ?? "";
+
+            var rule = new Rule(cleanedText);
+            rule.Alignment = Justify.Left;
+            AnsiConsole.Render(rule);
+        }
     }
 }
