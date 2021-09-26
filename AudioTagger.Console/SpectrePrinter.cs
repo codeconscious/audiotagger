@@ -46,7 +46,7 @@ namespace AudioTagger.Console
                   ResultsMap.Map[type].Color, null);
         }
 
-        public void Print(IReadOnlyList<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1)
+        public void Print(IEnumerable<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1)
         {
             PrependLines(prependLines);
 
@@ -63,7 +63,7 @@ namespace AudioTagger.Console
             AppendLines(appendLines);
         }
 
-        public void Print(IList<OutputLine> lines, byte prependLines = 0, byte appendLines = 1)
+        public void Print(IEnumerable<OutputLine> lines, byte prependLines = 0, byte appendLines = 1)
         {
             PrependLines(prependLines);
 

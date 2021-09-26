@@ -28,7 +28,7 @@ namespace AudioTagger.Console
         }
 
         public void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
-                                 ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
+                          ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new ArgumentNullException(nameof(message), "Message cannot be empty");
@@ -38,20 +38,20 @@ namespace AudioTagger.Console
             AppendLines(appendLines);
         }
 
-        public void Print(IReadOnlyList<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1)
+        public void Print(IEnumerable<LineSubString> subStrings, byte prependLines = 0, byte appendLines = 1)
         {
             PrependLines(prependLines);
 
-            if (!lineParts.Any())
+            if (!subStrings.Any())
                 return;
 
-            foreach (var linePart in lineParts)
+            foreach (var linePart in subStrings)
                 PrintColor(linePart.Text, linePart.FgColor, linePart.BgColor);
 
             AppendLines(appendLines);
         }
 
-        public void Print(IList<OutputLine> lines, byte prependLines = 0, byte appendLines = 1)
+        public void Print(IEnumerable<OutputLine> lines, byte prependLines = 0, byte appendLines = 1)
         {
             PrependLines(prependLines);
 
@@ -65,22 +65,21 @@ namespace AudioTagger.Console
                 {
                     PrintColor(lineParts);
                     if (lineParts == lastLine)
-                        PrintColor();
+                        WriteLine();
                 }
             }
 
             AppendLines(appendLines);
         }
 
-        public void Print(string message, ResultType type, byte prependLines = 0,
-                                 byte appendLines = 0)
+        public void Print(string message, ResultType type, byte prependLines = 0, byte appendLines = 0)
         {
             Print(message, prependLines, appendLines, GetResultSymbol(type) + " ",
                   ResultsMap.Map[type].Color, null);
         }
 
-        public void Error(string message) =>
-            Print(message, 1, 1, "ERROR: ");
+        public void Error(string message)
+            => Print(message, 1, 1, "ERROR: ");
 
         private void PrintColor(LineSubString lineParts)
         {
@@ -88,8 +87,8 @@ namespace AudioTagger.Console
         }
 
         private void PrintColor(string text, ConsoleColor? fgColor,
-                                       ConsoleColor? bgColor = null,
-                                       bool addLineBreak = false)
+                                ConsoleColor? bgColor = null,
+                                bool addLineBreak = false)
         {
             if (fgColor.HasValue)
                 System.Console.ForegroundColor = fgColor.Value;
@@ -103,12 +102,6 @@ namespace AudioTagger.Console
                 WriteLine();
 
             ResetColor();
-        }
-
-        // TODO: Check whether we can delete this.
-        private void PrintColor()
-        {
-            WriteLine();
         }
 
         public char GetResultSymbol(ResultType type)

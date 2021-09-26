@@ -8,9 +8,9 @@ namespace AudioTagger
         void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
                    ConsoleColor? fgColor = null, ConsoleColor? bgColor = null);
 
-        void Print(IReadOnlyList<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1);
+        void Print(IEnumerable<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1);
 
-        void Print(IList<OutputLine> lines, byte prependLines = 0, byte appendLines = 1);
+        void Print(IEnumerable<OutputLine> lines, byte prependLines = 0, byte appendLines = 1);
 
         void Print(string message, ResultType type, byte prependLines = 0, byte appendLines = 0);
 
