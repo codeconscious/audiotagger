@@ -18,6 +18,6 @@ namespace AudioTagger
 
         char GetResultSymbol(ResultType type);
 
-        void PrintDivider(string? text);
+        void PrintDivider(string? text, ConsoleColor? fgColor = null, ConsoleColor? bgColor = null);
     }
 }

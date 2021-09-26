@@ -129,7 +129,7 @@ namespace AudioTagger.Console
             };
         }
 
-        public void PrintDivider(string? text)
+        public void PrintDivider(string? text, ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
         {
             var rule = new Rule(Utilities.SanitizeSpectreString(text))
             {

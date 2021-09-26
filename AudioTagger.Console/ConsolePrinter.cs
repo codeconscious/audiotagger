@@ -116,11 +116,19 @@ namespace AudioTagger.Console
             };
         }
 
-        public void PrintDivider(string? text)
+        public void PrintDivider(string? text, ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
         {
             const string divider = "---";
 
+            if (fgColor.HasValue)
+                ForegroundColor = fgColor.Value;
+
+            if (bgColor.HasValue)
+                BackgroundColor = bgColor.Value;
+
             Write($"{divider} {text ?? ""} {divider}");
+
+            ResetColor();
         }
     }
 }

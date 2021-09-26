@@ -72,7 +72,7 @@ namespace AudioTagger.Console
             }
 
             // Print the filename
-            printer.PrintDivider(mediaFile.FileNameOnly);
+            printer.PrintDivider(mediaFile.FileNameOnly, ConsoleColor.Cyan);
 
             // Print the current tag data.
             printer.Print(OutputLine.GetTagPrintedLines(mediaFile), 1, 0);
