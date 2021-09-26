@@ -47,7 +47,8 @@
                 ConsoleColor.Green => "green",
                 ConsoleColor.Cyan => "cyan",
                 ConsoleColor.Magenta => "magenta",
-                ConsoleColor.Gray => "gray",
+                ConsoleColor.Gray => "silver",
+                ConsoleColor.DarkGray => "grey",
                 _ => "white"
             };
         }
