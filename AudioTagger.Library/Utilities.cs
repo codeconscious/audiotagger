@@ -12,6 +12,7 @@ namespace AudioTagger
                 ConsoleColor.Blue => "blue",
                 ConsoleColor.Green => "green",
                 ConsoleColor.Cyan => "aqua",
+                ConsoleColor.DarkCyan => "teal",
                 ConsoleColor.Magenta => "magenta",
                 ConsoleColor.Gray => "silver",
                 ConsoleColor.DarkGray => "grey",
@@ -26,7 +27,7 @@ namespace AudioTagger
         /// </summary>
         /// <param name="text">A Spectre.Console markup string</param>
         /// <returns>A sanitized string.</returns>
-        public static string SanitizeSpectreString(string text)
+        public static string SanitizeSpectreString(string? text)
         {
             return
                 text?

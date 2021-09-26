@@ -78,13 +78,6 @@ namespace AudioTagger
         {
             var lines = new List<OutputLine>();
 
-            var fileNameBase = System.IO.Path.GetFileNameWithoutExtension(fileData.Path);
-            var fileNameExt = System.IO.Path.GetExtension(fileData.Path);
-            lines.Add(
-                new OutputLine(
-                    new LineSubString(fileNameBase, ConsoleColor.Cyan),
-                    new LineSubString(fileNameExt, ConsoleColor.DarkCyan)));
-
             lines.Add(TagDataWithHeader("Title", fileData.Title));
             lines.Add(TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)));
             lines.Add(TagDataWithHeader("Album", fileData.Album));

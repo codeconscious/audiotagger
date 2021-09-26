@@ -71,6 +71,7 @@ namespace AudioTagger.Console
                 return shouldCancel;
             }
 
+            // Print the filename
             printer.PrintDivider(mediaFile.FileNameOnly);
 
             // Print the current tag data.
