@@ -8,8 +8,8 @@ namespace AudioTagger.Console
     {
         public static void Main(string[] args)
         {
-            IPrinter printer = new ConsolePrinter();
-            // IPrinter printer = new SpectrePrinter();
+            // IPrinter printer = new ConsolePrinter();
+            IPrinter printer = new SpectrePrinter();
 
             if (args.Length == 0)
             {

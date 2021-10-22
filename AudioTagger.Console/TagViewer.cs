@@ -11,7 +11,9 @@ namespace AudioTagger.Console
             {
                 try
                 {
-                    printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
+                    //printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
+                    var viewer = new MediaFileViewer();
+                    viewer.PrintFileDetails(mediaFile);
 
                     // TODO: Check ahead of time if images are supported.
                     //if (mediaFile.AlbumArt.Length > 0)
@@ -24,7 +26,7 @@ namespace AudioTagger.Console
                 }
                 catch (Exception e)
                 {
-                    printer.Error("An unknown error occurred: " + e.Message);
+                    printer.Error($"An unknown error occurred with file {mediaFile.FileNameOnly}: " + e.Message);
                     continue;
                 }
             }
