@@ -39,7 +39,7 @@ namespace AudioTagger.Console
             // TODO: Refactor cancellation so this isn't needed.
             const bool shouldCancel = false;
 
-            var match = RegexCollection.GetFirstMatch(mediaFile);
+            var match = RegexCollection.GetFirstMatch(mediaFile.FileNameOnly);
 
             // If there are no regex matches against the filename, we cannot continue.
             if (match == null)
@@ -81,6 +81,8 @@ namespace AudioTagger.Console
             printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
             foreach (var update in proposedUpdates)
                 printer.Print(update.Line);
+
+            // Spectre.Console.
 
             var response = ResponseHandler.AskUserYesNoCancel(printer);
 

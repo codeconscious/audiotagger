@@ -27,11 +27,11 @@ namespace AudioTagger
         /// Returns the first found regex matches for a filename, or null if none.
         /// </summary>
         /// <returns>Matched tag data</returns>
-        public static Match? GetFirstMatch(MediaFile fileData)
+        public static Match? GetFirstMatch(string fileName)
         {
             foreach (var regexText in Regexes)
             {
-                var match = Regex.Match(fileData.FileNameOnly,
+                var match = Regex.Match(fileName,
                                         regexText,
                                         RegexOptions.CultureInvariant);
 
