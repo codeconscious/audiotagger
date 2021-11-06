@@ -13,16 +13,16 @@ namespace AudioTagger.Tests
         public class ParsedItem
         {
             /// <summary>
-            /// The file name from which the other values while be parsed, as possible.
+            /// The file name from which the other expected values while be parsed, as possible.
             /// </summary>
             public string FileName { get; set; }
 
             // Expected values:
+            public string Title { get; set; }
             public List<string> Artists { get; set; }
             public string Album { get; set; }
             public string Disc { get; set; }
             public string Track { get; set; }
-            public string Title { get; set; }
             public string Year { get; set; }
             public List<string> Genres { get; set; }
 
@@ -36,13 +36,28 @@ namespace AudioTagger.Tests
         {
             public IEnumerator<object[]> GetEnumerator()
             {
-                yield return new object[] {
+                yield return new object[]
+                {
                     new ParsedItem("吉田拓郎 - 夏休み [1971] {歌謡曲}.mp3")
                     {
                         Artists = new List<string> { "吉田拓郎" },
                         Title = "夏休み",
                         Year = "1971",
                         Genres = new List<string> { "歌謡曲" }
+                    }                  
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller - 1.2 - Beat It [2005] {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Disc = "1",
+                        Track = "2",
+                        Year = "2005",
+                        Genres = new List<string> { "Pop"}
                     }
                 };
             }
@@ -52,7 +67,7 @@ namespace AudioTagger.Tests
 
         [Theory]
         [ClassData(typeof(TestDataSet))]
-        public void CanParseFiles_ArtistsTitleYearGenres(ParsedItem data)
+        public void CanParseValidFileNames(ParsedItem data)
         {
             var match = RegexCollection.GetFirstMatch(data.FileName);
 
@@ -71,6 +86,10 @@ namespace AudioTagger.Tests
             }
 
             Assert.Equal(data.Title, matchedData.Title);
+
+            // TODO: Add a Disc and Track property to matched data.
+            //Assert.Equal(data.Disc, matchedData.Disc);
+            //Assert.Equal(data.Track, matchedData.Track);
 
             Assert.Equal(data.Year, matchedData.Year.ToString());
 
