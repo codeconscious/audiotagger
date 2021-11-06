@@ -23,13 +23,13 @@ namespace AudioTagger
 
         public string Title
         {
-            get => _taggedFile.Tag.Title?.Normalize() ?? "";
+            get => _taggedFile.Tag.Title?.Normalize() ?? string.Empty;
             set => _taggedFile.Tag.Title = value.Trim().Normalize();
         }
 
         public string[] Artists
         {
-            get => _taggedFile.Tag.Performers?.Select(a => a?.Normalize() ?? "")
+            get => _taggedFile.Tag.Performers?.Select(a => a?.Normalize() ?? string.Empty)
                                               .ToArray()
                     ?? Array.Empty<string>();
 
@@ -41,7 +41,7 @@ namespace AudioTagger
 
         public string Album
         {
-            get => _taggedFile.Tag.Album?.Normalize() ?? "";
+            get => _taggedFile.Tag.Album?.Normalize() ?? string.Empty;
             set => _taggedFile.Tag.Album = value?.Trim()?.Normalize();
         }
 
@@ -60,14 +60,14 @@ namespace AudioTagger
         {
             get => _taggedFile.Tag.Genres;
             set => _taggedFile.Tag.Genres =
-                        value?.Select(g => g?.Trim()?.Normalize() ?? "")?
+                        value?.Select(g => g?.Trim()?.Normalize() ?? string.Empty)?
                             .ToArray()
                         ?? Array.Empty<string>();
         }
 
         public string[] Composers
         {
-            get => _taggedFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize() ?? "")?
+            get => _taggedFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize() ?? string.Empty)?
                                              .ToArray()
                     ?? Array.Empty<string>();
 
@@ -79,8 +79,14 @@ namespace AudioTagger
 
         public string Comments
         {
-            get => _taggedFile.Tag.Comment?.Trim()?.Normalize() ?? "";
+            get => _taggedFile.Tag.Comment?.Trim()?.Normalize() ?? string.Empty;
             set => _taggedFile.Tag.Comment = value.Trim().Normalize();
+        }
+
+        public string Lyrics
+        {
+            get => _taggedFile.Tag.Lyrics?.Trim()?.Normalize() ?? string.Empty;
+            set => _taggedFile.Tag.Lyrics = value.Trim().Normalize();
         }
 
         public int BitRate

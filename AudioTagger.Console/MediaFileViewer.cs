@@ -27,7 +27,7 @@ public class MediaFileViewer
         var bitrate = file.BitRate.ToString();
         var sampleRate = file.SampleRate.ToString("#,##0");
         var hasReplayGain = file.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
-        table.AddRow("Quality", $"{bitrate} kbps | {sampleRate} kHz | {hasReplayGain}");
+        table.AddRow("Quality", $"{bitrate} kbps @ {sampleRate} kHz | {hasReplayGain}");
 
         if (file.Composers?.Length > 0)
             table.AddRow("Composers", string.Join("; ", file.Composers));
@@ -35,7 +35,10 @@ public class MediaFileViewer
         if (!string.IsNullOrWhiteSpace(file.Comments))
             table.AddRow("Comments", file.Comments);
 
-        table.Columns[0].Width(12);
+        if (!string.IsNullOrWhiteSpace(file.Lyrics))
+            table.AddRow("Lyrics", file.Lyrics[..25] + "...");
+
+        table.Columns[0].Width(11);
 
         var panel = new Panel(table);
         panel.Header("[yellow]" + file.FileNameOnly.Replace("[", "[[").Replace("]", "]]") + "[/]", Justify.Left);
