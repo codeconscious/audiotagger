@@ -10,17 +10,23 @@ namespace AudioTagger
 {
     public static class RegexCollection
     {
-        // The regexes used for reading tags from names. Ultimately, this should be in a setting or file.
+        /// <summary>
+        /// The regexes used for reading tags from names.
+        /// </summary>
         public static List<string> Regexes => new()
         {
-            @"(?:^(?'artists'.+?) - ?)? ?(?:(?'album'.+?) - ?)?(?:(?'trackNo'\d+?) - ?)? (?:(?'title'.+?[^\[\{])) (?: ?\[(?'year'\d{3,})\])?(?: ?\{(?'genres'.+?)\})?(?=\..+)",
-            @"(?'artists'.+) [-–] (?'title'[^\[\{]+)(?: ?\[(?'year'\d{3,})\])?(?: ?\{(?'genres'.+)\})?"
+            /// TODO: Place into a file instead.
+            @"(?<artists>.+) - (?<album>.+) - (?<discNo>[1-9]{1,2})[\.-](?<trackNo>[1-9]+) - (?<title>.+?) (?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
+            @"(?<artists>.+) - (?<album>.+) - (?<trackNo>[1-9]{1,3}) - (?<title>.+?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
+            @"(?<artists>.+) - (?<album>.+) - (?<title>.+?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
+            @"(?<artists>.+) - (?<title>.+?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
+            @"(?<title>.+?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\.[^.]+$)"
         };
 
         /// <summary>
         /// Returns the first found regex matches for a filename, or null if none.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Matched tag data</returns>
         public static Match? GetFirstMatch(MediaFile fileData)
         {
             foreach (var regexText in Regexes)
@@ -29,10 +35,8 @@ namespace AudioTagger
                                         regexText,
                                         RegexOptions.CultureInvariant);
 
-                if (match != null)
+                if (match.Success)
                     return match;
-
-                continue;
             }
 
             return null;
