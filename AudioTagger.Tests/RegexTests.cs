@@ -76,6 +76,41 @@ namespace AudioTagger.Tests
 
                 yield return new object[]
                 {
+                    new ParsedItem("Michael Jackson - Thriller - 2 - Beat It [2005].mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Track = "2",
+                        Year = "2005",
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller - 2 - Beat It {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Track = "2",
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
+
+                yield return new object[]
+{
+                    new ParsedItem("Michael Jackson - Thriller - 2 - Beat It.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Track = "2",
+                    }
+};
+
+                yield return new object[]
+                {
                     new ParsedItem("Michael Jackson - Thriller - Beat It [2005] {Pop}.mp4")
                     {
                         Title = "Beat It",
@@ -83,6 +118,40 @@ namespace AudioTagger.Tests
                         Album = "Thriller",
                         Year = "2005",
                         Genres = new List<string> { "Pop"}
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller - Beat It [2005].mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Year = "2005",
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller - Beat It {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller - Beat It [2005] {Pop; Rock}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Year = "2005",
+                        Genres = new List<string> { "Pop", "Rock" }
                     }
                 };
 
@@ -126,13 +195,59 @@ namespace AudioTagger.Tests
                     }
                 };
 
-                // yield return new object[]
-                // {
-                //     new ParsedItem("Beat It.mp4")
-                //     {
-                //         Title = "Beat It",
-                //     }
-                // };
+                // Extra spaces
+                yield return new object[]
+                {
+                    new ParsedItem(" Michael Jackson  -  Beat It .mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" }
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Beat It [2005] {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Year = "2005",
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Beat It [2005].mp4")
+                    {
+                        Title = "Beat It",
+                        Year = "2005",
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Beat It {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
+
+                yield return new object[]
+                {
+                     new ParsedItem("Beat It.mp4")
+                     {
+                         Title = "Beat It",
+                     }
+                };
+
+                yield return new object[]
+                {
+                     new ParsedItem("82.99 F.M.mp3")
+                     {
+                         Title = "82.99 F.M",
+                     }
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -157,7 +272,7 @@ namespace AudioTagger.Tests
                 Assert.Equal(expected.Artists.Count, matchedData.Artists.Length);
                 for (var i = 0; i < expected.Artists.Count; i++)
                 {
-                    Assert.Equal(expected.Artists[i], matchedData.Artists[i]);
+                    Assert.Equal(expected.Artists[i], matchedData.Artists[i].Trim());
                 }
             }
             else
@@ -166,14 +281,14 @@ namespace AudioTagger.Tests
             }
 
             // There should always be a title.
-            Assert.Equal(expected.Title, matchedData.Title);
+            Assert.Equal(expected.Title, matchedData.Title.Trim());
 
             // TODO: Add a Disc and Track property to matched data.
             //Assert.Equal(data.Disc, matchedData.Disc);
             //Assert.Equal(data.Track, matchedData.Track);
 
             if (expected.Year != null)
-                Assert.Equal(expected.Year ?? null, matchedData.Year.ToString());
+                Assert.Equal(expected.Year ?? null, matchedData.Year.ToString().Trim());
             else
                 Assert.Null(matchedData.Year);
 
@@ -182,7 +297,7 @@ namespace AudioTagger.Tests
                 Assert.Equal(expected.Genres.Count, matchedData.Genres.Length);
                 for (var i = 0; i < expected.Genres.Count; i++)
                 {
-                    Assert.Equal(expected.Genres[i], matchedData.Genres[i]);
+                    Assert.Equal(expected.Genres[i], matchedData.Genres[i].Trim());
                 }
             }
             else
