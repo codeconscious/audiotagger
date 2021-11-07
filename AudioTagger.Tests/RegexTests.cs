@@ -44,7 +44,7 @@ namespace AudioTagger.Tests
                         Title = "夏休み",
                         Year = "1971",
                         Genres = new List<string> { "歌謡曲" }
-                    }                  
+                    }
                 };
 
                 yield return new object[]
@@ -60,6 +60,79 @@ namespace AudioTagger.Tests
                         Genres = new List<string> { "Pop"}
                     }
                 };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller - 2 - Beat It [2005] {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Track = "2",
+                        Year = "2005",
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller - Beat It [2005] {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Year = "2005",
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Beat It [2005] {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Year = "2005",
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Beat It {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Beat It [2005].mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Year = "2005"
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Beat It.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" }
+                    }
+                };
+
+                // yield return new object[]
+                // {
+                //     new ParsedItem("Beat It.mp4")
+                //     {
+                //         Title = "Beat It",
+                //     }
+                // };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -67,9 +140,9 @@ namespace AudioTagger.Tests
 
         [Theory]
         [ClassData(typeof(TestDataSet))]
-        public void CanParseValidFileNames(ParsedItem data)
+        public void CanParseValidFileNames(ParsedItem expected)
         {
-            var match = RegexCollection.GetFirstMatch(data.FileName);
+            var match = RegexCollection.GetFirstMatch(expected.FileName);
 
             var matchedTags = match.Groups
                                    .OfType<Group>()
@@ -79,24 +152,42 @@ namespace AudioTagger.Tests
 
             Assert.NotNull(matchedData);
 
-            Assert.Equal(data.Artists.Count, matchedData.Artists.Length);
-            for (var i = 0; i < data.Artists.Count; i++)
+            if (expected.Artists?.Any() == true)
             {
-                Assert.Equal(data.Artists[i], matchedData.Artists[i]);
+                Assert.Equal(expected.Artists.Count, matchedData.Artists.Length);
+                for (var i = 0; i < expected.Artists.Count; i++)
+                {
+                    Assert.Equal(expected.Artists[i], matchedData.Artists[i]);
+                }
+            }
+            else
+            {
+                Assert.Null(matchedData.Artists);
             }
 
-            Assert.Equal(data.Title, matchedData.Title);
+            // There should always be a title.
+            Assert.Equal(expected.Title, matchedData.Title);
 
             // TODO: Add a Disc and Track property to matched data.
             //Assert.Equal(data.Disc, matchedData.Disc);
             //Assert.Equal(data.Track, matchedData.Track);
 
-            Assert.Equal(data.Year, matchedData.Year.ToString());
+            if (expected.Year != null)
+                Assert.Equal(expected.Year ?? null, matchedData.Year.ToString());
+            else
+                Assert.Null(matchedData.Year);
 
-            Assert.Equal(data.Genres.Count, matchedData.Genres.Length);
-            for (var i = 0; i < data.Genres.Count; i++)
+            if (expected.Genres?.Any() == true)
             {
-                Assert.Equal(data.Genres[i], matchedData.Genres[i]);
+                Assert.Equal(expected.Genres.Count, matchedData.Genres.Length);
+                for (var i = 0; i < expected.Genres.Count; i++)
+                {
+                    Assert.Equal(expected.Genres[i], matchedData.Genres[i]);
+                }
+            }
+            else
+            {
+                Assert.Null(matchedData.Genres);
             }
         }
     }
