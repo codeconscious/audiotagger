@@ -9,8 +9,8 @@ namespace AudioTagger
 
         public MediaFile(string filePath, TagLib.File tabLibFile)
         {
-            if (!System.IO.File.Exists(filePath))
-                throw new System.IO.FileNotFoundException(nameof(filePath));
+            ArgumentNullException.ThrowIfNull(filePath);
+            ArgumentNullException.ThrowIfNull(tabLibFile);
 
             Path = filePath;
             _taggedFile = tabLibFile;
@@ -135,10 +135,11 @@ namespace AudioTagger
         /// and a path to a folder will return an AudioFile for each file within that folder.
         /// </summary>
         /// <param name="path">A directory or file path</param>
-        /// <returns></returns>
+        /// <returns>A collection of MediaFile</returns>
         public static IReadOnlyCollection<MediaFile> PopulateFileData(string path, bool searchSubDirectories = false)
         {
-            if (System.IO.Directory.Exists(path)) // i.e., the path is a directory
+            // If the path is a directory
+            if (System.IO.Directory.Exists(path))
             {
                 var mediaFiles = new List<MediaFile>();
 
@@ -161,7 +162,8 @@ namespace AudioTagger
                                 .ToList()*/;
             }
 
-            if (System.IO.File.Exists(path)) // i.e., the path is a file
+            // If the path is a file
+            if (System.IO.File.Exists(path))
             {
                 return new List<MediaFile> { MediaFileFactory.CreateFileData(path) };
             }
