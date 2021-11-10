@@ -248,6 +248,26 @@ namespace AudioTagger.Tests
                          Title = "82.99 F.M",
                      }
                 };
+
+                yield return new object[]
+                {
+                     new ParsedItem("吉田拓郎 - 夏休み [1971] {歌謡曲}.mp3")
+                     {
+                         Artists = new List<string> { "吉田拓郎" },
+                         Title = "夏休み",
+                         Year = "1971",
+                         Genres = new List<string> { "歌謡曲" }
+                     }
+                };
+
+                yield return new object[]
+                {
+                     new ParsedItem("五木ひろし with 木の実ナナ - 居酒屋.ogg")
+                     {
+                         Artists = new List<string> { "五木ひろし with 木の実ナナ" },
+                         Title = "居酒屋"
+                     }
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
