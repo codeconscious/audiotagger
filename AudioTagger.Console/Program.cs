@@ -60,8 +60,8 @@ namespace AudioTagger.Console
         /// <summary>
         /// Get the correct operation from the argument passed in.
         /// </summary>
-        /// <param name="modeArg"></param>
-        /// <returns></returns>
+        /// <param name="modeArg">The argument passed from the console.</param>
+        /// <returns>A class for performing operations on files.</returns>
         private static IPathOperation? OperationFactory(string modeArg)
         {
             return modeArg.ToLowerInvariant() switch
