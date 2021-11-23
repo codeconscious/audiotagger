@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Spectre.Console;
 
 namespace AudioTagger.Console
 {
@@ -62,7 +63,7 @@ namespace AudioTagger.Console
 
             var updateableFields = new UpdatableFields(matchedTags);
 
-            var proposedUpdates = updateableFields.GetUpdateOutput(mediaFile);
+            var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
             if (proposedUpdates?.Any() != true)
             {
@@ -72,27 +73,39 @@ namespace AudioTagger.Console
             }
 
             // Print the filename
-            printer.PrintDivider(mediaFile.FileNameOnly, ConsoleColor.Cyan);
+            //printer.PrintDivider(mediaFile.FileNameOnly, ConsoleColor.Cyan);
 
             // Print the current tag data.
-            printer.Print(OutputLine.GetTagPrintedLines(mediaFile), 1, 0);
+            // printer.Print(OutputLine.GetTagPrintedLines(mediaFile), 1, 0);
+
+            printer.PrintTagDataToTable(mediaFile, proposedUpdates);
 
             // Show the proposed updates and ask the user to confirm.
-            printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
-            foreach (var update in proposedUpdates)
-                printer.Print(update.Line);
+            // printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
+            // foreach (var update in proposedUpdates)
+            //     printer.Print(update.Line);
 
-            // Spectre.Console.
+            const string yes = "Yes";
+            const string no = "No";
+            const string cancel = "Cancel";
 
-            var response = ResponseHandler.AskUserYesNoCancel(printer);
+            var response = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Apply these updates?")
+                    // .PageSize(10)
+                    // .MoreChoicesText("[grey](Move up and down to reveal more fruits)[/]")
+                    .AddChoices(new[] { no, yes, cancel }));
 
-            if (response == UserResponse.Cancel)
+
+            // var response = ResponseHandler.AskUserYesNoCancel(printer);
+
+            if (response == cancel)
             {
                 printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
                 return true;
             }
 
-            if (response == UserResponse.No)
+            if (response == no)
             {
                 printer.Print("No updates made", ResultType.Neutral, 0, 1);
                 return shouldCancel;

@@ -124,5 +124,42 @@ namespace AudioTagger
 
             return updateOutput;
         }
+
+        public Dictionary<string, string> GetUpdateKeyValuePairs(MediaFile fileData)
+        {
+            var updateOutput = new Dictionary<string, string>();
+            const ConsoleColor headerColor = ConsoleColor.White;
+            const string prependLineWith = "";
+
+            if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
+            {
+                updateOutput.Add("Artists", string.Join("; ", Artists));
+            }
+
+            if (Title != null && Title != fileData.Title)
+            {
+                updateOutput.Add("Title", Title);
+            }
+
+            if (Album != null && Album != fileData.Album)
+            {
+                updateOutput.Add("Album", Album);
+            }
+
+            if (Year != null && Year != fileData.Year)
+            {
+                updateOutput.Add("Year", Year.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (Genres?.All(a => fileData.Genres.Contains(a)) == false)
+            {
+                var genreCount = Genres.Length;
+                updateOutput.Add(
+                    "Genres",
+                    string.Join("; ", Genres) + (genreCount > 1 ? $" ({genreCount})" : ""));
+            }
+
+            return updateOutput;
+        }
     }
 }

@@ -114,5 +114,38 @@ namespace AudioTagger
 
             return lines;
         }
+
+        public static Dictionary<string, string> GetTagKeyValuePairs(MediaFile fileData)
+        {
+            var lines = new Dictionary<string, string>();
+
+            lines.Add("Title", fileData.Title);
+            lines.Add("Artist(s)", string.Join(", ", fileData.Artists));
+            lines.Add("Album", fileData.Album);
+            lines.Add("Year", fileData.Year.ToString());
+            lines.Add("Duration", fileData.Duration.ToString("m\\:ss"));
+
+            var genreCount = fileData.Genres.Length;
+            lines.Add("Genre(s)", string.Join(", ", fileData.Genres) +
+                                  (genreCount > 1 ? $" ({genreCount})" : ""));
+
+            var bitrate = fileData.BitRate.ToString();
+            var sampleRate = fileData.SampleRate.ToString("#,##0");
+            var hasReplayGain = fileData.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
+
+            // Create formatted quality line
+            const string genreSeparator = "  |  ";
+            lines.Add(
+                "Quality",
+                $"{bitrate}kbps" + genreSeparator + $"{sampleRate} kHz" + genreSeparator + hasReplayGain);
+
+            if (fileData.Composers?.Length > 0)
+                lines.Add($"Composers", string.Join("; ", fileData.Composers));
+
+            if (!string.IsNullOrWhiteSpace(fileData.Comments))
+                lines.Add("Comment", fileData.Comments);
+
+            return lines;
+        }
     }
 }
