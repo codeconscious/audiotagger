@@ -135,7 +135,7 @@ namespace AudioTagger.Console
 
             var table = new Table();
             table.Border(TableBorder.Rounded);
-            table.AddColumn(mediaFile.FileNameOnly);
+            table.AddColumn($"[aqua]{Utilities.SanitizeSpectreString(mediaFile.FileNameOnly)}[/]");
 
             var tagTable = new Table();
             tagTable.Border(TableBorder.None);
