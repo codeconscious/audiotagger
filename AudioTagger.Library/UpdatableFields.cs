@@ -18,9 +18,16 @@ namespace AudioTagger
 
         public byte Count { get; }
 
-        public UpdatableFields(IEnumerable<Group> regexElements)
+        /// <summary>
+        /// Constructor that reads matched regex group names and
+        /// maps the data to the correct tag name property.
+        /// </summary>
+        /// <param name="matchedGroups"></param>
+        public UpdatableFields(IEnumerable<Group> matchedGroups)
         {
-            foreach (var element in regexElements)
+            ArgumentNullException.ThrowIfNull(matchedGroups);
+
+            foreach (var element in matchedGroups)
             {
                 if (element.Name == "title")
                 {
@@ -56,6 +63,7 @@ namespace AudioTagger
             }
         }
 
+        // TODO: Delete if not used.
         public IList<OutputLine> GetUpdateOutput(MediaFile fileData)
         {
             var updateOutput = new List<OutputLine>();
