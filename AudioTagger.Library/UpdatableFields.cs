@@ -149,7 +149,11 @@ namespace AudioTagger
 
                 updateOutput.Add(
                     "Genres",
-                    string.Join("; ", Genres) + (genreCount > 1 ? $" ({genreCount})" : ""));
+                    string.Join(
+                        "; ", Genres) +
+                        (genreCount > 1
+                            ? $" ({genreCount})"
+                            : ""));
             }
 
             return updateOutput;
