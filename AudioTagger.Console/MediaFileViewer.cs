@@ -50,7 +50,7 @@ public class MediaFileViewer
         var panel = new Panel(table);
         panel.Header("[yellow]" + Utilities.SanitizeSpectreString(file.FileNameOnly) + "[/]", Justify.Left);
         panel.Border = BoxBorder.Rounded;
-        panel.BorderStyle = new Style(Color.Grey35);
+        panel.BorderStyle = new Style(Color.Grey15);
         panel.Padding(5, 0, 5, 0);
         panel.Expand = true;
 
