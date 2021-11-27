@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AudioTagger.Console
+﻿namespace AudioTagger.Console
 {
     public class TagViewer : IPathOperation
     {
         public void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
         {
+            ArgumentNullException.ThrowIfNull(mediaFiles);
+
             foreach (var mediaFile in mediaFiles)
             {
                 try
