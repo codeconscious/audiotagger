@@ -68,7 +68,6 @@ namespace AudioTagger
         public IList<OutputLine> GetUpdateOutput(MediaFile fileData)
         {
             var updateOutput = new List<OutputLine>();
-            const ConsoleColor headerColor = ConsoleColor.White;
             const string prependLineWith = "";
 
             if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
@@ -77,8 +76,7 @@ namespace AudioTagger
                     OutputLine.TagDataWithHeader(
                         "Artists",
                         string.Join("; ", Artists),
-                        prependLineWith,
-                        headerColor));
+                        prependLineWith));
             }
 
             if (Title != null && Title != fileData.Title)
@@ -87,8 +85,7 @@ namespace AudioTagger
                     OutputLine.TagDataWithHeader(
                         "Title",
                         Title,
-                        prependLineWith,
-                        headerColor));
+                        prependLineWith));
             }
 
             if (Album != null && Album != fileData.Album)
@@ -97,8 +94,7 @@ namespace AudioTagger
                     OutputLine.TagDataWithHeader(
                         "Album",
                         Album,
-                        prependLineWith,
-                        headerColor));
+                        prependLineWith));
             }
 
             if (Year != null && Year != fileData.Year)
@@ -107,19 +103,18 @@ namespace AudioTagger
                     OutputLine.TagDataWithHeader(
                         "Year",
                         Year.Value.ToString(CultureInfo.InvariantCulture),
-                        prependLineWith,
-                        headerColor));
+                        prependLineWith));
             }
 
             if (Genres?.All(a => fileData.Genres.Contains(a)) == false)
             {
                 var genreCount = Genres.Length;
+
                 updateOutput.Add(
                     OutputLine.TagDataWithHeader(
                         "Genres",
                         string.Join("; ", Genres) + (genreCount > 1 ? $" ({genreCount})" : ""),
-                        prependLineWith,
-                        headerColor));
+                        prependLineWith));
             }
 
             return updateOutput;
@@ -128,7 +123,6 @@ namespace AudioTagger
         public Dictionary<string, string> GetUpdateKeyValuePairs(MediaFile fileData)
         {
             var updateOutput = new Dictionary<string, string>();
-            // const string prependLineWith = "";
 
             if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
             {
@@ -153,6 +147,7 @@ namespace AudioTagger
             if (Genres?.All(a => fileData.Genres.Contains(a)) == false)
             {
                 var genreCount = Genres.Length;
+
                 updateOutput.Add(
                     "Genres",
                     string.Join("; ", Genres) + (genreCount > 1 ? $" ({genreCount})" : ""));

@@ -40,8 +40,7 @@ namespace AudioTagger
         }
 
         public static OutputLine TagDataWithHeader(string tagName, IReadOnlyList<LineSubString> tagData,
-                                            string prependLine = "",
-                                            ConsoleColor headerColor = ConsoleColor.DarkGray)
+                                            string prependLine = "")
         {
             const int spacesToPrepend = 4;
             var spacesToAppend = 13 - tagName.Length; // TODO: Calculate this instead
@@ -51,7 +50,7 @@ namespace AudioTagger
 
             lineOutput.Add(prependLine);
             lineOutput.Add(new string(' ', spacesToPrepend));
-            lineOutput.Add(tagName, headerColor);
+            lineOutput.Add(tagName);
             lineOutput.Add(new string(' ', spacesToAppend));
 
             foreach (var part in tagData)
@@ -70,8 +69,7 @@ namespace AudioTagger
                 {
                     new LineSubString(tagData)
                 },
-                prependLine,
-                headerColor);
+                prependLine);
         }
 
         public static IList<OutputLine> GetTagPrintedLines(MediaFile fileData)
