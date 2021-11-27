@@ -128,8 +128,7 @@ namespace AudioTagger
         public Dictionary<string, string> GetUpdateKeyValuePairs(MediaFile fileData)
         {
             var updateOutput = new Dictionary<string, string>();
-            const ConsoleColor headerColor = ConsoleColor.White;
-            const string prependLineWith = "";
+            // const string prependLineWith = "";
 
             if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
             {
