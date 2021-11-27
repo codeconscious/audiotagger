@@ -38,12 +38,12 @@ public class MediaFileViewer
         if (!string.IsNullOrWhiteSpace(file.Lyrics))
             table.AddRow("Lyrics", file.Lyrics[..25] + "...");
 
-        table.Columns[0].Width(11);
+        table.Columns[0].Width(5);
 
         var panel = new Panel(table);
-        panel.Header("[yellow]" + file.FileNameOnly.Replace("[", "[[").Replace("]", "]]") + "[/]", Justify.Left);
+        panel.Header("[yellow]" + Utilities.SanitizeSpectreString(file.FileNameOnly) + "[/]", Justify.Left);
         panel.Border = BoxBorder.Rounded;
-        panel.BorderStyle = new Style(Color.Grey19);
+        panel.BorderStyle = new Style(Color.Grey35);
         panel.Padding(5, 0, 5, 0);
         panel.Expand = true;
 
