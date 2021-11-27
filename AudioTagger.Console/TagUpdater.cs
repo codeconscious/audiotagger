@@ -123,7 +123,8 @@ namespace AudioTagger.Console
                 return shouldCancel;
             }
 
-            printer.Print("Updates saved", ResultType.Success, 0, 1);
+            //printer.Print("Updates saved", ResultType.Success, 0, 1);
+            AnsiConsole.MarkupLine("[green]Updates saved[/]" + Environment.NewLine);
             return shouldCancel;
         }
 
