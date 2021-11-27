@@ -8,15 +8,6 @@ using System.Globalization;
 
 namespace AudioTagger
 {
-    public enum UpdatableField
-    {
-        Artists,
-        Title,
-        Album,
-        Year,
-        Genres
-    }
-
     public class UpdatableFields
     {
         public string[]? Artists { get; }
