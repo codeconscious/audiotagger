@@ -8,35 +8,42 @@ public class MediaFileViewer
     {
         ArgumentNullException.ThrowIfNull(file);
 
+        // TODO: Handle colors more gracefully.
+        var tagNameFormatter = (string s) => "[grey]" + s +"[/]";
+
         var table = new Table();
         table.AddColumns("", "");
         table.Border = TableBorder.None;
         table.HideHeaders();
         table.Expand = true;
 
-        table.AddRow("Title", file.Title);
-        table.AddRow("Artist", string.Join(", ", file.Artists));
-        table.AddRow("Album", file.Album);
-        table.AddRow("Year", file.Year.ToString());
-        table.AddRow("Duration", file.Duration.ToString("m\\:ss"));
+        table.AddRow(tagNameFormatter("Title"), file.Title);
+        table.AddRow(tagNameFormatter("Artist"), string.Join(", ", file.Artists));
+        table.AddRow(tagNameFormatter("Album"), file.Album);
+        table.AddRow(tagNameFormatter("Year"), file.Year.ToString());
+        table.AddRow(tagNameFormatter("Duration"), file.Duration.ToString("m\\:ss"));
 
         var genreCount = file.Genres.Length;
-        table.AddRow("Genre(s)", string.Join(", ", file.Genres) +
+        table.AddRow(tagNameFormatter("Genres"), string.Join(", ", file.Genres) +
                                  (genreCount > 1 ? $" ({genreCount})" : ""));
 
         var bitrate = file.BitRate.ToString();
         var sampleRate = file.SampleRate.ToString("#,##0");
         var hasReplayGain = file.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
-        table.AddRow("Quality", $"{bitrate} kbps @ {sampleRate} kHz | {hasReplayGain}");
+        table.AddRow(tagNameFormatter("Quality"), $"{bitrate} kbps @ {sampleRate} kHz | {hasReplayGain}");
 
         if (file.Composers?.Length > 0)
-            table.AddRow("Composers", string.Join("; ", file.Composers));
+        {
+            table.AddRow(
+                tagNameFormatter("Composers"),
+                string.Join("; ", file.Composers));
+        }
 
         if (!string.IsNullOrWhiteSpace(file.Comments))
-            table.AddRow("Comments", file.Comments);
+            table.AddRow(tagNameFormatter("Comments"), file.Comments);
 
         if (!string.IsNullOrWhiteSpace(file.Lyrics))
-            table.AddRow("Lyrics", file.Lyrics[..25] + "...");
+            table.AddRow(tagNameFormatter("Lyrics"), file.Lyrics[..25] + "...");
 
         table.Columns[0].Width(5);
 
