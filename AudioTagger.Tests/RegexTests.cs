@@ -268,6 +268,17 @@ namespace AudioTagger.Tests
                          Title = "居酒屋"
                      }
                 };
+
+                yield return new object[]
+                {
+                     new ParsedItem("Official髭男dism - I LOVE... [2020] {J-Pop}.mp3")
+                     {
+                         Artists = new List<string> { "Official髭男dism" },
+                         Title = "I LOVE...",
+                         Year = "2020",
+                         Genres = new List<string> { "J-Pop" }
+                     }
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
