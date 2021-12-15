@@ -1,3 +1,4 @@
+using System.IO;
 namespace AudioTagger.Console
 {
     public class MediaFileRenamer : IPathOperation
@@ -13,8 +14,10 @@ namespace AudioTagger.Console
                 return;
             }
 
-            foreach (var file in mediaFiles)
+            for (var i = 0; i < mediaFiles.Count; i++)
             {
+                var file = mediaFiles.ElementAt(i);
+
                 var artistsText = string.Join(" & ", file.Artists) + " - ";
                 var albumText = string.IsNullOrWhiteSpace(file.Album)
                     ? string.Empty
@@ -25,12 +28,16 @@ namespace AudioTagger.Console
                     ? " {" + string.Join("; ", file.Genres) + "}"
                     : string.Empty;
 
-                var desiredFileName = string.Concat(
+                var newFileName = string.Concat(
                     new string[] {
                         artistsText, albumText, titleText, yearText, genreText});
 
-                // TODO: Print to the display
-                // TODO: Rename the file
+                printer.Print("Desired name: " + newFileName);
+
+                // TODO: Ask user to confirm the name change
+
+                var currentFile = new FileInfo(file.Path);
+                currentFile.MoveTo(currentFile.Directory.FullName + Path.DirectorySeparatorChar + newFileName + currentFile.Extension);
             }
         }
     }
