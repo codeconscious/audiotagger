@@ -279,6 +279,29 @@ namespace AudioTagger.Tests
                          Genres = new List<string> { "J-Pop" }
                      }
                 };
+
+                // Contains "ft."
+                yield return new object[]
+                {
+                     new ParsedItem("Natalia Lafourcade - Tú Me Acostumbraste ft. Omara Portuondo (En Manos de Los Macorinos) (Cover).mp3")
+                     {
+                         Artists = new List<string> { "Natalia Lafourcade" },
+                         Title = "Tú Me Acostumbraste ft. Omara Portuondo (En Manos de Los Macorinos) (Cover)",
+                     }
+                };
+
+                // Album-based
+                yield return new object[]
+                {
+                     new ParsedItem("Rinsyoe Kida, Akira Ishikawa - Tsugaru Jongara Bushi: Drum & Tsugaru Jamisen [1973] - 01 - 津軽じょんがら節.mp3")
+                     {
+                         Artists = new List<string> { "Rinsyoe Kida", "Akira Ishikawa" },
+                         Album = "Tsugaru Jongara Bushi: Drum & Tsugaru Jamisen",
+                         Title = "津軽じょんがら節",
+                         Track = "1",
+                         Year = "1973",
+                     }
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
