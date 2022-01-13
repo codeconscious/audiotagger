@@ -16,15 +16,18 @@ namespace AudioTagger
         public static List<string> Regexes => new()
         {
             /// TODO: Place into a file instead.
+            // Album-based
+            // @"(?<artists>.+?) - (?<album>.+?) - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?: \[(?<year>\d{4})\])?(?: \{(?<genres>.+?)\})?(?=\.\S+)",
+            @"(?<artists>.+?) - (?<album>.+?)(?: ?\[(?<year>\d{4})\])? - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?: \{(?<genres>.+?)\})?(?=\.\S+)",
+
             // Track-based
             @"(?<artists>.+) - (?<album>.+) - (?<discNo>[1-9]{1,2})[\.-](?<trackNo>[1-9]+) - (?<title>.+?(?:\.{3})?) (?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
             @"(?<artists>.+) - (?<album>.+) - (?<trackNo>[1-9]{1,3}) - (?<title>.+?(?:\.{3})?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
             @"(?<artists>.+) - (?<album>.+) - (?<title>.+?(?:\.{3})?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
-            @"(?<artists>.+) - (?<title>.+(?:\.{3})?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
+            @"(?<artists>.+) - (?<title>.+?(?:\.{3})?)(?: \[(?<year>\d{4})\])?(?: \{(?<genres>.+?)\})?(?=\.\S+)",
             @"(?<title>.+?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\.[^.]+$)",
 
-            // Album-based
-            @"(?<artists>.+) - (?<album>.+) (?:\[(?<year>\d{4})\])? - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?=\..+)"
+
         };
 
         /// <summary>
