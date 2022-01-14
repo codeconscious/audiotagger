@@ -22,10 +22,10 @@ namespace AudioTagger.Console
 
                     isCancelled = UpdateTags(mediaFile, printer);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    printer.Error($"Error updating {mediaFile.FileNameOnly}: {e.Message}");
-                    printer.Print(e.StackTrace ?? "Stack trace not found.");
+                    printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
+                    printer.PrintException(ex);
                     continue;
                 }
             }
