@@ -157,5 +157,10 @@ namespace AudioTagger.Console
 
             AnsiConsole.Render(table);
         }
+
+        public void PrintException(Exception ex)
+        {
+            AnsiConsole.WriteException(ex);
+        }
     }
 }
