@@ -280,6 +280,17 @@ namespace AudioTagger.Tests
                      }
                 };
 
+                // Test accented characters
+                yield return new object[]
+                {
+                     new ParsedItem("Scott Summers - Size X Jeans - Eyé On You.mp3")
+                     {
+                         Artists = new List<string> { "Scott Summers" },
+                         Album = "Size X Jeans",
+                         Title = "Eyé On You"
+                     }
+                };
+
                 // Contains "ft."
                 yield return new object[]
                 {
