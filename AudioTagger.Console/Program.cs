@@ -39,7 +39,7 @@ namespace AudioTagger.Console
                 IReadOnlyCollection<MediaFile> filesData;
                 try
                 {
-                    filesData = MediaFile.PopulateFileData(path);
+                    filesData = MediaFile.PopulateFileData(path, searchSubDirectories: false);
                 }
                 catch (InvalidOperationException ex)
                 {
