@@ -99,7 +99,7 @@ namespace AudioTagger.Tests
                 };
 
                 yield return new object[]
-{
+                {
                     new ParsedItem("Michael Jackson - Thriller - 2 - Beat It.mp4")
                     {
                         Title = "Beat It",
@@ -107,30 +107,30 @@ namespace AudioTagger.Tests
                         Album = "Thriller",
                         Track = "2",
                     }
-};
-
-                yield return new object[]
-                {
-                    new ParsedItem("Michael Jackson - Thriller - Beat It [2005] {Pop}.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Year = "2005",
-                        Genres = new List<string> { "Pop"}
-                    }
                 };
 
-                yield return new object[]
-                {
-                    new ParsedItem("Michael Jackson - Thriller - Beat It [2005].mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Year = "2005",
-                    }
-                };
+                // yield return new object[]
+                // {
+                //     new ParsedItem("Michael Jackson - Thriller - Beat It [2005] {Pop}.mp4")
+                //     {
+                //         Title = "Beat It",
+                //         Artists = new List<string> { "Michael Jackson" },
+                //         Album = "Thriller",
+                //         Year = "2005",
+                //         Genres = new List<string> { "Pop"}
+                //     }
+                // };
+
+                // yield return new object[]
+                // {
+                //     new ParsedItem("Michael Jackson - Thriller - Beat It [2005].mp4")
+                //     {
+                //         Title = "Beat It",
+                //         Artists = new List<string> { "Michael Jackson" },
+                //         Album = "Thriller",
+                //         Year = "2005",
+                //     }
+                // };
 
                 yield return new object[]
                 {
@@ -143,17 +143,17 @@ namespace AudioTagger.Tests
                     }
                 };
 
-                yield return new object[]
-                {
-                    new ParsedItem("Michael Jackson - Thriller - Beat It [2005] {Pop; Rock}.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Year = "2005",
-                        Genres = new List<string> { "Pop", "Rock" }
-                    }
-                };
+                // yield return new object[]
+                // {
+                //     new ParsedItem("Michael Jackson - Thriller - Beat It [2005] {Pop; Rock}.mp4")
+                //     {
+                //         Title = "Beat It",
+                //         Artists = new List<string> { "Michael Jackson" },
+                //         Album = "Thriller",
+                //         Year = "2005",
+                //         Genres = new List<string> { "Pop", "Rock" }
+                //     }
+                // };
 
                 yield return new object[]
                 {
