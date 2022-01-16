@@ -31,25 +31,35 @@ namespace AudioTagger
             {
                 if (element.Name == "title")
                 {
-                    Title = element.Value.Trim().Normalize();
-                    Count++;
+                    // TODO: Relocate the replacements.
+                    Title = element.Value.Trim().Normalize()
+                                         .Replace("___", "　")
+                                         .Replace("__", " ");
+                                         Count++;
                 }
                 else if (element.Name == "artists")
                 {
-                    Artists = element.Value.Split(new[] { ";" },
-                                                  StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    Artists = element.Value.Replace("___", "　")
+                                           .Replace("__", " ")
+                                           .Split(new[] { ";" },
+                                                  StringSplitOptions.RemoveEmptyEntries |
+                                                  StringSplitOptions.TrimEntries)
                                            .Select(a => a.Normalize())
                                            .ToArray();
                     Count++;
                 }
                 else if (element.Name == "album")
                 {
-                    Album = element.Value.Trim().Normalize();
+                    Album = element.Value.Trim().Normalize()
+                                         .Replace("___", "　")
+                                         .Replace("__", " ");
                     Count++;
                 }
                 else if (element.Name == "genres")
                 {
-                    Genres = element.Value.Split(new[] { ";" },
+                    Genres = element.Value.Replace("___", "　")
+                                          .Replace("__", " ")
+                                          .Split(new[] { ";" },
                                                  StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                                           .Select(g => g.Normalize())
                                           .ToArray();
