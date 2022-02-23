@@ -129,14 +129,38 @@ namespace AudioTagger.Console
             };
         }
 
-        public void PrintDivider(string? text, ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
+        public void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string>? proposedUpdates)
         {
-            var rule = new Rule(Utilities.SanitizeSpectreString(text))
-            {
-                Alignment = Justify.Left
-            };
+            ArgumentNullException.ThrowIfNull(proposedUpdates);
 
-            AnsiConsole.Render(rule);
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            table.AddColumn($"[aqua]{Utilities.SanitizeSpectreString(mediaFile.FileNameOnly)}[/]");
+
+            var tagTable = new Table();
+            tagTable.Border(TableBorder.None);
+            tagTable.AddColumns("Tag Name", "Tag Value"); // Hidden on the next line, though.
+            tagTable.ShowHeaders = false;
+            var tagLines = OutputLine.GetTagKeyValuePairs(mediaFile);
+            foreach (var line in tagLines)
+            {
+                tagTable.AddRow(line.Key, line.Value);
+            }
+            table.AddRow(tagTable);
+
+            tagTable.AddEmptyRow();
+
+            foreach (var update in proposedUpdates)
+            {
+                tagTable.AddRow($"[olive]{update.Key}[/]", $"[yellow]{update.Value}[/]");
+            }
+
+            AnsiConsole.Render(table);
+        }
+
+        public void PrintException(Exception ex)
+        {
+            AnsiConsole.WriteException(ex);
         }
     }
 }

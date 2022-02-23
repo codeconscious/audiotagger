@@ -1,6 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿global using System;
+global using System.Linq;
+global using System.Collections.Generic;
+global using System.Collections.Immutable;
 
 namespace AudioTagger.Console
 {
@@ -8,8 +9,7 @@ namespace AudioTagger.Console
     {
         public static void Main(string[] args)
         {
-            IPrinter printer = new ConsolePrinter();
-            // IPrinter printer = new SpectrePrinter();
+            IPrinter printer = new SpectrePrinter();
 
             if (args.Length == 0)
             {
@@ -39,7 +39,7 @@ namespace AudioTagger.Console
                 IReadOnlyCollection<MediaFile> filesData;
                 try
                 {
-                    filesData = MediaFile.PopulateFileData(path);
+                    filesData = MediaFile.PopulateFileData(path, searchSubDirectories: false);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -60,15 +60,15 @@ namespace AudioTagger.Console
         /// <summary>
         /// Get the correct operation from the argument passed in.
         /// </summary>
-        /// <param name="modeArg"></param>
-        /// <returns></returns>
+        /// <param name="modeArg">The argument passed from the console.</param>
+        /// <returns>A class for performing operations on files.</returns>
         private static IPathOperation? OperationFactory(string modeArg)
         {
             return modeArg.ToLowerInvariant() switch
             {
                 "-v" or "--view" => new TagViewer(),
                 "-u" or "--update" => new TagUpdater(),
-                "-r" or "--rename" => new FileRenamer(),
+                "-r" or "--rename" => new MediaFileRenamer(),
                 _ => null
             };
         }
@@ -82,7 +82,6 @@ namespace AudioTagger.Console
             printer.Print("   -v or --view   : View tags");
             printer.Print("   -u or --update : Update tags");
             printer.Print("   -r or --rename : Rename files based on tags (Coming soonish)");
-            // TODO: Add option to disable colors
             // TODO: Make album art opt-in
         }
     }

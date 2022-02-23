@@ -8,15 +8,6 @@ using System.Globalization;
 
 namespace AudioTagger
 {
-    public enum UpdatableField
-    {
-        Artists,
-        Title,
-        Album,
-        Year,
-        Genres
-    }
-
     public class UpdatableFields
     {
         public string[]? Artists { get; }
@@ -27,31 +18,48 @@ namespace AudioTagger
 
         public byte Count { get; }
 
-        public UpdatableFields(IEnumerable<Group> regexElements)
+        /// <summary>
+        /// Constructor that reads matched regex group names and
+        /// maps the data to the correct tag name property.
+        /// </summary>
+        /// <param name="matchedGroups"></param>
+        public UpdatableFields(IEnumerable<Group> matchedGroups)
         {
-            foreach (var element in regexElements)
+            ArgumentNullException.ThrowIfNull(matchedGroups);
+
+            foreach (var element in matchedGroups)
             {
                 if (element.Name == "title")
                 {
-                    Title = element.Value.Trim().Normalize();
-                    Count++;
+                    // TODO: Relocate the replacements.
+                    Title = element.Value.Trim().Normalize()
+                                         .Replace("___", "　")
+                                         .Replace("__", " ");
+                                         Count++;
                 }
                 else if (element.Name == "artists")
                 {
-                    Artists = element.Value.Split(new[] { ";" },
-                                                  StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    Artists = element.Value.Replace("___", "　")
+                                           .Replace("__", " ")
+                                           .Split(new[] { ";" },
+                                                  StringSplitOptions.RemoveEmptyEntries |
+                                                  StringSplitOptions.TrimEntries)
                                            .Select(a => a.Normalize())
                                            .ToArray();
                     Count++;
                 }
                 else if (element.Name == "album")
                 {
-                    Album = element.Value.Trim().Normalize();
+                    Album = element.Value.Trim().Normalize()
+                                         .Replace("___", "　")
+                                         .Replace("__", " ");
                     Count++;
                 }
                 else if (element.Name == "genres")
                 {
-                    Genres = element.Value.Split(new[] { ";" },
+                    Genres = element.Value.Replace("___", "　")
+                                          .Replace("__", " ")
+                                          .Split(new[] { ";" },
                                                  StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                                           .Select(g => g.Normalize())
                                           .ToArray();
@@ -65,10 +73,10 @@ namespace AudioTagger
             }
         }
 
+        // TODO: Delete if not used.
         public IList<OutputLine> GetUpdateOutput(MediaFile fileData)
         {
             var updateOutput = new List<OutputLine>();
-            const ConsoleColor headerColor = ConsoleColor.White;
             const string prependLineWith = "";
 
             if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
@@ -77,8 +85,7 @@ namespace AudioTagger
                     OutputLine.TagDataWithHeader(
                         "Artists",
                         string.Join("; ", Artists),
-                        prependLineWith,
-                        headerColor));
+                        prependLineWith));
             }
 
             if (Title != null && Title != fileData.Title)
@@ -87,8 +94,7 @@ namespace AudioTagger
                     OutputLine.TagDataWithHeader(
                         "Title",
                         Title,
-                        prependLineWith,
-                        headerColor));
+                        prependLineWith));
             }
 
             if (Album != null && Album != fileData.Album)
@@ -97,8 +103,7 @@ namespace AudioTagger
                     OutputLine.TagDataWithHeader(
                         "Album",
                         Album,
-                        prependLineWith,
-                        headerColor));
+                        prependLineWith));
             }
 
             if (Year != null && Year != fileData.Year)
@@ -107,19 +112,58 @@ namespace AudioTagger
                     OutputLine.TagDataWithHeader(
                         "Year",
                         Year.Value.ToString(CultureInfo.InvariantCulture),
-                        prependLineWith,
-                        headerColor));
+                        prependLineWith));
             }
 
             if (Genres?.All(a => fileData.Genres.Contains(a)) == false)
             {
                 var genreCount = Genres.Length;
+
                 updateOutput.Add(
                     OutputLine.TagDataWithHeader(
                         "Genres",
                         string.Join("; ", Genres) + (genreCount > 1 ? $" ({genreCount})" : ""),
-                        prependLineWith,
-                        headerColor));
+                        prependLineWith));
+            }
+
+            return updateOutput;
+        }
+
+        public Dictionary<string, string> GetUpdateKeyValuePairs(MediaFile fileData)
+        {
+            var updateOutput = new Dictionary<string, string>();
+
+            if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
+            {
+                updateOutput.Add("Artists", string.Join("; ", Artists));
+            }
+
+            if (Title != null && Title != fileData.Title)
+            {
+                updateOutput.Add("Title", Title);
+            }
+
+            if (Album != null && Album != fileData.Album)
+            {
+                updateOutput.Add("Album", Album);
+            }
+
+            if (Year != null && Year != fileData.Year)
+            {
+                updateOutput.Add("Year", Year.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (Genres?.All(a => fileData.Genres.Contains(a)) == false)
+            {
+                var genreCount = Genres.Length;
+
+                updateOutput.Add(
+                    "Genres",
+                    string.Join(
+                        "; ", Genres) +
+                        (genreCount > 1
+                            ? $" ({genreCount})"
+                            : ""));
             }
 
             return updateOutput;

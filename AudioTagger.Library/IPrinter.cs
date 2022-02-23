@@ -18,6 +18,9 @@ namespace AudioTagger
 
         char GetResultSymbol(ResultType type);
 
-        void PrintDivider(string? text, ConsoleColor? fgColor = null, ConsoleColor? bgColor = null);
+        // void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string>? proposedUpdates);
+        void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string>? proposedUpdates);
+
+        void PrintException(Exception ex);
     }
 }

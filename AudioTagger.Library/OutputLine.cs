@@ -40,8 +40,7 @@ namespace AudioTagger
         }
 
         public static OutputLine TagDataWithHeader(string tagName, IReadOnlyList<LineSubString> tagData,
-                                            string prependLine = "",
-                                            ConsoleColor headerColor = ConsoleColor.DarkGray)
+                                            string prependLine = "")
         {
             const int spacesToPrepend = 4;
             var spacesToAppend = 13 - tagName.Length; // TODO: Calculate this instead
@@ -51,7 +50,7 @@ namespace AudioTagger
 
             lineOutput.Add(prependLine);
             lineOutput.Add(new string(' ', spacesToPrepend));
-            lineOutput.Add(tagName, headerColor);
+            lineOutput.Add(tagName);
             lineOutput.Add(new string(' ', spacesToAppend));
 
             foreach (var part in tagData)
@@ -70,8 +69,7 @@ namespace AudioTagger
                 {
                     new LineSubString(tagData)
                 },
-                prependLine,
-                headerColor);
+                prependLine);
         }
 
         public static IList<OutputLine> GetTagPrintedLines(MediaFile fileData)
@@ -111,6 +109,39 @@ namespace AudioTagger
 
             if (!string.IsNullOrWhiteSpace(fileData.Comments))
                 lines.Add(TagDataWithHeader("Comment", fileData.Comments));
+
+            return lines;
+        }
+
+        public static Dictionary<string, string> GetTagKeyValuePairs(MediaFile fileData)
+        {
+            var lines = new Dictionary<string, string>();
+
+            lines.Add("Title", fileData.Title);
+            lines.Add("Artist(s)", string.Join(", ", fileData.Artists));
+            lines.Add("Album", fileData.Album);
+            lines.Add("Year", fileData.Year.ToString());
+            lines.Add("Duration", fileData.Duration.ToString("m\\:ss"));
+
+            var genreCount = fileData.Genres.Length;
+            lines.Add("Genre(s)", string.Join(", ", fileData.Genres) +
+                                  (genreCount > 1 ? $" ({genreCount})" : ""));
+
+            var bitrate = fileData.BitRate.ToString();
+            var sampleRate = fileData.SampleRate.ToString("#,##0");
+            var hasReplayGain = fileData.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
+
+            // Create formatted quality line
+            const string genreSeparator = "  |  ";
+            lines.Add(
+                "Quality",
+                $"{bitrate}kbps" + genreSeparator + $"{sampleRate} kHz" + genreSeparator + hasReplayGain);
+
+            if (fileData.Composers?.Length > 0)
+                lines.Add($"Composers", string.Join("; ", fileData.Composers));
+
+            if (!string.IsNullOrWhiteSpace(fileData.Comments))
+                lines.Add("Comment", fileData.Comments);
 
             return lines;
         }

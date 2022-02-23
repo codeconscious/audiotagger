@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Spectre.Console;
 
 namespace AudioTagger.Console
 {
@@ -21,10 +22,10 @@ namespace AudioTagger.Console
 
                     isCancelled = UpdateTags(mediaFile, printer);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    printer.Error($"Error updating {mediaFile.FileNameOnly}: {e.Message}");
-                    printer.Print(e.StackTrace ?? "Stack trace not found.");
+                    printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
+                    printer.PrintException(ex);
                     continue;
                 }
             }
@@ -39,7 +40,7 @@ namespace AudioTagger.Console
             // TODO: Refactor cancellation so this isn't needed.
             const bool shouldCancel = false;
 
-            var match = RegexCollection.GetFirstMatch(mediaFile);
+            var match = RegexCollection.GetFirstMatch(mediaFile.FileNameOnly);
 
             // If there are no regex matches against the filename, we cannot continue.
             if (match == null)
@@ -62,7 +63,7 @@ namespace AudioTagger.Console
 
             var updateableFields = new UpdatableFields(matchedTags);
 
-            var proposedUpdates = updateableFields.GetUpdateOutput(mediaFile);
+            var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
             if (proposedUpdates?.Any() != true)
             {
@@ -72,25 +73,39 @@ namespace AudioTagger.Console
             }
 
             // Print the filename
-            printer.PrintDivider(mediaFile.FileNameOnly, ConsoleColor.Cyan);
+            //printer.PrintDivider(mediaFile.FileNameOnly, ConsoleColor.Cyan);
 
             // Print the current tag data.
-            printer.Print(OutputLine.GetTagPrintedLines(mediaFile), 1, 0);
+            // printer.Print(OutputLine.GetTagPrintedLines(mediaFile), 1, 0);
+
+            printer.PrintTagDataToTable(mediaFile, proposedUpdates);
 
             // Show the proposed updates and ask the user to confirm.
-            printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
-            foreach (var update in proposedUpdates)
-                printer.Print(update.Line);
+            // printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
+            // foreach (var update in proposedUpdates)
+            //     printer.Print(update.Line);
 
-            var response = ResponseHandler.AskUserYesNoCancel(printer);
+            const string yes = "Yes";
+            const string no = "No";
+            const string cancel = "Cancel";
 
-            if (response == UserResponse.Cancel)
+            var response = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Apply these updates?")
+                    // .PageSize(10)
+                    // .MoreChoicesText("[grey](Move up and down to reveal more fruits)[/]")
+                    .AddChoices(new[] { no, yes, cancel }));
+
+
+            // var response = ResponseHandler.AskUserYesNoCancel(printer);
+
+            if (response == cancel)
             {
                 printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
                 return true;
             }
 
-            if (response == UserResponse.No)
+            if (response == no)
             {
                 printer.Print("No updates made", ResultType.Neutral, 0, 1);
                 return shouldCancel;
@@ -108,7 +123,8 @@ namespace AudioTagger.Console
                 return shouldCancel;
             }
 
-            printer.Print("Updates saved", ResultType.Success, 0, 1);
+            //printer.Print("Updates saved", ResultType.Success, 0, 1);
+            AnsiConsole.MarkupLine("[green]Updates saved[/]" + Environment.NewLine);
             return shouldCancel;
         }
 
