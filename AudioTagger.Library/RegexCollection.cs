@@ -33,7 +33,7 @@ namespace AudioTagger
         /// <summary>
         /// Returns the first found regex matches for a filename, or null if none.
         /// </summary>
-        /// <returns>Matched tag data</returns>
+        /// <returns>Matched tag data; otherwise, null if no matches are found.</returns>
         public static Match? GetFirstMatch(string fileName)
         {
             foreach (var regexText in Regexes)
