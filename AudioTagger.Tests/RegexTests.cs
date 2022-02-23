@@ -280,6 +280,31 @@ namespace AudioTagger.Tests
                      }
                 };
 
+                // Album first, various artists
+                yield return new object[]
+                {
+                    new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart.mp3")
+                    {
+                        Album = "Compilation of Jamz",
+                        Artists = new List<string> { "Ororo Munroe" },
+                        Title = "Storms of My Heart",
+                        Year = "2022"
+                    }
+                };
+
+                // Album first, various artists
+                yield return new object[]
+                {
+                    new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart {World}.mp3")
+                    {
+                        Album = "Compilation of Jamz",
+                        Artists = new List<string> { "Ororo Munroe" },
+                        Title = "Storms of My Heart",
+                        Year = "2022",
+                        Genres = new List<string> { "World" }
+                    }
+                };
+
                 // Test accented characters
                 yield return new object[]
                 {
