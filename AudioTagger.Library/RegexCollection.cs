@@ -1,10 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Text.RegularExpressions;
 
 namespace AudioTagger
 {
@@ -16,18 +10,24 @@ namespace AudioTagger
         public static List<string> Regexes => new()
         {
             /// TODO: Place into a file instead.
-            // Album-based
+            #region Album-based
             // @"(?<artists>.+?) - (?<album>.+?) - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?: \[(?<year>\d{4})\])?(?: \{(?<genres>.+?)\})?(?=\.\S+)",
             @"(?<artists>.+?) - (?<album>.+?)(?: ?\[(?<year>\d{4})\])? - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?: \{(?<genres>.+?)\})?(?=\.\S+)",
             @"(?<artists>.+?) - (?<album>.+?)(?: ?\[(?<year>\d{4})\])? - (?<title>.+?(?:\.{3})?)(?: \{(?<genres>.+?)\})?(?=\.\S+)",
+            // AlbumName = 020 20. TrackArtist - TrackName.mp3:
+            @"(?<album>.+?)(?: ?\[(?<year>\d{4})\])? = (?:\d{1,3} )?(?:(?<discNo>[1-9]{1,2})[\.-])?(?:(?<trackNo>[0-9]+)\.?) (?<artists>.+?) - (?<title>.+?(?:\.{3})?)(?: \{(?<genres>.+)\})?(?:\..+)",
             @"(?<album>.+?)(?: ?\[(?<year>\d{4})\])? = (?<artists>.+?) - (?<title>.+?(?:\.{3})?)(?: \{(?<genres>.+)\})?(?:\..+)",
 
-            // Track-based
+
+            #endregion
+
+            #region Track-based
             @"(?<artists>.+) - (?<album>.+) - (?<discNo>[1-9]{1,2})[\.-](?<trackNo>[1-9]+) - (?<title>.+?(?:\.{3})?) (?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
             @"(?<artists>.+) - (?<album>.+) - (?<trackNo>[1-9]{1,3}) - (?<title>.+?(?:\.{3})?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
             @"(?<artists>.+) - (?<album>.+) - (?<title>.+?(?:\.{3})?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\..+)",
             @"(?<artists>.+) - (?<title>.+?(?:\.{3})?)(?: \[(?<year>\d{4})\])?(?: \{(?<genres>.+?)\})?(?=\.\S+)",
             @"(?<title>.+?) ?(?:\[(?<year>\d{4})\])? ?(?:\{(?<genres>.+?)\})?(?=\.[^.]+$)",
+            #endregion
         };
 
         /// <summary>

@@ -305,6 +305,31 @@ namespace AudioTagger.Tests
                     }
                 };
 
+                // Album first, various artists, no year, superfluous track number
+                yield return new object[]
+                {
+                    new ParsedItem("最強の名曲集 = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
+                    {
+                        Album = "最強の名曲集",
+                        Artists = new List<string> { "坂本龍馬" },
+                        Title = "南方仁のとの会話",
+                        Track = "20"
+                    }
+                };
+
+                // Album first, various artists, superfluous track number
+                yield return new object[]
+                {
+                    new ParsedItem("最強の名曲集 [2022] = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
+                    {
+                        Album = "最強の名曲集",
+                        Artists = new List<string> { "坂本龍馬" },
+                        Title = "南方仁のとの会話",
+                        Year = "2022",
+                        Track = "20"
+                    }
+                };
+
                 // Test accented characters
                 yield return new object[]
                 {
