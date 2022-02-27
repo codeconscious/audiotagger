@@ -17,10 +17,10 @@ namespace AudioTagger.Console
                 return;
             }
 
-            var queuedArgs = new Queue<string>(args.Select(a => a.Trim()));
+            var argQueue = new Queue<string>(args.Select(a => a.Trim()));
 
             // Select the desired operation using the first variable.
-            IPathOperation? operation = OperationFactory(queuedArgs.Dequeue());
+            IPathOperation? operation = OperationFactory(argQueue.Dequeue());
 
             if (operation == null)
             {
@@ -28,13 +28,13 @@ namespace AudioTagger.Console
                 return;
             }
 
-            if (!queuedArgs.Any())
+            if (!argQueue.Any())
             {
                 printer.Error("At least one file or directory path to process must be provided.");
                 return;
             }
 
-            foreach (var path in queuedArgs)
+            foreach (var path in argQueue)
             {
                 IReadOnlyCollection<MediaFile> filesData;
                 try
