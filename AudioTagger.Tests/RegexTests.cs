@@ -363,6 +363,18 @@ namespace AudioTagger.Tests
                          Year = "1973",
                      }
                 };
+
+                // "S.O.S." parsing issues
+                yield return new object[]
+                {
+                     new ParsedItem("Arbitrarious - S.O.S. (@地球) [1865] {International}.mp3")
+                     {
+                         Artists = new List<string> { "Arbitrarious" },
+                         Title = "S.O.S. (@地球)",
+                         Year = "1865",
+                         Genres = new List<string> { "International" }
+                     }
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
