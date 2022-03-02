@@ -10,22 +10,23 @@ namespace AudioTagger.Console
     {
         public void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
         {
-            bool isCancelled = false;
+            var isCancelled = false;
+            var doConfirm = true;
 
             // Process each file
             foreach (var mediaFile in mediaFiles)
             {
                 try
                 {
+                    isCancelled = UpdateTags(mediaFile, printer, ref doConfirm);
+
                     if (isCancelled)
                         break;
-
-                    isCancelled = UpdateTags(mediaFile, printer);
                 }
                 catch (Exception ex)
                 {
                     printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
-                    printer.PrintException(ex);
+                    //printer.PrintException(ex);
                     continue;
                 }
             }
@@ -35,7 +36,7 @@ namespace AudioTagger.Console
         /// Make proposed tag updates to the specified file if the user agrees.
         /// </summary>
         /// <returns>A bool indicating whether the following file should be processed.</returns>
-        private static bool UpdateTags(MediaFile mediaFile, IPrinter printer)
+        private static bool UpdateTags(MediaFile mediaFile, IPrinter printer, ref bool doConfirm)
         {
             // TODO: Refactor cancellation so this isn't needed.
             const bool shouldCancel = false;
@@ -85,30 +86,35 @@ namespace AudioTagger.Console
             // foreach (var update in proposedUpdates)
             //     printer.Print(update.Line);
 
-            const string yes = "Yes";
-            const string no = "No";
-            const string cancel = "Cancel";
-
-            var response = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("Apply these updates?")
-                    // .PageSize(10)
-                    // .MoreChoicesText("[grey](Move up and down to reveal more fruits)[/]")
-                    .AddChoices(new[] { no, yes, cancel }));
-
-
-            // var response = ResponseHandler.AskUserYesNoCancel(printer);
-
-            if (response == cancel)
+            if (doConfirm)
             {
-                printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
-                return true;
-            }
+                const string no = "No";
+                const string yes = "Yes";
+                const string yesToAll = "Yes To All";
+                const string cancel = "Cancel";
 
-            if (response == no)
-            {
-                printer.Print("No updates made", ResultType.Neutral, 0, 1);
-                return shouldCancel;
+                var response = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                        .Title("Apply these updates?")
+                        .AddChoices(new[] { no, yes, yesToAll, cancel }));
+
+                if (response == cancel)
+                {
+                    printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
+                    return true;
+                }
+
+                if (response == no)
+                {
+                    printer.Print("No updates made", ResultType.Neutral, 0, 1);
+                    return shouldCancel;
+                }
+
+                if (response == yesToAll)
+                {
+                    // Avoid asking next time.
+                    doConfirm = false;
+                }
             }
 
             // Make the tag updates
