@@ -12,6 +12,7 @@ namespace AudioTagger.Console
         {
             var isCancelled = false;
             var doConfirm = true;
+            var errorFiles = new List<string>();
 
             // Process each file
             foreach (var mediaFile in mediaFiles)
@@ -27,8 +28,15 @@ namespace AudioTagger.Console
                 {
                     printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
                     //printer.PrintException(ex);
+                    errorFiles.Add(mediaFile.FileNameOnly);
                     continue;
                 }
+            }
+
+            if (errorFiles.Any())
+            {
+                printer.Print("Files with errors:");
+                errorFiles.ForEach(f => printer.Print("- " + f));
             }
         }
 
