@@ -169,6 +169,11 @@ namespace AudioTagger.Console
                 fileData.Year = updateableFields.Year.Value;
             }
 
+            if (updateableFields.TrackNo != null && updateableFields.TrackNo != fileData.TrackNo)
+            {
+                fileData.TrackNo = updateableFields.TrackNo.Value;
+            }
+
             if (updateableFields.Genres?.All(a => fileData.Genres.Contains(a)) == false)
             {
                 fileData.Genres = updateableFields.Genres;

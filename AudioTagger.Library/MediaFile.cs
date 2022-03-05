@@ -51,6 +51,12 @@ namespace AudioTagger
             set => _taggedFile.Tag.Year = value;
         }
 
+        public uint TrackNo
+        {
+            get => _taggedFile.Tag.Track;
+            set => _taggedFile.Tag.Track = value;
+        }
+
         public TimeSpan Duration
         {
             get => _taggedFile.Properties.Duration;

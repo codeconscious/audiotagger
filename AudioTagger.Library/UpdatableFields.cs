@@ -14,6 +14,7 @@ namespace AudioTagger
         public string? Title { get; }
         public string? Album { get; }
         public uint? Year { get; }
+        public uint? TrackNo { get; }
         public string[]? Genres { get; }
 
         public byte Count { get; }
@@ -70,6 +71,11 @@ namespace AudioTagger
                     Year = uint.TryParse(element.Value, out var parsed) ? parsed : 0;
                     Count++;
                 }
+                else if (element.Name == "trackNo")
+                {
+                    TrackNo = uint.TryParse(element.Value, out var parsed) ? parsed : 0;
+                    Count++;
+                }
             }
         }
 
@@ -115,6 +121,15 @@ namespace AudioTagger
                         prependLineWith));
             }
 
+            if (TrackNo != null && TrackNo != fileData.TrackNo)
+            {
+                updateOutput.Add(
+                    OutputLine.TagDataWithHeader(
+                        "Track",
+                        TrackNo.Value.ToString(CultureInfo.InvariantCulture),
+                        prependLineWith));
+            }
+
             if (Genres?.All(a => fileData.Genres.Contains(a)) == false)
             {
                 var genreCount = Genres.Length;
@@ -151,6 +166,11 @@ namespace AudioTagger
             if (Year != null && Year != fileData.Year)
             {
                 updateOutput.Add("Year", Year.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (TrackNo != null && TrackNo != fileData.TrackNo)
+            {
+                updateOutput.Add("Track", TrackNo.Value.ToString(CultureInfo.InvariantCulture));
             }
 
             if (Genres?.All(a => fileData.Genres.Contains(a)) == false)
