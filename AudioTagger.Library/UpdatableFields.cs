@@ -73,7 +73,7 @@ namespace AudioTagger
                 }
                 else if (element.Name == "trackNo")
                 {
-                    TrackNo = uint.TryParse(element.Value, out var parsed) ? parsed : 0;
+                    TrackNo = uint.TryParse(element.Value, out var parsed) ? parsed : null;
                     Count++;
                 }
             }
