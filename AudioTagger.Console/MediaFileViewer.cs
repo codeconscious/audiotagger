@@ -20,6 +20,7 @@ public class MediaFileViewer
         table.AddRow(tagNameFormatter("Title"), file.Title);
         table.AddRow(tagNameFormatter("Artist"), string.Join(", ", file.Artists));
         table.AddRow(tagNameFormatter("Album"), file.Album);
+        table.AddRow(tagNameFormatter("Track"), file.TrackNo.ToString());
         table.AddRow(tagNameFormatter("Year"), file.Year.ToString());
         table.AddRow(tagNameFormatter("Duration"), file.Duration.ToString("m\\:ss"));
 
@@ -54,6 +55,6 @@ public class MediaFileViewer
         panel.Padding(5, 0, 5, 0);
         panel.Expand = true;
 
-        AnsiConsole.Render(panel);
+        AnsiConsole.Write(panel);
     }
 }

@@ -155,7 +155,7 @@ namespace AudioTagger.Console
                 tagTable.AddRow($"[olive]{update.Key}[/]", $"[yellow]{update.Value}[/]");
             }
 
-            AnsiConsole.Render(table);
+            AnsiConsole.Write(table);
         }
 
         public void PrintException(Exception ex)
