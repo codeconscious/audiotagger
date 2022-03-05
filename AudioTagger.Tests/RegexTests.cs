@@ -375,6 +375,18 @@ namespace AudioTagger.Tests
                          Genres = new List<string> { "International" }
                      }
                 };
+
+                // "...WHY" parsing issues
+                yield return new object[]
+                {
+                     new ParsedItem("Paft Dunk - Ongakooz [1756] - 02 - ...WHY.mp3")
+                     {
+                         Artists = new List<string> { "Paft Dunk" },
+                         Album = "Ongakooz",
+                         Title = "...WHY",
+                         Year = "1756",
+                         Track = "2"                     }
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
