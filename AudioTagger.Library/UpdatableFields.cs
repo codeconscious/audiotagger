@@ -36,7 +36,7 @@ namespace AudioTagger
                     Title = element.Value.Trim().Normalize()
                                          .Replace("___", "　")
                                          .Replace("__", " ");
-                                         Count++;
+                    Count++;
                 }
                 else if (element.Name == "artists")
                 {
@@ -76,6 +76,19 @@ namespace AudioTagger
                     TrackNo = uint.TryParse(element.Value, out var parsed) ? parsed : null;
                     Count++;
                 }
+            }
+        }
+
+        public UpdatableFields(string tagField, dynamic newValue)
+        {
+            ArgumentNullException.ThrowIfNull(tagField);
+            ArgumentNullException.ThrowIfNull(newValue);
+
+            if (tagField.Equals("year", StringComparison.OrdinalIgnoreCase) &&
+                newValue is int newYear)
+            {
+                Year = (uint) newYear;
+                Count++;
             }
         }
 

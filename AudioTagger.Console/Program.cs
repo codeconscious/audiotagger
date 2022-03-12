@@ -68,6 +68,7 @@ namespace AudioTagger.Console
             {
                 "-v" or "--view" => new TagViewer(),
                 "-u" or "--update" => new TagUpdater(),
+                "-y" or "--update-year" => new TagUpdaterYearOnly(),
                 "-r" or "--rename" => new MediaFileRenamer(),
                 _ => null
             };
