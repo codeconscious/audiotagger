@@ -9,7 +9,7 @@ namespace AudioTagger.Console
             ArgumentNullException.ThrowIfNull(mediaFiles);
 
             var table = new Table();
-            table.AddColumns("Artist(s)", "Album", "Track", "Title", "Year", "Duration");
+            table.AddColumns("Artist(s)", "Album", "Track", "Title", "Year", "Length");
             table.Border = TableBorder.Rounded;
             table.Expand = true;
 
