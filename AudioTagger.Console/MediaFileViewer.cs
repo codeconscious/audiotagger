@@ -57,4 +57,23 @@ public class MediaFileViewer
 
         AnsiConsole.Write(panel);
     }
+
+    public TableRow PrintFileSummary(MediaFile file)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+
+        var rows = new List<string>
+        {
+            string.Join(", ", file.Artists),
+            file.Album,
+            file.TrackNo == 0 ? string.Empty : file.TrackNo.ToString(),
+            file.Title,
+            file.Year == 0 ? string.Empty : file.Year.ToString(),
+            file.Duration.ToString("m\\:ss")
+        };
+
+        var markups = rows.Select(r => new Markup(r));
+
+        return new TableRow(markups);
+    }
 }

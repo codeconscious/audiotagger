@@ -66,7 +66,8 @@ namespace AudioTagger.Console
         {
             return modeArg.ToLowerInvariant() switch
             {
-                "-v" or "--view" => new TagViewer(),
+                "-v" or "--view" or "--view-details" => new TagViewer(),
+                "-vs" or "--view-summary" => new TagSummaryViewer(),
                 "-u" or "--update" => new TagUpdater(),
                 "-y" or "--update-year" => new TagUpdaterYearOnly(),
                 "-r" or "--rename" => new MediaFileRenamer(),
