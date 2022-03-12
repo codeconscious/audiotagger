@@ -387,6 +387,16 @@ namespace AudioTagger.Tests
                          Year = "1756",
                          Track = "2"                     }
                 };
+
+                yield return new object[]
+                {
+                     new ParsedItem("真剣赫怒 - What's This, Mr.Random [2030].mp3")
+                     {
+                         Artists = new List<string> { "真剣赫怒" },
+                         Title = "What's This, Mr.Random",
+                         Year = "2030"
+                    }
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
