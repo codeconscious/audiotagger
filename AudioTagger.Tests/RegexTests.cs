@@ -397,6 +397,15 @@ namespace AudioTagger.Tests
                          Year = "2030"
                     }
                 };
+
+                yield return new object[]
+                {
+                     new ParsedItem("全世界の生物の魂 - If You... (Remix).mp3")
+                     {
+                         Artists = new List<string> { "全世界の生物の魂" },
+                         Title = "If You... (Remix)",
+                    }
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
