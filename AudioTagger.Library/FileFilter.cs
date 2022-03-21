@@ -10,6 +10,8 @@ namespace AudioTagger
                         !file.StartsWith(".") &&
                         (file.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase) ||
                          file.EndsWith(".ogg", StringComparison.InvariantCultureIgnoreCase) ||
+                         file.EndsWith(".mkv", StringComparison.InvariantCultureIgnoreCase) ||
+                         file.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) ||
                          file.EndsWith(".m4a", StringComparison.InvariantCultureIgnoreCase)));
     }
 }
