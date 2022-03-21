@@ -8,6 +8,7 @@ namespace AudioTagger.Console
         public void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
         {
             bool isCancelled = false;
+            var doConfirm = true;
 
             // Process each file
             for (var i = 0; i < mediaFiles.Count; i++)
@@ -19,7 +20,7 @@ namespace AudioTagger.Console
                     if (isCancelled)
                         break;
 
-                    isCancelled = RenameFile(file, printer);
+                    isCancelled = RenameFile(file, printer, ref doConfirm);
                 }
                 catch (Exception e)
                 {
@@ -30,7 +31,7 @@ namespace AudioTagger.Console
             }
         }
 
-        private bool RenameFile(MediaFile file, IPrinter printer)
+        private bool RenameFile(MediaFile file, IPrinter printer, ref bool doConfirm)
         {
             ArgumentNullException.ThrowIfNull(file);
             ArgumentNullException.ThrowIfNull(printer);
@@ -55,28 +56,44 @@ namespace AudioTagger.Console
 
             var currentFile = new FileInfo(file.Path);
 
+            if (newFileName == file.FileNameOnly)
+            {
+                printer.Print($"No change needed for \"{file.FileNameOnly}\"");
+                return shouldCancel;
+            }
+
             printer.Print("Current name: " + file.FileNameOnly);
             printer.Print("Desired name: " + newFileName + currentFile.Extension);
 
-            const string yes = "Yes";
-            const string no = "No";
-            const string cancel = "Cancel";
-
-            var response = AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title("Apply thes update?")
-                .AddChoices(new[] { no, yes, cancel }));
-
-            if (response == cancel)
+            if (doConfirm)
             {
-                printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
-                return true;
-            }
+                const string no = "No";
+                const string yes = "Yes";
+                const string yesToAll = "Yes To All";
+                const string cancel = "Cancel";
 
-            if (response == no)
-            {
-                printer.Print("No updates made", ResultType.Neutral, 0, 1);
-                return shouldCancel;
+                var response = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                        .Title("Apply this update?")
+                        .AddChoices(new[] { no, yes, yesToAll, cancel }));
+
+                if (response == cancel)
+                {
+                    printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
+                    return true;
+                }
+
+                if (response == no)
+                {
+                    printer.Print("No updates made", ResultType.Neutral, 0, 1);
+                    return shouldCancel;
+                }
+
+                if (response == yesToAll)
+                {
+                    // Avoid asking next time.
+                    doConfirm = false;
+                }
             }
 
             currentFile.MoveTo(currentFile.Directory.FullName + Path.DirectorySeparatorChar + newFileName + currentFile.Extension);
