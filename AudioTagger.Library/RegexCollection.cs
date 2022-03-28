@@ -9,7 +9,11 @@ namespace AudioTagger
         /// </summary>
         public static List<string> Regexes => new()
         {
-            /// TODO: Place into a file instead.
+            // TODO: Place into a file instead.
+            #region YouTube-based
+            @"(?<artists>.+)「(?<title>.+)」\[(?<year>\d{4})\](?= \[.{11}\])",
+            #endregion
+
             #region Album-based
             // @"(?<artists>.+?) - (?<album>.+?) - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?: \[(?<year>\d{4})\])?(?: \{(?<genres>.+?)\})?(?=\.\S+)",
             @"(?<artists>.+?) - (?<album>.+?)(?: ?\[(?<year>\d{4})\])? - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?: \{(?<genres>.+?)\})?(?=\.\S+)",
