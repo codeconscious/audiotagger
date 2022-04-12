@@ -24,8 +24,8 @@ namespace AudioTagger.Console
                 }
                 catch (Exception e)
                 {
-                    printer.Error($"Error updating {file.FileNameOnly}: {e.Message}");
-                    printer.Print(e.StackTrace ?? "Stack trace not found.");
+                    printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
+                    printer.PrintException(e);
                     continue;
                 }
             }
@@ -40,21 +40,22 @@ namespace AudioTagger.Console
             const bool shouldCancel = false;
 
             // TODO: Move the loop to the outer method, as in TagUpdater?
-            var artistsText = string.Join(" & ", file.Artists) + " - ";
+            //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
             var albumText = string.IsNullOrWhiteSpace(file.Album)
                 ? string.Empty
-                : file.Album + " - ";
-            var titleText = file.Title;
-            var yearText = file.Year < 1000 ? string.Empty : " [" + file.Year.ToString() + "]";
+                : file.Album;
+            var titleText = " " + file.Title;
+            var yearText = file.Year < 1000 ? string.Empty : " [" + file.Year + "]";
             var genreText = file.Genres.Any()
                 ? " {" + string.Join("; ", file.Genres) + "}"
                 : string.Empty;
 
-            var newFileName = string.Concat(
-                new string[] {
-                    artistsText, albumText, titleText, yearText, genreText});
-
-            var currentFile = new FileInfo(file.Path);
+            var newPath = Path.Combine(Directory.GetParent(file.Path).FullName, string.Join(" && ", file.Artists));
+            //printer.Print("Path: " + folderPath);
+            
+            var newFileName = string.Concat(string.IsNullOrWhiteSpace(albumText)
+                ? new string[] { albumText, " -", titleText, yearText, genreText}
+                : new string[] { albumText, yearText, " -", titleText, genreText});
 
             if (newFileName == file.FileNameOnly)
             {
@@ -62,8 +63,13 @@ namespace AudioTagger.Console
                 return shouldCancel;
             }
 
+            var currentFile = new FileInfo(file.Path);
+            
+            var newPathFileName = Path.Combine(newPath, newFileName + currentFile.Extension);
+            printer.Print("NewPathFileName: " + newPathFileName);
+
             printer.Print("Current name: " + file.FileNameOnly);
-            printer.Print("Desired name: " + newFileName + currentFile.Extension);
+            printer.Print("Desired name: " + Path.GetDirectoryName(newPath) + Path.DirectorySeparatorChar + newFileName + currentFile.Extension);
 
             if (doConfirm)
             {
@@ -95,8 +101,11 @@ namespace AudioTagger.Console
                     doConfirm = false;
                 }
             }
+            
+            if (!Directory.Exists(newPath))
+                Directory.CreateDirectory(newPath);
 
-            currentFile.MoveTo(currentFile.Directory.FullName + Path.DirectorySeparatorChar + newFileName + currentFile.Extension);
+            currentFile.MoveTo(newPathFileName);
             printer.Print("File renamed.");
 
             return shouldCancel;
