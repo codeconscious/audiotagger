@@ -11,10 +11,12 @@ namespace AudioTagger
         {
             // TODO: Place into a file instead.
             // Archival pattern (Example: 《Various Artists》〈岩崎良美〉『LOVE ALBUM』［1.12］｛1979｝「紫の恋を」〔J-Pop〕【Japan】.mp3)
-            @"(?:(?:《(?<albumartists>.+?)》)?|(?:〈(?<artists>.+?)〉)?|(?:『(?<album>.+)』)?|(?:［(?:(?<disc>\d+)?\.)?(?<track>\d+)］)?|(?:(?<!_)「(?<title>紫の恋を)」(?!_))?|(?:｛(?<year>.+)｝)?|(?:〔(?<genres>.+)〕)?|(?:【(?<country>.*)】)?)*\.(?<extension>.+)",
+            // @"(?:(?:《(?<albumartists>.+?)》)?|(?:〈(?<artists>.+?)〉)?|(?:『(?<album>.+)』)?|(?:［(?:(?<disc>\d+)?\.)?(?<track>\d+)］)?|(?:(?<!_)「(?<title>紫の恋を)」(?!_))?|(?:｛(?<year>.+)｝)?|(?:〔(?<genres>.+)〕)?|(?:【(?<country>.*)】)?)*\.(?<extension>.+)",
 
             #region YouTube-based
-            @"(?<artists>.+)「(?<title>.+)」\[(?<year>\d{4})\](?= \[.{11}\])",
+            @"(?<artists>.+?)(?:『(?<album>.+)』)?(?:#(?:(?<track>\d+)))?「(?<title>.+?)」(?:\[(?<year>\d{4})\])?",
+            // @"(?<artists>.+)「(?<title>.+)」\[(?<year>\d{4})\](?= \[.{11}\])",
+            @"(?<albumArtists>.+) ≡ (?<album>.+) = (?<trackNo>\d+) - (?<artists>.+) – (?<title>.+)",
             #endregion
 
             #region Album-based
