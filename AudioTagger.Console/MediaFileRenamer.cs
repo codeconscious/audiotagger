@@ -5,13 +5,11 @@ namespace AudioTagger.Console
 {
     public sealed class MediaFileRenamer : IPathOperation
     {
-        public void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> mediaFiles, DirectoryInfo workingDirectory, IPrinter printer)
         {
-            var workingPath = Directory.GetParent(mediaFiles.First().Path).FullName;
-            
             var directoryResponse = AnsiConsole.Prompt(
                  new SelectionPrompt<string>()
-                     .Title($"All files will be saved under directory \"{workingPath}\"")
+                     .Title($"All files will be saved under directory \"{workingDirectory.FullName}\"")
                      .AddChoices(new[] { "Continue", "Cancel" }));
 
             if (directoryResponse == "Cancel")
@@ -33,7 +31,7 @@ namespace AudioTagger.Console
                     if (isCancelled)
                         break;
 
-                    isCancelled = RenameFile(file, printer, workingPath, ref doConfirm);
+                    isCancelled = RenameFile(file, printer, workingDirectory.FullName, ref doConfirm);
                 }
                 catch (Exception e)
                 {
@@ -54,10 +52,10 @@ namespace AudioTagger.Console
 
             // TODO: Move the loop to the outer method, as in TagUpdater?
             //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
-            var folderName = file.Artists.Any()
+            var newFolderName = file.Artists.Any()
                 ? GetSafeString(string.Join(" && ", file.Artists))
                 : "_UNSPECIFIED";
-            var folderPath = Path.Combine(workingPath, folderName);
+            var folderPath = Path.Combine(workingPath, newFolderName);
             
             var albumText = string.IsNullOrWhiteSpace(file.Album)
                 ? string.Empty
@@ -74,21 +72,25 @@ namespace AudioTagger.Console
                 ? new [] { titleText, yearText, genreText}
                 : new [] { albumText, yearText, " - ", titleText, genreText});
 
-            if (newFileName == file.FileNameOnly)
+            var previousFolderFileName = Path.Combine(newFolderName, newFileName + Path.GetExtension(file.FileNameOnly));
+            var proposedFolderFileName = Path.Combine(Directory.GetParent(file.Path).Name, file.FileNameOnly);
+            // printer.Print("> " + previousFolderFileName);
+            // printer.Print("> " + proposedFolderFileName);
+            if (previousFolderFileName == proposedFolderFileName)
             {
-                printer.Print($"No change needed for \"{file.FileNameOnly}\"");
+                printer.Print($"No change needed for \"{file.Path.Replace(workingPath, "")}\"");
                 return shouldCancel;
             }
             
             // Create a duplicate file object for the new file.
             var currentFile = new FileInfo(file.Path);
             
-            var newPathFileName = Path.Combine(workingPath, folderName, newFileName + currentFile.Extension);
+            var newPathFileName = Path.Combine(workingPath, newFolderName, newFileName + currentFile.Extension);
             // printer.Print("NewPathFileName: " + newPathFileName);
 
-            printer.Print("Current name: " + file.FileNameOnly);
+            printer.Print(" Current name: " + file.FileNameOnly);
             // printer.Print("Desired name: " + Path.GetDirectoryName(newPath) + Path.DirectorySeparatorChar + newFileName + currentFile.Extension);
-            printer.Print("Updated name: " + Path.Combine(folderName, newPathFileName));
+            printer.Print("Proposed name: " + Path.Combine(newFolderName, newPathFileName));
 
             if (doConfirm)
             {

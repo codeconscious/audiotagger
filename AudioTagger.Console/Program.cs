@@ -2,6 +2,7 @@
 global using System.Linq;
 global using System.Collections.Generic;
 global using System.Collections.Immutable;
+global using System.IO;
 
 namespace AudioTagger.Console
 {
@@ -39,7 +40,7 @@ namespace AudioTagger.Console
                 IReadOnlyCollection<MediaFile> filesData;
                 try
                 {
-                    filesData = MediaFile.PopulateFileData(path, searchSubDirectories: false);
+                    filesData = MediaFile.PopulateFileData(path, searchSubDirectories: true);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -53,7 +54,9 @@ namespace AudioTagger.Console
                     continue;
                 }
 
-                operation.Start(filesData, printer);
+                var directoryInfo = new DirectoryInfo(path);
+
+                operation.Start(filesData, directoryInfo, printer);
             }
         }
 
