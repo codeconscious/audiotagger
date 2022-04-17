@@ -3,11 +3,24 @@ using Spectre.Console;
 
 namespace AudioTagger.Console
 {
-    public class MediaFileRenamer : IPathOperation
+    public sealed class MediaFileRenamer : IPathOperation
     {
         public void Start(IReadOnlyCollection<MediaFile> mediaFiles, IPrinter printer)
         {
-            bool isCancelled = false;
+            var workingPath = Directory.GetParent(mediaFiles.First().Path).FullName;
+            
+            var directoryResponse = AnsiConsole.Prompt(
+                 new SelectionPrompt<string>()
+                     .Title($"All files will be saved under directory \"{workingPath}\"")
+                     .AddChoices(new[] { "Continue", "Cancel" }));
+
+            if (directoryResponse == "Cancel")
+            {
+                printer.Print("Cancelling...");
+                return;
+            }
+            
+            var isCancelled = false;
             var doConfirm = true;
 
             // Process each file
@@ -20,7 +33,7 @@ namespace AudioTagger.Console
                     if (isCancelled)
                         break;
 
-                    isCancelled = RenameFile(file, printer, ref doConfirm);
+                    isCancelled = RenameFile(file, printer, workingPath, ref doConfirm);
                 }
                 catch (Exception e)
                 {
@@ -31,7 +44,7 @@ namespace AudioTagger.Console
             }
         }
 
-        private bool RenameFile(MediaFile file, IPrinter printer, ref bool doConfirm)
+        private bool RenameFile(MediaFile file, IPrinter printer, string workingPath, ref bool doConfirm)
         {
             ArgumentNullException.ThrowIfNull(file);
             ArgumentNullException.ThrowIfNull(printer);
@@ -41,35 +54,41 @@ namespace AudioTagger.Console
 
             // TODO: Move the loop to the outer method, as in TagUpdater?
             //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
+            var folderName = file.Artists.Any()
+                ? string.Join(" && ", file.Artists)
+                : "_UNSPECIFIED";
+            var folderPath = Path.Combine(workingPath, folderName);
+            
             var albumText = string.IsNullOrWhiteSpace(file.Album)
                 ? string.Empty
                 : file.Album;
-            var titleText = " " + file.Title;
-            var yearText = file.Year < 1000 ? string.Empty : " [" + file.Year + "]";
+            var titleText = file.Title;
+            var yearText = file.Year < 1000
+                ? string.Empty
+                : " [" + file.Year + "]";
             var genreText = file.Genres.Any()
                 ? " {" + string.Join("; ", file.Genres) + "}"
                 : string.Empty;
 
-            var newPath = Path.Combine(Directory.GetParent(file.Path).FullName, string.Join(" && ", file.Artists));
-            //printer.Print("Path: " + folderPath);
-            
             var newFileName = string.Concat(string.IsNullOrWhiteSpace(albumText)
-                ? new string[] { albumText, " -", titleText, yearText, genreText}
-                : new string[] { albumText, yearText, " -", titleText, genreText});
+                ? new [] { titleText, yearText, genreText}
+                : new [] { albumText, yearText, " - ", titleText, genreText});
 
             if (newFileName == file.FileNameOnly)
             {
                 printer.Print($"No change needed for \"{file.FileNameOnly}\"");
                 return shouldCancel;
             }
-
+            
+            // Create a duplicate file object for the new file.
             var currentFile = new FileInfo(file.Path);
             
-            var newPathFileName = Path.Combine(newPath, newFileName + currentFile.Extension);
-            printer.Print("NewPathFileName: " + newPathFileName);
+            var newPathFileName = Path.Combine(workingPath, folderName, newFileName + currentFile.Extension);
+            // printer.Print("NewPathFileName: " + newPathFileName);
 
             printer.Print("Current name: " + file.FileNameOnly);
-            printer.Print("Desired name: " + Path.GetDirectoryName(newPath) + Path.DirectorySeparatorChar + newFileName + currentFile.Extension);
+            // printer.Print("Desired name: " + Path.GetDirectoryName(newPath) + Path.DirectorySeparatorChar + newFileName + currentFile.Extension);
+            printer.Print("Updated name: " + Path.Combine(folderName, newPathFileName));
 
             if (doConfirm)
             {
@@ -80,7 +99,7 @@ namespace AudioTagger.Console
 
                 var response = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
-                        .Title("Apply this update?")
+                        .Title("Rename this file?")
                         .AddChoices(new[] { no, yes, yesToAll, cancel }));
 
                 if (response == cancel)
@@ -102,13 +121,35 @@ namespace AudioTagger.Console
                 }
             }
             
-            if (!Directory.Exists(newPath))
-                Directory.CreateDirectory(newPath);
+            // printer.Print(">> " + folderPath);
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
 
+            // printer.Print("--> " + newPathFileName);
             currentFile.MoveTo(newPathFileName);
-            printer.Print("File renamed.");
+            printer.Print("Rename OK");
+            
+            // TODO: Delete any empty folders that remain.
 
             return shouldCancel;
+        }
+
+        private static string GetSafeCombinedPath(params string[] parts)
+        {
+            // foreach (var part in parts)
+            // {
+            //     foreach (var c in Path.GetInvalidFileNameChars()) 
+            //     { 
+            //         part = part.Replace(c, '-'); 
+            //     }      
+            // }
+
+            var cleanedParts = parts.SelectMany(p =>
+                Path.GetInvalidFileNameChars()
+                    .Select(ch => p.Replace(ch, '-')))
+                .ToArray();
+
+            return Path.Combine(cleanedParts);
         }
     }
 }
