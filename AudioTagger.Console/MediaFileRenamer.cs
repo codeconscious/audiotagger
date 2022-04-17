@@ -55,19 +55,19 @@ namespace AudioTagger.Console
             // TODO: Move the loop to the outer method, as in TagUpdater?
             //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
             var folderName = file.Artists.Any()
-                ? string.Join(" && ", file.Artists)
+                ? GetSafeString(string.Join(" && ", file.Artists))
                 : "_UNSPECIFIED";
             var folderPath = Path.Combine(workingPath, folderName);
             
             var albumText = string.IsNullOrWhiteSpace(file.Album)
                 ? string.Empty
-                : file.Album;
-            var titleText = file.Title;
+                : GetSafeString(file.Album);
+            var titleText = GetSafeString(file.Title);
             var yearText = file.Year < 1000
                 ? string.Empty
                 : " [" + file.Year + "]";
             var genreText = file.Genres.Any()
-                ? " {" + string.Join("; ", file.Genres) + "}"
+                ? GetSafeString(" {" + string.Join("; ", file.Genres) + "}")
                 : string.Empty;
 
             var newFileName = string.Concat(string.IsNullOrWhiteSpace(albumText)
@@ -134,22 +134,16 @@ namespace AudioTagger.Console
             return shouldCancel;
         }
 
-        private static string GetSafeCombinedPath(params string[] parts)
+        private static string GetSafeString(string input)
         {
-            // foreach (var part in parts)
-            // {
-            //     foreach (var c in Path.GetInvalidFileNameChars()) 
-            //     { 
-            //         part = part.Replace(c, '-'); 
-            //     }      
-            // }
+            var partWorking = input;
+            
+            foreach (var ch in Path.GetInvalidFileNameChars())
+            {
+                partWorking = partWorking.Replace(ch, '_');
+            }
 
-            var cleanedParts = parts.SelectMany(p =>
-                Path.GetInvalidFileNameChars()
-                    .Select(ch => p.Replace(ch, '-')))
-                .ToArray();
-
-            return Path.Combine(cleanedParts);
+            return partWorking;
         }
     }
 }
