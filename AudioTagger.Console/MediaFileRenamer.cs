@@ -20,7 +20,7 @@ namespace AudioTagger.Console
 
             var isCancelled = false;
             var doConfirm = true;
-            var errorFiles = new Dictionary<string, string>();
+            var errors = new List<string>();
 
             // Process each file
             for (var i = 0; i < mediaFiles.Count; i++)
@@ -38,18 +38,19 @@ namespace AudioTagger.Console
                 {
                     printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
                     printer.PrintException(e);
-                    errorFiles.Add(file.Path, e.Message);
+                    errors.Add(e.Message); // The message should contain the file name.
                     continue;
                 }
             }
 
             //Print the errors
-            if (errorFiles.Any())
+            if (errors.Any())
             {
                 printer.Print("ERRORS:");
-                foreach (var file in errorFiles)
-                    printer.Print($" - {file.Key}: {file.Value}");
-            }            
+                var number = 1;
+                foreach (var error in errors)
+                    printer.Print($" - #{number++}: {error}");
+            }
         }
 
         private bool RenameFile(MediaFile file, IPrinter printer, string workingPath, ref bool doConfirm)
@@ -71,6 +72,9 @@ namespace AudioTagger.Console
                 ? string.Empty
                 : GetSafeString(file.Album);
             var titleText = GetSafeString(file.Title);
+            var trackText = file.TrackNo == 0
+                ? string.Empty
+                : file.TrackNo.ToString("000") + " - ";
             var yearText = file.Year < 1000
                 ? string.Empty
                 : " [" + file.Year + "]";
@@ -81,10 +85,10 @@ namespace AudioTagger.Console
 
             var newFileName = string.Concat(string.IsNullOrWhiteSpace(albumText)
                 ? new [] { titleText, yearText, genreText}
-                : new [] { albumText, yearText, " - ", titleText, genreText}) + ext;
+                : new [] { albumText, yearText, " - ", trackText, titleText, genreText}) + ext;
 
             //var previousFolderFileName = Path.Combine(Directory.GetParent(file.Path).Name, file.FileNameOnly);
-            var previousFolderFileName = file.Path.Replace(workingPath, "");
+            var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
             var proposedFolderFileName = Path.Combine(newFolderName, newFileName);
             printer.Print("> " + previousFolderFileName);
             printer.Print("> " + proposedFolderFileName);
