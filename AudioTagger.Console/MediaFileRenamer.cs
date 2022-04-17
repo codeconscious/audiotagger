@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using Spectre.Console;
 
 namespace AudioTagger.Console
@@ -20,6 +20,7 @@ namespace AudioTagger.Console
 
             var isCancelled = false;
             var doConfirm = true;
+            var errorFiles = new Dictionary<string, string>();
 
             // Process each file
             for (var i = 0; i < mediaFiles.Count; i++)
@@ -33,13 +34,22 @@ namespace AudioTagger.Console
 
                     isCancelled = RenameFile(file, printer, workingDirectory.FullName, ref doConfirm);
                 }
-                catch (Exception e)
+                catch (IOException e)
                 {
                     printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
                     printer.PrintException(e);
+                    errorFiles.Add(file.Path, e.Message);
                     continue;
                 }
             }
+
+            //Print the errors
+            if (errorFiles.Any())
+            {
+                printer.Print("ERRORS:");
+                foreach (var file in errorFiles)
+                    printer.Print($" - {file.Key}: {file.Value}");
+            }            
         }
 
         private bool RenameFile(MediaFile file, IPrinter printer, string workingPath, ref bool doConfirm)
