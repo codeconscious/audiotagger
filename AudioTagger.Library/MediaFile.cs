@@ -159,13 +159,19 @@ namespace AudioTagger
 
                 foreach (var fileName in fileNames)
                 {
-                    mediaFiles.Add(MediaFileFactory.CreateFileData(fileName));
+                    try
+                    {
+                        mediaFiles.Add(MediaFileFactory.CreateFileData(fileName));
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
                 }
 
-                return mediaFiles/*.OrderBy(f => f.Artists)
-                                .ThenBy(f => f.Title)
-                                .AsEnumerable()
-                                .ToList()*/;
+                return mediaFiles.OrderBy(f => f.Path)
+                                 .AsEnumerable()
+                                 .ToList();
             }
 
             // If the path is a file

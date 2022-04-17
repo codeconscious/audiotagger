@@ -17,7 +17,7 @@ namespace AudioTagger.Console
                 printer.Print("Cancelling...");
                 return;
             }
-            
+
             var isCancelled = false;
             var doConfirm = true;
 
@@ -56,7 +56,7 @@ namespace AudioTagger.Console
                 ? GetSafeString(string.Join(" && ", file.Artists))
                 : "_UNSPECIFIED";
             var folderPath = Path.Combine(workingPath, newFolderName);
-            
+
             var albumText = string.IsNullOrWhiteSpace(file.Album)
                 ? string.Empty
                 : GetSafeString(file.Album);
@@ -83,13 +83,13 @@ namespace AudioTagger.Console
                 printer.Print($"No change needed for \"{file.Path.Replace(workingPath, "")}\"");
                 return shouldCancel;
             }
-            
+
             // Create a duplicate file object for the new file.
             var currentFile = new FileInfo(file.Path);
-            
+
             var newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
             // printer.Print("NewPathFileName: " + newPathFileName);
-            
+
             // printer.Print("newFolderName: " + newFolderName);
             printer.Print(" Current name: " + file.Path.Replace(workingPath, ""));
             printer.Print("Proposed name: " + Path.Combine(newFolderName, newPathFileName).Replace(workingPath, ""));
@@ -124,7 +124,7 @@ namespace AudioTagger.Console
                     doConfirm = false;
                 }
             }
-            
+
             // printer.Print(">> " + folderPath);
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
@@ -132,9 +132,9 @@ namespace AudioTagger.Console
             // printer.Print("--> " + newPathFileName);
             currentFile.MoveTo(newPathFileName);
             printer.Print("Rename OK");
-            
+
             // TODO: Delete any empty folders that remain.
-            workingPath
+            //workingPath
 
             return shouldCancel;
         }
@@ -142,7 +142,7 @@ namespace AudioTagger.Console
         private static string GetSafeString(string input)
         {
             var partWorking = input;
-            
+
             foreach (var ch in Path.GetInvalidFileNameChars())
             {
                 partWorking = partWorking.Replace(ch, '_');
@@ -153,7 +153,7 @@ namespace AudioTagger.Console
 
         // private static List<string> DeleteEmptySubDirectories(path)
         // {
-        //     
+        //
         //     // TODO: Return  a multi-value keyed collection of keyed to exception types instead?
         //     var errorDirectories = new List<string>();
         //     foreach (var path in paths)
@@ -169,6 +169,6 @@ namespace AudioTagger.Console
         //     }
         //     return errorDirectories;
         // }
-        
+
     }
 }

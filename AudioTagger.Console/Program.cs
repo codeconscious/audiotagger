@@ -44,7 +44,7 @@ namespace AudioTagger.Console
                 }
                 catch (InvalidOperationException ex)
                 {
-                    printer.Error($"Path \"{path}\" could not be fully parsed: " + ex.Message);
+                    printer.Error($"Path \"{path}\" could not be parsed: " + ex.Message);
                     continue;
                 }
 
@@ -53,6 +53,8 @@ namespace AudioTagger.Console
                     printer.Error($"No files found at \"{path}\".");
                     continue;
                 }
+
+                printer.Print($"Found {filesData.Count} files.");
 
                 var directoryInfo = new DirectoryInfo(path);
 
