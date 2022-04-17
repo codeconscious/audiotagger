@@ -67,15 +67,17 @@ namespace AudioTagger.Console
             var genreText = file.Genres.Any()
                 ? GetSafeString(" {" + string.Join("; ", file.Genres) + "}")
                 : string.Empty;
+            var ext = Path.GetExtension(file.FileNameOnly);
 
             var newFileName = string.Concat(string.IsNullOrWhiteSpace(albumText)
                 ? new [] { titleText, yearText, genreText}
-                : new [] { albumText, yearText, " - ", titleText, genreText});
+                : new [] { albumText, yearText, " - ", titleText, genreText}) + ext;
 
-            var previousFolderFileName = Path.Combine(newFolderName, newFileName + Path.GetExtension(file.FileNameOnly));
-            var proposedFolderFileName = Path.Combine(Directory.GetParent(file.Path).Name, file.FileNameOnly);
-            // printer.Print("> " + previousFolderFileName);
-            // printer.Print("> " + proposedFolderFileName);
+            //var previousFolderFileName = Path.Combine(Directory.GetParent(file.Path).Name, file.FileNameOnly);
+            var previousFolderFileName = file.Path.Replace(workingPath, "");
+            var proposedFolderFileName = Path.Combine(newFolderName, newFileName);
+            printer.Print("> " + previousFolderFileName);
+            printer.Print("> " + proposedFolderFileName);
             if (previousFolderFileName == proposedFolderFileName)
             {
                 printer.Print($"No change needed for \"{file.Path.Replace(workingPath, "")}\"");
@@ -85,12 +87,12 @@ namespace AudioTagger.Console
             // Create a duplicate file object for the new file.
             var currentFile = new FileInfo(file.Path);
             
-            var newPathFileName = Path.Combine(workingPath, newFolderName, newFileName + currentFile.Extension);
+            var newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
             // printer.Print("NewPathFileName: " + newPathFileName);
-
-            printer.Print(" Current name: " + file.FileNameOnly);
-            // printer.Print("Desired name: " + Path.GetDirectoryName(newPath) + Path.DirectorySeparatorChar + newFileName + currentFile.Extension);
-            printer.Print("Proposed name: " + Path.Combine(newFolderName, newPathFileName));
+            
+            // printer.Print("newFolderName: " + newFolderName);
+            printer.Print(" Current name: " + file.Path.Replace(workingPath, ""));
+            printer.Print("Proposed name: " + Path.Combine(newFolderName, newPathFileName).Replace(workingPath, ""));
 
             if (doConfirm)
             {
@@ -132,6 +134,7 @@ namespace AudioTagger.Console
             printer.Print("Rename OK");
             
             // TODO: Delete any empty folders that remain.
+            workingPath
 
             return shouldCancel;
         }
@@ -147,5 +150,25 @@ namespace AudioTagger.Console
 
             return partWorking;
         }
+
+        // private static List<string> DeleteEmptySubDirectories(path)
+        // {
+        //     
+        //     // TODO: Return  a multi-value keyed collection of keyed to exception types instead?
+        //     var errorDirectories = new List<string>();
+        //     foreach (var path in paths)
+        //     {
+        //         try
+        //         {
+        //             Directory.Delete(path, true);
+        //         }
+        //         catch (Exception e)
+        //         {
+        //             errorDirectories.Add(path);
+        //         }
+        //     }
+        //     return errorDirectories;
+        // }
+        
     }
 }
