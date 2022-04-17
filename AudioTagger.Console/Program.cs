@@ -38,6 +38,7 @@ namespace AudioTagger.Console
             foreach (var path in argQueue)
             {
                 printer.Print($"Processing path \"{path}\"...");
+
                 IReadOnlyCollection<MediaFile> filesData;
                 try
                 {
@@ -55,7 +56,7 @@ namespace AudioTagger.Console
                     continue;
                 }
 
-                printer.Print($"Found {filesData.Count} files.");
+                printer.Print($"Found {filesData.Count:#,##0} files.");
 
                 var directoryInfo = new DirectoryInfo(path);
 
