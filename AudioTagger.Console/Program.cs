@@ -37,6 +37,7 @@ namespace AudioTagger.Console
 
             foreach (var path in argQueue)
             {
+                printer.Print($"Processing path \"{path}\"...");
                 IReadOnlyCollection<MediaFile> filesData;
                 try
                 {
@@ -88,7 +89,7 @@ namespace AudioTagger.Console
             printer.Print("Commands:");
             printer.Print("   -v or --view   : View tags");
             printer.Print("   -u or --update : Update tags");
-            printer.Print("   -r or --rename : Rename files based on tags (Coming soonish)");
+            printer.Print("   -r or --rename : Rename files based on tags");
             // TODO: Make album art opt-in
         }
     }
