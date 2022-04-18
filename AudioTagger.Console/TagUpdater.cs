@@ -159,6 +159,11 @@ namespace AudioTagger.Console
                 fileData.Album = updateableFields.Album;
             }
 
+            if (updateableFields.AlbumArtists?.All(a => fileData.AlbumArtists.Contains(a)) == false)
+            {
+                fileData.AlbumArtists = updateableFields.AlbumArtists;
+            }
+
             if (updateableFields.Artists?.All(a => fileData.Artists.Contains(a)) == false)
             {
                 fileData.Artists = updateableFields.Artists;

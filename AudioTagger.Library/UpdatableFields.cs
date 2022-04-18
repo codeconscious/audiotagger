@@ -10,6 +10,7 @@ namespace AudioTagger
 {
     public class UpdatableFields
     {
+        public string[]? AlbumArtists { get; }
         public string[]? Artists { get; }
         public string? Title { get; }
         public string? Album { get; }
@@ -36,6 +37,18 @@ namespace AudioTagger
                     Title = element.Value.Trim().Normalize()
                                          .Replace("___", "　")
                                          .Replace("__", " ");
+                    Count++;
+                }
+                else if (element.Name == "albumArtists")
+                {
+                    AlbumArtists = element.Value
+                                          .Replace("___", "　")
+                                          .Replace("__", " ")
+                                          .Split(new[] { ";" },
+                                                 StringSplitOptions.RemoveEmptyEntries |
+                                                 StringSplitOptions.TrimEntries)
+                                          .Select(a => a.Normalize())
+                                          .ToArray();
                     Count++;
                 }
                 else if (element.Name == "artists")
@@ -93,6 +106,7 @@ namespace AudioTagger
         }
 
         // TODO: Delete if not used.
+        /*
         public IList<OutputLine> GetUpdateOutput(MediaFile fileData)
         {
             var updateOutput = new List<OutputLine>();
@@ -156,10 +170,16 @@ namespace AudioTagger
 
             return updateOutput;
         }
+        */
 
         public Dictionary<string, string> GetUpdateKeyValuePairs(MediaFile fileData)
         {
             var updateOutput = new Dictionary<string, string>();
+
+            if (AlbumArtists?.All(a => fileData.AlbumArtists.Contains(a)) == false)
+            {
+                updateOutput.Add("Album Artists", string.Join("; ", AlbumArtists));
+            }
 
             if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
             {

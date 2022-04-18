@@ -18,10 +18,14 @@ public class MediaFileViewer
         table.Expand = true;
 
         table.AddRow(tagNameFormatter("Title"), file.Title);
+        if (file.AlbumArtists.Any())
+            table.AddRow(tagNameFormatter("Album Artist"), string.Join(", ", file.AlbumArtists));
         table.AddRow(tagNameFormatter("Artist"), string.Join(", ", file.Artists));
         table.AddRow(tagNameFormatter("Album"), file.Album);
-        table.AddRow(tagNameFormatter("Track"), file.TrackNo.ToString());
-        table.AddRow(tagNameFormatter("Year"), file.Year.ToString());
+        if (file.TrackNo > 0)
+            table.AddRow(tagNameFormatter("Track"), file.TrackNo.ToString());
+        if (file.Year > 0)
+            table.AddRow(tagNameFormatter("Year"), file.Year.ToString());
         table.AddRow(tagNameFormatter("Duration"), file.Duration.ToString("m\\:ss"));
 
         var genreCount = file.Genres.Length;
@@ -42,6 +46,9 @@ public class MediaFileViewer
 
         if (!string.IsNullOrWhiteSpace(file.Comments))
             table.AddRow(tagNameFormatter("Comments"), file.Comments);
+
+        if (!string.IsNullOrWhiteSpace(file.Description))
+            table.AddRow(tagNameFormatter("Comments"), file.Description);
 
         if (!string.IsNullOrWhiteSpace(file.Lyrics))
             table.AddRow(tagNameFormatter("Lyrics"), file.Lyrics[..25] + "...");

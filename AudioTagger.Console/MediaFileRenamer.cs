@@ -63,9 +63,11 @@ namespace AudioTagger.Console
 
             // TODO: Move the loop to the outer method, as in TagUpdater?
             //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
-            var newFolderName = file.Artists.Any()
-                ? GetSafeString(string.Join(" && ", file.Artists))
-                : "_UNSPECIFIED";
+            var newFolderName = file.AlbumArtists.Any()
+                ? GetSafeString(string.Join(" && ", file.AlbumArtists))
+                : file.Artists.Any()
+                    ? GetSafeString(string.Join(" && ", file.Artists))
+                    : "_UNSPECIFIED";
             var folderPath = Path.Combine(workingPath, newFolderName);
 
             var albumText = string.IsNullOrWhiteSpace(file.Album)
