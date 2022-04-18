@@ -63,13 +63,19 @@ namespace AudioTagger.Console
 
             // TODO: Move the loop to the outer method, as in TagUpdater?
             //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
-            var newFolderName = file.AlbumArtists.Any()
+            var newFolderName = HasValue(file.AlbumArtists)
                 ? GetSafeString(string.Join(" && ", file.AlbumArtists))
-                : file.Artists.Any()
+                : HasValue(file.Artists)
                     ? GetSafeString(string.Join(" && ", file.Artists))
                     : "_UNSPECIFIED";
             var folderPath = Path.Combine(workingPath, newFolderName);
 
+            var albumArtistText = HasValue(file.AlbumArtists)
+                ? GetSafeString(string.Join(" && ", file.AlbumArtists)) + " ≡ "
+                : string.Empty;
+            var artistText = HasValue(file.Artists)
+                ? GetSafeString(string.Join(" && ", file.Artists)) + " = "
+                : string.Empty;
             var albumText = string.IsNullOrWhiteSpace(file.Album)
                 ? string.Empty
                 : GetSafeString(file.Album);
@@ -80,14 +86,18 @@ namespace AudioTagger.Console
             var yearText = file.Year < 1000
                 ? string.Empty
                 : " [" + file.Year + "]";
-            var genreText = file.Genres.Any()
-                ? GetSafeString(" {" + string.Join("; ", file.Genres) + "}")
-                : string.Empty;
+            // var genreText = file.Genres.Any()
+            //     ? GetSafeString(" {" + string.Join("; ", file.Genres) + "}")
+            //     : string.Empty;
             var ext = Path.GetExtension(file.FileNameOnly);
 
-            var newFileName = string.Concat(string.IsNullOrWhiteSpace(albumText)
-                ? new [] { titleText, yearText, genreText}
-                : new [] { albumText, yearText, " - ", trackText, titleText, genreText}) + ext;
+            var newFileName =
+                albumArtistText + 
+                artistText + 
+                string.Concat(string.IsNullOrWhiteSpace(albumText)
+                    ? new [] { titleText, yearText }
+                    : new [] { albumText, yearText, " - ", trackText, titleText }) + 
+                ext;
 
             //var previousFolderFileName = Path.Combine(Directory.GetParent(file.Path).Name, file.FileNameOnly);
             var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
@@ -165,6 +175,22 @@ namespace AudioTagger.Console
             }
 
             return partWorking;
+        }
+
+        private static bool HasValue(IEnumerable<string> tagValues)
+        {
+            if (tagValues?.Any() != true)
+                return false;
+
+            var asString = string.Join("", tagValues);
+
+            if (string.IsNullOrWhiteSpace(asString))
+                return false;
+
+            if (asString.Contains("<unknown>"))
+                return false;
+
+            return true;
         }
 
         // private static List<string> DeleteEmptySubDirectories(path)
