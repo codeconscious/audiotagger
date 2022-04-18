@@ -8,9 +8,9 @@ namespace AudioTagger.Console
         public void Start(IReadOnlyCollection<MediaFile> mediaFiles, DirectoryInfo workingDirectory, IPrinter printer)
         {
             var directoryResponse = AnsiConsole.Prompt(
-                 new SelectionPrompt<string>()
-                     .Title($"All files will be saved under directory \"{workingDirectory.FullName}\"")
-                     .AddChoices(new[] { "Continue", "Cancel" }));
+                new SelectionPrompt<string>()
+                    .Title($"All files will be saved under directory \"{workingDirectory.FullName}\"")
+                    .AddChoices(new[] {"Continue", "Cancel"}));
 
             if (directoryResponse == "Cancel")
             {
@@ -92,18 +92,18 @@ namespace AudioTagger.Console
             var ext = Path.GetExtension(file.FileNameOnly);
 
             var newFileName =
-                albumArtistText + 
-                artistText + 
+                albumArtistText +
+                artistText +
                 string.Concat(string.IsNullOrWhiteSpace(albumText)
-                    ? new [] { titleText, yearText }
-                    : new [] { albumText, yearText, " - ", trackText, titleText }) + 
+                    ? new[] {titleText, yearText}
+                    : new[] {albumText, yearText, " - ", trackText, titleText}) +
                 ext;
 
             //var previousFolderFileName = Path.Combine(Directory.GetParent(file.Path).Name, file.FileNameOnly);
             var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
             var proposedFolderFileName = Path.Combine(newFolderName, newFileName);
-            printer.Print("> " + previousFolderFileName);
-            printer.Print("> " + proposedFolderFileName);
+            // printer.Print("> " + previousFolderFileName); // Debug use
+            // printer.Print("> " + proposedFolderFileName); // Debug use
             if (previousFolderFileName == proposedFolderFileName)
             {
                 printer.Print($"No change needed for \"{file.Path.Replace(workingPath, "")}\"");
@@ -130,7 +130,7 @@ namespace AudioTagger.Console
                 var response = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                         .Title("Rename this file?")
-                        .AddChoices(new[] { no, yes, yesToAll, cancel }));
+                        .AddChoices(new[] {no, yes, yesToAll, cancel}));
 
                 if (response == cancel)
                 {
@@ -159,8 +159,7 @@ namespace AudioTagger.Console
             currentFile.MoveTo(newPathFileName);
             printer.Print("Rename OK");
 
-            // TODO: Delete any empty folders that remain.
-            //workingPath
+            DeleteEmptySubDirectories(workingPath);
 
             return shouldCancel;
         }
@@ -193,24 +192,23 @@ namespace AudioTagger.Console
             return true;
         }
 
-        // private static List<string> DeleteEmptySubDirectories(path)
-        // {
-        //
-        //     // TODO: Return  a multi-value keyed collection of keyed to exception types instead?
-        //     var errorDirectories = new List<string>();
-        //     foreach (var path in paths)
-        //     {
-        //         try
-        //         {
-        //             Directory.Delete(path, true);
-        //         }
-        //         catch (Exception e)
-        //         {
-        //             errorDirectories.Add(path);
-        //         }
-        //     }
-        //     return errorDirectories;
-        // }
-
+        /// <summary>
+        /// Delete all empty subdirectories beneath, and including, the given one.
+        /// </summary>
+        /// <remarks>Implementation from https://stackoverflow.com/a/2811654/11767771</remarks>
+        /// <param name="topDirectoryPath"></param>
+        private static void DeleteEmptySubDirectories(string topDirectoryPath)
+        {
+            // TODO: Return  a multi-value keyed collection of keyed to exception types instead?
+            foreach (var directory in Directory.GetDirectories(topDirectoryPath))
+            {
+                DeleteEmptySubDirectories(directory);
+                if (Directory.GetFiles(directory).Length == 0 &&
+                    Directory.GetDirectories(directory).Length == 0)
+                {
+                    Directory.Delete(directory, false);
+                }
+            }
+        }
     }
 }
