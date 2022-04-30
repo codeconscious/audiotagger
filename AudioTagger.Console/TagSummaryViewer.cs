@@ -15,10 +15,14 @@ namespace AudioTagger.Console
 
             var viewer = new MediaFileViewer();
 
-            foreach (var mediaFile in mediaFiles.OrderBy(m => m.Artists[0])
-                                                .ThenBy(m => m.Album)
-                                                .ThenBy(m => m.TrackNo)
-                                                .ThenBy(m => m.Title))
+            var orderedMediaFiles = mediaFiles
+                .OrderBy(m => m.AlbumArtists.Length == 0 ? string.Empty : m.AlbumArtists[0])
+                .ThenBy(m => m.Artists[0])
+                .ThenBy(m => m.Album)
+                .ThenBy(m => m.TrackNo)
+                .ThenBy(m => m.Title);
+
+            foreach (var mediaFile in orderedMediaFiles)
             {
                 try
                 {
