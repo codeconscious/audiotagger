@@ -16,12 +16,12 @@ namespace AudioTagger
             #region YouTube-based
             @"(?<artists>.+?)(?:『(?<album>.+)』)?(?:#(?:(?<track>\d+)))?「(?<title>.+?)」(?:\[(?<year>\d{4})\])?",
             // @"(?<artists>.+)「(?<title>.+)」\[(?<year>\d{4})\](?= \[.{11}\])",
-            @"(?<albumArtists>.+) ≡ (?<album>.+) = (?<trackNo>\d+) - (?<artists>.+) – (?<title>.+)",
+            // @"(?<albumArtists>.+) ≡ (?<album>.+) = (?<trackNo>\d+) - (?<artists>.+) – (?<title>.+)",
             #endregion
 
             #region Album-based
-            @"(?<album>.+?)(?: ?\[(?<year>\d{4})\])? = (?<track>\d+) - (?<artists>.+?) [-–] (?<title>.+)(?=\.mp3)",
-            @"(?<album>.+?)(?: ?\[(?<year>\d{4})\])? = (?<artists>.+?) - (?<title>.+)(?=\.mp3)",
+            @"(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\[(?<year>\d{4})\])? = (?<track>\d+) - (?<artists>.+?) [–-] (?<title>.+)(?=\.mp3)",
+            @"(?:(?<albumArtists>.+) ≡ )(?<album>.+?)(?: ?\[(?<year>\d{4})\])? = (?<artists>.+?) [–-] (?<title>.+)(?=\.mp3)",
             // @"(?<artists>.+?) - (?<album>.+?) - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?: \[(?<year>\d{4})\])?(?: \{(?<genres>.+?)\})?(?=\.\S+)",
             @"(?<artists>.+?) - (?<album>.+?)(?: ?\[(?<year>\d{4})\])? - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?: \{(?<genres>.+?)\})?(?=\.\S+)",
             @"(?<artists>.+?) - (?<album>.+?)(?: ?\[(?<year>\d{4})\])? - (?<title>.+?(?:\.{3})?)(?: \{(?<genres>.+?)\})?(?=\.\S+)",
