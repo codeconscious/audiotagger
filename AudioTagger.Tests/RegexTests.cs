@@ -388,6 +388,30 @@ namespace AudioTagger.Tests
                          Track = "2"                     }
                 };
 
+                // "WHY..." potential parsing issues
+                yield return new object[]
+                {
+                     new ParsedItem("Paft Dunk - Ongakooz [1756] - 02 - WHY....mp3")
+                     {
+                         Artists = new List<string> { "Paft Dunk" },
+                         Album = "Ongakooz",
+                         Title = "WHY...",
+                         Year = "1756",
+                         Track = "2"                     }
+                };
+
+                // "...WHY..." potential parsing issues
+                yield return new object[]
+                {
+                     new ParsedItem("Paft Dunk - Ongakooz [1756] - 02 - ...WHY....mp3")
+                     {
+                         Artists = new List<string> { "Paft Dunk" },
+                         Album = "Ongakooz",
+                         Title = "...WHY...",
+                         Year = "1756",
+                         Track = "2"                     }
+                };
+
                 yield return new object[]
                 {
                      new ParsedItem("真剣赫怒 - What's This, Mr.Random [2030].mp3")
