@@ -4,12 +4,12 @@ namespace AudioTagger
 {
     public static class RegexCollection
     {
+        // TODO: Place these into a file instead.
         /// <summary>
         /// The regexes used for reading tags from names.
         /// </summary>
         public static List<string> Regexes => new()
         {
-            // TODO: Place into a file instead.
             // Archival pattern (Example: 《Various Artists》〈岩崎良美〉『LOVE ALBUM』［1.12］｛1979｝「紫の恋を」〔J-Pop〕【Japan】.mp3)
             // @"(?:(?:《(?<albumartists>.+?)》)?|(?:〈(?<artists>.+?)〉)?|(?:『(?<album>.+)』)?|(?:［(?:(?<disc>\d+)?\.)?(?<track>\d+)］)?|(?:(?<!_)「(?<title>紫の恋を)」(?!_))?|(?:｛(?<year>.+)｝)?|(?:〔(?<genres>.+)〕)?|(?:【(?<country>.*)】)?)*\.(?<extension>.+)",
 
