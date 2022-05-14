@@ -43,6 +43,18 @@ namespace AudioTagger.Console
                 }
             }
 
+            var deletedDirectories = DeleteEmptySubDirectories(workingDirectory.FullName);
+            if (deletedDirectories.Any())
+            {
+                printer.Print("DELETED DIRECTORIES:");
+                foreach (var dir in deletedDirectories)
+                    printer.Print("- " + dir);
+            }
+            else
+            {
+                printer.Print("No empty subdirectories found.");
+            }
+
             //Print the errors
             if (errors.Any())
             {
@@ -159,8 +171,6 @@ namespace AudioTagger.Console
             currentFile.MoveTo(newPathFileName);
             printer.Print("Rename OK");
 
-            DeleteEmptySubDirectories(workingPath);
-
             return shouldCancel;
         }
 
@@ -197,18 +207,23 @@ namespace AudioTagger.Console
         /// </summary>
         /// <remarks>Implementation from https://stackoverflow.com/a/2811654/11767771</remarks>
         /// <param name="topDirectoryPath"></param>
-        private static void DeleteEmptySubDirectories(string topDirectoryPath)
+        private static List<string> DeleteEmptySubDirectories(string topDirectoryPath)
         {
-            // TODO: Return  a multi-value keyed collection of keyed to exception types instead?
+            var deletedDirectories = new List<string>();
+
             foreach (var directory in Directory.GetDirectories(topDirectoryPath))
             {
                 DeleteEmptySubDirectories(directory);
+
                 if (Directory.GetFiles(directory).Length == 0 &&
                     Directory.GetDirectories(directory).Length == 0)
                 {
                     Directory.Delete(directory, false);
+                    deletedDirectories.Add(directory);
                 }
             }
+
+            return deletedDirectories;
         }
     }
 }
