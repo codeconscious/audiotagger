@@ -90,7 +90,7 @@ namespace AudioTagger.Console
             printer.Print("Commands:");
             printer.Print("   -v or --view   : View tags");
             printer.Print("   -u or --update : Update tags");
-            printer.Print("   -r or --rename : Rename files based on tags");
+            printer.Print("   -r or --rename : Rename files based on existing tags");
             // TODO: Make album art opt-in
         }
     }
