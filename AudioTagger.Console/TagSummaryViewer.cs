@@ -4,7 +4,10 @@ namespace AudioTagger.Console
 {
     public class TagSummaryViewer : IPathOperation
     {
-        public void Start(IReadOnlyCollection<MediaFile> mediaFiles, DirectoryInfo workingDirectory, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
+                          DirectoryInfo workingDirectory,
+                          IRegexCollection regexCollection,
+                          IPrinter printer)
         {
             ArgumentNullException.ThrowIfNull(mediaFiles);
 

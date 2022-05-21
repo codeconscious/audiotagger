@@ -8,7 +8,10 @@ namespace AudioTagger.Console
 {
     public class TagUpdaterYearOnly : IPathOperation
     {
-        public void Start(IReadOnlyCollection<MediaFile> mediaFiles, DirectoryInfo workingDirectory, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
+                          DirectoryInfo workingDirectory,
+                          IRegexCollection regexCollection,
+                          IPrinter printer)
         {
             var isCancelled = false;
             var doConfirm = true;

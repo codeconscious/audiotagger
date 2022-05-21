@@ -2,7 +2,10 @@
 {
     public class TagViewer : IPathOperation
     {
-        public void Start(IReadOnlyCollection<MediaFile> mediaFiles, DirectoryInfo workingDirectory, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
+                          DirectoryInfo workingDirectory,
+                          IRegexCollection regexCollection,
+                          IPrinter printer)
         {
             ArgumentNullException.ThrowIfNull(mediaFiles);
 
