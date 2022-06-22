@@ -20,8 +20,8 @@ namespace AudioTagger
             #endregion
 
             #region Album-based
-            @"(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\[(?<year>\d{4})\])? = (?<trackNo>\d{1,3}) [–-] (?<title>.+)(?=\.mp3)",
             @"(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\[(?<year>\d{4})\])? = (?<trackNo>\d+) - (?<artists>.+?) [–-] (?<title>.+)(?=\.mp3)",
+            @"(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\[(?<year>\d{4})\])? = (?<trackNo>\d{1,3}) [–-] (?<title>.+)(?=\.mp3)",
             @"(?:(?<albumArtists>.+) ≡ )(?<album>.+?)(?: ?\[(?<year>\d{4})\])? = (?<artists>.+?) [–-] (?<title>.+)(?=\.mp3)",
             // @"(?<artists>.+?) - (?<album>.+?) - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?: \[(?<year>\d{4})\])?(?: \{(?<genres>.+?)\})?(?=\.\S+)",
             @"(?<artists>.+?) - (?<album>.+?)(?: ?\[(?<year>\d{4})\])? - (?:(?<discNo>[1-9]{1,2})[\.-])?(?<trackNo>[0-9]+) - (?<title>.+?(?:\.{3})?)(?: \{(?<genres>.+?)\})?(?=\.\S+)",
