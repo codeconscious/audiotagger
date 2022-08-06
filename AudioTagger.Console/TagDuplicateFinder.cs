@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace AudioTagger.Console;
 
 public class TagDuplicateFinder : IPathOperation
@@ -16,8 +18,7 @@ public class TagDuplicateFinder : IPathOperation
         stopwatch.Start();
 
         var duplicateGroups = mediaFiles
-            .ToLookup(m => string.Concat(m.Artists).ToLowerInvariant().Trim() +
-                           m.Title.Trim())
+            .ToLookup(m => ConcatenateArtists(m.Artists) + m.Title.Trim())
             .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
             .OrderBy(m => m.Key);
 
@@ -40,6 +41,16 @@ public class TagDuplicateFinder : IPathOperation
             var title = firstDupe.Title;
             var bitrate = "(" + string.Join(", ", dupeGroup.Select(d => d.BitRate + "kpbs")) + ")";
             printer.Print($"{index.ToString().PadLeft(indexPadding)}. {artist} / {title}  {bitrate}");
+        }
+
+        static string ConcatenateArtists(IEnumerable<string> artists)
+        {
+            return Regex.Replace(
+                string.Concat(artists)
+                      .ToLowerInvariant()
+                      .Trim(),
+                "^the",
+                "");
         }
     }
 }
