@@ -1,9 +1,3 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Spectre.Console;
-
 namespace AudioTagger.Console;
 
 public class TagDuplicateFinder : IPathOperation
@@ -43,7 +37,8 @@ public class TagDuplicateFinder : IPathOperation
             index++;
             var artist = string.Concat(dupe.First().Artists);
             var title = dupe.First().Title;
-            printer.Print($"{index.ToString().PadLeft(indexPadding)}. {artist} / {title}");
+            var bitrate = "(" + string.Join(", ", dupe.Select(d => d.BitRate + "kpbs")) + ")";
+            printer.Print($"{index.ToString().PadLeft(indexPadding)}. {artist} / {title}  {bitrate}");
         }
     }
 }
