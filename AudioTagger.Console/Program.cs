@@ -78,6 +78,7 @@ namespace AudioTagger.Console
                 "-u" or "--update" => new TagUpdater(),
                 "-y" or "--update-year" => new TagUpdaterYearOnly(),
                 "-r" or "--rename" => new MediaFileRenamer(),
+                "-d" or "--duplicates" => new TagDuplicateFinder(),
                 _ => null
             };
         }
@@ -91,6 +92,7 @@ namespace AudioTagger.Console
             printer.Print("   -v or --view   : View tags");
             printer.Print("   -u or --update : Update tags");
             printer.Print("   -r or --rename : Rename files based on existing tags");
+            printer.Print("   -d or --rename : Rename files based on existing tags");
             // TODO: Make album art opt-in
         }
     }
