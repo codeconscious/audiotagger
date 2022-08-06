@@ -6,6 +6,9 @@ namespace AudioTagger
 {
     public interface IPathOperation
     {
-        public void Start(IReadOnlyCollection<MediaFile> filesData, DirectoryInfo workingDirectory, IPrinter printer);
+        public void Start(
+            IReadOnlyCollection<MediaFile> filesData,
+            DirectoryInfo workingDirectory,
+            IPrinter printer);
     }
 }
