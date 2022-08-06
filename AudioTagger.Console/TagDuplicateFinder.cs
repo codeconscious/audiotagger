@@ -10,45 +10,20 @@ public class TagDuplicateFinder : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles, DirectoryInfo workingDirectory, IPrinter printer)
     {
-        printer.Print("Starting...");
+        printer.Print("Checking for duplicates (by artist(s) and title)...");
 
-        // var duplicates = new Dictionary<string, List<MediaFile>>();
+        var duplicates = mediaFiles
+            .ToLookup(m => string.Concat(m.Artists).Trim() + m.Title.Trim())
+            .Where(m => m.Count() > 1)
+            .OrderBy(m => m.Key);
 
-        // var d = mediaFiles.ToDictionary(m => string.Concat(m.Artists).Trim(), m => m);
-        // var d2 = mediaFiles.ToLookup(m => string.Concat(m.Artists).Trim(), m => m).Where(m => m.Count() > 1);
+        printer.Print(duplicates.Count() + " found.");
 
-        // printer.Print("Count: " + d.Count);
-
-        // foreach (var dupe in d2)
-        //     printer.Print("- " + dupe.Key);
-
-        //foreach (var mediaFile in mediaFiles)
-        //{
-        //    try
-        //    {
-        //        isCancelled = GetTags(mediaFile);
-
-        //        if (isCancelled)
-        //            break;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
-        //        //printer.PrintException(ex);
-        //        errorFiles.Add(mediaFile.FileNameOnly);
-        //        continue;
-        //    }
-        //}
-
-        //if (errorFiles.Any())
-        //{
-        //    printer.Print("Files with errors:");
-        //    errorFiles.ForEach(f => printer.Print("- " + f));
-        //}
+        foreach (var dupe in duplicates)
+        {
+            var artist = string.Concat(dupe.First().Artists);
+            var title = dupe.First().Title;
+            printer.Print($"  - {artist} /  {title}");
+        }
     }
-
-    // private static string GetTags(MediaFile mediaFile)
-    // {
-
-    // }
 }
