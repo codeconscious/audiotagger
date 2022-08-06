@@ -15,13 +15,13 @@ public class TagDuplicateFinder : IPathOperation
         var stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
 
-        var duplicates = mediaFiles
+        var duplicateGroups = mediaFiles
             .ToLookup(m => string.Concat(m.Artists).ToLowerInvariant().Trim() +
                            m.Title.Trim())
             .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
             .OrderBy(m => m.Key);
 
-        var count = duplicates.Count();
+        var count = duplicateGroups.Count();
 
         // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
         // Reference: https://stackoverflow.com/q/5113750/11767771
@@ -32,12 +32,13 @@ public class TagDuplicateFinder : IPathOperation
         uint index = 0;
         int indexPadding = count.ToString().Length + 2;
 
-        foreach (var dupe in duplicates)
+        foreach (var dupeGroup in duplicateGroups)
         {
             index++;
-            var artist = string.Concat(dupe.First().Artists);
-            var title = dupe.First().Title;
-            var bitrate = "(" + string.Join(", ", dupe.Select(d => d.BitRate + "kpbs")) + ")";
+            var firstDupe = dupeGroup.First();
+            var artist = string.Concat(firstDupe.Artists);
+            var title = firstDupe.Title;
+            var bitrate = "(" + string.Join(", ", dupeGroup.Select(d => d.BitRate + "kpbs")) + ")";
             printer.Print($"{index.ToString().PadLeft(indexPadding)}. {artist} / {title}  {bitrate}");
         }
     }
