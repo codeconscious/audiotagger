@@ -18,7 +18,7 @@ public class TagDuplicateFinder : IPathOperation
         var duplicates = mediaFiles
             .ToLookup(m => string.Concat(m.Artists).ToLowerInvariant().Trim() +
                            m.Title.Trim())
-            .Where(m => m.Count() > 1)
+            .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
             .OrderBy(m => m.Key);
 
         var count = duplicates.Count();
