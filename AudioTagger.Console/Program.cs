@@ -89,10 +89,10 @@ namespace AudioTagger.Console
             printer.Print("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 1, ""); // TODO: Decide on a name
             printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
             printer.Print("Commands:");
-            printer.Print("   -v or --view   : View tags");
-            printer.Print("   -u or --update : Update tags");
-            printer.Print("   -r or --rename : Rename files based on existing tags");
-            printer.Print("   -d or --rename : Rename files based on existing tags");
+            printer.Print("   -v or --view       : View tags");
+            printer.Print("   -u or --update     : Update tags");
+            printer.Print("   -r or --rename     : Rename files based on existing tags");
+            printer.Print("   -d or --duplicates : List tracks with identical artists and titles");
             // TODO: Make album art opt-in
         }
     }
