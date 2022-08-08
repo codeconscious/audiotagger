@@ -13,7 +13,9 @@ public class TagStats : IPathOperation
             return;
         }
 
-         var artistStats = mediaFiles
+        const int topArtistCount = 25;
+
+        var topArtists = mediaFiles
             .Where(m =>
                 m.Artists.Any() &&
                 string.Concat(m.Artists) != "<Unknown>" && // Not working.
@@ -21,10 +23,23 @@ public class TagStats : IPathOperation
             .GroupBy(a => a.Artists, new ArtistsComparer())
             .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value)
-            .Take(30);
+            .Take(topArtistCount);
 
-        foreach (var artist in artistStats)
+        printer.Print($"Top {topArtistCount} artists:", prependLines: 1);
+        foreach (var artist in topArtists)
             printer.Print($"  - {artist.Key}: {artist.Value}");
+
+        const int mostCommonTitleCount = 10;
+
+        var mostCommonTitles = mediaFiles
+            .GroupBy(a => a.Title.Trim(), new TitleComparer())
+            .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
+            .OrderByDescending(g => g.Value)
+            .Take(mostCommonTitleCount);
+
+        printer.Print($"Top {mostCommonTitleCount} track titles:", prependLines: 1);
+        foreach (var title in mostCommonTitles)
+            printer.Print($"  - {title.Key}: {title.Value}");
     }
 
     class ArtistsComparer : IEqualityComparer<string[]>
@@ -54,6 +69,25 @@ public class TagStats : IPathOperation
                       .Trim(),
                 "^the",
                 "");
+        }
+    }
+
+    private class TitleComparer : IEqualityComparer<string>
+    {
+        public bool Equals(string? x, string? y)
+        {
+            if (x is null && y is null)
+                return true;
+
+            if (x is null || y is null)
+                return false;
+
+            return string.Equals(x.Trim(), y.Trim(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        public int GetHashCode([DisallowNull] string obj)
+        {
+            return obj.ToLower().GetHashCode();
         }
     }
 }
