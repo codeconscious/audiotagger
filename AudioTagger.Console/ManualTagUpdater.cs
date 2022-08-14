@@ -4,6 +4,12 @@ namespace AudioTagger.Console;
 
 public class ManualTagUpdater : IPathOperation
 {
+    public bool SaveUpdates { get; }
+    public ManualTagUpdater(bool saveUpdates = false)
+    {
+        SaveUpdates = saveUpdates;
+    }
+
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles, DirectoryInfo workingDirectory, IPrinter printer)
     {
         if (!mediaFiles.Any())
@@ -12,7 +18,7 @@ public class ManualTagUpdater : IPathOperation
             return;
         }
 
-        const string pattern = @"TEST ALBUM NAME";
+        const string pattern = @"Round \d";
         var updateFiles = mediaFiles.Where(f => Regex.IsMatch(f.Album.Trim(), pattern, RegexOptions.IgnoreCase));
 
         if (!updateFiles.Any())
@@ -22,6 +28,9 @@ public class ManualTagUpdater : IPathOperation
         }
 
         printer.Print($"Updating {updateFiles.Count()} tags...");
+
+        if (!SaveUpdates)
+            printer.Print("No files will actually be updated.", fgColor: ConsoleColor.Yellow);
 
         var stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
@@ -35,7 +44,7 @@ public class ManualTagUpdater : IPathOperation
             try
             {
                 file.Album = string.Empty;
-                file.SaveUpdates();
+                if (SaveUpdates) file.SaveUpdates();
                 successCount++;
                 //printer.Print(outputPrepend + $"OK: {file.Path}");
             }

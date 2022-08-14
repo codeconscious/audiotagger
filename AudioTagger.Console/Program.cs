@@ -80,7 +80,8 @@ namespace AudioTagger.Console
                 "-r" or "--rename" => new MediaFileRenamer(),
                 "-d" or "--duplicates" => new TagDuplicateFinder(),
                 "-s" or "--stats" => new TagStats(),
-                "-m" or "--manual" => new ManualTagUpdater(),
+                "-m" or "--manual" => new ManualTagUpdater(saveUpdates: false),
+                "-mm" or "--mmanual" => new ManualTagUpdater(saveUpdates: true),
                 _ => null
             };
         }
@@ -96,7 +97,8 @@ namespace AudioTagger.Console
             printer.Print("   -r or --rename     : Rename files based on existing tags");
             printer.Print("   -d or --duplicates : List tracks with identical artists and titles");
             printer.Print("   -s or --stats      : Display file statistics");
-            printer.Print("   -m or --manual     : Update specific tags manually using custom code");
+            printer.Print("   -m or --manual     : Update specific tags manually using custom code without saving the files");
+            printer.Print("   -mm or --mmanual   : Update specific tags manually using custom code and save the files");
             // TODO: Make album art opt-in
         }
     }
