@@ -80,7 +80,7 @@ namespace AudioTagger.Console
                 "-r" or "--rename" => new MediaFileRenamer(),
                 "-d" or "--duplicates" => new TagDuplicateFinder(),
                 "-s" or "--stats" => new TagStats(),
-                "-m" or "--manual" => new SpecificTagUpdater(),
+                "-m" or "--manual" => new ManualTagUpdater(),
                 _ => null
             };
         }
