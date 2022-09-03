@@ -15,13 +15,16 @@ namespace AudioTagger.Console
 
             var viewer = new MediaFileViewer();
 
+            // printer.Print("Ordering the data...");
             var orderedMediaFiles = mediaFiles
-                .OrderBy(m => m.AlbumArtists.Length == 0 ? string.Empty : m.AlbumArtists[0])
-                .ThenBy(m => m.Artists[0])
-                .ThenBy(m => m.Album)
+                .OrderBy(m => string.Concat(m.AlbumArtists) ?? string.Empty)
+                .ThenBy(m => string.Concat(m.Artists) ?? string.Empty)
+                .ThenBy(m => m.Album ?? string.Empty)
                 .ThenBy(m => m.TrackNo)
-                .ThenBy(m => m.Title);
+                .ThenBy(m => m.Title)
+                .ToImmutableArray();
 
+            // printer.Print("Printing the data...");
             foreach (var mediaFile in orderedMediaFiles)
             {
                 try
@@ -31,12 +34,10 @@ namespace AudioTagger.Console
                 catch (TagLib.CorruptFileException e)
                 {
                     printer.Error("The file's tag metadata was corrupt or missing: " + e.Message);
-                    continue;
                 }
                 catch (Exception e)
                 {
                     printer.Error($"An unknown error occurred with file {mediaFile.FileNameOnly}: " + e.Message);
-                    continue;
                 }
             }
 
