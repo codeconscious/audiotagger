@@ -35,12 +35,12 @@ namespace AudioTagger.Console
                 return;
             }
 
-            var stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
-
             foreach (var path in argQueue)
             {
                 printer.Print($"Processing path \"{path}\"...");
+
+                var stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
 
                 IReadOnlyCollection<MediaFile> filesData;
                 try
@@ -59,18 +59,16 @@ namespace AudioTagger.Console
                     continue;
                 }
 
-                printer.Print($"Found {filesData.Count:#,##0} files.");
+                // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
+                // Reference: https://stackoverflow.com/q/5113750/11767771
+                var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
+
+                printer.Print($"Found {filesData.Count:#,##0} files in {elapsedMs:#,##0}ms.");
 
                 var directoryInfo = new DirectoryInfo(path);
 
                 operation.Start(filesData, directoryInfo, printer);
             }
-
-            // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
-            // Reference: https://stackoverflow.com/q/5113750/11767771
-            var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
-
-            printer.Print($"Done reading files in {elapsedMs:#,##0}ms");
         }
 
         /// <summary>

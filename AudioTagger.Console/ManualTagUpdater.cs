@@ -18,7 +18,9 @@ public class ManualTagUpdater : IPathOperation
             return;
         }
 
-        const string pattern = @"Round \d";
+        const string pattern = @"F\d\d";
+        const string renameTo = "";
+
         var updateFiles = mediaFiles.Where(f => Regex.IsMatch(f.Album.Trim(), pattern, RegexOptions.IgnoreCase));
 
         if (!updateFiles.Any())
@@ -43,7 +45,7 @@ public class ManualTagUpdater : IPathOperation
         {
             try
             {
-                file.Album = string.Empty;
+                file.Album = renameTo;
                 if (SaveUpdates) file.SaveUpdates();
                 successCount++;
                 //printer.Print(outputPrepend + $"OK: {file.Path}");
