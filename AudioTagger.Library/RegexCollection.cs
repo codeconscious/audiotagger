@@ -27,12 +27,13 @@ public class RegexCollection : IRegexCollection
         var patterns = File.ReadAllLines(regexFileName)
                            .Where(line =>
                                 !line.StartsWith("# ") &&  // Comments
+                                !line.StartsWith("// ") &&  // Comments
                                 !string.IsNullOrWhiteSpace(line))
                            .Distinct()
                            .ToList();
 
-        if (patterns.Count == 0)
-            throw new InvalidDataException("No regex patterns were found.");
+        // if (patterns.Count == 0)
+        //     throw new InvalidDataException("No regex patterns were found.");
 
         Patterns = patterns;
     }
