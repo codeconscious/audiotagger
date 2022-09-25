@@ -23,6 +23,9 @@ namespace AudioTagger.Console
             // Select the desired operation using the first variable.
             IPathOperation? operation = OperationFactory(argQueue.Dequeue());
 
+            const string regexPath = "Regexes.txt";
+            var regexCollection = new RegexCollection(regexPath);
+
             if (operation == null)
             {
                 PrintInstructions(printer);
@@ -67,7 +70,7 @@ namespace AudioTagger.Console
 
                 var directoryInfo = new DirectoryInfo(path);
 
-                operation.Start(filesData, directoryInfo, printer);
+                operation.Start(filesData, directoryInfo, regexCollection, printer);
             }
         }
 

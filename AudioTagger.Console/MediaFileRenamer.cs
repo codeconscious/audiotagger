@@ -5,7 +5,10 @@ namespace AudioTagger.Console
 {
     public sealed class MediaFileRenamer : IPathOperation
     {
-        public void Start(IReadOnlyCollection<MediaFile> mediaFiles, DirectoryInfo workingDirectory, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
+                          DirectoryInfo workingDirectory,
+                          IRegexCollection regexCollection,
+                          IPrinter printer)
         {
             var directoryResponse = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()

@@ -8,9 +8,12 @@ namespace AudioTagger.Console
 {
     public class TagUpdater : IPathOperation
     {
-        public void Start(IReadOnlyCollection<MediaFile> mediaFiles, DirectoryInfo workingDirectory, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
+                          DirectoryInfo workingDirectory,
+                          IRegexCollection regexCollection,
+                          IPrinter printer)
         {
-            var isCancelled = false;
+            var cancelRequested = false;
             var doConfirm = true;
             var errorFiles = new List<string>();
 
@@ -19,9 +22,9 @@ namespace AudioTagger.Console
             {
                 try
                 {
-                    isCancelled = UpdateTags(mediaFile, printer, ref doConfirm);
+                    cancelRequested = UpdateTags(mediaFile, regexCollection, printer, ref doConfirm);
 
-                    if (isCancelled)
+                    if (cancelRequested)
                         break;
                 }
                 catch (Exception ex)
@@ -44,12 +47,12 @@ namespace AudioTagger.Console
         /// Make proposed tag updates to the specified file if the user agrees.
         /// </summary>
         /// <returns>A bool indicating whether the following file should be processed.</returns>
-        private static bool UpdateTags(MediaFile mediaFile, IPrinter printer, ref bool doConfirm)
+        private static bool UpdateTags(MediaFile mediaFile, IRegexCollection regexCollection, IPrinter printer, ref bool doConfirm)
         {
             // TODO: Refactor cancellation so this isn't needed.
             const bool shouldCancel = false;
 
-            var match = RegexCollection.GetFirstMatch(mediaFile.FileNameOnly);
+            var match = regexCollection.GetFirstFileMatch(mediaFile.FileNameOnly);
 
             // If there are no regex matches against the filename, we cannot continue.
             if (match == null)
