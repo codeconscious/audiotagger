@@ -24,7 +24,17 @@ namespace AudioTagger.Console
             IPathOperation? operation = OperationFactory(argQueue.Dequeue());
 
             const string regexPath = "Regexes.txt";
-            var regexCollection = new RegexCollection(regexPath);
+            RegexCollection regexCollection;
+            try
+            {
+                regexCollection = new RegexCollection(regexPath);
+                printer.Print($"Found {regexCollection.Patterns.Count} regex(es).");
+            }
+            catch (FileNotFoundException)
+            {
+                printer.Error($"The file {regexPath} must exist.");
+                return;
+            }
 
             if (operation == null)
             {

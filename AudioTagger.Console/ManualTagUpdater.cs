@@ -10,7 +10,10 @@ public class ManualTagUpdater : IPathOperation
         SaveUpdates = saveUpdates;
     }
 
-    public void Start(IReadOnlyCollection<MediaFile> mediaFiles, DirectoryInfo workingDirectory, IPrinter printer)
+    public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
+                      DirectoryInfo workingDirectory,
+                      IRegexCollection regexCollection,
+                      IPrinter printer)
     {
         if (!mediaFiles.Any())
         {
