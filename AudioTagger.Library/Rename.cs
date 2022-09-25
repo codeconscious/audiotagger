@@ -8,13 +8,16 @@ namespace AudioTagger
 {
     public class FileRenamer : IPathOperation
     {
-        public void Start(IReadOnlyCollection<MediaFile> filesData, DirectoryInfo workingDirectory, IPrinter printer)
+        public void Start(IReadOnlyCollection<MediaFile> filesData,
+                          DirectoryInfo workingDirectory,
+                          IRegexCollection regexCollection,
+                          IPrinter printer)
         {
             foreach (var fileData in filesData)
             {
                 if (fileData == null)
                 {
-                    printer.Error($"Skipped invalid file...");
+                    printer.Error("Skipped invalid file.");
                 }
                 else
                 {
