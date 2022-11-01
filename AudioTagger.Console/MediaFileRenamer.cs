@@ -89,7 +89,7 @@ namespace AudioTagger.Console
                 ? GetSafeString(string.Join(" && ", file.AlbumArtists)) + " ≡ "
                 : string.Empty;
             var artistText = HasValue(file.Artists)
-                ? GetSafeString(string.Join(" && ", file.Artists)) + " = "
+                ? GetSafeString(string.Join(" && ", file.Artists)) + " - "
                 : string.Empty;
             var albumText = string.IsNullOrWhiteSpace(file.Album)
                 ? string.Empty
@@ -111,8 +111,7 @@ namespace AudioTagger.Console
                 artistText +
                 string.Concat(string.IsNullOrWhiteSpace(albumText)
                     ? new[] {titleText, yearText}
-                    : new[] {albumText, yearText, " - ", trackText, titleText}) +
-                ext;
+                    : new[] {albumText, yearText, " - ", trackText, titleText}) + ext;
 
             //var previousFolderFileName = Path.Combine(Directory.GetParent(file.Path).Name, file.FileNameOnly);
             var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
