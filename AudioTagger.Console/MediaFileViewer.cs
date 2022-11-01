@@ -76,6 +76,7 @@ public class MediaFileViewer
             file.TrackNo == 0 ? string.Empty : file.TrackNo.ToString(),
             file.Title,
             file.Year == 0 ? string.Empty : file.Year.ToString(),
+            string.Join(", ", file.Genres),
             file.Duration.ToString("m\\:ss")
         };
 
