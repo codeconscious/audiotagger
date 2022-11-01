@@ -26,7 +26,8 @@ public class ManualTagUpdater : IPathOperation
         // const string renameTo = "";
         const string newGenre = "Alternative";
 
-        var updateFiles = mediaFiles;//.Where(f => Regex.IsMatch(f.Album.Trim(), pattern, RegexOptions.IgnoreCase));
+        // var updateFiles = mediaFiles.Where(f => Regex.IsMatch(f.Album.Trim(), pattern, RegexOptions.IgnoreCase));
+        var updateFiles = mediaFiles.Where(f => !f.Genres.Any());
 
         if (!updateFiles.Any())
         {
@@ -34,7 +35,7 @@ public class ManualTagUpdater : IPathOperation
             return;
         }
 
-        printer.Print($"Updating {updateFiles.Count} tags...");
+        printer.Print($"Updating {updateFiles.Count()} tags...");
 
         if (!SaveUpdates)
             printer.Print("No files will actually be updated.", fgColor: ConsoleColor.Yellow);
