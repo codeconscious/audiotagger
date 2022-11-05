@@ -38,8 +38,8 @@ namespace AudioTagger.Console
         }
 
         private static List<string> RenameFiles(IReadOnlyCollection<MediaFile> mediaFiles,
-                                    DirectoryInfo workingDirectory,
-                                    IPrinter printer)
+                                                DirectoryInfo workingDirectory,
+                                                IPrinter printer)
         {
             var isCancelled = false;
             var doConfirm = true;
@@ -67,35 +67,38 @@ namespace AudioTagger.Console
             return errors;
         }
 
+        /// <summary>
+        /// Renames a single file based upon its tags. The filename format is set manually.
+        /// </summary>
+        /// <returns>A bool indicated whether the user cancelled the operation or not.</returns>
         private static bool RenameSingleFile(MediaFile file,
                                              IPrinter printer,
                                              string workingPath,
                                              ref bool doConfirm)
         {
             ArgumentNullException.ThrowIfNull(file);
-            ArgumentNullException.ThrowIfNull(printer);
 
             // TODO: Refactor cancellation so this isn't needed.
             const bool shouldCancel = false;
 
             //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
             var newFolderName = HasValue(file.AlbumArtists)
-                ? EnsureStringIsPathSafe(string.Join(" && ", file.AlbumArtists))
+                ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists))
                 : HasValue(file.Artists)
-                    ? EnsureStringIsPathSafe(string.Join(" && ", file.Artists))
+                    ? EnsurePathSafeString(string.Join(" && ", file.Artists))
                     : "_UNSPECIFIED";
-            var folderPath = Path.Combine(workingPath, newFolderName);
+            var fullFolderPath = Path.Combine(workingPath, newFolderName);
 
             var albumArtistText = HasValue(file.AlbumArtists)
-                ? EnsureStringIsPathSafe(string.Join(" && ", file.AlbumArtists)) + " ≡ "
+                ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists)) + " ≡ "
                 : string.Empty;
             var artistText = HasValue(file.Artists)
-                ? EnsureStringIsPathSafe(string.Join(" && ", file.Artists)) + " - "
+                ? EnsurePathSafeString(string.Join(" && ", file.Artists)) + " - "
                 : string.Empty;
             var albumText = string.IsNullOrWhiteSpace(file.Album)
                 ? string.Empty
-                : EnsureStringIsPathSafe(file.Album);
-            var titleText = EnsureStringIsPathSafe(file.Title);
+                : EnsurePathSafeString(file.Album);
+            var titleText = EnsurePathSafeString(file.Title);
             var trackText = file.TrackNo == 0
                 ? string.Empty
                 : file.TrackNo.ToString("000") + " - ";
@@ -121,7 +124,7 @@ namespace AudioTagger.Console
             // printer.Print("> " + proposedFolderFileName); // Debug use
             if (previousFolderFileName == proposedFolderFileName)
             {
-                printer.Print($"No change needed for \"{file.Path.Replace(workingPath, "")}\"");
+                printer.Print($"No rename needed for \"{file.Path.Replace(workingPath, "")}\"");
                 return shouldCancel;
             }
 
@@ -167,8 +170,8 @@ namespace AudioTagger.Console
             }
 
             // printer.Print(">> " + folderPath);
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
+            if (!Directory.Exists(fullFolderPath))
+                Directory.CreateDirectory(fullFolderPath);
 
             // printer.Print("--> " + newPathFileName);
             currentFile.MoveTo(newPathFileName);
@@ -188,7 +191,7 @@ namespace AudioTagger.Console
                 printer.Print($" - #{number++}: {error}");
         }
 
-        private static string EnsureStringIsPathSafe(string input)
+        private static string EnsurePathSafeString(string input)
         {
             var working = input;
 
