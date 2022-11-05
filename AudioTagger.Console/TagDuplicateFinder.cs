@@ -23,9 +23,10 @@ public class TagDuplicateFinder : IPathOperation
         var duplicateGroups = mediaFiles
             .ToLookup(m => ConcatenateArtists(m.Artists) + m.Title.Trim())
             .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
-            .OrderBy(m => m.Key);
+            .OrderBy(m => m.Key)
+            .ToImmutableArray();
 
-        var count = duplicateGroups.Count();
+        var count = duplicateGroups.Length;
 
         // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
         // Reference: https://stackoverflow.com/q/5113750/11767771
@@ -33,8 +34,23 @@ public class TagDuplicateFinder : IPathOperation
 
         printer.Print($"Found {count} duplicate{(count == 1 ? "" : "s")} in {elapsedMs:#,##0}ms.");
 
+        PrintResults(duplicateGroups, printer);
+    }
+
+    private static string ConcatenateArtists(IEnumerable<string> artists)
+    {
+        return Regex.Replace(
+            string.Concat(artists)
+                    .ToLowerInvariant()
+                    .Trim(),
+            "^the",
+            "");
+    }
+
+    private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
+    {
         uint index = 0;
-        int indexPadding = count.ToString().Length + 2;
+        int indexPadding = duplicateGroups.Count.ToString().Length + 2;
 
         foreach (var dupeGroup in duplicateGroups)
         {
@@ -44,16 +60,6 @@ public class TagDuplicateFinder : IPathOperation
             var title = firstDupe.Title;
             var bitrate = "(" + string.Join(", ", dupeGroup.Select(d => d.BitRate + "kpbs")) + ")";
             printer.Print($"{index.ToString().PadLeft(indexPadding)}. {artist} / {title}  {bitrate}");
-        }
-
-        static string ConcatenateArtists(IEnumerable<string> artists)
-        {
-            return Regex.Replace(
-                string.Concat(artists)
-                      .ToLowerInvariant()
-                      .Trim(),
-                "^the",
-                "");
         }
     }
 }
