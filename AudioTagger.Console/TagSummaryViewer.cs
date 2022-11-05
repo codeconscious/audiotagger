@@ -11,14 +11,7 @@ namespace AudioTagger.Console
         {
             ArgumentNullException.ThrowIfNull(mediaFiles);
 
-            var table = new Table();
-            table.AddColumns("Artist(s)", "Album", "Track", "Title", "Year", "Genre(s)", "Length");
-            table.Border = TableBorder.Rounded;
-            table.Expand = true;
-
-            var viewer = new MediaFileViewer();
-
-            // printer.Print("Ordering the data...");
+            printer.Print("Ordering the data...");
             var orderedMediaFiles = mediaFiles
                 .OrderBy(m => string.Concat(m.AlbumArtists) ?? string.Empty)
                 .ThenBy(m => string.Concat(m.Artists) ?? string.Empty)
@@ -27,7 +20,35 @@ namespace AudioTagger.Console
                 .ThenBy(m => m.Title)
                 .ToImmutableArray();
 
-            // printer.Print("Printing the data...");
+            var table = PrepareTableWithColumns("Artist(s)", "Album", "Track", "Title", "Year", "Genre(s)", "Length");
+
+            var populatedTable = AppendDataRows(table,
+                                                new MediaFileViewer(),
+                                                orderedMediaFiles,
+                                                printer);
+
+            printer.Print("Printing the table...");
+            AnsiConsole.Write(table);
+        }
+
+        private static Table PrepareTableWithColumns(params string[] columns)
+        {
+            var table = new Table
+            {
+                Border = TableBorder.Rounded,
+                Expand = true
+            };
+
+            table.AddColumns(columns);
+
+            return table;
+        }
+
+        private static Table AppendDataRows(Table table,
+                                            MediaFileViewer viewer,
+                                            ImmutableArray<MediaFile> orderedMediaFiles,
+                                            IPrinter printer)
+        {
             foreach (var mediaFile in orderedMediaFiles)
             {
                 try
@@ -40,11 +61,11 @@ namespace AudioTagger.Console
                 }
                 catch (Exception e)
                 {
-                    printer.Error($"An unknown error occurred with file {mediaFile.FileNameOnly}: " + e.Message);
+                    printer.Error($"An unknown error occurred with file \"{mediaFile.FileNameOnly}\": " + e.Message);
                 }
             }
 
-            AnsiConsole.Write(table);
+            return table;
         }
     }
 }
