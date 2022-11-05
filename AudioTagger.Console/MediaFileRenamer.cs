@@ -80,22 +80,22 @@ namespace AudioTagger.Console
 
             //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
             var newFolderName = HasValue(file.AlbumArtists)
-                ? GetSafeString(string.Join(" && ", file.AlbumArtists))
+                ? EnsureStringIsPathSafe(string.Join(" && ", file.AlbumArtists))
                 : HasValue(file.Artists)
-                    ? GetSafeString(string.Join(" && ", file.Artists))
+                    ? EnsureStringIsPathSafe(string.Join(" && ", file.Artists))
                     : "_UNSPECIFIED";
             var folderPath = Path.Combine(workingPath, newFolderName);
 
             var albumArtistText = HasValue(file.AlbumArtists)
-                ? GetSafeString(string.Join(" && ", file.AlbumArtists)) + " ≡ "
+                ? EnsureStringIsPathSafe(string.Join(" && ", file.AlbumArtists)) + " ≡ "
                 : string.Empty;
             var artistText = HasValue(file.Artists)
-                ? GetSafeString(string.Join(" && ", file.Artists)) + " - "
+                ? EnsureStringIsPathSafe(string.Join(" && ", file.Artists)) + " - "
                 : string.Empty;
             var albumText = string.IsNullOrWhiteSpace(file.Album)
                 ? string.Empty
-                : GetSafeString(file.Album);
-            var titleText = GetSafeString(file.Title);
+                : EnsureStringIsPathSafe(file.Album);
+            var titleText = EnsureStringIsPathSafe(file.Title);
             var trackText = file.TrackNo == 0
                 ? string.Empty
                 : file.TrackNo.ToString("000") + " - ";
@@ -188,16 +188,16 @@ namespace AudioTagger.Console
                 printer.Print($" - #{number++}: {error}");
         }
 
-        private static string GetSafeString(string input)
+        private static string EnsureStringIsPathSafe(string input)
         {
-            var partWorking = input;
+            var working = input;
 
             foreach (var ch in Path.GetInvalidFileNameChars())
             {
-                partWorking = partWorking.Replace(ch, '_');
+                working = working.Replace(ch, '_');
             }
 
-            return partWorking;
+            return working;
         }
 
         private static bool HasValue(IEnumerable<string> tagValues)
