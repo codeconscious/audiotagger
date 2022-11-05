@@ -10,22 +10,42 @@ namespace AudioTagger.Console
                           IRegexCollection regexCollection,
                           IPrinter printer)
         {
+            if (!ShouldContinue(workingDirectory, printer))
+                return;
+
+            var errors = RenameFiles(mediaFiles, workingDirectory, printer);
+            PrintRenameErrors(errors, printer);
+
+            var deletedDirectories = DeleteEmptySubDirectories(workingDirectory.FullName);
+            PrintSubDirectoryDeletionResults(deletedDirectories, printer);
+        }
+
+        /// <summary>
+        /// Ask the user to confirm they want to continue.
+        /// </summary>
+        /// <returns>A bool indicating whether to continue (true) or cancel the operation.</returns>
+        private static bool ShouldContinue(DirectoryInfo workingDirectory, IPrinter printer)
+        {
             var directoryResponse = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title($"All files will be saved under directory \"{workingDirectory.FullName}\"")
                     .AddChoices(new[] {"Continue", "Cancel"}));
 
-            if (directoryResponse == "Cancel")
-            {
-                printer.Print("Cancelling...");
-                return;
-            }
+            if (directoryResponse == "Continue")
+                return true;
 
+            printer.Print("Cancelling...");
+            return false;
+        }
+
+        private static List<string> RenameFiles(IReadOnlyCollection<MediaFile> mediaFiles,
+                                    DirectoryInfo workingDirectory,
+                                    IPrinter printer)
+        {
             var isCancelled = false;
             var doConfirm = true;
             var errors = new List<string>();
 
-            // Process each file
             for (var i = 0; i < mediaFiles.Count; i++)
             {
                 var file = mediaFiles.ElementAt(i);
@@ -35,40 +55,23 @@ namespace AudioTagger.Console
                     if (isCancelled)
                         break;
 
-                    isCancelled = RenameFile(file, printer, workingDirectory.FullName, ref doConfirm);
+                    isCancelled = RenameSingleFile(file, printer, workingDirectory.FullName, ref doConfirm);
                 }
                 catch (IOException e)
                 {
                     printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
                     printer.PrintException(e);
                     errors.Add(e.Message); // The message should contain the file name.
-                    continue;
                 }
             }
 
-            var deletedDirectories = DeleteEmptySubDirectories(workingDirectory.FullName);
-            if (deletedDirectories.Any())
-            {
-                printer.Print("DELETED DIRECTORIES:");
-                foreach (var dir in deletedDirectories)
-                    printer.Print("- " + dir);
-            }
-            else
-            {
-                printer.Print("No empty subdirectories found.");
-            }
-
-            //Print the errors
-            if (errors.Any())
-            {
-                printer.Print("ERRORS:");
-                var number = 1;
-                foreach (var error in errors)
-                    printer.Print($" - #{number++}: {error}");
-            }
+            return errors;
         }
 
-        private bool RenameFile(MediaFile file, IPrinter printer, string workingPath, ref bool doConfirm)
+        private static bool RenameSingleFile(MediaFile file,
+                                             IPrinter printer,
+                                             string workingPath,
+                                             ref bool doConfirm)
         {
             ArgumentNullException.ThrowIfNull(file);
             ArgumentNullException.ThrowIfNull(printer);
@@ -76,7 +79,6 @@ namespace AudioTagger.Console
             // TODO: Refactor cancellation so this isn't needed.
             const bool shouldCancel = false;
 
-            // TODO: Move the loop to the outer method, as in TagUpdater?
             //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
             var newFolderName = HasValue(file.AlbumArtists)
                 ? GetSafeString(string.Join(" && ", file.AlbumArtists))
@@ -176,6 +178,17 @@ namespace AudioTagger.Console
             return shouldCancel;
         }
 
+        private static void PrintRenameErrors(IList<string> errors, IPrinter printer)
+        {
+            if (!errors.Any())
+                return;
+
+            printer.Print("ERRORS:");
+            var number = 1;
+            foreach (var error in errors)
+                printer.Print($" - #{number++}: {error}");
+        }
+
         private static string GetSafeString(string input)
         {
             var partWorking = input;
@@ -193,7 +206,7 @@ namespace AudioTagger.Console
             if (tagValues?.Any() != true)
                 return false;
 
-            var asString = string.Join("", tagValues);
+            var asString = string.Concat(tagValues);
 
             if (string.IsNullOrWhiteSpace(asString))
                 return false;
@@ -226,6 +239,20 @@ namespace AudioTagger.Console
             }
 
             return deletedDirectories;
+        }
+
+        private static void PrintSubDirectoryDeletionResults(IList<string> deletedDirectories, IPrinter printer)
+        {
+            if (deletedDirectories.Any())
+            {
+                printer.Print("DELETED DIRECTORIES:");
+                foreach (var dir in deletedDirectories)
+                    printer.Print("- " + dir);
+            }
+            else
+            {
+                printer.Print("No empty subdirectories found.");
+            }
         }
     }
 }
