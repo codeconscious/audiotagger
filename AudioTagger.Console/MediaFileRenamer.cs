@@ -10,17 +10,16 @@ namespace AudioTagger.Console
                           IPrinter printer)
         {
             if (!ShouldContinue(workingDirectory, printer))
+            {
                 return;
+            }
 
-            var errors = RenameFiles(mediaFiles, workingDirectory, printer);
-            PrintRenameErrors(errors, printer);
-
-            var deletedDirectories = DeleteEmptySubDirectories(workingDirectory.FullName);
-            PrintSubDirectoryDeletionResults(deletedDirectories, printer);
+            RenameFiles(mediaFiles, workingDirectory, printer);
+            DeleteEmptySubDirectories(workingDirectory.FullName, printer);
         }
 
         /// <summary>
-        /// Ask the user to confirm they want to continue.
+        /// Asks user to confirm whether they want to continue or cancel.
         /// </summary>
         /// <returns>A bool indicating whether to continue (true) or cancel the operation.</returns>
         private static bool ShouldContinue(DirectoryInfo workingDirectory, IPrinter printer)
@@ -37,11 +36,11 @@ namespace AudioTagger.Console
             return false;
         }
 
-        private static List<string> RenameFiles(IReadOnlyCollection<MediaFile> mediaFiles,
+        private static void RenameFiles(IReadOnlyCollection<MediaFile> mediaFiles,
                                                 DirectoryInfo workingDirectory,
                                                 IPrinter printer)
         {
-            var isCancelled = false;
+            var isCancelRequested = false;
             var doConfirm = true;
             var errors = new List<string>();
 
@@ -51,10 +50,10 @@ namespace AudioTagger.Console
 
                 try
                 {
-                    if (isCancelled)
+                    if (isCancelRequested)
                         break;
 
-                    isCancelled = RenameSingleFile(file, printer, workingDirectory.FullName, ref doConfirm);
+                    isCancelRequested = RenameSingleFile(file, printer, workingDirectory.FullName, ref doConfirm);
                 }
                 catch (IOException e)
                 {
@@ -64,7 +63,18 @@ namespace AudioTagger.Console
                 }
             }
 
-            return errors;
+            PrintRenameErrors(errors, printer);
+
+            static void PrintRenameErrors(IList<string> errors, IPrinter printer)
+            {
+                if (!errors.Any())
+                    return;
+
+                uint number = 1;
+                printer.Print("ERRORS:");
+                foreach (var error in errors)
+                    printer.Print($" - #{number++}: {error}");
+            }
         }
 
         /// <summary>
@@ -181,17 +191,10 @@ namespace AudioTagger.Console
             return shouldCancel;
         }
 
-        private static void PrintRenameErrors(IList<string> errors, IPrinter printer)
-        {
-            if (!errors.Any())
-                return;
-
-            printer.Print("ERRORS:");
-            var number = 1;
-            foreach (var error in errors)
-                printer.Print($" - #{number++}: {error}");
-        }
-
+        /// <summary>
+        /// Replaces characters that are invalid in file path names with a safe character.
+        /// </summary>
+        /// <returns>A corrected string, or the original if no changes were needed.</returns>
         private static string EnsurePathSafeString(string input)
         {
             var working = input;
@@ -221,17 +224,15 @@ namespace AudioTagger.Console
         }
 
         /// <summary>
-        /// Recursively delete all empty subdirectories beneath, and including, the given one.
+        /// Recursively deletes all empty subdirectories beneath, and including, the given one.
         /// </summary>
-        /// <remarks>Implementation from https://stackoverflow.com/a/2811654/11767771</remarks>
-        /// <param name="topDirectoryPath"></param>
-        private static List<string> DeleteEmptySubDirectories(string topDirectoryPath)
+        private static void DeleteEmptySubDirectories(string topDirectoryPath, IPrinter printer)
         {
             var deletedDirectories = new List<string>();
 
             foreach (var directory in Directory.GetDirectories(topDirectoryPath))
             {
-                DeleteEmptySubDirectories(directory);
+                DeleteEmptySubDirectories(directory, printer);
 
                 if (Directory.GetFiles(directory).Length == 0 &&
                     Directory.GetDirectories(directory).Length == 0)
@@ -241,20 +242,20 @@ namespace AudioTagger.Console
                 }
             }
 
-            return deletedDirectories;
-        }
+            PrintResults(deletedDirectories, printer);
 
-        private static void PrintSubDirectoryDeletionResults(IList<string> deletedDirectories, IPrinter printer)
-        {
-            if (!deletedDirectories.Any())
+            static void PrintResults(IList<string> deletedDirectories, IPrinter printer)
             {
-                printer.Print("No empty subdirectories were found.");
-                return;
-            }
+                if (!deletedDirectories.Any())
+                {
+                    printer.Print("No empty subdirectories were found.");
+                    return;
+                }
 
-            printer.Print("DELETED DIRECTORIES:");
-            foreach (var dir in deletedDirectories)
-                printer.Print("- " + dir);
+                printer.Print("DELETED DIRECTORIES:");
+                foreach (var dir in deletedDirectories)
+                    printer.Print("- " + dir);
+            }
         }
     }
 }
