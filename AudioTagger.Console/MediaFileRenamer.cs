@@ -69,6 +69,7 @@ namespace AudioTagger.Console
 
         /// <summary>
         /// Renames a single file based upon its tags. The filename format is set manually.
+        /// TODO: Break down further into methods or local functions.
         /// </summary>
         /// <returns>A bool indicated whether the user cancelled the operation or not.</returns>
         private static bool RenameSingleFile(MediaFile file,
@@ -220,7 +221,7 @@ namespace AudioTagger.Console
         }
 
         /// <summary>
-        /// Delete all empty subdirectories beneath, and including, the given one.
+        /// Recursively delete all empty subdirectories beneath, and including, the given one.
         /// </summary>
         /// <remarks>Implementation from https://stackoverflow.com/a/2811654/11767771</remarks>
         /// <param name="topDirectoryPath"></param>
@@ -245,16 +246,15 @@ namespace AudioTagger.Console
 
         private static void PrintSubDirectoryDeletionResults(IList<string> deletedDirectories, IPrinter printer)
         {
-            if (deletedDirectories.Any())
+            if (!deletedDirectories.Any())
             {
-                printer.Print("DELETED DIRECTORIES:");
-                foreach (var dir in deletedDirectories)
-                    printer.Print("- " + dir);
+                printer.Print("No empty subdirectories were found.");
+                return;
             }
-            else
-            {
-                printer.Print("No empty subdirectories found.");
-            }
+
+            printer.Print("DELETED DIRECTORIES:");
+            foreach (var dir in deletedDirectories)
+                printer.Print("- " + dir);
         }
     }
 }
