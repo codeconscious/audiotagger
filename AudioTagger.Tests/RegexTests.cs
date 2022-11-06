@@ -1,4 +1,3 @@
-/*
 using System;
 using Xunit;
 using AudioTagger;
@@ -440,7 +439,8 @@ namespace AudioTagger.Tests
         [ClassData(typeof(TestDataSet))]
         public void CanParseValidFileNames(ParsedItem expected)
         {
-            var match = RegexCollection.GetFirstMatch(expected.FileName);
+            var regexCollection = new RegexCollection("../AudioTagger.Console/Regexes.txt");
+            var match = regexCollection.GetFirstFileMatch(expected.FileName);
 
             var matchedTags = match.Groups
                                    .OfType<Group>()
@@ -490,4 +490,3 @@ namespace AudioTagger.Tests
         }
     }
 }
-*/
