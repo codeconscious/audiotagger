@@ -9,7 +9,7 @@ namespace AudioTagger.Console
                           IRegexCollection regexCollection,
                           IPrinter printer)
         {
-            if (!ShouldContinue(workingDirectory, printer))
+            if (!ConfirmContinue(workingDirectory, printer))
             {
                 return;
             }
@@ -19,10 +19,9 @@ namespace AudioTagger.Console
         }
 
         /// <summary>
-        /// Asks user to confirm whether they want to continue or cancel.
+        /// Asks user to confirm whether they want to continue (true) or cancel (false).
         /// </summary>
-        /// <returns>A bool indicating whether to continue (true) or cancel the operation.</returns>
-        private static bool ShouldContinue(DirectoryInfo workingDirectory, IPrinter printer)
+        private static bool ConfirmContinue(DirectoryInfo workingDirectory, IPrinter printer)
         {
             var directoryResponse = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
@@ -37,8 +36,8 @@ namespace AudioTagger.Console
         }
 
         private static void RenameFiles(IReadOnlyCollection<MediaFile> mediaFiles,
-                                                DirectoryInfo workingDirectory,
-                                                IPrinter printer)
+                                        DirectoryInfo workingDirectory,
+                                        IPrinter printer)
         {
             var isCancelRequested = false;
             var doConfirm = true;
@@ -63,9 +62,9 @@ namespace AudioTagger.Console
                 }
             }
 
-            PrintRenameErrors(errors, printer);
+            PrintErrors(errors, printer);
 
-            static void PrintRenameErrors(IList<string> errors, IPrinter printer)
+            static void PrintErrors(IList<string> errors, IPrinter printer)
             {
                 if (!errors.Any())
                     return;
@@ -128,9 +127,8 @@ namespace AudioTagger.Console
                     ? new[] {titleText, yearText}
                     : new[] {albumText, yearText, " - ", trackText, titleText}) + ext;
 
-            //var previousFolderFileName = Path.Combine(Directory.GetParent(file.Path).Name, file.FileNameOnly);
             var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
-            var proposedFolderFileName = Path.Combine(newFolderName, newFileName);
+            var proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
             // printer.Print("> " + previousFolderFileName); // Debug use
             // printer.Print("> " + proposedFolderFileName); // Debug use
             if (previousFolderFileName == proposedFolderFileName)
@@ -143,11 +141,9 @@ namespace AudioTagger.Console
             var currentFile = new FileInfo(file.Path);
 
             var newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
-            // printer.Print("NewPathFileName: " + newPathFileName);
 
-            // printer.Print("newFolderName: " + newFolderName);
-            printer.Print(" Current name: " + file.Path.Replace(workingPath, ""));
-            printer.Print("Proposed name: " + Path.Combine(newFolderName, newPathFileName).Replace(workingPath, ""));
+            printer.Print("   Current name: " + file.Path.Replace(workingPath, ""));
+            printer.Print("  Proposed name: " + Path.Combine(newFolderName, newPathFileName).Replace(workingPath, ""));
 
             if (doConfirm)
             {
@@ -175,52 +171,52 @@ namespace AudioTagger.Console
 
                 if (response == yesToAll)
                 {
-                    // Avoid asking next time.
-                    doConfirm = false;
+                    doConfirm = false; // Avoid asking again.
                 }
             }
 
-            // printer.Print(">> " + folderPath);
             if (!Directory.Exists(fullFolderPath))
                 Directory.CreateDirectory(fullFolderPath);
 
-            // printer.Print("--> " + newPathFileName);
             currentFile.MoveTo(newPathFileName);
             printer.Print("Rename OK");
 
             return shouldCancel;
-        }
 
-        /// <summary>
-        /// Replaces characters that are invalid in file path names with a safe character.
-        /// </summary>
-        /// <returns>A corrected string, or the original if no changes were needed.</returns>
-        private static string EnsurePathSafeString(string input)
-        {
-            var working = input;
-
-            foreach (var ch in Path.GetInvalidFileNameChars())
+            /// <summary>
+            /// Replaces characters that are invalid in file path names with a safe character.
+            /// </summary>
+            /// <returns>A corrected string, or the original if no changes were needed.</returns>
+            static string EnsurePathSafeString(string input)
             {
-                working = working.Replace(ch, '_');
+                var working = input;
+
+                foreach (var ch in Path.GetInvalidFileNameChars())
+                {
+                    working = working.Replace(ch, '_');
+                }
+
+                return working;
             }
 
-            return working;
-        }
+            /// <summary>
+            /// Specifies whether the given collections has any valid values.
+            /// </summary>
+            static bool HasValue(IEnumerable<string> tagValues)
+            {
+                if (tagValues?.Any() != true)
+                    return false;
 
-        private static bool HasValue(IEnumerable<string> tagValues)
-        {
-            if (tagValues?.Any() != true)
-                return false;
+                var asString = string.Concat(tagValues);
 
-            var asString = string.Concat(tagValues);
+                if (string.IsNullOrWhiteSpace(asString))
+                    return false;
 
-            if (string.IsNullOrWhiteSpace(asString))
-                return false;
+                if (asString.Contains("<unknown>"))
+                    return false;
 
-            if (asString.Contains("<unknown>"))
-                return false;
-
-            return true;
+                return true;
+            }
         }
 
         /// <summary>
