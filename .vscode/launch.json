@@ -14,7 +14,8 @@
             "args": ["--update", "/home/jx/Downloads/music/"],
             "cwd": "${workspaceFolder}",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
-            "console": "internalConsole",
+            // "console": "internalConsole", // Default value
+            "console": "integratedTerminal",
             "stopAtEntry": false
         },
         {
