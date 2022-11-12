@@ -453,7 +453,6 @@ namespace AudioTagger.Tests
 
             if (expected.Artists?.Any() == true)
             {
-                Console.WriteLine($"expected.Artists.Count: {expected.Artists.Count} | matchedData.Artists.Length: {matchedData.Artists.Length}");
                 Assert.Equal(expected.Artists.Count, matchedData.Artists.Length);
                 for (var i = 0; i < expected.Artists.Count; i++)
                 {
