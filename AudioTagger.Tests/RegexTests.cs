@@ -280,55 +280,55 @@ namespace AudioTagger.Tests
                      }
                 };
 
-                // Album first, various artists
-                yield return new object[]
-                {
-                    new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart.mp3")
-                    {
-                        Album = "Compilation of Jamz",
-                        Artists = new List<string> { "Ororo Munroe" },
-                        Title = "Storms of My Heart",
-                        Year = "2022"
-                    }
-                };
+                // Album first, various artists, no genres
+                // yield return new object[]
+                // {
+                //     new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart.mp3")
+                //     {
+                //         Album = "Compilation of Jamz",
+                //         Artists = new List<string> { "Ororo Munroe" },
+                //         Title = "Storms of My Heart",
+                //         Year = "2022"
+                //     }
+                // };
 
-                // Album first, various artists
-                yield return new object[]
-                {
-                    new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart {World}.mp3")
-                    {
-                        Album = "Compilation of Jamz",
-                        Artists = new List<string> { "Ororo Munroe" },
-                        Title = "Storms of My Heart",
-                        Year = "2022",
-                        Genres = new List<string> { "World" }
-                    }
-                };
+                // Album first, various artists, with genres
+                // yield return new object[]
+                // {
+                //     new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart {World}.mp3")
+                //     {
+                //         Album = "Compilation of Jamz",
+                //         Artists = new List<string> { "Ororo Munroe" },
+                //         Title = "Storms of My Heart",
+                //         Year = "2022",
+                //         Genres = new List<string> { "World" }
+                //     }
+                // };
 
                 // Album first, various artists, no year, superfluous track number
-                yield return new object[]
-                {
-                    new ParsedItem("最強の名曲集 = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
-                    {
-                        Album = "最強の名曲集",
-                        Artists = new List<string> { "坂本龍馬" },
-                        Title = "南方仁のとの会話",
-                        Track = "20"
-                    }
-                };
+                // yield return new object[]
+                // {
+                //     new ParsedItem("最強の名曲集 = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
+                //     {
+                //         Album = "最強の名曲集",
+                //         Artists = new List<string> { "坂本龍馬" },
+                //         Title = "南方仁のとの会話",
+                //         Track = "20"
+                //     }
+                // };
 
-                // Album first, various artists, superfluous track number
-                yield return new object[]
-                {
-                    new ParsedItem("最強の名曲集 [2022] = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
-                    {
-                        Album = "最強の名曲集",
-                        Artists = new List<string> { "坂本龍馬" },
-                        Title = "南方仁のとの会話",
-                        Year = "2022",
-                        Track = "20"
-                    }
-                };
+                // Album first, various artists, with year, superfluous track number
+                // yield return new object[]
+                // {
+                //     new ParsedItem("最強の名曲集 [2022] = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
+                //     {
+                //         Album = "最強の名曲集",
+                //         Artists = new List<string> { "坂本龍馬" },
+                //         Title = "南方仁のとの会話",
+                //         Year = "2022",
+                //         Track = "20"
+                //     }
+                // };
 
                 // Test accented characters
                 yield return new object[]
@@ -453,6 +453,7 @@ namespace AudioTagger.Tests
 
             if (expected.Artists?.Any() == true)
             {
+                Console.WriteLine($"expected.Artists.Count: {expected.Artists.Count} | matchedData.Artists.Length: {matchedData.Artists.Length}");
                 Assert.Equal(expected.Artists.Count, matchedData.Artists.Length);
                 for (var i = 0; i < expected.Artists.Count; i++)
                 {
