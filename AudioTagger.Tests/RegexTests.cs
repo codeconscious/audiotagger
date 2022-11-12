@@ -439,7 +439,8 @@ namespace AudioTagger.Tests
         [ClassData(typeof(TestDataSet))]
         public void CanParseValidFileNames(ParsedItem expected)
         {
-            var regexCollection = new RegexCollection("../AudioTagger.Console/Regexes.txt");
+            var regexCollection = new RegexCollection("Regexes.txt");
+
             var match = regexCollection.GetFirstFileMatch(expected.FileName);
 
             var matchedTags = match.Groups
