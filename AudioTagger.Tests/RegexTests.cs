@@ -164,7 +164,7 @@ namespace AudioTagger.Tests
 
                 yield return new object[]
                 {
-                    new ParsedItem("Michael Jackson - Beat It {Pop}.mp4")
+                    new ParsedItem("Michael Jackson - Beat It {Pop}.flac")
                     {
                         Title = "Beat It",
                         Artists = new List<string> { "Michael Jackson" },
