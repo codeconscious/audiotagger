@@ -16,7 +16,8 @@ namespace AudioTagger.Tests
             /// </summary>
             public string FileName { get; set; }
 
-            // Expected values:
+            #region Expected parsed values
+
             public string Title { get; set; }
             public List<string> Artists { get; set; }
             public string Album { get; set; }
@@ -29,6 +30,8 @@ namespace AudioTagger.Tests
             {
                 FileName = fileName;
             }
+
+            #endregion
         }
 
         private class TestDataSet : IEnumerable<object[]>
