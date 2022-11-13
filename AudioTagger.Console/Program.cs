@@ -23,7 +23,7 @@ namespace AudioTagger.Console
             // Select the desired operation using the first variable.
             IPathOperation? operation = OperationFactory(argQueue.Dequeue());
 
-            const string regexPath = "Regexes.txt";
+            const string regexPath = "../AudioTagger.Library/Regexes.txt";
             RegexCollection regexCollection;
             try
             {

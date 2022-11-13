@@ -1,7 +1,5 @@
-/*
 using System;
 using Xunit;
-using AudioTagger;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
@@ -18,7 +16,8 @@ namespace AudioTagger.Tests
             /// </summary>
             public string FileName { get; set; }
 
-            // Expected values:
+            #region Expected parsed values
+
             public string Title { get; set; }
             public List<string> Artists { get; set; }
             public string Album { get; set; }
@@ -31,6 +30,8 @@ namespace AudioTagger.Tests
             {
                 FileName = fileName;
             }
+
+            #endregion
         }
 
         private class TestDataSet : IEnumerable<object[]>
@@ -48,44 +49,47 @@ namespace AudioTagger.Tests
                     }
                 };
 
-                // yield return new object[]
-                // {
-                //     new ParsedItem("Michael Jackson - Thriller - 1.2 - Beat It [2005] {Pop}.mp4")
-                //     {
-                //         Title = "Beat It",
-                //         Artists = new List<string> { "Michael Jackson" },
-                //         Album = "Thriller",
-                //         Disc = "1",
-                //         Track = "2",
-                //         Year = "2005",
-                //         Genres = new List<string> { "Pop"}
-                //     }
-                // };
+                // With disc and track, with genre
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller [2005] - 1.2 - Beat It {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Disc = "1",
+                        Track = "2",
+                        Year = "2005",
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
 
-                // yield return new object[]
-                // {
-                //     new ParsedItem("Michael Jackson - Thriller - 2 - Beat It [2005] {Pop}.mp4")
-                //     {
-                //         Title = "Beat It",
-                //         Artists = new List<string> { "Michael Jackson" },
-                //         Album = "Thriller",
-                //         Track = "2",
-                //         Year = "2005",
-                //         Genres = new List<string> { "Pop"}
-                //     }
-                // };
+                // Track with no disc, with genre
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller [2005] - 2 - Beat It {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Track = "2",
+                        Year = "2005",
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
 
-                // yield return new object[]
-                // {
-                //     new ParsedItem("Michael Jackson - Thriller - 2 - Beat It [2005].mp4")
-                //     {
-                //         Title = "Beat It",
-                //         Artists = new List<string> { "Michael Jackson" },
-                //         Album = "Thriller",
-                //         Track = "2",
-                //         Year = "2005",
-                //     }
-                // };
+                // No genre
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller [2005] - 2 - Beat It.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Track = "2",
+                        Year = "2005",
+                    }
+                };
 
                 yield return new object[]
                 {
@@ -110,29 +114,32 @@ namespace AudioTagger.Tests
                     }
                 };
 
-                // yield return new object[]
-                // {
-                //     new ParsedItem("Michael Jackson - Thriller - Beat It [2005] {Pop}.mp4")
-                //     {
-                //         Title = "Beat It",
-                //         Artists = new List<string> { "Michael Jackson" },
-                //         Album = "Thriller",
-                //         Year = "2005",
-                //         Genres = new List<string> { "Pop"}
-                //     }
-                // };
+                // No track number
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller [2005] - Beat It {Pop}.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Year = "2005",
+                        Genres = new List<string> { "Pop"}
+                    }
+                };
 
-                // yield return new object[]
-                // {
-                //     new ParsedItem("Michael Jackson - Thriller - Beat It [2005].mp4")
-                //     {
-                //         Title = "Beat It",
-                //         Artists = new List<string> { "Michael Jackson" },
-                //         Album = "Thriller",
-                //         Year = "2005",
-                //     }
-                // };
+                // No track number or genre
+                yield return new object[]
+                {
+                    new ParsedItem("Michael Jackson - Thriller [2005] - Beat It.mp4")
+                    {
+                        Title = "Beat It",
+                        Artists = new List<string> { "Michael Jackson" },
+                        Album = "Thriller",
+                        Year = "2005",
+                    }
+                };
 
+                // No year or track number
                 yield return new object[]
                 {
                     new ParsedItem("Michael Jackson - Thriller - Beat It {Pop}.mp4")
@@ -143,18 +150,6 @@ namespace AudioTagger.Tests
                         Genres = new List<string> { "Pop"}
                     }
                 };
-
-                // yield return new object[]
-                // {
-                //     new ParsedItem("Michael Jackson - Thriller - Beat It [2005] {Pop; Rock}.mp4")
-                //     {
-                //         Title = "Beat It",
-                //         Artists = new List<string> { "Michael Jackson" },
-                //         Album = "Thriller",
-                //         Year = "2005",
-                //         Genres = new List<string> { "Pop", "Rock" }
-                //     }
-                // };
 
                 yield return new object[]
                 {
@@ -169,7 +164,7 @@ namespace AudioTagger.Tests
 
                 yield return new object[]
                 {
-                    new ParsedItem("Michael Jackson - Beat It {Pop}.mp4")
+                    new ParsedItem("Michael Jackson - Beat It {Pop}.flac")
                     {
                         Title = "Beat It",
                         Artists = new List<string> { "Michael Jackson" },
@@ -281,7 +276,7 @@ namespace AudioTagger.Tests
                      }
                 };
 
-                // Album first, various artists
+                // Album first, various artists, no genres
                 yield return new object[]
                 {
                     new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart.mp3")
@@ -293,7 +288,7 @@ namespace AudioTagger.Tests
                     }
                 };
 
-                // Album first, various artists
+                // Album first, various artists, with genres
                 yield return new object[]
                 {
                     new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart {World}.mp3")
@@ -318,7 +313,7 @@ namespace AudioTagger.Tests
                     }
                 };
 
-                // Album first, various artists, superfluous track number
+                // Album first, various artists, with year, superfluous track number
                 yield return new object[]
                 {
                     new ParsedItem("最強の名曲集 [2022] = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
@@ -440,7 +435,9 @@ namespace AudioTagger.Tests
         [ClassData(typeof(TestDataSet))]
         public void CanParseValidFileNames(ParsedItem expected)
         {
-            var match = RegexCollection.GetFirstMatch(expected.FileName);
+            var regexCollection = new RegexCollection("Regexes.txt");
+
+            var match = regexCollection.GetFirstFileMatch(expected.FileName);
 
             var matchedTags = match.Groups
                                    .OfType<Group>()
@@ -490,4 +487,3 @@ namespace AudioTagger.Tests
         }
     }
 }
-*/

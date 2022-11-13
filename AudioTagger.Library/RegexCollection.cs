@@ -16,15 +16,15 @@ public class RegexCollection : IRegexCollection
     /// </summary>
     public IReadOnlyCollection<string> Patterns { get; }
 
-    public RegexCollection(string regexFileName)
+    public RegexCollection(string fileContainingRegexPatterns)
     {
-        if (string.IsNullOrWhiteSpace(regexFileName))
-            throw new ArgumentNullException(nameof(regexFileName));
+        if (string.IsNullOrWhiteSpace(fileContainingRegexPatterns))
+            throw new ArgumentNullException(nameof(fileContainingRegexPatterns));
 
-        if (!File.Exists(regexFileName))
-            throw new FileNotFoundException($"The regex file \"{regexFileName}\" was not found.");
+        if (!File.Exists(fileContainingRegexPatterns))
+            throw new FileNotFoundException($"The regex file \"{fileContainingRegexPatterns}\" was not found.");
 
-        var patterns = File.ReadAllLines(regexFileName)
+        var patterns = File.ReadAllLines(fileContainingRegexPatterns)
                            .Where(line =>
                                 !line.StartsWith("# ") &&  // Comments
                                 !line.StartsWith("// ") &&  // Comments
