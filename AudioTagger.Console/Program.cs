@@ -3,6 +3,7 @@ global using System.Linq;
 global using System.Collections.Generic;
 global using System.Collections.Immutable;
 global using System.IO;
+using Spectre.Console;
 
 namespace AudioTagger.Console;
 
@@ -99,7 +100,8 @@ public static class Program
         printer.Print("ID3 audio tagger utilities.");
         printer.Print("Usage: ccaudiotagger [COMMAND] [FILES/DIRECTORIES]...", 0, 1, "");
         printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
-        printer.Print("Commands:");
-        printer.Print(OperationLibrary.GetHelpText());
+
+        // printer.Print(OperationLibrary.GetHelpText());
+        AnsiConsole.Write(OperationLibrary.GetHelpText());
     }
 }
