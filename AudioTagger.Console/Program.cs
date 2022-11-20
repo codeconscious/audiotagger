@@ -3,6 +3,7 @@ global using System.Linq;
 global using System.Collections.Generic;
 global using System.Collections.Immutable;
 global using System.IO;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AudioTagger.Console
 {
@@ -91,37 +92,70 @@ namespace AudioTagger.Console
         /// <returns>A class for performing operations on files.</returns>
         private static IPathOperation? OperationFactory(string modeArg)
         {
-            return modeArg.ToLowerInvariant() switch
-            {
-                "-v" or "--view" or "--view-details" => new TagViewer(),
-                "-vs" or "--view-summary" => new TagSummaryViewer(),
-                "-u" or "--update" => new TagUpdater(),
-                "-y" or "--update-year" => new TagUpdaterYearOnly(),
-                "-r" or "--rename" => new MediaFileRenamer(),
-                "-d" or "--duplicates" => new TagDuplicateFinder(),
-                "-s" or "--stats" => new TagStats(),
-                "-m" or "--manual" => new ManualTagUpdater(saveUpdates: false),
-                "-mm" or "--mmanual" => new ManualTagUpdater(saveUpdates: true),
-                _ => null
-            };
+            return OperationLibrary.GetPathOperation(modeArg);
         }
 
         private static void PrintInstructions(IPrinter printer)
         {
-            // TODO: Might be worth combining this data with the switch statement above.
             printer.Print("ID3 audio tagger utilities.");
             printer.Print("Usage: ccaudiotagger [COMMAND] [FILES/DIRECTORIES]...", 0, 1, "");
             printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
             printer.Print("Commands:");
-            printer.Print("   -v  or --view         : View tag data");
-            printer.Print("   -vs or --view-summary : View a tag data summary");
-            printer.Print("   -u  or --update       : Update tag data using filenames");
-            printer.Print("   -y  or --update-year  : Update years using Date Created years (Must do before other updates)");
-            printer.Print("   -r  or --rename       : Rename and reorganize files into folders based on tagdata ");
-            printer.Print("   -d  or --duplicates   : List tracks with identical artists and titles (No files are deleted)");
-            printer.Print("   -s  or --stats        : Display file statistics using tag data");
-            printer.Print("   -m  or --manual       : Update specific tags manually using custom code without saving the updates");
-            printer.Print("   -mm or --mmanual      : Update specific tags manually using custom code and save the updates");
+            printer.Print(OperationLibrary.GetHelpText());
         }
+    }
+
+    internal static class OperationLibrary
+    {
+        internal static readonly List<Operation> Operations = new()
+        {
+            new(new List<string>{"-v", "--view"}, "View tag data", new TagViewer()),
+            new(new List<string>{"-vs", "--view-summary"}, "View a tag data summary", new TagSummaryViewer()),
+            new(new List<string>{"-u", "--update"}, "Update tag data using filenames", new TagUpdater()),
+            new(new List<string>{"-y", "--update-year"}, "Update years using Date Created years (Must do before other updates)", new TagUpdaterYearOnly()),
+            new(new List<string>{"-r", "--rename"}, "Rename and reorganize files into folders based on tag data", new MediaFileRenamer()),
+            new(new List<string>{"-d", "--duplicates"}, "List tracks with identical artists and titles (No files are deleted)", new TagDuplicateFinder()),
+            new(new List<string>{"-s", "--stats"}, "Display file statistics using tag data", new TagStats()),
+            new(new List<string>{"-m", "--manual"}, "Tentatively update specific tags manually using custom code, but without saving the updates", new ManualTagUpdater(saveUpdates: false)),
+            new(new List<string>{"-mm", "--mmanual"}, "Update specific tags manually using custom code and save the updates", new ManualTagUpdater(saveUpdates: true)),
+        };
+
+        public static string GetHelpText()
+        {
+            // TODO: Use Spectre to make a table.
+            var output = new System.Text.StringBuilder();
+
+            foreach (var operation in Operations)
+            {
+                output.Append("   ").AppendJoin(" or ", operation.Options).AppendLine();
+                output.Append("      ").AppendLine(operation.Description);
+            }
+
+            return output.ToString();
+        }
+
+        public static IPathOperation? GetPathOperation(string requestedOperation)
+        {
+            return Operations.Where(o => o.Options.Contains(requestedOperation.ToLowerInvariant()))?
+                             .SingleOrDefault()?
+                             .PathOperation;
+        }
+
+        internal class Operation
+        {
+            public required List<string> Options { get;set;}
+            public required string Description { get; set; }
+            public required IPathOperation PathOperation { get; set; }
+
+            private Operation() { }
+
+            [SetsRequiredMembers]
+            public Operation(List<string> options, string description, IPathOperation pathOperation)
+            {
+                Options = options;
+                Description = description;
+                PathOperation = pathOperation;
+            }
+        };
     }
 }
