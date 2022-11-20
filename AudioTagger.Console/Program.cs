@@ -101,7 +101,15 @@ public static class Program
         printer.Print("Usage: ccaudiotagger [COMMAND] [FILES/DIRECTORIES]...", 0, 1, "");
         printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
 
-        // printer.Print(OperationLibrary.GetHelpText());
-        AnsiConsole.Write(OperationLibrary.GetHelpText());
+        var table = new Table();
+        table.AddColumns("Commands", "Descriptions");
+        table.Border = TableBorder.Rounded;
+
+        foreach (var operation in OperationLibrary.GenerateHelpTextPairs())
+        {
+            table.AddRow(operation.Key, operation.Value);
+        }
+
+        AnsiConsole.Write(table);
     }
 }

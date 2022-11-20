@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Spectre.Console;
 
 namespace AudioTagger.Console;
 
@@ -53,32 +52,23 @@ internal static class OperationLibrary
             new ManualTagUpdater(saveUpdates: true)),
     };
 
-    public static Table GetHelpText()
+    public static Dictionary<string, string> GenerateHelpTextPairs()
     {
-        var table = new Table();
-        table.AddColumns("Commands", "Descriptions");
-        table.Border = TableBorder.Rounded;
-
-        foreach (var operation in Operations)
-        {
-            table.AddRow(
-                string.Join(", ", operation.Options),
-                operation.Description);
-        }
-
-        return table;
+        return Operations.ToDictionary(
+            o => string.Join(", " , o.Commands),
+            o => o.Description);
     }
 
     public static IPathOperation? GetPathOperation(string requestedOperation)
     {
-        return Operations.Where(o => o.Options.Contains(requestedOperation.ToLowerInvariant()))?
+        return Operations.Where(o => o.Commands.Contains(requestedOperation.ToLowerInvariant()))?
                             .SingleOrDefault()?
                             .PathOperation;
     }
 
     internal class Operation
     {
-        public required List<string> Options { get;set;}
+        public required List<string> Commands { get;set;}
         public required string Description { get; set; }
         public required IPathOperation PathOperation { get; set; }
 
@@ -87,7 +77,7 @@ internal static class OperationLibrary
         [SetsRequiredMembers]
         public Operation(List<string> options, string description, IPathOperation pathOperation)
         {
-            Options = options;
+            Commands = options;
             Description = description;
             PathOperation = pathOperation;
         }
