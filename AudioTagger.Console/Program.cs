@@ -108,18 +108,20 @@ namespace AudioTagger.Console
 
         private static void PrintInstructions(IPrinter printer)
         {
-            printer.Print("Audio tagger and (eventually) renamer");
-            printer.Print("Usage: jaudiotag [COMMAND] [FILES/DIRECTORIES]...", 0, 1, ""); // TODO: Decide on a name
+            // TODO: Might be worth combining this data with the switch statement above.
+            printer.Print("ID3 audio tagger utilities.");
+            printer.Print("Usage: ccaudiotagger [COMMAND] [FILES/DIRECTORIES]...", 0, 1, "");
             printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
             printer.Print("Commands:");
-            printer.Print("   -v or --view       : View tags");
-            printer.Print("   -u or --update     : Update tags");
-            printer.Print("   -r or --rename     : Rename files based on existing tags");
-            printer.Print("   -d or --duplicates : List tracks with identical artists and titles");
-            printer.Print("   -s or --stats      : Display file statistics");
-            printer.Print("   -m or --manual     : Update specific tags manually using custom code without saving the files");
-            printer.Print("   -mm or --mmanual   : Update specific tags manually using custom code and save the files");
-            // TODO: Make album art opt-in
+            printer.Print("   -v  or --view         : View tag data");
+            printer.Print("   -vs or --view-summary : View a tag data summary");
+            printer.Print("   -u  or --update       : Update tag data using filenames");
+            printer.Print("   -y  or --update-year  : Update years using Date Created years (Must do before other updates)");
+            printer.Print("   -r  or --rename       : Rename and reorganize files into folders based on tagdata ");
+            printer.Print("   -d  or --duplicates   : List tracks with identical artists and titles (No files are deleted)");
+            printer.Print("   -s  or --stats        : Display file statistics using tag data");
+            printer.Print("   -m  or --manual       : Update specific tags manually using custom code without saving the updates");
+            printer.Print("   -mm or --mmanual      : Update specific tags manually using custom code and save the updates");
         }
     }
 }
