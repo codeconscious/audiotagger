@@ -30,6 +30,8 @@ namespace AudioTagger.Console
 
             using (var ms = new MemoryStream(bytes))
             {
+                // TODO: Investigate error csharp(CA1416) here and below.
+                // "This call site is reachable on all platforms. 'Bitmap' is only supported on: 'windows'."
                 bitmap = new Bitmap(ms);
             }
 
