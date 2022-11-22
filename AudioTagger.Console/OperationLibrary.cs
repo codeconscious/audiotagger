@@ -62,8 +62,8 @@ internal static class OperationLibrary
     public static IPathOperation? GetPathOperation(string requestedOperation)
     {
         return Operations.Where(o => o.Commands.Contains(requestedOperation.ToLowerInvariant()))?
-                            .SingleOrDefault()?
-                            .PathOperation;
+                         .SingleOrDefault()?
+                         .PathOperation;
     }
 
     internal class Operation
