@@ -105,9 +105,9 @@ public static class Program
         table.AddColumns("Commands", "Descriptions");
         table.Border = TableBorder.Rounded;
 
-        foreach (var operation in OperationLibrary.GenerateHelpTextPairs())
+        foreach (var pair in OperationLibrary.GenerateHelpTextPairs())
         {
-            table.AddRow(operation.Key, operation.Value);
+            table.AddRow(pair.Key, pair.Value);
         }
 
         AnsiConsole.Write(table);
