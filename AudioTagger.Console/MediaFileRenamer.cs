@@ -43,6 +43,8 @@ namespace AudioTagger.Console
             var doConfirm = true;
             var errors = new List<string>();
 
+            var artistCounts = GetArtistCounts(mediaFiles);
+
             for (var i = 0; i < mediaFiles.Count; i++)
             {
                 var file = mediaFiles.ElementAt(i);
@@ -52,7 +54,10 @@ namespace AudioTagger.Console
                     if (isCancelRequested)
                         break;
 
-                    isCancelRequested = RenameSingleFile(file, printer, workingDirectory.FullName, ref doConfirm);
+                    var useRootPath = artistCounts[string.Concat(file.Artists)] > 1;
+
+                    isCancelRequested = RenameSingleFile(
+                        file, printer, workingDirectory.FullName, useRootPath, ref doConfirm);
                 }
                 catch (IOException e)
                 {
@@ -76,6 +81,15 @@ namespace AudioTagger.Console
             }
         }
 
+        private static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
+        {
+            var artistCounts = mediaFiles
+                                    .GroupBy(n => string.Concat(n.Artists))
+                                    .ToDictionary( g => g.Key, g => g.Count());
+
+            return artistCounts;
+        }
+
         /// <summary>
         /// Renames a single file based upon its tags. The filename format is set manually.
         /// TODO: Break down further into methods or local functions.
@@ -84,6 +98,7 @@ namespace AudioTagger.Console
         private static bool RenameSingleFile(MediaFile file,
                                              IPrinter printer,
                                              string workingPath,
+                                             bool keepInRootFolder,
                                              ref bool doConfirm)
         {
             ArgumentNullException.ThrowIfNull(file);
@@ -92,13 +107,6 @@ namespace AudioTagger.Console
             const bool shouldCancel = false;
 
             //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
-            var newFolderName = HasValue(file.AlbumArtists)
-                ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists))
-                : HasValue(file.Artists)
-                    ? EnsurePathSafeString(string.Join(" && ", file.Artists))
-                    : "_UNSPECIFIED";
-            var fullFolderPath = Path.Combine(workingPath, newFolderName);
-
             var albumArtistText = HasValue(file.AlbumArtists)
                 ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists)) + " ≡ "
                 : string.Empty;
@@ -126,6 +134,13 @@ namespace AudioTagger.Console
                 string.Concat(string.IsNullOrWhiteSpace(albumText)
                     ? new[] {titleText, yearText}
                     : new[] {albumText, yearText, " - ", trackText, titleText}) + ext;
+
+            var newFolderName = HasValue(file.AlbumArtists)
+                ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists))
+                : HasValue(file.Artists)
+                    ? EnsurePathSafeString(string.Join(" && ", file.Artists))
+                    : "_UNSPECIFIED";
+            var fullFolderPath = Path.Combine(workingPath, newFolderName);
 
             var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
             var proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
