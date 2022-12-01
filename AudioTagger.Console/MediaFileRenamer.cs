@@ -54,7 +54,7 @@ namespace AudioTagger.Console
                     if (isCancelRequested)
                         break;
 
-                    var useRootPath = artistCounts[string.Concat(file.Artists)] > 1;
+                    var useRootPath = artistCounts[string.Concat(file.Artists)] == 1;
 
                     isCancelRequested = RenameSingleFile(
                         file, printer, workingDirectory.FullName, useRootPath, ref doConfirm);
@@ -135,11 +135,19 @@ namespace AudioTagger.Console
                     ? new[] {titleText, yearText}
                     : new[] {albumText, yearText, " - ", trackText, titleText}) + ext;
 
-            var newFolderName = HasValue(file.AlbumArtists)
-                ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists))
-                : HasValue(file.Artists)
-                    ? EnsurePathSafeString(string.Join(" && ", file.Artists))
-                    : "_UNSPECIFIED";
+            string newFolderName;
+            if (keepInRootFolder)
+            {
+                newFolderName = string.Empty;
+            }
+            else
+            {
+                newFolderName = HasValue(file.AlbumArtists)
+                    ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists))
+                    : HasValue(file.Artists)
+                        ? EnsurePathSafeString(string.Join(" && ", file.Artists))
+                        : "_UNSPECIFIED-ARTIST";
+            }
             var fullFolderPath = Path.Combine(workingPath, newFolderName);
 
             var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
