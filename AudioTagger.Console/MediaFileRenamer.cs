@@ -165,8 +165,17 @@ namespace AudioTagger.Console
 
             var newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
 
-            printer.Print("   Current name: " + file.Path.Replace(workingPath, ""));
-            printer.Print("  Proposed name: " + Path.Combine(newFolderName, newPathFileName).Replace(workingPath, ""));
+            var currentFullPath = file.Path.Replace(workingPath, "");
+            var proposedFullPath = Path.Combine(newFolderName, newPathFileName).Replace(workingPath, "");
+
+            if (currentFullPath == proposedFullPath)
+            {
+                printer.Print($"No change needed for {currentFullPath}", fgColor: ConsoleColor.DarkGray);
+                return shouldCancel;
+            }
+
+            printer.Print("   Current name: " + currentFullPath);
+            printer.Print("  Proposed name: " + proposedFullPath, fgColor: ConsoleColor.Yellow);
 
             if (doConfirm)
             {
