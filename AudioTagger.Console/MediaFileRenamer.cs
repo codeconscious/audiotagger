@@ -49,6 +49,12 @@ namespace AudioTagger.Console
             {
                 var file = mediaFiles.ElementAt(i);
 
+                if (file.Title?.Length == 0)
+                {
+                    printer.Print($"Skipping \"{file.FileNameOnly}\" because it has no title.", fgColor: ConsoleColor.DarkRed);
+                    continue;
+                }
+
                 try
                 {
                     if (isCancelRequested)
@@ -107,10 +113,10 @@ namespace AudioTagger.Console
             const bool shouldCancel = false;
 
             //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
-            var albumArtistText = HasValue(file.AlbumArtists)
+            var albumArtistText = HasAnyValues(file.AlbumArtists)
                 ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists)) + " ≡ "
                 : string.Empty;
-            var artistText = HasValue(file.Artists)
+            var artistText = HasAnyValues(file.Artists)
                 ? EnsurePathSafeString(string.Join(" && ", file.Artists)) + " - "
                 : string.Empty;
             var albumText = string.IsNullOrWhiteSpace(file.Album)
@@ -142,9 +148,9 @@ namespace AudioTagger.Console
             }
             else
             {
-                newFolderName = HasValue(file.AlbumArtists)
+                newFolderName = HasAnyValues(file.AlbumArtists)
                     ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists))
-                    : HasValue(file.Artists)
+                    : HasAnyValues(file.Artists)
                         ? EnsurePathSafeString(string.Join(" && ", file.Artists))
                         : "_UNSPECIFIED-ARTIST";
             }
@@ -234,7 +240,7 @@ namespace AudioTagger.Console
             /// <summary>
             /// Specifies whether the given collections has any valid values.
             /// </summary>
-            static bool HasValue(IEnumerable<string> tagValues)
+            static bool HasAnyValues(IEnumerable<string> tagValues)
             {
                 if (tagValues?.Any() != true)
                     return false;
@@ -276,7 +282,6 @@ namespace AudioTagger.Console
             {
                 if (!deletedDirectories.Any())
                 {
-                    printer.Print("No empty subdirectories were found.");
                     return;
                 }
 
