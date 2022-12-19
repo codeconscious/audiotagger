@@ -125,10 +125,9 @@
             get => _taggedFile.Properties.AudioSampleRate;
         }
 
-        public double ReplayGainTrack
-        {
-            get => _taggedFile.Tag.ReplayGainTrackGain;
-        }
+        public double ReplayGainTrack => _taggedFile.Tag.ReplayGainTrackGain;
+
+        public double ReplayGainAlbum => _taggedFile.Tag.ReplayGainAlbumGain;
 
         // The embedded image for the album, represented as an array of bytes or,
         // if none, an empty array.
