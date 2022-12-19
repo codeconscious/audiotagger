@@ -125,11 +125,9 @@
             get => _taggedFile.Properties.AudioSampleRate;
         }
 
-        // TODO: Verify this is working correctly.
-        public bool HasReplayGainData
+        public double ReplayGainTrack
         {
-            get => _taggedFile.Tag.ReplayGainTrackGain != 0 ||
-                   _taggedFile.Tag.ReplayGainAlbumGain != 0;
+            get => _taggedFile.Tag.ReplayGainTrackGain;
         }
 
         // The embedded image for the album, represented as an array of bytes or,

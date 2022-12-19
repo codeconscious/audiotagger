@@ -34,8 +34,8 @@ public class MediaFileViewer
 
         var bitrate = file.BitRate.ToString();
         var sampleRate = file.SampleRate.ToString("#,##0");
-        var hasReplayGain = file.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
-        table.AddRow(tagNameFormatter("Quality"), $"{bitrate} kbps @ {sampleRate} kHz | {hasReplayGain}");
+        var trackReplayGain = file.ReplayGainTrack;
+        table.AddRow(tagNameFormatter("Quality"), $"{bitrate} kbps @ {sampleRate} kHz | RG: {trackReplayGain}");
 
         if (file.Composers?.Length > 0)
         {
