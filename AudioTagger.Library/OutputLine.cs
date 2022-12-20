@@ -89,7 +89,9 @@ namespace AudioTagger
 
             var bitrate = fileData.BitRate.ToString();
             var sampleRate = fileData.SampleRate.ToString("#,##0");
-            var trackReplayGain = fileData.ReplayGainTrack.ToString();
+            var trackReplayGain = fileData.ReplayGainTrack;
+            var albumReplayGain = double.IsNaN(fileData.ReplayGainAlbum) ? "--" : fileData.ReplayGainAlbum.ToString();
+            var formattedReplayGainText = $"ReplayGain: T{trackReplayGain} A{albumReplayGain}";
 
             // Create formatted quality line
             const string genreSeparator = "    ";
@@ -102,7 +104,7 @@ namespace AudioTagger
                         new LineSubString(" kbps" + genreSeparator, ConsoleColor.DarkGray),
                         new LineSubString(sampleRate),
                         new LineSubString(" kHz" + genreSeparator, ConsoleColor.DarkGray),
-                        new LineSubString("RG: " + trackReplayGain)
+                        new LineSubString(formattedReplayGainText)
                     }));
 
             if (fileData.Composers?.Length > 0)
@@ -130,13 +132,15 @@ namespace AudioTagger
 
             var bitrate = fileData.BitRate.ToString();
             var sampleRate = fileData.SampleRate.ToString("#,##0");
-            var trackReplayGain = fileData.ReplayGainTrack.ToString();
+            var trackReplayGain = fileData.ReplayGainTrack;
+            var albumReplayGain = double.IsNaN(fileData.ReplayGainAlbum) ? "--" : fileData.ReplayGainAlbum.ToString();
+            var formattedReplayGainText = $"ReplayGain: T{trackReplayGain} A{albumReplayGain}";
 
             // Create formatted quality line
             const string separator = "  |  ";
             lines.Add(
                 "Quality",
-                $"{bitrate}kbps" + separator + $"{sampleRate} kHz" + separator + "RG: " + trackReplayGain);
+                $"{bitrate}kbps" + separator + $"{sampleRate} kHz" + separator + formattedReplayGainText);
 
             if (fileData.Composers?.Length > 0)
                 lines.Add($"Composers", string.Join("; ", fileData.Composers));
