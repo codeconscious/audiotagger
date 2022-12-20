@@ -34,10 +34,8 @@ public class MediaFileViewer
 
         var bitrate = file.BitRate.ToString();
         var sampleRate = file.SampleRate.ToString("#,##0");
-        var trackReplayGain = file.ReplayGainTrack;
-        var albumReplayGain = double.IsNaN(file.ReplayGainAlbum) ? "--" : file.ReplayGainAlbum.ToString();
-        var formattedReplayGainText = $"ReplayGain: T{trackReplayGain} A{albumReplayGain}";
-        table.AddRow(tagNameFormatter("Quality"), $"{bitrate} kbps @ {sampleRate} kHz | {formattedReplayGainText}");
+
+        table.AddRow(tagNameFormatter("Quality"), $"{bitrate} kbps @ {sampleRate} kHz | {file.ReplayGainSummary()}");
 
         if (file.Composers?.Length > 0)
         {

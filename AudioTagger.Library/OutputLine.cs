@@ -89,9 +89,6 @@ namespace AudioTagger
 
             var bitrate = fileData.BitRate.ToString();
             var sampleRate = fileData.SampleRate.ToString("#,##0");
-            var trackReplayGain = fileData.ReplayGainTrack;
-            var albumReplayGain = double.IsNaN(fileData.ReplayGainAlbum) ? "--" : fileData.ReplayGainAlbum.ToString();
-            var formattedReplayGainText = $"ReplayGain: T{trackReplayGain} A{albumReplayGain}";
 
             // Create formatted quality line
             const string genreSeparator = "    ";
@@ -104,7 +101,7 @@ namespace AudioTagger
                         new LineSubString(" kbps" + genreSeparator, ConsoleColor.DarkGray),
                         new LineSubString(sampleRate),
                         new LineSubString(" kHz" + genreSeparator, ConsoleColor.DarkGray),
-                        new LineSubString(formattedReplayGainText)
+                        new LineSubString(fileData.ReplayGainSummary())
                     }));
 
             if (fileData.Composers?.Length > 0)
@@ -118,13 +115,14 @@ namespace AudioTagger
 
         public static Dictionary<string, string> GetTagKeyValuePairs(MediaFile fileData)
         {
-            var lines = new Dictionary<string, string>();
-
-            lines.Add("Title", fileData.Title);
-            lines.Add("Artist(s)", string.Join(", ", fileData.Artists));
-            lines.Add("Album", fileData.Album);
-            lines.Add("Year", fileData.Year.ToString());
-            lines.Add("Duration", fileData.Duration.ToString("m\\:ss"));
+            var lines = new Dictionary<string, string>
+            {
+                { "Title", fileData.Title },
+                { "Artist(s)", string.Join(", ", fileData.Artists) },
+                { "Album", fileData.Album },
+                { "Year", fileData.Year.ToString() },
+                { "Duration", fileData.Duration.ToString("m\\:ss") }
+            };
 
             var genreCount = fileData.Genres.Length;
             lines.Add("Genre(s)", string.Join(", ", fileData.Genres) +
@@ -132,18 +130,15 @@ namespace AudioTagger
 
             var bitrate = fileData.BitRate.ToString();
             var sampleRate = fileData.SampleRate.ToString("#,##0");
-            var trackReplayGain = fileData.ReplayGainTrack;
-            var albumReplayGain = double.IsNaN(fileData.ReplayGainAlbum) ? "--" : fileData.ReplayGainAlbum.ToString();
-            var formattedReplayGainText = $"ReplayGain: T{trackReplayGain} A{albumReplayGain}";
 
             // Create formatted quality line
             const string separator = "  |  ";
             lines.Add(
                 "Quality",
-                $"{bitrate}kbps" + separator + $"{sampleRate} kHz" + separator + formattedReplayGainText);
+                $"{bitrate}kbps" + separator + $"{sampleRate} kHz" + separator + fileData.ReplayGainSummary());
 
             if (fileData.Composers?.Length > 0)
-                lines.Add($"Composers", string.Join("; ", fileData.Composers));
+                lines.Add("Composers", string.Join("; ", fileData.Composers));
 
             if (!string.IsNullOrWhiteSpace(fileData.Comments))
                 lines.Add("Comment", fileData.Comments);

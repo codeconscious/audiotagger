@@ -14,10 +14,7 @@
             _taggedFile = tabLibFile;
         }
 
-        public string FileNameOnly
-        {
-            get => System.IO.Path.GetFileName(Path);
-        }
+        public string FileNameOnly => System.IO.Path.GetFileName(Path);
 
         public string Title
         {
@@ -89,7 +86,7 @@
             get => _taggedFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize()
                                                           ?? string.Empty)?
                                              .ToArray()
-                    ?? Array.Empty<string>();
+                   ?? Array.Empty<string>();
 
             set => _taggedFile.Tag.Composers = value?.Select(g => g?.Trim()?
                                                                     .Normalize())?
@@ -115,19 +112,24 @@
             set => _taggedFile.Tag.Description = value.Trim().Normalize();
         }
 
-        public int BitRate
-        {
-            get => _taggedFile.Properties.AudioBitrate;
-        }
+        public int BitRate => _taggedFile.Properties.AudioBitrate;
 
-        public int SampleRate
-        {
-            get => _taggedFile.Properties.AudioSampleRate;
-        }
+        public int SampleRate => _taggedFile.Properties.AudioSampleRate;
 
         public double ReplayGainTrack => _taggedFile.Tag.ReplayGainTrackGain;
 
         public double ReplayGainAlbum => _taggedFile.Tag.ReplayGainAlbumGain;
+
+        /// <summary>
+        /// Gets text summary of track and album ReplayGain data.
+        /// </summary>
+        public string ReplayGainSummary()
+        {
+            const string noData = "———";
+            var trackGain = double.IsNaN(ReplayGainTrack) ? noData : ReplayGainTrack.ToString();
+            var albumGain = double.IsNaN(ReplayGainAlbum) ? noData : ReplayGainAlbum.ToString();
+            return $"Track: {trackGain} | Album: {albumGain}";
+        }
 
         // The embedded image for the album, represented as an array of bytes or,
         // if none, an empty array.
@@ -145,7 +147,7 @@
         }
 
         /// <summary>
-        /// Save updated tag data to the file.
+        /// Save pending tag data updates to the file.
         /// </summary>
         public void SaveUpdates()
         {
@@ -158,7 +160,7 @@
         /// and a path to a folder will return an AudioFile for each file within that folder.
         /// </summary>
         /// <param name="path">A directory or file path</param>
-        /// <returns>A collection of MediaFile</returns>
+        /// <returns>A collection of MediaFile.</returns>
         public static IReadOnlyCollection<MediaFile> PopulateFileData(string path, bool searchSubDirectories = false)
         {
             // If the path is a directory
@@ -180,10 +182,7 @@
                     {
                         mediaFiles.Add(MediaFileFactory.CreateFileData(fileName));
                     }
-                    catch (Exception)
-                    {
-
-                    }
+                    catch (Exception) { }
                 }
 
                 return mediaFiles.OrderBy(f => f.Path)
