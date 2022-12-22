@@ -50,6 +50,10 @@ internal static class OperationLibrary
             new List<string>{"-mm", "--mmanual"},
             "Update specific tags manually using custom code and save the updates.",
             new ManualTagUpdater(saveUpdates: true)),
+        new(
+            new List<string>{"-n", "--replaygain"},
+            "Apply track normalization to all files.",
+            new Normalization()),
     };
 
     public static Dictionary<string, string> GenerateHelpTextPairs()
