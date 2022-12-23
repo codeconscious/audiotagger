@@ -2,6 +2,9 @@ using System.Diagnostics;
 
 namespace AudioTagger.Console;
 
+/// <summary>
+/// Normalize audio using ReplayGain.
+/// </summary>
 public class Normalization : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
@@ -11,28 +14,24 @@ public class Normalization : IPathOperation
     {
         if (!mediaFiles.Any())
         {
-            printer.Print("There are no files to work on. Cancelling...");
+            printer.Print("There are no files to normalize. Cancelling...");
             return;
         }
 
-        var count = mediaFiles.Count;
-        printer.Print($"There are {count} files for processing.");
+        printer.Print($"Found {mediaFiles.Count} files for normalization.");
 
-        var startInfo = new ProcessStartInfo()
+        foreach (var file in mediaFiles)
         {
-            FileName = "find",
-            Arguments = $". -name \"{workingDirectory}\\.*.mp3\" -exec mp3gain -r -k -p -s i {{}} \\;",
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            CreateNoWindow = true
-        };
-        var process = Process.Start(startInfo);
+            printer.Print($"- {file.Path}");
 
-        while (!process.StandardOutput.EndOfStream)
-        {
-            string result = process.StandardOutput.ReadLine();
-            // do something here
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = "mp3gain",
+                Arguments = $"-r -k -p -s i \"{file.Path}\"",
+                RedirectStandardOutput = true,
+            };
+
+            Process.Start(startInfo)!.WaitForExit();
         }
-        process.WaitForExit();
     }
 }
