@@ -18,7 +18,7 @@ internal static class OperationLibrary
         ),
         new(
             new List<string>{"-u", "--update"},
-            "Update tag data using filenames.",
+            "Update tag data using filename patterns.",
             new TagUpdater()
         ),
         new(
@@ -33,7 +33,7 @@ internal static class OperationLibrary
         ),
         new(
             new List<string>{"-d", "--duplicates"},
-            "List tracks with identical artists and titles. (No files are deleted.)",
+            "List tracks with identical artists and titles. No files are deleted.",
             new TagDuplicateFinder()
         ),
         new(
@@ -43,7 +43,7 @@ internal static class OperationLibrary
         ),
         new(
             new List<string>{"-m", "--manual"},
-            "Test updating specific tags manually using custom code, but without saving the updates.",
+            "Test updating specific tags manually using custom code, but do NOT save the updates.",
             new ManualTagUpdater(saveUpdates: false)
         ),
         new(
@@ -51,8 +51,8 @@ internal static class OperationLibrary
             "Update specific tags manually using custom code and save the updates.",
             new ManualTagUpdater(saveUpdates: true)),
         new(
-            new List<string>{"-n", "--replaygain"},
-            "Apply track normalization to all files.",
+            new List<string>{"-n", "--normalize", "--replaygain"},
+            "Apply track normalization.",
             new Normalization()),
     };
 
