@@ -128,7 +128,7 @@
             const string noData = "———";
             var trackGain = double.IsNaN(ReplayGainTrack) ? noData : ReplayGainTrack.ToString();
             var albumGain = double.IsNaN(ReplayGainAlbum) ? noData : ReplayGainAlbum.ToString();
-            return $"Track: {trackGain} | Album: {albumGain}";
+            return $"Track: {trackGain}  |  Album: {albumGain}";
         }
 
         // The embedded image for the album, represented as an array of bytes or,
