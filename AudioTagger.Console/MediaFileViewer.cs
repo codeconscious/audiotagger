@@ -77,7 +77,8 @@ public class MediaFileViewer
             file.Title,
             file.Year == 0 ? string.Empty : file.Year.ToString(),
             string.Join(", ", file.Genres),
-            file.Duration.ToString("m\\:ss")
+            file.Duration.ToString("m\\:ss"),
+            file.ReplayGainTrack.ToString()
         };
 
         var markups = rows.Select(r => new Markup(r));

@@ -18,7 +18,11 @@ public class TagSummaryViewer : IPathOperation
                                      .ThenBy(m => m.Title)
                                      .ToImmutableArray();
 
-        var table = PrepareTableWithColumns("Artist(s)", "Album", "Track", "Title", "Year", "Genre(s)", "Length");
+        var table = PrepareTableWithColumns("Artist(s)", "Album", "Trk", "Title", "Year", "Genre(s)", "Dur.", "RG(Tr.)");
+        table.Columns[2].Alignment(Justify.Right); // TODO: Combine with the name declarations above.
+        table.Columns[4].Alignment(Justify.Right);
+        table.Columns[6].Alignment(Justify.Right);
+        table.Columns[7].Alignment(Justify.Right);
 
         table = AppendDataRowsToTable(table,
                                       new MediaFileViewer(),
