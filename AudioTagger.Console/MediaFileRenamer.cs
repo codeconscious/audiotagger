@@ -89,11 +89,9 @@ namespace AudioTagger.Console
 
         private static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
         {
-            var artistCounts = mediaFiles
-                                    .GroupBy(n => string.Concat(n.Artists))
-                                    .ToDictionary( g => g.Key, g => g.Count());
-
-            return artistCounts;
+            return mediaFiles.GroupBy(n => string.Concat(n.Artists))
+                             .ToDictionary(g => g.Key,
+                                           g => g.Count());
         }
 
         /// <summary>
@@ -141,25 +139,13 @@ namespace AudioTagger.Console
                     ? new[] {titleText, yearText}
                     : new[] {albumText, yearText, " - ", trackText, titleText}) + ext;
 
-            string newFolderName;
-            if (keepInRootFolder)
-            {
-                newFolderName = string.Empty;
-            }
-            else
-            {
-                newFolderName = HasAnyValues(file.AlbumArtists)
-                    ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists))
-                    : HasAnyValues(file.Artists)
-                        ? EnsurePathSafeString(string.Join(" && ", file.Artists))
-                        : "_UNSPECIFIED-ARTIST";
-            }
+            var newFolderName = keepInRootFolder ? string.Empty : GetFolderName(file);
             var fullFolderPath = Path.Combine(workingPath, newFolderName);
-
             var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
             var proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
             // printer.Print("> " + previousFolderFileName); // Debug use
             // printer.Print("> " + proposedFolderFileName); // Debug use
+
             if (previousFolderFileName == proposedFolderFileName)
             {
                 printer.Print($"No rename needed for \"{file.Path.Replace(workingPath, "")}\"");
@@ -254,6 +240,20 @@ namespace AudioTagger.Console
                     return false;
 
                 return true;
+            }
+
+            static string GetFolderName(MediaFile file)
+            {
+                if (HasAnyValues(file.AlbumArtists))
+                    return EnsurePathSafeString(string.Join(" && ", file.AlbumArtists));
+
+                if (HasAnyValues(file.Artists))
+                    return EnsurePathSafeString(string.Join(" && ", file.Artists));
+
+                if (!string.IsNullOrWhiteSpace(file.Album))
+                    return EnsurePathSafeString(file.Album);
+
+                return "___UNSPECIFIED___";
             }
         }
 
