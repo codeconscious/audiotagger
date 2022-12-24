@@ -18,7 +18,15 @@ public class TagSummaryViewer : IPathOperation
                                      .ThenBy(m => m.Title)
                                      .ToImmutableArray();
 
-        var table = PrepareTableWithColumns("Artist(s)", "Album", "Track", "Title", "Year", "Genre(s)", "Length");
+        var table = CreateTableWithColumns(
+            ("Artist(s)", Justify.Left),
+            ("Album", Justify.Left),
+            ("Trk", Justify.Right),
+            ("Title", Justify.Left),
+            ("Year", Justify.Right),
+            ("Genre(s)", Justify.Left),
+            ("Dur.", Justify.Right),
+            ("RG(Tr)", Justify.Right));
 
         table = AppendDataRowsToTable(table,
                                       new MediaFileViewer(),
@@ -28,7 +36,7 @@ public class TagSummaryViewer : IPathOperation
         AnsiConsole.Write(table);
     }
 
-    private static Table PrepareTableWithColumns(params string[] columns)
+    private static Table CreateTableWithColumns(params (string, Justify)[] columnPairs)
     {
         var table = new Table
         {
@@ -36,7 +44,22 @@ public class TagSummaryViewer : IPathOperation
             Expand = true
         };
 
-        table.AddColumns(columns);
+        foreach (var pair in columnPairs)
+        {
+            var column = new TableColumn(pair.Item1);
+
+            switch (pair.Item2)
+            {
+                case Justify.Center:
+                    column = column.Centered();
+                    break;
+                case Justify.Right:
+                    column = column.RightAligned();
+                    break;
+            }
+
+            table.AddColumn(column);
+        }
 
         return table;
     }

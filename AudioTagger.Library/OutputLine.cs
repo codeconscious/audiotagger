@@ -74,21 +74,21 @@ namespace AudioTagger
 
         public static IList<OutputLine> GetTagPrintedLines(MediaFile fileData)
         {
-            var lines = new List<OutputLine>();
-
-            lines.Add(TagDataWithHeader("Title", fileData.Title));
-            lines.Add(TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)));
-            lines.Add(TagDataWithHeader("Album", fileData.Album));
-            lines.Add(TagDataWithHeader("Year", fileData.Year.ToString()));
-            lines.Add(TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss")));
+            var lines = new List<OutputLine>
+            {
+                TagDataWithHeader("Title", fileData.Title),
+                TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)),
+                TagDataWithHeader("Album", fileData.Album),
+                TagDataWithHeader("Year", fileData.Year.ToString()),
+                TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss"))
+            };
 
             var genreCount = fileData.Genres.Length;
             lines.Add(TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
-                                                (genreCount > 1 ? $" ({genreCount})" : "")));
+                                                    (genreCount > 1 ? $" ({genreCount})" : "")));
 
             var bitrate = fileData.BitRate.ToString();
             var sampleRate = fileData.SampleRate.ToString("#,##0");
-            var hasReplayGain = fileData.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
 
             // Create formatted quality line
             const string genreSeparator = "    ";
@@ -101,7 +101,7 @@ namespace AudioTagger
                         new LineSubString(" kbps" + genreSeparator, ConsoleColor.DarkGray),
                         new LineSubString(sampleRate),
                         new LineSubString(" kHz" + genreSeparator, ConsoleColor.DarkGray),
-                        new LineSubString(hasReplayGain)
+                        new LineSubString(fileData.ReplayGainSummary())
                     }));
 
             if (fileData.Composers?.Length > 0)
@@ -115,13 +115,14 @@ namespace AudioTagger
 
         public static Dictionary<string, string> GetTagKeyValuePairs(MediaFile fileData)
         {
-            var lines = new Dictionary<string, string>();
-
-            lines.Add("Title", fileData.Title);
-            lines.Add("Artist(s)", string.Join(", ", fileData.Artists));
-            lines.Add("Album", fileData.Album);
-            lines.Add("Year", fileData.Year.ToString());
-            lines.Add("Duration", fileData.Duration.ToString("m\\:ss"));
+            var lines = new Dictionary<string, string>
+            {
+                { "Title", fileData.Title },
+                { "Artist(s)", string.Join(", ", fileData.Artists) },
+                { "Album", fileData.Album },
+                { "Year", fileData.Year.ToString() },
+                { "Duration", fileData.Duration.ToString("m\\:ss") }
+            };
 
             var genreCount = fileData.Genres.Length;
             lines.Add("Genre(s)", string.Join(", ", fileData.Genres) +
@@ -129,16 +130,15 @@ namespace AudioTagger
 
             var bitrate = fileData.BitRate.ToString();
             var sampleRate = fileData.SampleRate.ToString("#,##0");
-            var hasReplayGain = fileData.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
 
             // Create formatted quality line
-            const string genreSeparator = "  |  ";
+            const string separator = "  |  ";
             lines.Add(
                 "Quality",
-                $"{bitrate}kbps" + genreSeparator + $"{sampleRate} kHz" + genreSeparator + hasReplayGain);
+                $"{bitrate}kbps" + separator + $"{sampleRate} kHz" + separator + fileData.ReplayGainSummary());
 
             if (fileData.Composers?.Length > 0)
-                lines.Add($"Composers", string.Join("; ", fileData.Composers));
+                lines.Add("Composers", string.Join("; ", fileData.Composers));
 
             if (!string.IsNullOrWhiteSpace(fileData.Comments))
                 lines.Add("Comment", fileData.Comments);

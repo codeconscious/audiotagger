@@ -34,8 +34,8 @@ public class MediaFileViewer
 
         var bitrate = file.BitRate.ToString();
         var sampleRate = file.SampleRate.ToString("#,##0");
-        var hasReplayGain = file.HasReplayGainData ? "ReplayGain OK" : "No ReplayGain";
-        table.AddRow(tagNameFormatter("Quality"), $"{bitrate} kbps @ {sampleRate} kHz | {hasReplayGain}");
+
+        table.AddRow(tagNameFormatter("Quality"), $"{bitrate} kbps @ {sampleRate} kHz | {file.ReplayGainSummary()}");
 
         if (file.Composers?.Length > 0)
         {
@@ -77,7 +77,8 @@ public class MediaFileViewer
             file.Title,
             file.Year == 0 ? string.Empty : file.Year.ToString(),
             string.Join(", ", file.Genres),
-            file.Duration.ToString("m\\:ss")
+            file.Duration.ToString("m\\:ss"),
+            file.ReplayGainTrack.ToString()
         };
 
         var markups = rows.Select(r => new Markup(r));
