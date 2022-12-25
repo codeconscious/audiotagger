@@ -110,7 +110,6 @@ namespace AudioTagger.Console
             // TODO: Refactor cancellation so this isn't needed.
             const bool shouldCancel = false;
 
-            //var albumArtistsText = string.Join(" & ", file.AlbumArtists) + " ≡ ";
             var albumArtistText = HasAnyValues(file.AlbumArtists)
                 ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists)) + " ≡ "
                 : string.Empty;
@@ -127,9 +126,6 @@ namespace AudioTagger.Console
             var yearText = file.Year < 1000
                 ? string.Empty
                 : " [" + file.Year + "]";
-            // var genreText = file.Genres.Any()
-            //     ? GetSafeString(" {" + string.Join("; ", file.Genres) + "}")
-            //     : string.Empty;
             var ext = Path.GetExtension(file.FileNameOnly);
 
             var newFileName =
@@ -137,14 +133,14 @@ namespace AudioTagger.Console
                 artistText +
                 string.Concat(string.IsNullOrWhiteSpace(albumText)
                     ? new[] {titleText, yearText}
-                    : new[] {albumText, yearText, " - ", trackText, titleText}) + ext;
+                    : new[] {albumText, yearText, file.LacksArtists ? " = " : " - ", trackText, titleText}) + ext;
 
             var newFolderName = keepInRootFolder ? string.Empty : GetFolderName(file);
             var fullFolderPath = Path.Combine(workingPath, newFolderName);
             var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
             var proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
-            // printer.Print("> " + previousFolderFileName); // Debug use
-            // printer.Print("> " + proposedFolderFileName); // Debug use
+            // printer.Print("> " + previousFolderFileName); // For debug use
+            // printer.Print("> " + proposedFolderFileName); // For debug use
 
             if (previousFolderFileName == proposedFolderFileName)
             {
