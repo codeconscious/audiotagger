@@ -43,8 +43,8 @@
 
             set => _taggedFile.Tag.Performers =
                         value.Where(a => !string.IsNullOrWhiteSpace(a))
-                            .Select(a => a.Trim().Normalize())
-                            .ToArray();
+                             .Select(a => a.Trim().Normalize())
+                             .ToArray();
         }
 
         public string Album
@@ -52,6 +52,8 @@
             get => _taggedFile.Tag.Album?.Normalize() ?? string.Empty;
             set => _taggedFile.Tag.Album = value?.Trim()?.Normalize();
         }
+
+        public bool LacksArtists => !AlbumArtists.Any() && !Artists.Any();
 
         public uint Year
         {
@@ -131,8 +133,10 @@
             return $"Track: {trackGain}  |  Album: {albumGain}";
         }
 
-        // The embedded image for the album, represented as an array of bytes or,
-        // if none, an empty array.
+        /// <summary>
+        /// The embedded image for the album, represented as an array of bytes or,
+        /// if none, an empty array.
+        /// </summary>
         public byte[] AlbumArt
         {
            get
