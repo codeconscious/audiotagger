@@ -17,11 +17,14 @@ public class MediaFileViewer
         table.HideHeaders();
         table.Expand = true;
 
-        table.AddRow(tagNameFormatter("Title"), file.Title);
+        table.AddRow(tagNameFormatter("Title"), file.Title.EscapeMarkup());
         if (file.AlbumArtists.Any())
-            table.AddRow(tagNameFormatter("Album Artist"), string.Join(", ", file.AlbumArtists));
-        table.AddRow(tagNameFormatter("Artist"), string.Join(", ", file.Artists));
-        table.AddRow(tagNameFormatter("Album"), file.Album);
+        {
+            table.AddRow(tagNameFormatter("Album Artist"),
+                         string.Join(", ", file.AlbumArtists).EscapeMarkup());
+        }
+        table.AddRow(tagNameFormatter("Artist"), string.Join(", ", file.Artists).EscapeMarkup());
+        table.AddRow(tagNameFormatter("Album"), file.Album.EscapeMarkup());
         if (file.TrackNo > 0)
             table.AddRow(tagNameFormatter("Track"), file.TrackNo.ToString());
         if (file.Year > 0)
@@ -29,7 +32,7 @@ public class MediaFileViewer
         table.AddRow(tagNameFormatter("Duration"), file.Duration.ToString("m\\:ss"));
 
         var genreCount = file.Genres.Length;
-        table.AddRow(tagNameFormatter("Genres"), string.Join(", ", file.Genres) +
+        table.AddRow(tagNameFormatter("Genres"), string.Join(", ", file.Genres).EscapeMarkup() +
                                  (genreCount > 1 ? $" ({genreCount})" : ""));
 
         var bitrate = file.BitRate.ToString();
@@ -41,22 +44,22 @@ public class MediaFileViewer
         {
             table.AddRow(
                 tagNameFormatter("Composers"),
-                string.Join("; ", file.Composers));
+                string.Join("; ", file.Composers).EscapeMarkup());
         }
 
         if (!string.IsNullOrWhiteSpace(file.Comments))
-            table.AddRow(tagNameFormatter("Comments"), file.Comments);
+            table.AddRow(tagNameFormatter("Comments"), file.Comments.EscapeMarkup());
 
         if (!string.IsNullOrWhiteSpace(file.Description))
-            table.AddRow(tagNameFormatter("Comments"), file.Description);
+            table.AddRow(tagNameFormatter("Comments"), file.Description.EscapeMarkup());
 
         if (!string.IsNullOrWhiteSpace(file.Lyrics))
-            table.AddRow(tagNameFormatter("Lyrics"), file.Lyrics[..25] + "...");
+            table.AddRow(tagNameFormatter("Lyrics"), file.Lyrics[..25].EscapeMarkup() + "...");
 
         table.Columns[0].Width(5);
 
         var panel = new Panel(table);
-        panel.Header("[yellow]" + Utilities.SanitizeSpectreString(file.FileNameOnly) + "[/]", Justify.Left);
+        panel.Header("[yellow]" + file.FileNameOnly.EscapeMarkup() + "[/]", Justify.Left);
         panel.Border = BoxBorder.Rounded;
         panel.BorderStyle = new Style(Color.Grey15);
         panel.Padding(5, 0, 5, 0);
@@ -71,12 +74,12 @@ public class MediaFileViewer
 
         var rows = new List<string>
         {
-            string.Join(", ", file.Artists),
-            file.Album,
-            file.TrackNo == 0 ? string.Empty : file.TrackNo.ToString(),
-            file.Title,
+            string.Join(", ", file.Artists).EscapeMarkup(),
+            file.Album.EscapeMarkup(),
+            file.TrackNo == 0 ? string.Empty : file.TrackNo.ToString().EscapeMarkup(),
+            file.Title.EscapeMarkup(),
             file.Year == 0 ? string.Empty : file.Year.ToString(),
-            string.Join(", ", file.Genres),
+            string.Join(", ", file.Genres).EscapeMarkup(),
             file.Duration.ToString("m\\:ss"),
             file.ReplayGainTrack.ToString()
         };
