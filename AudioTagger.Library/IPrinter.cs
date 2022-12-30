@@ -15,8 +15,7 @@
 
         char GetResultSymbol(ResultType type);
 
-        // void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string>? proposedUpdates);
-        void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string>? proposedUpdates);
+        void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string> proposedUpdates);
 
         void PrintException(Exception ex);
     }

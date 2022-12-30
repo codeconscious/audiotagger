@@ -130,7 +130,7 @@ namespace AudioTagger.Console
             };
         }
 
-        public void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string>? proposedUpdates)
+        public void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string> proposedUpdates)
         {
             ArgumentNullException.ThrowIfNull(proposedUpdates);
 
@@ -142,18 +142,18 @@ namespace AudioTagger.Console
             tagTable.Border(TableBorder.None);
             tagTable.AddColumns("Tag Name", "Tag Value"); // Hidden on the next line, though.
             tagTable.ShowHeaders = false;
-            var tagLines = OutputLine.GetTagKeyValuePairs(mediaFile);
-            foreach (var line in tagLines)
-            {
-                tagTable.AddRow(line.Key, line.Value);
-            }
-            table.AddRow(tagTable);
 
+            foreach (var line in OutputLine.GetTagKeyValuePairs(mediaFile))
+            {
+                tagTable.AddRow(line.Key, line.Value.EscapeMarkup());
+            }
+
+            table.AddRow(tagTable);
             tagTable.AddEmptyRow();
 
             foreach (var update in proposedUpdates)
             {
-                tagTable.AddRow($"[olive]{update.Key}[/]", $"[yellow]{update.Value}[/]");
+                tagTable.AddRow($"[olive]{update.Key}[/]", $"[yellow]{update.Value.EscapeMarkup()}[/]");
             }
 
             AnsiConsole.Write(table);
