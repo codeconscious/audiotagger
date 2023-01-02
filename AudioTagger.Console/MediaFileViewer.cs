@@ -56,7 +56,7 @@ public class MediaFileViewer
         if (!string.IsNullOrWhiteSpace(file.Lyrics))
             table.AddRow(tagNameFormatter("Lyrics"), file.Lyrics[..25].EscapeMarkup() + "...");
 
-        table.Columns[0].Width(5);
+        table.Columns[0].Width(15);
 
         var panel = new Panel(table);
         panel.Header("[yellow]" + file.FileNameOnly.EscapeMarkup() + "[/]", Justify.Left);
