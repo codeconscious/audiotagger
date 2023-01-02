@@ -2,6 +2,9 @@ using Spectre.Console;
 
 namespace AudioTagger.Console;
 
+/// <summary>
+/// Updates a single supported tag to a specified value for all files in a specific path.
+/// </summary>
 public class TagUpdaterSingle : IPathOperation
 {
     public TagUpdaterSingle() { }
@@ -107,14 +110,13 @@ public class TagUpdaterSingle : IPathOperation
         switch (tagName)
         {
             case "albumArtists":
-                mediaFile.AlbumArtists = tagValue
-                                          .Replace("___", "　")
-                                          .Replace("__", " ")
-                                          .Split(new[] { ";" },
-                                                 StringSplitOptions.RemoveEmptyEntries |
-                                                 StringSplitOptions.TrimEntries)
-                                          .Select(a => a.Normalize())
-                                          .ToArray();
+                mediaFile.AlbumArtists = tagValue.Replace("___", "　")
+                                                 .Replace("__", " ")
+                                                 .Split(new[] { ";" },
+                                                         StringSplitOptions.RemoveEmptyEntries |
+                                                         StringSplitOptions.TrimEntries)
+                                                 .Select(a => a.Normalize())
+                                                 .ToArray();
                 break;
             case "artists":
                 mediaFile.Artists = tagValue.Replace("___", "　")
@@ -127,16 +129,16 @@ public class TagUpdaterSingle : IPathOperation
                 break;
             case "album":
                 mediaFile.Album = tagValue.Trim().Normalize()
-                                         .Replace("___", "　")
-                                         .Replace("__", " ");
+                                          .Replace("___", "　")
+                                          .Replace("__", " ");
                 break;
             case "genres":
                 mediaFile.Genres = tagValue.Replace("___", "　")
-                                          .Replace("__", " ")
-                                          .Split(new[] { ";" },
-                                                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                                          .Select(g => g.Normalize())
-                                          .ToArray();
+                                           .Replace("__", " ")
+                                           .Split(new[] { ";" },
+                                                  StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                           .Select(g => g.Normalize())
+                                           .ToArray();
                 break;
             case "year":
                 mediaFile.Year = ushort.Parse(tagValue);
