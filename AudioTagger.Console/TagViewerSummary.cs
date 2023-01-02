@@ -2,7 +2,7 @@ using Spectre.Console;
 
 namespace AudioTagger.Console;
 
-public class TagSummaryViewer : IPathOperation
+public class TagViewerSummary : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
