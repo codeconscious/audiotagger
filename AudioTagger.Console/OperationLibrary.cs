@@ -14,7 +14,7 @@ internal static class OperationLibrary
         new(
             new List<string>{"-vs", "--view-summary"},
             "View a tag data summary.",
-            new TagSummaryViewer()
+            new TagViewerSummary()
         ),
         new(
             new List<string>{"-u", "--update"},

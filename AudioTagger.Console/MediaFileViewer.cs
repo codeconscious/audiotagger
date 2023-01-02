@@ -74,7 +74,7 @@ public class MediaFileViewer
 
         var rows = new List<string>
         {
-            string.Join(", ", file.Artists).EscapeMarkup(),
+            GetCombinedArtists(file.AlbumArtists, file.Artists),
             file.Album.EscapeMarkup(),
             file.TrackNo == 0 ? string.Empty : file.TrackNo.ToString().EscapeMarkup(),
             file.Title.EscapeMarkup(),
@@ -87,5 +87,19 @@ public class MediaFileViewer
         var markups = rows.Select(r => new Markup(r));
 
         return new TableRow(markups);
+
+        static string GetCombinedArtists(string[] albumArtists, string[] artists)
+        {
+            var artistString = string.Join(", ", artists).EscapeMarkup();
+
+            if (!albumArtists.Any())
+                return artistString;
+
+            var albumArtistString = string.Join(", ", albumArtists).EscapeMarkup();
+
+            return albumArtistString == artistString
+                ? artistString
+                : $"{albumArtistString} ({artistString})";
+        }
     }
 }
