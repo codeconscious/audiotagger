@@ -4,7 +4,7 @@ namespace AudioTagger.Console;
 
 internal static class OperationLibrary
 {
-    internal static readonly List<Operation> Operations = new()
+    internal static readonly IReadOnlyList<Operation> Operations = new List<Operation>()
     {
         new(
             new List<string>{"-v", "--view"},
@@ -22,8 +22,13 @@ internal static class OperationLibrary
             new TagUpdater()
         ),
         new(
+            new List<string>{"-u1", "--update-single"},
+            "Update a single tag by manually specifying a value",
+            new TagUpdaterSingle()
+        ),
+        new(
             new List<string>{"-y", "--update-year"},
-            "Update years using Date Created years. (Must do before other updates.)",
+            "Update years using Date Created from file properties. (Must do before other updates.)",
             new TagUpdaterYearOnly()
         ),
         new(
@@ -41,15 +46,6 @@ internal static class OperationLibrary
             "Display file statistics using tag data.",
             new TagStats()
         ),
-        new(
-            new List<string>{"-m", "--manual"},
-            "Test updating specific tags manually using custom code, but do NOT save the updates.",
-            new ManualTagUpdater(saveUpdates: false)
-        ),
-        new(
-            new List<string>{"-mm", "--mmanual"},
-            "Update specific tags manually using custom code and save the updates.",
-            new ManualTagUpdater(saveUpdates: true)),
         new(
             new List<string>{"-n", "--normalize", "--replaygain"},
             "Apply track normalization.",
