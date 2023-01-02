@@ -31,7 +31,7 @@ public class TagStats : IPathOperation
 
         PrintToTable(
             $"Top {topArtistCount} artists:",
-            new[] { "[gray]Artist[/]", "[gray]Count[/]" },
+            new[] { "Artist", "Count" },
             topArtists.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Right });
 
@@ -45,7 +45,7 @@ public class TagStats : IPathOperation
 
         PrintToTable(
             $"Top {mostCommonTitleCount} track titles:",
-            new[] { "[gray]Title[/]", "[gray]Count[/]" },
+            new[] { "Title", "Count" },
             mostCommonTitles.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Right });
 
@@ -60,7 +60,7 @@ public class TagStats : IPathOperation
 
         PrintToTable(
             $"Top {mostCommonTitleCount} Years",
-            new[] { "[gray]Year[/]", "[gray]Count[/]" },
+            new[] { "Year", "Count" },
             mostCommonYears.Select(y => new[] { y.Key.ToString(), y.Value.ToString("#,##0") }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Right });
     }
@@ -92,7 +92,7 @@ public class TagStats : IPathOperation
         {
             Border = TableBorder.None
         };
-        table.AddColumns(columnNames.ToArray());
+        table.AddColumns(columnNames.Select(n => $"[gray]{n}[/]").ToArray());
         table.Columns[0].Width = rows.Max(r => r[0].Length + 3);
         table.Columns[1].Width = rows.Max(r => r[1].Length + 3);
         if (justifications != null)
