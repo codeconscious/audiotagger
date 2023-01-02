@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using Spectre.Console;
 
 namespace AudioTagger.Console;
 
@@ -28,9 +29,11 @@ public class TagStats : IPathOperation
             .OrderByDescending(g => g.Value)
             .Take(topArtistCount);
 
-        printer.Print($"Top {topArtistCount} artists:", prependLines: 1);
-        foreach (var artist in topArtists)
-            printer.Print($"  - {artist.Key}: {artist.Value}");
+        PrintToTable(
+            $"Top {topArtistCount} artists:",
+            new[] { "[gray]Artist[/]", "[gray]Count[/]" },
+            topArtists.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
+            new List<Justify>() { Justify.Left, Justify.Right });
 
         const int mostCommonTitleCount = 10;
 
@@ -40,9 +43,73 @@ public class TagStats : IPathOperation
             .OrderByDescending(g => g.Value)
             .Take(mostCommonTitleCount);
 
-        printer.Print($"Top {mostCommonTitleCount} track titles:", prependLines: 1);
-        foreach (var title in mostCommonTitles)
-            printer.Print($"  - {title.Key}: {title.Value}");
+        PrintToTable(
+            $"Top {mostCommonTitleCount} track titles:",
+            new[] { "[gray]Title[/]", "[gray]Count[/]" },
+            mostCommonTitles.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
+            new List<Justify>() { Justify.Left, Justify.Right });
+
+        const int mostCommonYearCount = 15;
+
+        var mostCommonYears = mediaFiles
+            // .Where(f => f.Year != 0)
+            .GroupBy(f => f.Year)
+            .ToImmutableDictionary(f => f.Key, f => f.Count())
+            .OrderByDescending(f => f.Value)
+            .Take(mostCommonYearCount);
+
+        PrintToTable(
+            $"Top {mostCommonTitleCount} Years",
+            new[] { "[gray]Year[/]", "[gray]Count[/]" },
+            mostCommonYears.Select(y => new[] { y.Key.ToString(), y.Value.ToString("#,##0") }).ToList(),
+            new List<Justify>() { Justify.Left, Justify.Right });
+    }
+
+    private static void PrintToTable(string title,
+                                     IList<string> columnNames,
+                                     List<string[]> rows,
+                                     List<Justify>? justifications = null)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new InvalidOperationException("A title must be provided.");
+
+        if (columnNames == null || rows == null || !columnNames.Any() || !rows.Any())
+            throw new InvalidOperationException("Column names and row data must be provided.");
+
+        if (columnNames.Count != rows[0].Length ||
+            !rows.All(r => r.Length == columnNames.Count))
+        {
+            throw new InvalidOperationException("The counts of columns and rows must be identical.");
+        }
+
+        if (justifications != null && justifications.Count != columnNames.Count)
+        {
+            throw new InvalidOperationException(
+                "If justifications are provided, the count must be identical to the column count.");
+        }
+
+        var table = new Table
+        {
+            Border = TableBorder.None
+        };
+        table.AddColumns(columnNames.ToArray());
+        table.Columns[0].Width = rows.Max(r => r[0].Length + 3);
+        table.Columns[1].Width = rows.Max(r => r[1].Length + 3);
+        if (justifications != null)
+        {
+            for (int i = 0; i < justifications.Count; i++)
+            {
+                table.Columns[i].Alignment = justifications[i];
+            }
+        }
+
+        rows.ForEach(r => table.AddRow(r));
+
+        var panel = new Panel(table)
+        {
+            Header = new PanelHeader(title)
+        };
+        AnsiConsole.Write(panel);
     }
 
     class ArtistsComparer : IEqualityComparer<string[]>
