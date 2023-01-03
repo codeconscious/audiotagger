@@ -17,9 +17,11 @@
                     var viewer = new MediaFileViewer();
                     viewer.PrintFileDetails(mediaFile);
 
+#if _WINDOWS
                     // TODO: Check ahead of time if images are supported.
-                    //if (mediaFile.AlbumArt.Length > 0)
-                    //    Graphics.ConsoleWriteImage(mediaFile.AlbumArt);
+                    if (mediaFile.AlbumArt.Length > 0)
+                       Graphics.ConsoleWriteImage(mediaFile.AlbumArt);
+#endif
                 }
                 catch (TagLib.CorruptFileException e)
                 {
