@@ -20,11 +20,9 @@ public class TagStats : IPathOperation
         const int topArtistCount = 25;
 
         var topArtists = mediaFiles
-            .Where(m =>
-                m.Artists.Any() &&
-                string.Concat(m.Artists) != "<Unknown>" && // Not working.
-                !m.Genres.Contains("日本語会話"))
-            .GroupBy(a => a.Artists, new ArtistsComparer())
+            .Where(m => m.Artists.Any() && !m.Genres.Contains("日本語会話"))
+            // .GroupBy(a => a.Artists, new ArtistsComparer())
+            .GroupBy(a => a.AlbumArtists.Any() ? a.AlbumArtists : a.Artists, new ArtistsComparer())
             .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value)
             .Take(topArtistCount);
@@ -35,7 +33,7 @@ public class TagStats : IPathOperation
             topArtists.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Right });
 
-        const int mostCommonTitleCount = 10;
+        const int mostCommonTitleCount = 15;
 
         var mostCommonTitles = mediaFiles
             .GroupBy(a => a.Title.Trim(), new TitleComparer())
