@@ -16,10 +16,6 @@
                     //printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
                     var viewer = new MediaFileViewer();
                     viewer.PrintFileDetails(mediaFile);
-
-                    // TODO: Check ahead of time if images are supported.
-                    //if (mediaFile.AlbumArt.Length > 0)
-                    //    Graphics.ConsoleWriteImage(mediaFile.AlbumArt);
                 }
                 catch (TagLib.CorruptFileException e)
                 {
