@@ -10,6 +10,8 @@ A .NET 7 CLI program that can perform the following actions on audio files:
 - See folder stats
 - Apply audio normalization (ReplayGain)
 
-This is a personal, labor-of-love project that I work on in my spare time, so it's not very polished, but it works well for my use cases. Feel feel to try it out yourself.
+This is a personal, labor-of-love project that I work on in my spare time, and it's not particularly polished, but it works very well for my use case. Feel feel to try it out yourself.
 
-Currently, you must run this app from the `AudioTagger.Console` folder using `dotnet run`. Passing no arguments will show the help notes.
+Requirements: .NET 7 runtime.
+
+Currently, you must run this app from the `AudioTagger.Console` folder using `dotnet run`. Passing no arguments will show the instructions.
