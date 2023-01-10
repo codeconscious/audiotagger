@@ -7,6 +7,8 @@ namespace AudioTagger.Console;
 /// </summary>
 public class TagUpdaterSingle : IPathOperation
 {
+    private enum TagUpdateType { Overwrite, Prepend, Append }
+
     public TagUpdaterSingle() { }
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
@@ -27,10 +29,11 @@ public class TagUpdaterSingle : IPathOperation
         foreach (var file in mediaFiles)
             printer.Print($"- {file.Path}");
 
-        var tagName = GetTagName();
-        var tagValue = GetTagValue(tagName);
+        var tagName = ConfirmTagName();
+        var updateType = ConfirmUpdateType(tagName);
+        var tagValue = ConfirmTagValue(tagName);
 
-        printer.Print($"Updating the {tagName.ToUpperInvariant()} tag to the following value:");
+        printer.Print($"Updating the {tagName.ToUpperInvariant()} tag to the following value via {updateType.ToString().ToUpperInvariant()}:");
         printer.Print(tagValue, fgColor: ConsoleColor.Magenta);
 
         if (!ConfirmContinue())
@@ -48,7 +51,7 @@ public class TagUpdaterSingle : IPathOperation
 
             try
             {
-                UpdateTags(file, tagName, tagValue);
+                UpdateTags(file, tagName, tagValue, updateType);
                 successCount++;
             }
             catch
@@ -65,7 +68,7 @@ public class TagUpdaterSingle : IPathOperation
         printer.Print($"Done in {elapsedMs:#,##0}ms -- {successCount} successes, {failureCount} failures");
     }
 
-    private static string GetTagName()
+    private static string ConfirmTagName()
     {
         // TODO: Refactor with UpdatableFields.cs to DRY things up.
         var dict = new Dictionary<string, string>
@@ -80,16 +83,28 @@ public class TagUpdaterSingle : IPathOperation
         };
 
         var response = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("Which tag do you want to update?")
-                    .AddChoices(dict.Keys));
+            new SelectionPrompt<string>()
+                .Title("Which tag do you want to update?")
+                .AddChoices(dict.Keys));
 
         return dict[response];
     }
 
-    private static string GetTagValue(string tagName)
+
+    private static string ConfirmTagValue(string tagName)
     {
         return AnsiConsole.Ask<string>($"Enter the new value for {tagName.ToUpperInvariant()}: ");
+    }
+
+    private static TagUpdateType ConfirmUpdateType(string tagName)
+    {
+        if (tagName == "year" || tagName == "trackNo")
+            return TagUpdateType.Overwrite;
+
+        return AnsiConsole.Prompt(
+            new SelectionPrompt<TagUpdateType>()
+                .Title($"How do you want to update the {tagName} tag?")
+                .AddChoices(Enum.GetValues(typeof(TagUpdateType)).Cast<TagUpdateType>()));
     }
 
     private static bool ConfirmContinue()
@@ -105,40 +120,55 @@ public class TagUpdaterSingle : IPathOperation
         return shouldProceed == yes;
     }
 
-    private static void UpdateTags(MediaFile mediaFile, string tagName, string tagValue)
+    private static void UpdateTags(MediaFile mediaFile,
+                                   string tagName,
+                                   string tagValue,
+                                   TagUpdateType updateType)
     {
         switch (tagName)
         {
             case "albumArtists":
-                mediaFile.AlbumArtists = tagValue.Replace("___", "　")
-                                                 .Replace("__", " ")
-                                                 .Split(new[] { ";" },
-                                                         StringSplitOptions.RemoveEmptyEntries |
-                                                         StringSplitOptions.TrimEntries)
-                                                 .Select(a => a.Normalize())
-                                                 .ToArray();
+                var sanitizedAlbumArtists = tagValue.Replace("___", "　")
+                                                    .Replace("__", " ")
+                                                    .Split(new[] { ";" },
+                                                           StringSplitOptions.RemoveEmptyEntries |
+                                                           StringSplitOptions.TrimEntries)
+                                                    .Select(a => a.Normalize())
+                                                    .ToArray();
+                mediaFile.AlbumArtists = GetUpdatedValues(mediaFile.AlbumArtists,
+                                                          sanitizedAlbumArtists,
+                                                          updateType);
                 break;
             case "artists":
-                mediaFile.Artists = tagValue.Replace("___", "　")
-                                            .Replace("__", " ")
-                                            .Split(new[] { ";" },
-                                                   StringSplitOptions.RemoveEmptyEntries |
-                                                   StringSplitOptions.TrimEntries)
-                                            .Select(a => a.Normalize())
-                                            .ToArray();
+                var sanitizedArtists = tagValue.Replace("___", "　")
+                                               .Replace("__", " ")
+                                               .Split(new[] { ";" },
+                                                      StringSplitOptions.RemoveEmptyEntries |
+                                                      StringSplitOptions.TrimEntries)
+                                               .Select(a => a.Normalize())
+                                               .ToArray();
+                mediaFile.Artists = GetUpdatedValues(mediaFile.Artists,
+                                                     sanitizedArtists,
+                                                     updateType);
                 break;
             case "album":
-                mediaFile.Album = tagValue.Trim().Normalize()
-                                          .Replace("___", "　")
-                                          .Replace("__", " ");
+                var sanitizedAlbum = tagValue.Trim().Normalize()
+                                             .Replace("___", "　")
+                                             .Replace("__", " ");
+                mediaFile.Album = GetUpdatedValue(mediaFile.Album,
+                                                  sanitizedAlbum,
+                                                  updateType);
                 break;
             case "genres":
-                mediaFile.Genres = tagValue.Replace("___", "　")
-                                           .Replace("__", " ")
-                                           .Split(new[] { ";" },
-                                                  StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                                           .Select(g => g.Normalize())
-                                           .ToArray();
+                var sanitizedGenres = tagValue.Replace("___", "　")
+                                              .Replace("__", " ")
+                                              .Split(new[] { ";" },
+                                                     StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                              .Select(g => g.Normalize())
+                                              .ToArray();
+                mediaFile.Genres = GetUpdatedValues(mediaFile.Artists,
+                                                    sanitizedGenres,
+                                                    updateType);
                 break;
             case "year":
                 mediaFile.Year = ushort.Parse(tagValue);
@@ -147,12 +177,32 @@ public class TagUpdaterSingle : IPathOperation
                 mediaFile.TrackNo = ushort.Parse(tagValue);
                 break;
             case "comment":
-                mediaFile.Comments = tagValue;
+                mediaFile.Comments = GetUpdatedValue(mediaFile.Comments, tagValue, updateType);
                 break;
             default:
                 throw new InvalidOperationException($"Unsupported tag \"{tagName}\" could not be processed.");
         }
 
         mediaFile.SaveUpdates();
+
+        static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType)
+        {
+            return updateType switch
+            {
+                TagUpdateType.Overwrite =>  newValue,
+                TagUpdateType.Prepend =>    newValue + currentValue,
+                _ =>                        currentValue + newValue,
+            };
+        }
+
+        static string[] GetUpdatedValues(string[] currentValues, string[] newValues, TagUpdateType updateType)
+        {
+            return updateType switch
+            {
+                TagUpdateType.Overwrite =>  newValues,
+                TagUpdateType.Prepend =>    newValues.Concat(currentValues).ToArray(),
+                _ =>                        currentValues.Concat(newValues).ToArray()
+            };
+        }
     }
 }
