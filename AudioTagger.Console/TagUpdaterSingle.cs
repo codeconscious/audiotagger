@@ -7,6 +7,8 @@ namespace AudioTagger.Console;
 /// </summary>
 public class TagUpdaterSingle : IPathOperation
 {
+    private enum TagUpdateType { Overwrite, Prepend, Append }
+
     public TagUpdaterSingle() { }
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
@@ -20,24 +22,25 @@ public class TagUpdaterSingle : IPathOperation
             return;
         }
 
-        var stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Start();
-
         printer.Print($"Will update a single tag in {mediaFiles.Count} files:");
         foreach (var file in mediaFiles)
             printer.Print($"- {file.Path}");
 
-        var tagName = GetTagName();
-        var tagValue = GetTagValue(tagName);
+        var tagName = ConfirmTagName();
+        var updateType = ConfirmUpdateType(tagName);
+        var tagValue = ConfirmTagValue(tagName, updateType);
 
-        printer.Print($"Updating the {tagName.ToUpperInvariant()} tag to the following value:");
-        printer.Print(tagValue, fgColor: ConsoleColor.Magenta);
+        printer.Print($"Will {updateType.ToString().ToUpperInvariant()} the {tagName.ToUpperInvariant()} tag using this text:");
+        printer.Print(tagValue, appendLines: 1, fgColor: ConsoleColor.Magenta);
 
         if (!ConfirmContinue())
         {
             printer.Print("Cancelling!");
             return;
         }
+
+        var stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Start();
 
         uint successCount = 0;
         uint failureCount = 0;
@@ -48,13 +51,18 @@ public class TagUpdaterSingle : IPathOperation
 
             try
             {
-                UpdateTags(file, tagName, tagValue);
+                UpdateTags(file, tagName, tagValue, updateType);
                 successCount++;
+            }
+            catch (FormatException e)
+            {
+                failureCount++;
+                printer.Print($"❌ ERROR: {e.Message} ({file.Path})");
             }
             catch
             {
                 failureCount++;
-                printer.Print($"✖️ ERROR: {file.Path}");
+                printer.Print($"✖️ UNEXPECTED ERROR: {file.Path}");
             }
         }
 
@@ -62,10 +70,29 @@ public class TagUpdaterSingle : IPathOperation
         // Reference: https://stackoverflow.com/q/5113750/11767771
         var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
 
-        printer.Print($"Done in {elapsedMs:#,##0}ms -- {successCount} successes, {failureCount} failures");
+        var successLabel = successCount == 1 ? "success" : "successes";
+        var failureLabel = failureCount == 1 ? "failure" : "failures";
+        printer.Print($"Done in {elapsedMs:#,##0}ms with {successCount} {successLabel} and {failureCount} {failureLabel}");
     }
 
-    private static string GetTagName()
+    private static string ConfirmTagValue(string tagName, TagUpdateType updateType)
+    {
+        var updateTypeName = updateType.ToString().ToUpperInvariant();
+        return AnsiConsole.Ask<string>($"Enter the text to {updateTypeName} to {tagName.ToUpperInvariant()}: ");
+    }
+
+    private static TagUpdateType ConfirmUpdateType(string tagName)
+    {
+        if (tagName == "year" || tagName == "trackNo")
+            return TagUpdateType.Overwrite;
+
+        return AnsiConsole.Prompt(
+            new SelectionPrompt<TagUpdateType>()
+                .Title($"How do you want to update the {tagName.ToUpperInvariant()} tag?")
+                .AddChoices(Enum.GetValues(typeof(TagUpdateType)).Cast<TagUpdateType>()));
+    }
+
+    private static string ConfirmTagName()
     {
         // TODO: Refactor with UpdatableFields.cs to DRY things up.
         var dict = new Dictionary<string, string>
@@ -80,16 +107,11 @@ public class TagUpdaterSingle : IPathOperation
         };
 
         var response = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("Which tag do you want to update?")
-                    .AddChoices(dict.Keys));
+            new SelectionPrompt<string>()
+                .Title("Which tag do you want to update?")
+                .AddChoices(dict.Keys));
 
         return dict[response];
-    }
-
-    private static string GetTagValue(string tagName)
-    {
-        return AnsiConsole.Ask<string>($"Enter the new value for {tagName.ToUpperInvariant()}: ");
     }
 
     private static bool ConfirmContinue()
@@ -105,40 +127,56 @@ public class TagUpdaterSingle : IPathOperation
         return shouldProceed == yes;
     }
 
-    private static void UpdateTags(MediaFile mediaFile, string tagName, string tagValue)
+    private static void UpdateTags(MediaFile mediaFile,
+                                   string tagName,
+                                   string tagValue,
+                                   TagUpdateType updateType)
     {
         switch (tagName)
         {
             case "albumArtists":
-                mediaFile.AlbumArtists = tagValue.Replace("___", "　")
-                                                 .Replace("__", " ")
-                                                 .Split(new[] { ";" },
-                                                         StringSplitOptions.RemoveEmptyEntries |
-                                                         StringSplitOptions.TrimEntries)
-                                                 .Select(a => a.Normalize())
-                                                 .ToArray();
+                var sanitizedAlbumArtists = tagValue.Replace("___", "　")
+                                                    .Replace("__", " ")
+                                                    .Split(new[] { ";" },
+                                                           StringSplitOptions.RemoveEmptyEntries |
+                                                           StringSplitOptions.TrimEntries)
+                                                    .Select(a => a.Normalize())
+                                                    .ToArray();
+                mediaFile.AlbumArtists = GetUpdatedValues(mediaFile.AlbumArtists,
+                                                          sanitizedAlbumArtists,
+                                                          updateType);
                 break;
             case "artists":
-                mediaFile.Artists = tagValue.Replace("___", "　")
-                                            .Replace("__", " ")
-                                            .Split(new[] { ";" },
-                                                   StringSplitOptions.RemoveEmptyEntries |
-                                                   StringSplitOptions.TrimEntries)
-                                            .Select(a => a.Normalize())
-                                            .ToArray();
+                var sanitizedArtists = tagValue.Replace("___", "　")
+                                               .Replace("__", " ")
+                                               .Split(new[] { ";" },
+                                                      StringSplitOptions.RemoveEmptyEntries |
+                                                      StringSplitOptions.TrimEntries)
+                                               .Select(a => a.Normalize())
+                                               .ToArray();
+                mediaFile.Artists = GetUpdatedValues(mediaFile.Artists,
+                                                     sanitizedArtists,
+                                                     updateType);
                 break;
             case "album":
-                mediaFile.Album = tagValue.Trim().Normalize()
-                                          .Replace("___", "　")
-                                          .Replace("__", " ");
+                var sanitizedAlbum = tagValue.Trim().Normalize()
+                                             .Replace("___", "　")
+                                             .Replace("__", " ");
+                mediaFile.Album = GetUpdatedValue(mediaFile.Album,
+                                                  sanitizedAlbum,
+                                                  updateType,
+                                                  false);
                 break;
             case "genres":
-                mediaFile.Genres = tagValue.Replace("___", "　")
-                                           .Replace("__", " ")
-                                           .Split(new[] { ";" },
-                                                  StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                                           .Select(g => g.Normalize())
-                                           .ToArray();
+                var sanitizedGenres = tagValue.Replace("___", "　")
+                                              .Replace("__", " ")
+                                              .Split(new[] { ";" },
+                                                     StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                              .Select(g => g.Normalize())
+                                              .ToArray();
+                mediaFile.Genres = GetUpdatedValues(mediaFile.Genres,
+                                                    sanitizedGenres,
+                                                    updateType);
                 break;
             case "year":
                 mediaFile.Year = ushort.Parse(tagValue);
@@ -147,12 +185,33 @@ public class TagUpdaterSingle : IPathOperation
                 mediaFile.TrackNo = ushort.Parse(tagValue);
                 break;
             case "comment":
-                mediaFile.Comments = tagValue;
+                mediaFile.Comments = GetUpdatedValue(mediaFile.Comments, tagValue, updateType, true);
                 break;
             default:
                 throw new InvalidOperationException($"Unsupported tag \"{tagName}\" could not be processed.");
         }
 
         mediaFile.SaveUpdates();
+
+        static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType, bool useNewLine)
+        {
+            var divider = useNewLine ? Environment.NewLine : string.Empty;
+            return updateType switch
+            {
+                TagUpdateType.Overwrite =>  newValue,
+                TagUpdateType.Prepend =>    newValue + divider + currentValue,
+                _ =>                        currentValue + divider + newValue,
+            };
+        }
+
+        static string[] GetUpdatedValues(string[] currentValues, string[] newValues, TagUpdateType updateType)
+        {
+            return updateType switch
+            {
+                TagUpdateType.Overwrite =>  newValues,
+                TagUpdateType.Prepend =>    newValues.Concat(currentValues).ToArray(),
+                _ =>                        currentValues.Concat(newValues).ToArray()
+            };
+        }
     }
 }
