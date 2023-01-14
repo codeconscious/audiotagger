@@ -174,7 +174,7 @@ public class TagUpdaterSingle : IPathOperation
                                                      StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                                               .Select(g => g.Normalize())
                                               .ToArray();
-                mediaFile.Genres = GetUpdatedValues(mediaFile.Artists,
+                mediaFile.Genres = GetUpdatedValues(mediaFile.Genres,
                                                     sanitizedGenres,
                                                     updateType);
                 break;
