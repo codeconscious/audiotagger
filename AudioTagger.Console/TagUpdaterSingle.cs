@@ -22,25 +22,25 @@ public class TagUpdaterSingle : IPathOperation
             return;
         }
 
-        var stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Start();
-
         printer.Print($"Will update a single tag in {mediaFiles.Count} files:");
         foreach (var file in mediaFiles)
             printer.Print($"- {file.Path}");
 
         var tagName = ConfirmTagName();
         var updateType = ConfirmUpdateType(tagName);
-        var tagValue = ConfirmTagValue(tagName);
+        var tagValue = ConfirmTagValue(tagName, updateType);
 
-        printer.Print($"Updating the {tagName.ToUpperInvariant()} tag to the following value via {updateType.ToString().ToUpperInvariant()}:");
-        printer.Print(tagValue, fgColor: ConsoleColor.Magenta);
+        printer.Print($"Will {updateType.ToString().ToUpperInvariant()} the {tagName.ToUpperInvariant()} tag using this text:");
+        printer.Print(tagValue, appendLines: 1, fgColor: ConsoleColor.Magenta);
 
         if (!ConfirmContinue())
         {
             printer.Print("Cancelling!");
             return;
         }
+
+        var stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Start();
 
         uint successCount = 0;
         uint failureCount = 0;
@@ -54,10 +54,15 @@ public class TagUpdaterSingle : IPathOperation
                 UpdateTags(file, tagName, tagValue, updateType);
                 successCount++;
             }
+            catch (FormatException e)
+            {
+                failureCount++;
+                printer.Print($"❌ ERROR: {e.Message} ({file.Path})");
+            }
             catch
             {
                 failureCount++;
-                printer.Print($"✖️ ERROR: {file.Path}");
+                printer.Print($"✖️ UNEXPECTED ERROR: {file.Path}");
             }
         }
 
@@ -65,7 +70,26 @@ public class TagUpdaterSingle : IPathOperation
         // Reference: https://stackoverflow.com/q/5113750/11767771
         var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
 
-        printer.Print($"Done in {elapsedMs:#,##0}ms -- {successCount} successes, {failureCount} failures");
+        var successLabel = successCount == 1 ? "success" : "successes";
+        var failureLabel = failureCount == 1 ? "failure" : "failures";
+        printer.Print($"Done in {elapsedMs:#,##0}ms with {successCount} {successLabel} and {failureCount} {failureLabel}");
+    }
+
+    private static string ConfirmTagValue(string tagName, TagUpdateType updateType)
+    {
+        var updateTypeName = updateType.ToString().ToUpperInvariant();
+        return AnsiConsole.Ask<string>($"Enter the text to {updateTypeName} to {tagName.ToUpperInvariant()}: ");
+    }
+
+    private static TagUpdateType ConfirmUpdateType(string tagName)
+    {
+        if (tagName == "year" || tagName == "trackNo")
+            return TagUpdateType.Overwrite;
+
+        return AnsiConsole.Prompt(
+            new SelectionPrompt<TagUpdateType>()
+                .Title($"How do you want to update the {tagName.ToUpperInvariant()} tag?")
+                .AddChoices(Enum.GetValues(typeof(TagUpdateType)).Cast<TagUpdateType>()));
     }
 
     private static string ConfirmTagName()
@@ -88,23 +112,6 @@ public class TagUpdaterSingle : IPathOperation
                 .AddChoices(dict.Keys));
 
         return dict[response];
-    }
-
-
-    private static string ConfirmTagValue(string tagName)
-    {
-        return AnsiConsole.Ask<string>($"Enter the new value for {tagName.ToUpperInvariant()}: ");
-    }
-
-    private static TagUpdateType ConfirmUpdateType(string tagName)
-    {
-        if (tagName == "year" || tagName == "trackNo")
-            return TagUpdateType.Overwrite;
-
-        return AnsiConsole.Prompt(
-            new SelectionPrompt<TagUpdateType>()
-                .Title($"How do you want to update the {tagName} tag?")
-                .AddChoices(Enum.GetValues(typeof(TagUpdateType)).Cast<TagUpdateType>()));
     }
 
     private static bool ConfirmContinue()
@@ -157,7 +164,8 @@ public class TagUpdaterSingle : IPathOperation
                                              .Replace("__", " ");
                 mediaFile.Album = GetUpdatedValue(mediaFile.Album,
                                                   sanitizedAlbum,
-                                                  updateType);
+                                                  updateType,
+                                                  false);
                 break;
             case "genres":
                 var sanitizedGenres = tagValue.Replace("___", "　")
@@ -177,7 +185,7 @@ public class TagUpdaterSingle : IPathOperation
                 mediaFile.TrackNo = ushort.Parse(tagValue);
                 break;
             case "comment":
-                mediaFile.Comments = GetUpdatedValue(mediaFile.Comments, tagValue, updateType);
+                mediaFile.Comments = GetUpdatedValue(mediaFile.Comments, tagValue, updateType, true);
                 break;
             default:
                 throw new InvalidOperationException($"Unsupported tag \"{tagName}\" could not be processed.");
@@ -185,13 +193,14 @@ public class TagUpdaterSingle : IPathOperation
 
         mediaFile.SaveUpdates();
 
-        static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType)
+        static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType, bool useNewLine)
         {
+            var divider = useNewLine ? Environment.NewLine : string.Empty;
             return updateType switch
             {
                 TagUpdateType.Overwrite =>  newValue,
-                TagUpdateType.Prepend =>    newValue + currentValue,
-                _ =>                        currentValue + newValue,
+                TagUpdateType.Prepend =>    newValue + divider + currentValue,
+                _ =>                        currentValue + divider + newValue,
             };
         }
 
