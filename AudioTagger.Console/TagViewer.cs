@@ -18,19 +18,18 @@
                     viewer.PrintFileDetails(mediaFile);
 
 #if _WINDOWS
-                    // TODO: Check ahead of time if images are supported.
                     if (mediaFile.AlbumArt.Length > 0)
                        Graphics.ConsoleWriteImage(mediaFile.AlbumArt);
 #endif
                 }
                 catch (TagLib.CorruptFileException e)
                 {
-                    printer.Error("The file's tag metadata was corrupt or missing: " + e.Message);
+                    printer.Error("The file's tag metadata was corrupt: " + e.Message);
                     continue;
                 }
                 catch (Exception e)
                 {
-                    printer.Error($"An unknown error occurred with file {mediaFile.FileNameOnly}: " + e.Message);
+                    printer.Error($"An unexpected error occurred with file {mediaFile.FileNameOnly}: " + e.Message);
                     continue;
                 }
             }
