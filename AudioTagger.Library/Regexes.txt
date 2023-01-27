@@ -1,6 +1,9 @@
 // Archival pattern (Example: 《Various Artists》〈岩崎良美〉『LOVE ALBUM』［1.12］｛1979｝「紫の恋を」〔J-Pop〕【Japan】.mp3)
 // @"(?:(?:《(?<albumartists>.+?)》)?|(?:〈(?<artists>.+?)〉)?|(?:『(?<album>.+)』)?|(?:［(?:(?<disc>\d+)?\.)?(?<track>\d+)］)?|(?:(?<!_)「(?<title>紫の恋を)」(?!_))?|(?:｛(?<year>.+)｝)?|(?:〔(?<genres>.+)〕)?|(?:【(?<country>.*)】)?)*\.(?<extension>.+)
 
+// Special case
+//(?<artists>.+) -- (?<title>.+) \((?<album>.+), (?<year>\d{4})\)
+
 // YouTube-based
 (?<artists>.+?)(?:『(?<album>.+)』)?(?:#(?:(?<track>\d+)))?「(?<title>.+?)」(?:\[(?<year>\d{4})\])?
 (?<artists>.+)「(?<title>.+)」\[(?<year>\d{4})\](?= \[.{11}\])
