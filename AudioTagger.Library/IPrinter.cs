@@ -1,22 +1,21 @@
-﻿namespace AudioTagger
+﻿namespace AudioTagger;
+
+public interface IPrinter
 {
-    public interface IPrinter
-    {
-        void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
-                   ConsoleColor? fgColor = null, ConsoleColor? bgColor = null);
+    void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
+               ConsoleColor? fgColor = null, ConsoleColor? bgColor = null);
 
-        void Print(IEnumerable<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1);
+    void Print(IEnumerable<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1);
 
-        void Print(IEnumerable<OutputLine> lines, byte prependLines = 0, byte appendLines = 1);
+    void Print(IEnumerable<OutputLine> lines, byte prependLines = 0, byte appendLines = 1);
 
-        void Print(string message, ResultType type, byte prependLines = 0, byte appendLines = 0);
+    void Print(string message, ResultType type, byte prependLines = 0, byte appendLines = 0);
 
-        void Error(string message);
+    void Error(string message);
 
-        char GetResultSymbol(ResultType type);
+    char GetResultSymbol(ResultType type);
 
-        void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string> proposedUpdates);
+    void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string> proposedUpdates);
 
-        void PrintException(Exception ex);
-    }
+    void PrintException(Exception ex);
 }

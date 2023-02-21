@@ -1,206 +1,206 @@
-﻿namespace AudioTagger
+﻿namespace AudioTagger;
+
+public class MediaFile
 {
-    public class MediaFile
+    public string Path { get; }
+    private readonly TagLib.File _taggedFile;
+
+    public MediaFile(string filePath, TagLib.File tabLibFile)
     {
-        public string Path { get; }
-        private readonly TagLib.File _taggedFile; // Tag data (Rename)
+        ArgumentNullException.ThrowIfNull(filePath);
+        ArgumentNullException.ThrowIfNull(tabLibFile);
 
-        public MediaFile(string filePath, TagLib.File tabLibFile)
-        {
-            ArgumentNullException.ThrowIfNull(filePath);
-            ArgumentNullException.ThrowIfNull(tabLibFile);
+        Path = filePath;
+        _taggedFile = tabLibFile;
+    }
 
-            Path = filePath;
-            _taggedFile = tabLibFile;
-        }
+    public string FileNameOnly => System.IO.Path.GetFileName(Path);
 
-        public string FileNameOnly => System.IO.Path.GetFileName(Path);
+    public string Title
+    {
+        get => _taggedFile.Tag.Title?.Normalize() ?? string.Empty;
+        set => _taggedFile.Tag.Title = value.Trim().Normalize();
+    }
 
-        public string Title
-        {
-            get => _taggedFile.Tag.Title?.Normalize() ?? string.Empty;
-            set => _taggedFile.Tag.Title = value.Trim().Normalize();
-        }
+    public string[] AlbumArtists
+    {
+        get => _taggedFile.Tag.AlbumArtists?.Select(a => a?.Normalize() ?? string.Empty)
+                                            .ToArray()
+                ?? Array.Empty<string>();
 
-        public string[] AlbumArtists
-        {
-            get => _taggedFile.Tag.AlbumArtists?.Select(a => a?.Normalize() ?? string.Empty)
-                                                .ToArray()
-                    ?? Array.Empty<string>();
+        set => _taggedFile.Tag.AlbumArtists =
+                    value.Where(a => !string.IsNullOrWhiteSpace(a))
+                         .Select(a => a.Trim().Normalize())
+                         .ToArray();
+    }
 
-            set => _taggedFile.Tag.AlbumArtists =
-                        value.Where(a => !string.IsNullOrWhiteSpace(a))
-                            .Select(a => a.Trim().Normalize())
-                            .ToArray();
-        }
+    // TODO: Note why Performers is used instead of Artists.
+    public string[] Artists
+    {
+        get => _taggedFile.Tag.Performers?.Select(a => a?.Normalize() ?? string.Empty)
+                                          .ToArray()
+                ?? Array.Empty<string>();
 
-        // TODO: Note why Performers is used instead of Artists.
-        public string[] Artists
-        {
-            get => _taggedFile.Tag.Performers?.Select(a => a?.Normalize() ?? string.Empty)
+        set => _taggedFile.Tag.Performers =
+                    value.Where(a => !string.IsNullOrWhiteSpace(a))
+                         .Select(a => a.Trim().Normalize())
+                         .ToArray();
+    }
+
+    public string Album
+    {
+        get => _taggedFile.Tag.Album?.Normalize() ?? string.Empty;
+        set => _taggedFile.Tag.Album = value?.Trim()?.Normalize();
+    }
+
+    public bool LacksArtists => !AlbumArtists.Any() && !Artists.Any();
+
+    public uint Year
+    {
+        get => _taggedFile.Tag.Year;
+        set => _taggedFile.Tag.Year = value;
+    }
+
+    public uint TrackNo
+    {
+        get => _taggedFile.Tag.Track;
+        set => _taggedFile.Tag.Track = value;
+    }
+
+    public TimeSpan Duration
+    {
+        get => _taggedFile.Properties.Duration;
+    }
+
+    public string[] Genres
+    {
+        get => _taggedFile.Tag.Genres;
+
+        // TODO: Add first genre tag too?
+        set => _taggedFile.Tag.Genres = value?.Select(g => g?.Trim()?.Normalize()
+                                                      ?? string.Empty)?
                                               .ToArray()
-                    ?? Array.Empty<string>();
+                                        ?? Array.Empty<string>();
+    }
 
-            set => _taggedFile.Tag.Performers =
-                        value.Where(a => !string.IsNullOrWhiteSpace(a))
-                             .Select(a => a.Trim().Normalize())
-                             .ToArray();
-        }
+    public string[] Composers
+    {
+        get => _taggedFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize()
+                                                      ?? string.Empty)?
+                                         .ToArray()
+               ?? Array.Empty<string>();
 
-        public string Album
+        set => _taggedFile.Tag.Composers = value?.Select(g => g?.Trim()?
+                                                                .Normalize())?
+                                                 .ToArray()
+                                           ?? Array.Empty<string>();
+    }
+
+    public string Lyrics
+    {
+        get => _taggedFile.Tag.Lyrics?.Trim()?.Normalize() ?? string.Empty;
+        set => _taggedFile.Tag.Lyrics = value.Trim().Normalize();
+    }
+
+    public string Comments
+    {
+        get => _taggedFile.Tag.Comment?.Trim()?.Normalize() ?? string.Empty;
+        set => _taggedFile.Tag.Comment = value.Trim().Normalize();
+    }
+
+    public string Description
+    {
+        get => _taggedFile.Tag.Description?.Trim()?.Normalize() ?? string.Empty;
+        set => _taggedFile.Tag.Description = value.Trim().Normalize();
+    }
+
+    public int BitRate => _taggedFile.Properties.AudioBitrate;
+
+    public int SampleRate => _taggedFile.Properties.AudioSampleRate;
+
+    public double ReplayGainTrack => _taggedFile.Tag.ReplayGainTrackGain;
+
+    public double ReplayGainAlbum => _taggedFile.Tag.ReplayGainAlbumGain;
+
+    /// <summary>
+    /// Gets text summary of track and album ReplayGain data.
+    /// </summary>
+    public string ReplayGainSummary()
+    {
+        const string noData = "———";
+        var trackGain = double.IsNaN(ReplayGainTrack) ? noData : ReplayGainTrack.ToString();
+        var albumGain = double.IsNaN(ReplayGainAlbum) ? noData : ReplayGainAlbum.ToString();
+        return $"Track: {trackGain}  |  Album: {albumGain}";
+    }
+
+    /// <summary>
+    /// The embedded image for the album, represented as an array of bytes or,
+    /// if none, an empty array.
+    /// </summary>
+    public byte[] AlbumArt
+    {
+        get
         {
-            get => _taggedFile.Tag.Album?.Normalize() ?? string.Empty;
-            set => _taggedFile.Tag.Album = value?.Trim()?.Normalize();
+            var albumData = _taggedFile.Tag?.Pictures;
+
+            return albumData == null || albumData.Length == 0
+                ? Array.Empty<byte>()
+                : _taggedFile.Tag?.Pictures[0]?.Data?.Data
+                  ?? Array.Empty<byte>();
         }
+    }
 
-        public bool LacksArtists => !AlbumArtists.Any() && !Artists.Any();
+    /// <summary>
+    /// Save pending tag data updates to the file.
+    /// </summary>
+    public void SaveUpdates()
+    {
+        _taggedFile.Save();
+    }
 
-        public uint Year
+    /// <summary>
+    /// Given a folder or file path, returns a list of AudioFile for each file.
+    /// Thus, a path to a file will always return a collection of one item,
+    /// and a path to a folder will return an AudioFile for each file within that folder.
+    /// </summary>
+    /// <param name="path">A directory or file path</param>
+    /// <returns>A collection of MediaFile.</returns>
+    public static IReadOnlyCollection<MediaFile> PopulateFileData(string path, bool searchSubDirectories = false)
+    {
+        // If the path is a directory
+        if (System.IO.Directory.Exists(path))
         {
-            get => _taggedFile.Tag.Year;
-            set => _taggedFile.Tag.Year = value;
-        }
+            var mediaFiles = new List<MediaFile>();
 
-        public uint TrackNo
-        {
-            get => _taggedFile.Tag.Track;
-            set => _taggedFile.Tag.Track = value;
-        }
+            var fileNames = System.IO.Directory
+                .EnumerateFiles(path,
+                                "*.*",
+                                searchSubDirectories
+                                    ? System.IO.SearchOption.AllDirectories
+                                    : System.IO.SearchOption.TopDirectoryOnly)
+                .Where(FileSelection.Filter)
+                .ToArray();
 
-        public TimeSpan Duration
-        {
-            get => _taggedFile.Properties.Duration;
-        }
-
-        public string[] Genres
-        {
-            get => _taggedFile.Tag.Genres;
-
-            // TODO: Add first genre tag too?
-            set => _taggedFile.Tag.Genres =
-                        value?.Select(g => g?.Trim()?.Normalize() ?? string.Empty)?
-                            .ToArray()
-                        ?? Array.Empty<string>();
-        }
-
-        public string[] Composers
-        {
-            get => _taggedFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize()
-                                                          ?? string.Empty)?
-                                             .ToArray()
-                   ?? Array.Empty<string>();
-
-            set => _taggedFile.Tag.Composers = value?.Select(g => g?.Trim()?
-                                                                    .Normalize())?
-                                                     .ToArray()
-                                               ?? Array.Empty<string>();
-        }
-
-        public string Lyrics
-        {
-            get => _taggedFile.Tag.Lyrics?.Trim()?.Normalize() ?? string.Empty;
-            set => _taggedFile.Tag.Lyrics = value.Trim().Normalize();
-        }
-
-        public string Comments
-        {
-            get => _taggedFile.Tag.Comment?.Trim()?.Normalize() ?? string.Empty;
-            set => _taggedFile.Tag.Comment = value.Trim().Normalize();
-        }
-
-        public string Description
-        {
-            get => _taggedFile.Tag.Description?.Trim()?.Normalize() ?? string.Empty;
-            set => _taggedFile.Tag.Description = value.Trim().Normalize();
-        }
-
-        public int BitRate => _taggedFile.Properties.AudioBitrate;
-
-        public int SampleRate => _taggedFile.Properties.AudioSampleRate;
-
-        public double ReplayGainTrack => _taggedFile.Tag.ReplayGainTrackGain;
-
-        public double ReplayGainAlbum => _taggedFile.Tag.ReplayGainAlbumGain;
-
-        /// <summary>
-        /// Gets text summary of track and album ReplayGain data.
-        /// </summary>
-        public string ReplayGainSummary()
-        {
-            const string noData = "———";
-            var trackGain = double.IsNaN(ReplayGainTrack) ? noData : ReplayGainTrack.ToString();
-            var albumGain = double.IsNaN(ReplayGainAlbum) ? noData : ReplayGainAlbum.ToString();
-            return $"Track: {trackGain}  |  Album: {albumGain}";
-        }
-
-        /// <summary>
-        /// The embedded image for the album, represented as an array of bytes or,
-        /// if none, an empty array.
-        /// </summary>
-        public byte[] AlbumArt
-        {
-           get
-           {
-                var albumData = _taggedFile.Tag?.Pictures;
-
-                return albumData == null || albumData.Length == 0
-                    ? Array.Empty<byte>()
-                    : _taggedFile.Tag?.Pictures[0]?.Data?.Data
-                      ?? Array.Empty<byte>();
-           }
-        }
-
-        /// <summary>
-        /// Save pending tag data updates to the file.
-        /// </summary>
-        public void SaveUpdates()
-        {
-            _taggedFile.Save();
-        }
-
-        /// <summary>
-        /// Given a folder or file path, returns a list of AudioFile for each file.
-        /// Thus, a path to a file will always return a collection of one item,
-        /// and a path to a folder will return an AudioFile for each file within that folder.
-        /// </summary>
-        /// <param name="path">A directory or file path</param>
-        /// <returns>A collection of MediaFile.</returns>
-        public static IReadOnlyCollection<MediaFile> PopulateFileData(string path, bool searchSubDirectories = false)
-        {
-            // If the path is a directory
-            if (System.IO.Directory.Exists(path))
+            foreach (var fileName in fileNames)
             {
-                var mediaFiles = new List<MediaFile>();
-
-                var fileNames = System.IO.Directory.EnumerateFiles(path,
-                                                                   "*.*",
-                                                                   searchSubDirectories
-                                                                        ? System.IO.SearchOption.AllDirectories
-                                                                        : System.IO.SearchOption.TopDirectoryOnly)
-                                                   .Where(FileSelection.Filter)
-                                                   .ToArray();
-
-                foreach (var fileName in fileNames)
+                try
                 {
-                    try
-                    {
-                        mediaFiles.Add(MediaFileFactory.CreateFileData(fileName));
-                    }
-                    catch (Exception) { }
+                    mediaFiles.Add(MediaFileFactory.CreateFileData(fileName));
                 }
-
-                return mediaFiles.OrderBy(f => f.Path)
-                                 .AsEnumerable()
-                                 .ToList();
+                catch (Exception) { }
             }
 
-            // If the path is a file
-            if (System.IO.File.Exists(path))
-            {
-                return new List<MediaFile> { MediaFileFactory.CreateFileData(path) };
-            }
-
-            throw new InvalidOperationException($"The path \"{path}\" was invalid.");
+            return mediaFiles.OrderBy(f => f.Path)
+                                .AsEnumerable()
+                                .ToList();
         }
+
+        // If the path is a file
+        if (System.IO.File.Exists(path))
+        {
+            return new List<MediaFile> { MediaFileFactory.CreateFileData(path) };
+        }
+
+        throw new InvalidOperationException($"The path \"{path}\" was invalid.");
     }
 }
