@@ -22,6 +22,7 @@ public class TagDuplicateFinder : IPathOperation
 
         var duplicateGroups = mediaFiles
             .ToLookup(m => ConcatenateArtists(m.Artists) + RemoveUnneededText(m.Title))
+            .ToLookup(m => ConcatenateArtists(m.Artists) + RemoveUnneededText(m.Title))
             .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
             .OrderBy(m => m.Key)
             .ToImmutableArray();
@@ -49,10 +50,21 @@ public class TagDuplicateFinder : IPathOperation
     }
 
     private static string RemoveUnneededText(string title)
+    private static string RemoveUnneededText(string title)
     {
         var empty = string.Empty;
 
+        var empty = string.Empty;
+
         return title
+            .Replace("Short Version", empty)
+            .Replace("Short Ver.", empty)
+            .Replace("Short Ver", empty)
+            .Replace("Short Ver", empty)
+            .Replace("TV Version", empty)
+            .Replace("TV Ver", empty)
+            .Replace("()", empty)
+            .Replace("（）", empty)
             .Replace("Short Version", empty)
             .Replace("Short Ver.", empty)
             .Replace("Short Ver", empty)
