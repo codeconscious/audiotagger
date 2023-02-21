@@ -15,13 +15,13 @@ public class TagDuplicateFinder : IPathOperation
             return;
         }
 
-        printer.Print("Checking for duplicates (by artist(s) and title)...");
+        printer.Print("Checking for duplicates by artist(s) and title...");
 
         var stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
 
         var duplicateGroups = mediaFiles
-            .ToLookup(m => ConcatenateArtists(m.Artists) + m.Title.Trim())
+            .ToLookup(m => ConcatenateArtists(m.Artists) + RemoveUnneededText(m.Title))
             .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
             .OrderBy(m => m.Key)
             .ToImmutableArray();
@@ -39,12 +39,29 @@ public class TagDuplicateFinder : IPathOperation
 
     private static string ConcatenateArtists(IEnumerable<string> artists)
     {
-        return Regex.Replace(
-            string.Concat(artists)
-                    .ToLowerInvariant()
-                    .Trim(),
-            "^the",
-            "");
+        return
+            Regex.Replace(
+                string.Concat(artists)
+                      .ToLowerInvariant()
+                      .Trim(),
+                "^the",
+                "");
+    }
+
+    private static string RemoveUnneededText(string title)
+    {
+        var empty = string.Empty;
+
+        return title
+            .Replace("Short Version", empty)
+            .Replace("Short Ver.", empty)
+            .Replace("Short Ver", empty)
+            .Replace("TV Version", empty)
+            .Replace("TV Ver.", empty)
+            .Replace("TV Ver", empty)
+            .Replace("()", empty)
+            .Replace("（）", empty)
+            .Trim();
     }
 
     private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
