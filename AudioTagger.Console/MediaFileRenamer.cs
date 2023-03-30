@@ -1,13 +1,13 @@
-﻿using Spectre.Console;
+using Spectre.Console;
 
 namespace AudioTagger.Console;
 
 public sealed class MediaFileRenamer : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                      DirectoryInfo workingDirectory,
-                      IRegexCollection regexCollection,
-                      IPrinter printer)
+                        DirectoryInfo workingDirectory,
+                        IRegexCollection regexCollection,
+                        IPrinter printer)
     {
         if (!ConfirmContinue(workingDirectory, printer))
         {
@@ -60,7 +60,7 @@ public sealed class MediaFileRenamer : IPathOperation
                 if (isCancelRequested)
                     break;
 
-                var useRootPath = artistCounts[string.Concat(file.Artists)] == 1;
+                var useRootPath = artistCounts[GetConcatenatedArtists(file)] == 1;
 
                 isCancelRequested = RenameSingleFile(
                     file, printer, workingDirectory.FullName, useRootPath, ref doConfirm);
@@ -70,6 +70,12 @@ public sealed class MediaFileRenamer : IPathOperation
                 printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
                 printer.PrintException(e);
                 errors.Add(e.Message); // The message should contain the file name.
+            }
+            catch (KeyNotFoundException e)
+            {
+                printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
+                printer.PrintException(e);
+                errors.Add(e.Message);
             }
         }
 
@@ -89,9 +95,9 @@ public sealed class MediaFileRenamer : IPathOperation
 
     private static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
     {
-        return mediaFiles.GroupBy(n => string.Concat(n.Artists))
-                         .ToDictionary(g => g.Key,
-                                       g => g.Count());
+        return mediaFiles.GroupBy(n => GetConcatenatedArtists(n))
+            .ToDictionary(g => g.Key,
+                            g => g.Count());
     }
 
     /// <summary>
@@ -100,10 +106,10 @@ public sealed class MediaFileRenamer : IPathOperation
     /// </summary>
     /// <returns>A bool indicated whether the user cancelled the operation or not.</returns>
     private static bool RenameSingleFile(MediaFile file,
-                                         IPrinter printer,
-                                         string workingPath,
-                                         bool keepInRootFolder,
-                                         ref bool doConfirm)
+                                            IPrinter printer,
+                                            string workingPath,
+                                            bool keepInRootFolder,
+                                            ref bool doConfirm)
     {
         ArgumentNullException.ThrowIfNull(file);
 
@@ -285,5 +291,18 @@ public sealed class MediaFileRenamer : IPathOperation
             foreach (var dir in deletedDirectories)
                 printer.Print("- " + dir);
         }
+    }
+
+    /// <summary>
+    /// Reads the album artists, if any, or else the artists of a file
+    /// and returns them in an unformatted, concatenated string.
+    /// </summary>
+    private static string GetConcatenatedArtists(MediaFile file)
+    {
+        // TODO: What if both fields are empty?
+        return string.Concat(
+            file.AlbumArtists.Any()
+                ? file.AlbumArtists
+                : file.Artists);
     }
 }
