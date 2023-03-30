@@ -53,6 +53,9 @@ public class TagDuplicateFinder : IPathOperation
         var empty = string.Empty;
 
         return title
+            .Replace("Album Version", empty)
+            .Replace("Album Ver.", empty)
+            .Replace("Album Ver", empty)
             .Replace("Short Version", empty)
             .Replace("Short Ver.", empty)
             .Replace("Short Ver", empty)

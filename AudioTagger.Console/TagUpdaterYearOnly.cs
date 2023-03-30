@@ -4,154 +4,153 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Spectre.Console;
 
-namespace AudioTagger.Console
+namespace AudioTagger.Console;
+
+public class TagUpdaterYearOnly : IPathOperation
 {
-    public class TagUpdaterYearOnly : IPathOperation
+    public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
+                      DirectoryInfo workingDirectory,
+                      IRegexCollection regexCollection,
+                      IPrinter printer)
     {
-        public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                          DirectoryInfo workingDirectory,
-                          IRegexCollection regexCollection,
-                          IPrinter printer)
+        var isCancelled = false;
+        var doConfirm = true;
+        var errorFiles = new List<string>();
+
+        // Process each file
+        foreach (var mediaFile in mediaFiles)
         {
-            var isCancelled = false;
-            var doConfirm = true;
-            var errorFiles = new List<string>();
-
-            // Process each file
-            foreach (var mediaFile in mediaFiles)
+            try
             {
-                try
-                {
-                    isCancelled = UpdateTags(mediaFile, printer, ref doConfirm);
+                isCancelled = UpdateTags(mediaFile, printer, ref doConfirm);
 
-                    if (isCancelled)
-                        break;
-                }
-                catch (Exception ex)
-                {
-                    printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
-                    //printer.PrintException(ex);
-                    errorFiles.Add(mediaFile.FileNameOnly);
-                    continue;
-                }
+                if (isCancelled)
+                    break;
             }
-
-            if (errorFiles.Any())
+            catch (Exception ex)
             {
-                printer.Print("Files with errors:");
-                errorFiles.ForEach(f => printer.Print("- " + f));
+                printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
+                //printer.PrintException(ex);
+                errorFiles.Add(mediaFile.FileNameOnly);
+                continue;
             }
         }
 
-        /// <summary>
-        /// Make proposed tag updates to the specified file if the user agrees.
-        /// </summary>
-        /// <returns>A bool indicating whether the following file should be processed.</returns>
-        private static bool UpdateTags(MediaFile mediaFile, IPrinter printer, ref bool doConfirm)
+        if (errorFiles.Any())
         {
-            // TODO: Refactor cancellation so this isn't needed.
-            const bool shouldCancel = false;
-            const string updateType = "year";
+            printer.Print("Files with errors:");
+            errorFiles.ForEach(f => printer.Print("- " + f));
+        }
+    }
 
-            var createdDt = System.IO.File.GetCreationTime(mediaFile.Path);
+    /// <summary>
+    /// Make proposed tag updates to the specified file if the user agrees.
+    /// </summary>
+    /// <returns>A bool indicating whether the following file should be processed.</returns>
+    private static bool UpdateTags(MediaFile mediaFile, IPrinter printer, ref bool doConfirm)
+    {
+        // TODO: Refactor cancellation so this isn't needed.
+        const bool shouldCancel = false;
+        const string updateType = "year";
 
-            var updateableFields = new UpdatableFields(updateType, createdDt.Year);
+        var createdDt = System.IO.File.GetCreationTime(mediaFile.Path);
 
-            var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
+        var updateableFields = new UpdatableFields(updateType, createdDt.Year);
 
-            if (proposedUpdates?.Any() != true)
-            {
-                printer.Print($"No {updateType} updates needed for \"{mediaFile.FileNameOnly}\".",
-                              ResultType.Neutral);
-                return shouldCancel;
-            }
+        var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
-            printer.PrintTagDataToTable(mediaFile, proposedUpdates);
-
-            if (doConfirm)
-            {
-                const string no = "No";
-                const string yes = "Yes";
-                const string yesToAll = "Yes To All";
-                const string cancel = "Cancel";
-
-                var response = AnsiConsole.Prompt(
-                    new SelectionPrompt<string>()
-                        .Title("Apply these updates?")
-                        .AddChoices(new[] { no, yes, yesToAll, cancel }));
-
-                if (response == cancel)
-                {
-                    printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
-                    return true;
-                }
-
-                if (response == no)
-                {
-                    printer.Print("No updates made", ResultType.Neutral, 0, 1);
-                    return shouldCancel;
-                }
-
-                if (response == yesToAll)
-                {
-                    // Avoid asking next time.
-                    doConfirm = false;
-                }
-            }
-
-            // Make the tag updates
-            UpdateFileTags(mediaFile, updateableFields);
-            try
-            {
-                mediaFile.SaveUpdates();
-            }
-            catch (TagLib.CorruptFileException ex)
-            {
-                printer.Error("Saving failed: " + ex.Message);
-                return shouldCancel;
-            }
-
-            //printer.Print("Updates saved", ResultType.Success, 0, 1);
-            AnsiConsole.MarkupLine("[green]Updates saved[/]" + Environment.NewLine);
+        if (proposedUpdates?.Any() != true)
+        {
+            printer.Print($"No {updateType} updates needed for \"{mediaFile.FileNameOnly}\".",
+                          ResultType.Neutral);
             return shouldCancel;
         }
 
-        /// <summary>
-        /// Update file tags where they differ from parsed filename data.
-        /// </summary>
-        /// <param name="fileData"></param>
-        /// <param name="updateableFields"></param>
-        private static void UpdateFileTags(MediaFile fileData, UpdatableFields updateableFields)
+        printer.PrintTagDataToTable(mediaFile, proposedUpdates);
+
+        if (doConfirm)
         {
-            if (updateableFields.Title != null && updateableFields.Title != fileData.Title)
+            const string no = "No";
+            const string yes = "Yes";
+            const string yesToAll = "Yes To All";
+            const string cancel = "Cancel";
+
+            var response = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Apply these updates?")
+                    .AddChoices(new[] { no, yes, yesToAll, cancel }));
+
+            if (response == cancel)
             {
-                fileData.Title = updateableFields.Title;
+                printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
+                return true;
             }
 
-            if (updateableFields.Album != null && updateableFields.Album != fileData.Album)
+            if (response == no)
             {
-                fileData.Album = updateableFields.Album;
+                printer.Print("No updates made", ResultType.Neutral, 0, 1);
+                return shouldCancel;
             }
 
-            if (updateableFields.Artists?.All(a => fileData.Artists.Contains(a)) == false)
+            if (response == yesToAll)
             {
-                fileData.Artists = updateableFields.Artists;
+                // Avoid asking next time.
+                doConfirm = false;
             }
+        }
 
-            if (updateableFields.Year != null && updateableFields.Year != fileData.Year)
-            {
-                fileData.Year = updateableFields.Year.Value;
-            }
+        // Make the tag updates
+        UpdateFileTags(mediaFile, updateableFields);
+        try
+        {
+            mediaFile.SaveUpdates();
+        }
+        catch (TagLib.CorruptFileException ex)
+        {
+            printer.Error("Saving failed: " + ex.Message);
+            return shouldCancel;
+        }
 
-            if (updateableFields.TrackNo != null && updateableFields.TrackNo != fileData.TrackNo)
-            {
-                fileData.TrackNo = updateableFields.TrackNo.Value;
-            }
+        //printer.Print("Updates saved", ResultType.Success, 0, 1);
+        AnsiConsole.MarkupLine("[green]Updates saved[/]" + Environment.NewLine);
+        return shouldCancel;
+    }
 
-            if (updateableFields.Genres?.All(a => fileData.Genres.Contains(a)) == false)
-            {
-                fileData.Genres = updateableFields.Genres;
-            }
+    /// <summary>
+    /// Update file tags where they differ from parsed filename data.
+    /// </summary>
+    /// <param name="fileData"></param>
+    /// <param name="updateableFields"></param>
+    private static void UpdateFileTags(MediaFile fileData, UpdatableFields updateableFields)
+    {
+        if (updateableFields.Title != null && updateableFields.Title != fileData.Title)
+        {
+            fileData.Title = updateableFields.Title;
+        }
+
+        if (updateableFields.Album != null && updateableFields.Album != fileData.Album)
+        {
+            fileData.Album = updateableFields.Album;
+        }
+
+        if (updateableFields.Artists?.All(a => fileData.Artists.Contains(a)) == false)
+        {
+            fileData.Artists = updateableFields.Artists;
+        }
+
+        if (updateableFields.Year != null && updateableFields.Year != fileData.Year)
+        {
+            fileData.Year = updateableFields.Year.Value;
+        }
+
+        if (updateableFields.TrackNo != null && updateableFields.TrackNo != fileData.TrackNo)
+        {
+            fileData.TrackNo = updateableFields.TrackNo.Value;
+        }
+
+        if (updateableFields.Genres?.All(a => fileData.Genres.Contains(a)) == false)
+        {
+            fileData.Genres = updateableFields.Genres;
         }
     }
 }
