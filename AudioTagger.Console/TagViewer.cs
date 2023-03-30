@@ -1,37 +1,36 @@
-﻿namespace AudioTagger.Console
-{
-    public class TagViewer : IPathOperation
-    {
-        public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                          DirectoryInfo workingDirectory,
-                          IRegexCollection regexCollection,
-                          IPrinter printer)
-        {
-            ArgumentNullException.ThrowIfNull(mediaFiles);
+﻿namespace AudioTagger.Console;
 
-            foreach (var mediaFile in mediaFiles)
+public class TagViewer : IPathOperation
+{
+    public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
+                      DirectoryInfo workingDirectory,
+                      IRegexCollection regexCollection,
+                      IPrinter printer)
+    {
+        ArgumentNullException.ThrowIfNull(mediaFiles);
+
+        foreach (var mediaFile in mediaFiles)
+        {
+            try
             {
-                try
-                {
-                    //printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
-                    var viewer = new MediaFileViewer();
-                    viewer.PrintFileDetails(mediaFile);
+                //printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
+                var viewer = new MediaFileViewer();
+                viewer.PrintFileDetails(mediaFile);
 
 #if _WINDOWS
-                    if (mediaFile.AlbumArt.Length > 0)
-                       Graphics.ConsoleWriteImage(mediaFile.AlbumArt);
+                if (mediaFile.AlbumArt.Length > 0)
+                   Graphics.ConsoleWriteImage(mediaFile.AlbumArt);
 #endif
-                }
-                catch (TagLib.CorruptFileException e)
-                {
-                    printer.Error("The file's tag metadata was corrupt: " + e.Message);
-                    continue;
-                }
-                catch (Exception e)
-                {
-                    printer.Error($"An unexpected error occurred with file {mediaFile.FileNameOnly}: " + e.Message);
-                    continue;
-                }
+            }
+            catch (TagLib.CorruptFileException e)
+            {
+                printer.Error("The file's tag metadata was corrupt: " + e.Message);
+                continue;
+            }
+            catch (Exception e)
+            {
+                printer.Error($"An unexpected error occurred with file {mediaFile.FileNameOnly}: " + e.Message);
+                continue;
             }
         }
     }

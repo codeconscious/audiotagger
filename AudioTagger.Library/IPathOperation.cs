@@ -1,12 +1,11 @@
 ﻿using System.IO;
 
-namespace AudioTagger
+namespace AudioTagger;
+
+public interface IPathOperation
 {
-    public interface IPathOperation
-    {
-        public void Start(IReadOnlyCollection<MediaFile> filesData,
-                          DirectoryInfo workingDirectory,
-                          IRegexCollection regexCollection,
-                          IPrinter printer);
-    }
+    public void Start(IReadOnlyCollection<MediaFile> filesData,
+                      DirectoryInfo workingDirectory,
+                      IRegexCollection regexCollection,
+                      IPrinter printer);
 }
