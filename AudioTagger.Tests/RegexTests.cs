@@ -5,485 +5,484 @@ using System.Collections;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace AudioTagger.Tests
+namespace AudioTagger.Tests;
+
+public class RegexTests
 {
-    public class RegexTests
+    public class ParsedItem
     {
-        public class ParsedItem
+        /// <summary>
+        /// The file name from which the other expected values while be parsed, as possible.
+        /// </summary>
+        public string FileName { get; set; }
+
+        #region Expected parsed values
+
+        public string Title { get; set; }
+        public List<string> Artists { get; set; }
+        public string Album { get; set; }
+        public string Disc { get; set; }
+        public string Track { get; set; }
+        public string Year { get; set; }
+        public List<string> Genres { get; set; }
+
+        public ParsedItem(string fileName)
         {
-            /// <summary>
-            /// The file name from which the other expected values while be parsed, as possible.
-            /// </summary>
-            public string FileName { get; set; }
-
-            #region Expected parsed values
-
-            public string Title { get; set; }
-            public List<string> Artists { get; set; }
-            public string Album { get; set; }
-            public string Disc { get; set; }
-            public string Track { get; set; }
-            public string Year { get; set; }
-            public List<string> Genres { get; set; }
-
-            public ParsedItem(string fileName)
-            {
-                FileName = fileName;
-            }
-
-            #endregion
+            FileName = fileName;
         }
 
-        private class TestDataSet : IEnumerable<object[]>
+        #endregion
+    }
+
+    private class TestDataSet : IEnumerable<object[]>
+    {
+        public IEnumerator<object[]> GetEnumerator()
         {
-            public IEnumerator<object[]> GetEnumerator()
+            yield return new object[]
             {
-                yield return new object[]
+                new ParsedItem("吉田拓郎 - 夏休み [1971] {歌謡曲}.mp3")
                 {
-                    new ParsedItem("吉田拓郎 - 夏休み [1971] {歌謡曲}.mp3")
-                    {
-                        Artists = new List<string> { "吉田拓郎" },
-                        Title = "夏休み",
-                        Year = "1971",
-                        Genres = new List<string> { "歌謡曲" }
-                    }
-                };
+                    Artists = new List<string> { "吉田拓郎" },
+                    Title = "夏休み",
+                    Year = "1971",
+                    Genres = new List<string> { "歌謡曲" }
+                }
+            };
 
-                // With disc and track, with genre
-                yield return new object[]
+            // With disc and track, with genre
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Thriller [2005] - 1.2 - Beat It {Pop}.mp4")
                 {
-                    new ParsedItem("Michael Jackson - Thriller [2005] - 1.2 - Beat It {Pop}.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Disc = "1",
-                        Track = "2",
-                        Year = "2005",
-                        Genres = new List<string> { "Pop"}
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Album = "Thriller",
+                    Disc = "1",
+                    Track = "2",
+                    Year = "2005",
+                    Genres = new List<string> { "Pop"}
+                }
+            };
 
-                // Track with no disc, with genre
-                yield return new object[]
+            // Track with no disc, with genre
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Thriller [2005] - 2 - Beat It {Pop}.mp4")
                 {
-                    new ParsedItem("Michael Jackson - Thriller [2005] - 2 - Beat It {Pop}.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Track = "2",
-                        Year = "2005",
-                        Genres = new List<string> { "Pop"}
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Album = "Thriller",
+                    Track = "2",
+                    Year = "2005",
+                    Genres = new List<string> { "Pop"}
+                }
+            };
 
-                // No genre
-                yield return new object[]
+            // No genre
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Thriller [2005] - 2 - Beat It.mp4")
                 {
-                    new ParsedItem("Michael Jackson - Thriller [2005] - 2 - Beat It.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Track = "2",
-                        Year = "2005",
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Album = "Thriller",
+                    Track = "2",
+                    Year = "2005",
+                }
+            };
 
-                yield return new object[]
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Thriller - 2 - Beat It {Pop}.mp4")
                 {
-                    new ParsedItem("Michael Jackson - Thriller - 2 - Beat It {Pop}.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Track = "2",
-                        Genres = new List<string> { "Pop"}
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Album = "Thriller",
+                    Track = "2",
+                    Genres = new List<string> { "Pop"}
+                }
+            };
 
-                yield return new object[]
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Thriller - 2 - Beat It.mp4")
                 {
-                    new ParsedItem("Michael Jackson - Thriller - 2 - Beat It.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Track = "2",
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Album = "Thriller",
+                    Track = "2",
+                }
+            };
 
-                // No track number
-                yield return new object[]
+            // No track number
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Thriller [2005] - Beat It {Pop}.mp4")
                 {
-                    new ParsedItem("Michael Jackson - Thriller [2005] - Beat It {Pop}.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Year = "2005",
-                        Genres = new List<string> { "Pop"}
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Album = "Thriller",
+                    Year = "2005",
+                    Genres = new List<string> { "Pop"}
+                }
+            };
 
-                // No track number or genre
-                yield return new object[]
+            // No track number or genre
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Thriller [2005] - Beat It.mp4")
                 {
-                    new ParsedItem("Michael Jackson - Thriller [2005] - Beat It.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Year = "2005",
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Album = "Thriller",
+                    Year = "2005",
+                }
+            };
 
-                // No year or track number
-                yield return new object[]
+            // No year or track number
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Thriller - Beat It {Pop}.mp4")
                 {
-                    new ParsedItem("Michael Jackson - Thriller - Beat It {Pop}.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Album = "Thriller",
-                        Genres = new List<string> { "Pop"}
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Album = "Thriller",
+                    Genres = new List<string> { "Pop"}
+                }
+            };
 
-                yield return new object[]
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Beat It [2005] {Pop}.mp4")
                 {
-                    new ParsedItem("Michael Jackson - Beat It [2005] {Pop}.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Year = "2005",
-                        Genres = new List<string> { "Pop"}
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Year = "2005",
+                    Genres = new List<string> { "Pop"}
+                }
+            };
 
-                yield return new object[]
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Beat It {Pop}.flac")
                 {
-                    new ParsedItem("Michael Jackson - Beat It {Pop}.flac")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Genres = new List<string> { "Pop"}
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Genres = new List<string> { "Pop"}
+                }
+            };
 
-                yield return new object[]
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Beat It [2005].mp4")
                 {
-                    new ParsedItem("Michael Jackson - Beat It [2005].mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" },
-                        Year = "2005"
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" },
+                    Year = "2005"
+                }
+            };
 
-                yield return new object[]
+            yield return new object[]
+            {
+                new ParsedItem("Michael Jackson - Beat It.mp4")
                 {
-                    new ParsedItem("Michael Jackson - Beat It.mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" }
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" }
+                }
+            };
 
-                // Extra spaces
-                yield return new object[]
+            // Extra spaces
+            yield return new object[]
+            {
+                new ParsedItem(" Michael Jackson  -  Beat It .mp4")
                 {
-                    new ParsedItem(" Michael Jackson  -  Beat It .mp4")
-                    {
-                        Title = "Beat It",
-                        Artists = new List<string> { "Michael Jackson" }
-                    }
-                };
+                    Title = "Beat It",
+                    Artists = new List<string> { "Michael Jackson" }
+                }
+            };
 
-                yield return new object[]
+            yield return new object[]
+            {
+                new ParsedItem("Beat It [2005] {Pop}.mp4")
                 {
-                    new ParsedItem("Beat It [2005] {Pop}.mp4")
-                    {
-                        Title = "Beat It",
-                        Year = "2005",
-                        Genres = new List<string> { "Pop"}
-                    }
-                };
+                    Title = "Beat It",
+                    Year = "2005",
+                    Genres = new List<string> { "Pop"}
+                }
+            };
 
-                yield return new object[]
+            yield return new object[]
+            {
+                new ParsedItem("Beat It [2005].mp4")
                 {
-                    new ParsedItem("Beat It [2005].mp4")
-                    {
-                        Title = "Beat It",
-                        Year = "2005",
-                    }
-                };
+                    Title = "Beat It",
+                    Year = "2005",
+                }
+            };
 
-                yield return new object[]
+            yield return new object[]
+            {
+                new ParsedItem("Beat It {Pop}.mp4")
                 {
-                    new ParsedItem("Beat It {Pop}.mp4")
-                    {
-                        Title = "Beat It",
-                        Genres = new List<string> { "Pop"}
-                    }
-                };
+                    Title = "Beat It",
+                    Genres = new List<string> { "Pop"}
+                }
+            };
 
-                yield return new object[]
+            yield return new object[]
+            {
+                 new ParsedItem("Beat It.mp4")
+                 {
+                     Title = "Beat It",
+                 }
+            };
+
+            yield return new object[]
+            {
+                 new ParsedItem("82.99 F.M.mp3")
+                 {
+                     Title = "82.99 F.M",
+                 }
+            };
+
+            yield return new object[]
+            {
+                 new ParsedItem("吉田拓郎 - 夏休み [1971] {歌謡曲}.mp3")
+                 {
+                     Artists = new List<string> { "吉田拓郎" },
+                     Title = "夏休み",
+                     Year = "1971",
+                     Genres = new List<string> { "歌謡曲" }
+                 }
+            };
+
+            yield return new object[]
+            {
+                 new ParsedItem("五木ひろし with 木の実ナナ - 居酒屋.ogg")
+                 {
+                     Artists = new List<string> { "五木ひろし with 木の実ナナ" },
+                     Title = "居酒屋"
+                 }
+            };
+
+            yield return new object[]
+            {
+                 new ParsedItem("Official髭男dism - I LOVE... [2020] {J-Pop}.mp3")
+                 {
+                     Artists = new List<string> { "Official髭男dism" },
+                     Title = "I LOVE...",
+                     Year = "2020",
+                     Genres = new List<string> { "J-Pop" }
+                 }
+            };
+
+            // Album first, various artists, no genres
+            yield return new object[]
+            {
+                new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart.mp3")
                 {
-                     new ParsedItem("Beat It.mp4")
-                     {
-                         Title = "Beat It",
-                     }
-                };
+                    Album = "Compilation of Jamz",
+                    Artists = new List<string> { "Ororo Munroe" },
+                    Title = "Storms of My Heart",
+                    Year = "2022"
+                }
+            };
 
-                yield return new object[]
+            // Album first, various artists, with genres
+            yield return new object[]
+            {
+                new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart {World}.mp3")
                 {
-                     new ParsedItem("82.99 F.M.mp3")
-                     {
-                         Title = "82.99 F.M",
-                     }
-                };
+                    Album = "Compilation of Jamz",
+                    Artists = new List<string> { "Ororo Munroe" },
+                    Title = "Storms of My Heart",
+                    Year = "2022",
+                    Genres = new List<string> { "World" }
+                }
+            };
 
-                yield return new object[]
+            // Album first, various artists, no year, superfluous track number
+            yield return new object[]
+            {
+                new ParsedItem("最強の名曲集 = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
                 {
-                     new ParsedItem("吉田拓郎 - 夏休み [1971] {歌謡曲}.mp3")
-                     {
-                         Artists = new List<string> { "吉田拓郎" },
-                         Title = "夏休み",
-                         Year = "1971",
-                         Genres = new List<string> { "歌謡曲" }
-                     }
-                };
+                    Album = "最強の名曲集",
+                    Artists = new List<string> { "坂本龍馬" },
+                    Title = "南方仁のとの会話",
+                    Track = "20"
+                }
+            };
 
-                yield return new object[]
+            // Album first, various artists, with year, superfluous track number
+            yield return new object[]
+            {
+                new ParsedItem("最強の名曲集 [2022] = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
                 {
-                     new ParsedItem("五木ひろし with 木の実ナナ - 居酒屋.ogg")
-                     {
-                         Artists = new List<string> { "五木ひろし with 木の実ナナ" },
-                         Title = "居酒屋"
-                     }
-                };
+                    Album = "最強の名曲集",
+                    Artists = new List<string> { "坂本龍馬" },
+                    Title = "南方仁のとの会話",
+                    Year = "2022",
+                    Track = "20"
+                }
+            };
 
-                yield return new object[]
-                {
-                     new ParsedItem("Official髭男dism - I LOVE... [2020] {J-Pop}.mp3")
-                     {
-                         Artists = new List<string> { "Official髭男dism" },
-                         Title = "I LOVE...",
-                         Year = "2020",
-                         Genres = new List<string> { "J-Pop" }
-                     }
-                };
+            // Test accented characters
+            yield return new object[]
+            {
+                 new ParsedItem("Scott Summers - Size X Jeans - Eyé On You.mp3")
+                 {
+                     Artists = new List<string> { "Scott Summers" },
+                     Album = "Size X Jeans",
+                     Title = "Eyé On You"
+                 }
+            };
 
-                // Album first, various artists, no genres
-                yield return new object[]
-                {
-                    new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart.mp3")
-                    {
-                        Album = "Compilation of Jamz",
-                        Artists = new List<string> { "Ororo Munroe" },
-                        Title = "Storms of My Heart",
-                        Year = "2022"
-                    }
-                };
+            // Contains "ft."
+            yield return new object[]
+            {
+                 new ParsedItem("Natalia Lafourcade - Tú Me Acostumbraste ft. Omara Portuondo (En Manos de Los Macorinos) (Cover).mp3")
+                 {
+                     Artists = new List<string> { "Natalia Lafourcade" },
+                     Title = "Tú Me Acostumbraste ft. Omara Portuondo (En Manos de Los Macorinos) (Cover)",
+                 }
+            };
 
-                // Album first, various artists, with genres
-                yield return new object[]
-                {
-                    new ParsedItem("Compilation of Jamz [2022] = Ororo Munroe - Storms of My Heart {World}.mp3")
-                    {
-                        Album = "Compilation of Jamz",
-                        Artists = new List<string> { "Ororo Munroe" },
-                        Title = "Storms of My Heart",
-                        Year = "2022",
-                        Genres = new List<string> { "World" }
-                    }
-                };
+            // Album-based
+            yield return new object[]
+            {
+                 new ParsedItem("Rinsyoe Kida, Akira Ishikawa - Tsugaru Jongara Bushi: Drum & Tsugaru Jamisen [1973] - 01 - 津軽じょんがら節.mp3")
+                 {
+                     Artists = new List<string> { "Rinsyoe Kida, Akira Ishikawa" },
+                     Album = "Tsugaru Jongara Bushi: Drum & Tsugaru Jamisen",
+                     Title = "津軽じょんがら節",
+                     Track = "1",
+                     Year = "1973",
+                 }
+            };
 
-                // Album first, various artists, no year, superfluous track number
-                yield return new object[]
-                {
-                    new ParsedItem("最強の名曲集 = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
-                    {
-                        Album = "最強の名曲集",
-                        Artists = new List<string> { "坂本龍馬" },
-                        Title = "南方仁のとの会話",
-                        Track = "20"
-                    }
-                };
+            // "S.O.S." parsing issues
+            yield return new object[]
+            {
+                 new ParsedItem("Arbitrarious - S.O.S. (@地球) [1865] {International}.mp3")
+                 {
+                     Artists = new List<string> { "Arbitrarious" },
+                     Title = "S.O.S. (@地球)",
+                     Year = "1865",
+                     Genres = new List<string> { "International" }
+                 }
+            };
 
-                // Album first, various artists, with year, superfluous track number
-                yield return new object[]
-                {
-                    new ParsedItem("最強の名曲集 [2022] = 020 20. 坂本龍馬 - 南方仁のとの会話.mp3")
-                    {
-                        Album = "最強の名曲集",
-                        Artists = new List<string> { "坂本龍馬" },
-                        Title = "南方仁のとの会話",
-                        Year = "2022",
-                        Track = "20"
-                    }
-                };
+            // "...WHY" parsing issues
+            yield return new object[]
+            {
+                 new ParsedItem("Paft Dunk - Ongakooz [1756] - 02 - ...WHY.mp3")
+                 {
+                     Artists = new List<string> { "Paft Dunk" },
+                     Album = "Ongakooz",
+                     Title = "...WHY",
+                     Year = "1756",
+                     Track = "2"                     }
+            };
 
-                // Test accented characters
-                yield return new object[]
-                {
-                     new ParsedItem("Scott Summers - Size X Jeans - Eyé On You.mp3")
-                     {
-                         Artists = new List<string> { "Scott Summers" },
-                         Album = "Size X Jeans",
-                         Title = "Eyé On You"
-                     }
-                };
+            // "WHY..." potential parsing issues
+            yield return new object[]
+            {
+                 new ParsedItem("Paft Dunk - Ongakooz [1756] - 02 - WHY....mp3")
+                 {
+                     Artists = new List<string> { "Paft Dunk" },
+                     Album = "Ongakooz",
+                     Title = "WHY...",
+                     Year = "1756",
+                     Track = "2"                     }
+            };
 
-                // Contains "ft."
-                yield return new object[]
-                {
-                     new ParsedItem("Natalia Lafourcade - Tú Me Acostumbraste ft. Omara Portuondo (En Manos de Los Macorinos) (Cover).mp3")
-                     {
-                         Artists = new List<string> { "Natalia Lafourcade" },
-                         Title = "Tú Me Acostumbraste ft. Omara Portuondo (En Manos de Los Macorinos) (Cover)",
-                     }
-                };
+            // "...WHY..." potential parsing issues
+            yield return new object[]
+            {
+                 new ParsedItem("Paft Dunk - Ongakooz [1756] - 02 - ...WHY....mp3")
+                 {
+                     Artists = new List<string> { "Paft Dunk" },
+                     Album = "Ongakooz",
+                     Title = "...WHY...",
+                     Year = "1756",
+                     Track = "2"                     }
+            };
 
-                // Album-based
-                yield return new object[]
-                {
-                     new ParsedItem("Rinsyoe Kida, Akira Ishikawa - Tsugaru Jongara Bushi: Drum & Tsugaru Jamisen [1973] - 01 - 津軽じょんがら節.mp3")
-                     {
-                         Artists = new List<string> { "Rinsyoe Kida, Akira Ishikawa" },
-                         Album = "Tsugaru Jongara Bushi: Drum & Tsugaru Jamisen",
-                         Title = "津軽じょんがら節",
-                         Track = "1",
-                         Year = "1973",
-                     }
-                };
+            yield return new object[]
+            {
+                 new ParsedItem("真剣赫怒 - What's This, Mr.Random [2030].mp3")
+                 {
+                     Artists = new List<string> { "真剣赫怒" },
+                     Title = "What's This, Mr.Random",
+                     Year = "2030"
+                }
+            };
 
-                // "S.O.S." parsing issues
-                yield return new object[]
-                {
-                     new ParsedItem("Arbitrarious - S.O.S. (@地球) [1865] {International}.mp3")
-                     {
-                         Artists = new List<string> { "Arbitrarious" },
-                         Title = "S.O.S. (@地球)",
-                         Year = "1865",
-                         Genres = new List<string> { "International" }
-                     }
-                };
-
-                // "...WHY" parsing issues
-                yield return new object[]
-                {
-                     new ParsedItem("Paft Dunk - Ongakooz [1756] - 02 - ...WHY.mp3")
-                     {
-                         Artists = new List<string> { "Paft Dunk" },
-                         Album = "Ongakooz",
-                         Title = "...WHY",
-                         Year = "1756",
-                         Track = "2"                     }
-                };
-
-                // "WHY..." potential parsing issues
-                yield return new object[]
-                {
-                     new ParsedItem("Paft Dunk - Ongakooz [1756] - 02 - WHY....mp3")
-                     {
-                         Artists = new List<string> { "Paft Dunk" },
-                         Album = "Ongakooz",
-                         Title = "WHY...",
-                         Year = "1756",
-                         Track = "2"                     }
-                };
-
-                // "...WHY..." potential parsing issues
-                yield return new object[]
-                {
-                     new ParsedItem("Paft Dunk - Ongakooz [1756] - 02 - ...WHY....mp3")
-                     {
-                         Artists = new List<string> { "Paft Dunk" },
-                         Album = "Ongakooz",
-                         Title = "...WHY...",
-                         Year = "1756",
-                         Track = "2"                     }
-                };
-
-                yield return new object[]
-                {
-                     new ParsedItem("真剣赫怒 - What's This, Mr.Random [2030].mp3")
-                     {
-                         Artists = new List<string> { "真剣赫怒" },
-                         Title = "What's This, Mr.Random",
-                         Year = "2030"
-                    }
-                };
-
-                yield return new object[]
-                {
-                     new ParsedItem("全世界の生物の魂 - If You... (Remix).mp3")
-                     {
-                         Artists = new List<string> { "全世界の生物の魂" },
-                         Title = "If You... (Remix)",
-                    }
-                };
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            yield return new object[]
+            {
+                 new ParsedItem("全世界の生物の魂 - If You... (Remix).mp3")
+                 {
+                     Artists = new List<string> { "全世界の生物の魂" },
+                     Title = "If You... (Remix)",
+                }
+            };
         }
 
-        [Theory]
-        [ClassData(typeof(TestDataSet))]
-        public void CanParseValidFileNames(ParsedItem expected)
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    [Theory]
+    [ClassData(typeof(TestDataSet))]
+    public void CanParseValidFileNames(ParsedItem expected)
+    {
+        var regexCollection = new RegexCollection("Regexes.txt");
+
+        var match = regexCollection.GetFirstFileMatch(expected.FileName);
+
+        var matchedTags = match.Groups
+                               .OfType<Group>()
+                               .Where(g => g.Success);
+
+        var matchedData = new UpdatableFields(matchedTags);
+
+        Assert.NotNull(matchedData);
+
+        if (expected.Artists?.Any() == true)
         {
-            var regexCollection = new RegexCollection("Regexes.txt");
-
-            var match = regexCollection.GetFirstFileMatch(expected.FileName);
-
-            var matchedTags = match.Groups
-                                   .OfType<Group>()
-                                   .Where(g => g.Success);
-
-            var matchedData = new UpdatableFields(matchedTags);
-
-            Assert.NotNull(matchedData);
-
-            if (expected.Artists?.Any() == true)
+            Assert.Equal(expected.Artists.Count, matchedData.Artists.Length);
+            for (var i = 0; i < expected.Artists.Count; i++)
             {
-                Assert.Equal(expected.Artists.Count, matchedData.Artists.Length);
-                for (var i = 0; i < expected.Artists.Count; i++)
-                {
-                    Assert.Equal(expected.Artists[i], matchedData.Artists[i].Trim());
-                }
+                Assert.Equal(expected.Artists[i], matchedData.Artists[i].Trim());
             }
-            else
+        }
+        else
+        {
+            Assert.Null(matchedData.Artists);
+        }
+
+        // There should always be a title.
+        Assert.Equal(expected.Title, matchedData.Title.Trim());
+
+        // TODO: Add a Disc and Track property to matched data.
+        //Assert.Equal(data.Disc, matchedData.Disc);
+        //Assert.Equal(data.Track, matchedData.Track);
+
+        if (expected.Year != null)
+            Assert.Equal(expected.Year ?? null, matchedData.Year.ToString().Trim());
+        else
+            Assert.Null(matchedData.Year);
+
+        if (expected.Genres?.Any() == true)
+        {
+            Assert.Equal(expected.Genres.Count, matchedData.Genres.Length);
+            for (var i = 0; i < expected.Genres.Count; i++)
             {
-                Assert.Null(matchedData.Artists);
+                Assert.Equal(expected.Genres[i], matchedData.Genres[i].Trim());
             }
-
-            // There should always be a title.
-            Assert.Equal(expected.Title, matchedData.Title.Trim());
-
-            // TODO: Add a Disc and Track property to matched data.
-            //Assert.Equal(data.Disc, matchedData.Disc);
-            //Assert.Equal(data.Track, matchedData.Track);
-
-            if (expected.Year != null)
-                Assert.Equal(expected.Year ?? null, matchedData.Year.ToString().Trim());
-            else
-                Assert.Null(matchedData.Year);
-
-            if (expected.Genres?.Any() == true)
-            {
-                Assert.Equal(expected.Genres.Count, matchedData.Genres.Length);
-                for (var i = 0; i < expected.Genres.Count; i++)
-                {
-                    Assert.Equal(expected.Genres[i], matchedData.Genres[i].Trim());
-                }
-            }
-            else
-            {
-                Assert.Null(matchedData.Genres);
-            }
+        }
+        else
+        {
+            Assert.Null(matchedData.Genres);
         }
     }
 }

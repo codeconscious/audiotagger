@@ -1,25 +1,24 @@
 ﻿using System;
 using System.IO;
 
-namespace AudioTagger
+namespace AudioTagger;
+
+public static class MediaFileFactory
 {
-    public static class MediaFileFactory
+    public static MediaFile CreateFileData(string filePath)
     {
-        public static MediaFile CreateFileData(string filePath)
+        if (string.IsNullOrWhiteSpace(filePath))
         {
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                throw new ArgumentNullException(nameof(filePath));
-            }
-
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException(nameof(filePath));
-            }
-
-            var taggedFile = TagLib.File.Create(filePath);
-
-            return new MediaFile(filePath, taggedFile);
+            throw new ArgumentNullException(nameof(filePath));
         }
+
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException(nameof(filePath));
+        }
+
+        var taggedFile = TagLib.File.Create(filePath);
+
+        return new MediaFile(filePath, taggedFile);
     }
 }

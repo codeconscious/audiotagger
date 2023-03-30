@@ -62,7 +62,7 @@ public class TagUpdaterSingle : IPathOperation
             catch
             {
                 failureCount++;
-                printer.Print($"✖️ UNEXPECTED ERROR: {file.Path}");
+                printer.Print($"❌ UNEXPECTED ERROR: {file.Path}");
             }
         }
 
@@ -198,9 +198,9 @@ public class TagUpdaterSingle : IPathOperation
             var divider = useNewLine ? Environment.NewLine : string.Empty;
             return updateType switch
             {
-                TagUpdateType.Overwrite =>  newValue,
-                TagUpdateType.Prepend =>    newValue + divider + currentValue,
-                _ =>                        currentValue + divider + newValue,
+                TagUpdateType.Overwrite => newValue,
+                TagUpdateType.Prepend =>   newValue + divider + currentValue,
+                _ =>                       currentValue + divider + newValue,
             };
         }
 
@@ -208,9 +208,9 @@ public class TagUpdaterSingle : IPathOperation
         {
             return updateType switch
             {
-                TagUpdateType.Overwrite =>  newValues,
-                TagUpdateType.Prepend =>    newValues.Concat(currentValues).ToArray(),
-                _ =>                        currentValues.Concat(newValues).ToArray()
+                TagUpdateType.Overwrite => newValues,
+                TagUpdateType.Prepend =>   newValues.Concat(currentValues).ToArray(),
+                _ =>                       currentValues.Concat(newValues).ToArray()
             };
         }
     }
