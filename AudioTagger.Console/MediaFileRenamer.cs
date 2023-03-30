@@ -60,7 +60,8 @@ namespace AudioTagger.Console
                     if (isCancelRequested)
                         break;
 
-                    var useRootPath = artistCounts[string.Concat(file.Artists)] == 1;
+                    var concatenatedArtists = string.Concat(file.AlbumArtists.Any() ? file.AlbumArtists : file.Artists);
+                    var useRootPath = artistCounts[concatenatedArtists] == 1;
 
                     isCancelRequested = RenameSingleFile(
                         file, printer, workingDirectory.FullName, useRootPath, ref doConfirm);
@@ -70,6 +71,12 @@ namespace AudioTagger.Console
                     printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
                     printer.PrintException(e);
                     errors.Add(e.Message); // The message should contain the file name.
+                }
+                catch (KeyNotFoundException e)
+                {
+                    printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
+                    printer.PrintException(e);
+                    errors.Add(e.Message); // The
                 }
             }
 
@@ -89,9 +96,13 @@ namespace AudioTagger.Console
 
         private static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
         {
-            return mediaFiles.GroupBy(n => string.Concat(n.Artists))
-                             .ToDictionary(g => g.Key,
-                                           g => g.Count());
+            return mediaFiles.GroupBy(n => {
+                    return n.AlbumArtists.Any()
+                        ? string.Concat(n.AlbumArtists)
+                        : string.Concat(n.Artists);
+                })
+                .ToDictionary(g => g.Key,
+                              g => g.Count());
         }
 
         /// <summary>
