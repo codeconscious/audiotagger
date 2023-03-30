@@ -60,8 +60,7 @@ namespace AudioTagger.Console
                     if (isCancelRequested)
                         break;
 
-                    var concatenatedArtists = string.Concat(file.AlbumArtists.Any() ? file.AlbumArtists : file.Artists);
-                    var useRootPath = artistCounts[concatenatedArtists] == 1;
+                    var useRootPath = artistCounts[GetConcatenatedArtists(file)] == 1;
 
                     isCancelRequested = RenameSingleFile(
                         file, printer, workingDirectory.FullName, useRootPath, ref doConfirm);
@@ -76,7 +75,7 @@ namespace AudioTagger.Console
                 {
                     printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
                     printer.PrintException(e);
-                    errors.Add(e.Message); // The
+                    errors.Add(e.Message);
                 }
             }
 
@@ -96,11 +95,7 @@ namespace AudioTagger.Console
 
         private static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
         {
-            return mediaFiles.GroupBy(n => {
-                    return n.AlbumArtists.Any()
-                        ? string.Concat(n.AlbumArtists)
-                        : string.Concat(n.Artists);
-                })
+            return mediaFiles.GroupBy(n => GetConcatenatedArtists(n))
                 .ToDictionary(g => g.Key,
                               g => g.Count());
         }
@@ -296,6 +291,19 @@ namespace AudioTagger.Console
                 foreach (var dir in deletedDirectories)
                     printer.Print("- " + dir);
             }
+        }
+
+        /// <summary>
+        /// Reads the album artists, if any, or else the artists of a file
+        /// and returns them in an unformatted, concatenated string.
+        /// </summary>
+        private static string GetConcatenatedArtists(MediaFile file)
+        {
+            // TODO: What if both fields are empty?
+            return string.Concat(
+                file.AlbumArtists.Any()
+                    ? file.AlbumArtists
+                    : file.Artists);
         }
     }
 }
