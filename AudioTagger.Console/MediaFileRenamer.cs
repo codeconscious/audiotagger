@@ -5,9 +5,9 @@ namespace AudioTagger.Console;
 public sealed class MediaFileRenamer : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                        DirectoryInfo workingDirectory,
-                        IRegexCollection regexCollection,
-                        IPrinter printer)
+                      DirectoryInfo workingDirectory,
+                      IRegexCollection regexCollection,
+                      IPrinter printer)
     {
         if (!ConfirmContinue(workingDirectory, printer))
         {

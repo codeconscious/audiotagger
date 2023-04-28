@@ -48,6 +48,11 @@ public class TagDuplicateFinder : IPathOperation
                 "");
     }
 
+    /// <summary>
+    /// Remove specified text from a given string.
+    /// </summary>
+    /// <param name="title"></param>
+    /// <returns>A cleaned string.</returns>
     private static string RemoveUnneededText(string title)
     {
         var empty = string.Empty;
@@ -59,11 +64,14 @@ public class TagDuplicateFinder : IPathOperation
             .Replace("Short Version", empty)
             .Replace("Short Ver.", empty)
             .Replace("Short Ver", empty)
+            .Replace("Radio Edit", empty)
             .Replace("TV Version", empty)
             .Replace("TV Ver.", empty)
             .Replace("TV Ver", empty)
             .Replace("()", empty)
             .Replace("（）", empty)
+            .Replace("•", empty)
+            .Replace("・", empty)
             .Trim();
     }
 
