@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Spectre.Console;
 
 namespace AudioTagger.Console;
