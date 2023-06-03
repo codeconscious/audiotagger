@@ -55,15 +55,15 @@ public class FileRenamer : IPathOperation
         var genre = string.Join("; ", fileData.Genres);
 
         if (!string.IsNullOrWhiteSpace(artist))
-            newFileName.Append(artist + " - ");
+            newFileName.Append(artist).Append(" - ");
 
         newFileName.Append(title);
 
         if (!string.IsNullOrWhiteSpace(year))
-            newFileName.Append($" [{year}]");
+            newFileName.Append(" [").Append(year).Append(']');
 
         if (!string.IsNullOrWhiteSpace(genre))
-            newFileName.Append($" {{genre}}");
+            newFileName.Append(" {").Append(genre).Append('}');
 
         printer.Print("Rename file:");
         printer.Print("OLD: " + fileName);
