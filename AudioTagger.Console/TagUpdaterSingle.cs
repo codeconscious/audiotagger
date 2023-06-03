@@ -26,7 +26,7 @@ public class TagUpdaterSingle : IPathOperation
         foreach (var file in mediaFiles)
             printer.Print($"- {file.Path}");
 
-        var tagName = ConfirmTagName();
+        var tagName = ConfirmUpdateTagName();
         var updateType = ConfirmUpdateType(tagName);
         var tagValue = ConfirmTagValue(tagName, updateType);
 
@@ -92,7 +92,11 @@ public class TagUpdaterSingle : IPathOperation
                 .AddChoices(Enum.GetValues(typeof(TagUpdateType)).Cast<TagUpdateType>()));
     }
 
-    private static string ConfirmTagName()
+    /// <summary>
+    /// Asks the user to confirm the tag to update from a given collection.
+    /// </summary>
+    /// <returns>The internal code-side name of the selected tag for technical operations.</returns>
+    private static string ConfirmUpdateTagName()
     {
         // TODO: Refactor with UpdatableFields.cs to DRY things up.
         var dict = new Dictionary<string, string>
@@ -193,9 +197,17 @@ public class TagUpdaterSingle : IPathOperation
 
         mediaFile.SaveUpdates();
 
-        static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType, bool useNewLine)
+        /// <summary>
+        /// Returns the new, updated value for a tag.
+        /// </summary>
+        /// <param name="currentValue">The original value to be modified.</param>
+        /// <param name="newValue">The text to be added.</param>
+        /// <param name="updateType"></param>
+        /// <param name="useNewLine">Whether or not to add line breaks between the new and old text.</param>
+        /// <returns></returns>
+        static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType, bool useNewLines)
         {
-            var divider = useNewLine ? Environment.NewLine : string.Empty;
+            var divider = useNewLines ? Environment.NewLine + Environment.NewLine : string.Empty;
             return updateType switch
             {
                 TagUpdateType.Overwrite => newValue,
