@@ -1,4 +1,4 @@
-# Audiotagger
+# AudioTagger
 
 A .NET 7 CLI program that can perform the following actions on audio files:
 
