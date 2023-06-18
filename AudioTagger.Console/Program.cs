@@ -4,6 +4,7 @@ global using System.Collections.Generic;
 global using System.Collections.Immutable;
 global using System.IO;
 using Spectre.Console;
+using System.Text.Json;
 
 namespace AudioTagger.Console;
 
@@ -19,12 +20,15 @@ public static class Program
             return;
         }
 
+        const string settingsFileName = "settings.json";
+        var settings = ReadSettings(settingsFileName, printer);
+
         var argQueue = new Queue<string>(args.Select(a => a.Trim()));
 
         // Select the desired operation using the first variable.
         IPathOperation? operation = OperationFactory(argQueue.Dequeue());
 
-        const string regexPath = "../AudioTagger.Library/Regexes.txt";
+        const string regexPath = "../AudioTagger.Library/Regexes.txt"; // TODO: Move to settings.
         RegexCollection regexCollection;
         try
         {
@@ -79,9 +83,11 @@ public static class Program
 
             printer.Print($"Found {filesData.Count:#,##0} files in {elapsedMs:#,##0}ms.");
 
-            var directoryInfo = new DirectoryInfo(path);
-
-            operation.Start(filesData, directoryInfo, regexCollection, printer);
+            operation.Start(filesData,
+                            new DirectoryInfo(path),
+                            regexCollection,
+                            printer,
+                            settings);
         }
     }
 
@@ -93,6 +99,21 @@ public static class Program
     private static IPathOperation? OperationFactory(string modeArg)
     {
         return OperationLibrary.GetPathOperation(modeArg);
+    }
+
+    private static Settings? ReadSettings(string fileName, IPrinter printer)
+    {
+        try
+        {
+            var text = File.ReadAllText(fileName);
+            return JsonSerializer.Deserialize<Settings>(text);
+        }
+        catch (Exception ex)
+        {
+            printer.PrintException(ex);
+            printer.Print("Continuing with no settings found.", appendLines: 1);
+            return null;
+        }
     }
 
     private static void PrintInstructions(IPrinter printer)

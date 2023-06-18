@@ -7,7 +7,8 @@ public sealed class MediaFileRenamer : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IRegexCollection regexCollection,
-                      IPrinter printer)
+                      IPrinter printer,
+                      Settings? settings = null)
     {
         if (!ConfirmContinue(workingDirectory, printer))
         {

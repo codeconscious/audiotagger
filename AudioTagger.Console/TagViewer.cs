@@ -5,7 +5,8 @@ public class TagViewer : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IRegexCollection regexCollection,
-                      IPrinter printer)
+                      IPrinter printer,
+                      Settings? settings = null)
     {
         ArgumentNullException.ThrowIfNull(mediaFiles);
 

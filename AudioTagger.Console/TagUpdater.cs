@@ -8,7 +8,8 @@ public class TagUpdater : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IRegexCollection regexCollection,
-                      IPrinter printer)
+                      IPrinter printer,
+                      Settings? settings = null)
     {
         var cancelRequested = false;
         var doConfirm = true;

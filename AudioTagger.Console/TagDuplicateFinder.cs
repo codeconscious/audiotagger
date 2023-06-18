@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace AudioTagger.Console;
 
@@ -7,7 +8,8 @@ public class TagDuplicateFinder : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IRegexCollection regexCollection,
-                      IPrinter printer)
+                      IPrinter printer,
+                      Settings? settings = null)
     {
         if (!mediaFiles.Any())
         {
@@ -15,13 +17,18 @@ public class TagDuplicateFinder : IPathOperation
             return;
         }
 
+        var titleReplacements = settings?.Duplicates?.TitleReplacements ??
+                                ImmutableList<string>.Empty;
+        printer.Print($"Found {titleReplacements.Count} replacement term(s).");
+
         printer.Print("Checking for duplicates by artist(s) and title...");
 
         var stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
 
         var duplicateGroups = mediaFiles
-            .ToLookup(m => ConcatenateArtists(m.Artists) + RemoveUnneededText(m.Title))
+            .ToLookup(m => ConcatenateArtists(m.Artists) +
+                           RemoveUnneededText(m.Title, titleReplacements))
             .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
             .OrderBy(m => m.Key)
             .ToImmutableArray();
@@ -52,27 +59,19 @@ public class TagDuplicateFinder : IPathOperation
     /// Remove specified text from a given string.
     /// </summary>
     /// <param name="title"></param>
-    /// <returns>A cleaned string.</returns>
-    private static string RemoveUnneededText(string title)
+    /// <returns>The modified string.</returns>
+    private static string RemoveUnneededText(string title, ImmutableList<string> terms)
     {
-        var empty = string.Empty;
-
-        return title
-            .Replace("Album Version", empty)
-            .Replace("Album Ver.", empty)
-            .Replace("Album Ver", empty)
-            .Replace("Short Version", empty)
-            .Replace("Short Ver.", empty)
-            .Replace("Short Ver", empty)
-            .Replace("Radio Edit", empty)
-            .Replace("TV Version", empty)
-            .Replace("TV Ver.", empty)
-            .Replace("TV Ver", empty)
-            .Replace("()", empty)
-            .Replace("（）", empty)
-            .Replace("•", empty)
-            .Replace("・", empty)
-            .Trim();
+        return terms switch
+        {
+            null => title,
+            { Count: 0 } => title,
+            _ => terms.ToList()
+                      .Aggregate(
+                          new StringBuilder(title),
+                          (sb, term) => sb.Replace(term, string.Empty),
+                          sb => sb.ToString().Trim())
+        };
     }
 
     private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
