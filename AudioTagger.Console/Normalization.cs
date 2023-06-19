@@ -9,7 +9,6 @@ public class Normalization : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IRegexCollection regexCollection,
                       IPrinter printer,
                       Settings? settings = null)
     {
@@ -19,7 +18,7 @@ public class Normalization : IPathOperation
             return;
         }
 
-        printer.Print($"Found {mediaFiles.Count} files for normalization.");
+        printer.Print($"Found {mediaFiles.Count} file(s) for normalization.");
 
         foreach (var file in mediaFiles)
         {

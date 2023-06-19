@@ -7,7 +7,6 @@ public class TagUpdater : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IRegexCollection regexCollection,
                       IPrinter printer,
                       Settings? settings = null)
     {
@@ -15,7 +14,15 @@ public class TagUpdater : IPathOperation
         var doConfirm = true;
         var errorFiles = new List<string>();
 
-        // Process each file
+        var regexes = settings?.Tagging?.RegexPatterns;
+        if (regexes?.Any() != true)
+        {
+            printer.Print("No regexes were found! Cannot continue.", fgColor: ConsoleColor.Red);
+            return;
+        }
+        var regexCollection = new RegexCollection(regexes);
+        printer.Print($"Found {regexCollection.Patterns.Count} regex expression(s).");
+
         foreach (var mediaFile in mediaFiles)
         {
             try

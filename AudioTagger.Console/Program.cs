@@ -28,19 +28,6 @@ public static class Program
         // Select the desired operation using the first variable.
         IPathOperation? operation = OperationFactory(argQueue.Dequeue());
 
-        const string regexPath = "../AudioTagger.Library/Regexes.txt"; // TODO: Move to settings.
-        RegexCollection regexCollection;
-        try
-        {
-            regexCollection = new RegexCollection(regexPath);
-            printer.Print($"Found {regexCollection.Patterns.Count} regex(es).");
-        }
-        catch (FileNotFoundException)
-        {
-            printer.Error($"The file {regexPath} must exist.");
-            return;
-        }
-
         if (operation == null)
         {
             PrintInstructions(printer);
@@ -85,7 +72,6 @@ public static class Program
 
             operation.Start(filesData,
                             new DirectoryInfo(path),
-                            regexCollection,
                             printer,
                             settings);
         }
