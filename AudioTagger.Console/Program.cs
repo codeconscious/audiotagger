@@ -99,6 +99,12 @@ public static class Program
             printer.Print("Continuing with no settings since `settings.json` was not found. (See the readme file for more.)", appendLines: 1);
             return null;
         }
+        catch (JsonException ex)
+        {
+            printer.Print($"The settings file is invalid: {ex.Message}");
+            printer.Print("Continuing with settings...", appendLines: 1);
+            return null;
+        }
     }
 
     private static void PrintInstructions(IPrinter printer)
