@@ -94,10 +94,9 @@ public static class Program
             var text = File.ReadAllText(fileName);
             return JsonSerializer.Deserialize<Settings>(text);
         }
-        catch (Exception ex)
+        catch (FileNotFoundException)
         {
-            printer.PrintException(ex);
-            printer.Print("Continuing with no settings found.", appendLines: 1);
+            printer.Print("Continuing with no settings since `settings.json` was not found. (See the readme file for more.)", appendLines: 1);
             return null;
         }
     }
