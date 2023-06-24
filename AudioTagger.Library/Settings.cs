@@ -8,7 +8,10 @@ public record Settings
     public Duplicates Duplicates { get; set; } = new();
 
     [JsonPropertyName("tagging")]
-    public Tagging Tagging { get; set; } = new();
+    public Tagging? Tagging { get; set; }
+
+    [JsonPropertyName("renamePatterns")]
+    public ImmutableList<string>? RenamePatterns { get; set; }
 }
 
 public record Duplicates
