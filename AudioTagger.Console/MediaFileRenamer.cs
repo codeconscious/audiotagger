@@ -109,7 +109,7 @@ public sealed class MediaFileRenamer : IPathOperation
     }
 
     /// <summary>
-    /// Renames a single file based upon its tags. The filename format is set manually.
+    /// Renames a single file based upon its tags and specified rename patterns.
     /// </summary>
     /// <returns>A bool indicated whether the user cancelled the operation or not.</returns>
     private static bool RenameSingleFile(MediaFile file,
@@ -124,22 +124,18 @@ public sealed class MediaFileRenamer : IPathOperation
         // TODO: Refactor cancellation so this isn't needed.
         const bool shouldCancel = false;
 
-        // printer.Print($"• FILENAME: {file.FileNameOnly} (with {renamePatterns.Count()} patterns)");
-
         ImmutableList<string> fileTagNames = file.PopulatedTagNames();
 
         string? matchedRenamePattern = null;
         var regex = new Regex(@"(?<=%)\w+(?=%)");
-        foreach (var pattern in renamePatterns) // NOT REGEXES!
+        foreach (var renamePattern in renamePatterns)
         {
-            var matches = regex.Matches(pattern);
+            var matches = regex.Matches(renamePattern);
             var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
-
             if (expectedTags.Count == fileTagNames.Count &&
                 expectedTags.All(expectedTag => fileTagNames.Contains(expectedTag!)))
             {
-                // printer.Print("Match found!");
-                matchedRenamePattern = pattern;
+                matchedRenamePattern = renamePattern;
             }
         }
 
@@ -149,17 +145,12 @@ public sealed class MediaFileRenamer : IPathOperation
                           fgColor: ConsoleColor.Red);
             return false;
         }
-        // printer.Print($"Matched rename pattern: {matchedRenamePattern}");
 
         var newFileName = GenerateNewFileName(file, fileTagNames, matchedRenamePattern);
-        // printer.Print($"New filename is: {newFileName}");
-
         var newFolderName = keepInRootFolder ? string.Empty : GenerateSafeDirectoryName(file);
         var fullFolderPath = Path.Combine(workingPath, newFolderName);
         var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
         var proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
-        // printer.Print("> " + previousFolderFileName); // For debug use
-        // printer.Print("> " + proposedFolderFileName); // For debug use
 
         if (previousFolderFileName == proposedFolderFileName)
         {
@@ -221,7 +212,13 @@ public sealed class MediaFileRenamer : IPathOperation
 
         return shouldCancel;
 
-
+        /// <summary>
+        /// Generated an updated filename using the given rename pattern and tag names.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="fileTagNames"></param>
+        /// <param name="renamePattern"></param>
+        /// <returns></returns>
         static string GenerateNewFileName(MediaFile file, ICollection<string> fileTagNames, string renamePattern)
         {
             var newBaseFileName =
