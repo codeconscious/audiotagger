@@ -21,6 +21,7 @@ public static class Program
         }
 
         const string settingsFileName = "settings.json";
+        if (!EnsureSettingsFileExists(settingsFileName, printer)) return;
         var settings = ReadSettings(settingsFileName, printer);
 
         var argQueue = new Queue<string>(args.Select(a => a.Trim()));
@@ -102,8 +103,27 @@ public static class Program
         catch (JsonException ex)
         {
             printer.Print($"The settings file is invalid: {ex.Message}");
-            printer.Print("Continuing with settings...", appendLines: 1);
+            printer.Print("Continuing without settings...", appendLines: 1);
             return null;
+        }
+    }
+
+    private static bool EnsureSettingsFileExists(string fileName, IPrinter printer)
+    {
+        if (File.Exists(fileName))
+            return true;
+
+        try
+        {
+            var json = JsonSerializer.Serialize(new Settings());
+            File.WriteAllText(fileName, json);
+            printer.Print($"Created empty settings file \"{fileName}\" successfully.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            printer.Print($"There was an error creating \"{fileName}\": {ex.Message}", fgColor: ConsoleColor.Red);
+            return false;
         }
     }
 

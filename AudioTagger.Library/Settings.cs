@@ -5,7 +5,7 @@ namespace AudioTagger;
 public record Settings
 {
     [JsonPropertyName("duplicates")]
-    public Duplicates? Duplicates { get; set; }
+    public Duplicates Duplicates { get; set; } = new();
 
     [JsonPropertyName("tagging")]
     public Tagging? Tagging { get; set; }
