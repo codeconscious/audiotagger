@@ -221,20 +221,6 @@ public sealed class MediaFileRenamer : IPathOperation
 
         return shouldCancel;
 
-        /// <summary>
-        /// Replaces characters that are invalid in file path names with a specified safe character.
-        /// </summary>
-        /// <returns>A corrected string or the original if no changes were needed.</returns>
-        static string EnsurePathSafeString(string input, char replacementChar = '_')
-        {
-            return Path.GetInvalidFileNameChars()
-                       .ToList()
-                       .Aggregate(
-                            new StringBuilder(input),
-                            (workingString, invalidChar) =>
-                                workingString.Replace(invalidChar, replacementChar))
-                       .ToString();
-        }
 
         static string GenerateNewFileName(MediaFile file, ICollection<string> fileTagNames, string renamePattern)
         {
@@ -248,27 +234,27 @@ public sealed class MediaFileRenamer : IPathOperation
                             "ALBUMARTISTS" =>
                                 workingFileName.Replace(
                                     "%ALBUMARTISTS%",
-                                    EnsurePathSafeString(string.Join(" && ", file.AlbumArtists))),
+                                    MediaFile.EnsurePathSafeString(file.AlbumArtists)),
                             "ARTISTS" =>
                                 workingFileName.Replace(
                                     "%ARTISTS%",
-                                    EnsurePathSafeString(string.Join(" && ", file.Artists))),
+                                    MediaFile.EnsurePathSafeString(file.Artists)),
                             "ALBUM" =>
                                 workingFileName.Replace(
                                     "%ALBUM%",
-                                    EnsurePathSafeString(file.Album)),
+                                    MediaFile.EnsurePathSafeString(file.Album)),
                             "TITLE" =>
                                 workingFileName.Replace(
                                     "%TITLE%",
-                                    EnsurePathSafeString(file.Title)),
+                                    MediaFile.EnsurePathSafeString(file.Title)),
                             "YEAR" =>
                                 workingFileName.Replace(
                                     "%YEAR%",
-                                    EnsurePathSafeString(file.Year.ToString())),
+                                    MediaFile.EnsurePathSafeString(file.Year.ToString())),
                             "TRACK" =>
                                 workingFileName.Replace(
                                     "%TRACK%",
-                                    EnsurePathSafeString(file.TrackNo.ToString())),
+                                    MediaFile.EnsurePathSafeString(file.TrackNo.ToString())),
                             _ => throw new InvalidOperationException(""),
                         };
                     }
@@ -283,13 +269,13 @@ public sealed class MediaFileRenamer : IPathOperation
         static string GenerateSafeDirectoryName(MediaFile file)
         {
             if (MediaFile.HasAnyValues(file.AlbumArtists))
-                return EnsurePathSafeString(string.Join(" && ", file.AlbumArtists));
+                return MediaFile.EnsurePathSafeString(file.AlbumArtists);
 
             if (MediaFile.HasAnyValues(file.Artists))
-                return EnsurePathSafeString(string.Join(" && ", file.Artists));
+                return MediaFile.EnsurePathSafeString(file.Artists);
 
             if (!string.IsNullOrWhiteSpace(file.Album))
-                return EnsurePathSafeString(file.Album);
+                return MediaFile.EnsurePathSafeString(file.Album);
 
             return "___UNSPECIFIED___";
         }
