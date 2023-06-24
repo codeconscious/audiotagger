@@ -9,6 +9,9 @@ public record Settings
 
     [JsonPropertyName("tagging")]
     public Tagging? Tagging { get; set; }
+
+    [JsonPropertyName("renamePatterns")]
+    public ImmutableList<string>? RenamePatterns { get; set; }
 }
 
 public record Duplicates

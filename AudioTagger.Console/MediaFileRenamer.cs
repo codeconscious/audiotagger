@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.RegularExpressions;
 using Spectre.Console;
 
 namespace AudioTagger.Console;
@@ -14,7 +16,12 @@ public sealed class MediaFileRenamer : IPathOperation
             return;
         }
 
-        RenameFiles(mediaFiles, workingDirectory, printer);
+        if (settings?.RenamePatterns is null)
+            throw new InvalidOperationException("The settings contained no rename patterns. Cannot continue.");
+
+        printer.Print($"Found {settings.RenamePatterns.Count} rename patterns.");
+
+        RenameFiles(mediaFiles, workingDirectory, printer, settings.RenamePatterns);
         DeleteEmptySubDirectories(workingDirectory.FullName, printer);
     }
 
@@ -37,7 +44,8 @@ public sealed class MediaFileRenamer : IPathOperation
 
     private static void RenameFiles(IReadOnlyCollection<MediaFile> mediaFiles,
                                     DirectoryInfo workingDirectory,
-                                    IPrinter printer)
+                                    IPrinter printer,
+                                    IEnumerable<string> renamePatterns)
     {
         var isCancelRequested = false;
         var doConfirm = true;
@@ -63,7 +71,7 @@ public sealed class MediaFileRenamer : IPathOperation
                 var useRootPath = artistCounts[GetConcatenatedArtists(file)] == 1;
 
                 isCancelRequested = RenameSingleFile(
-                    file, printer, workingDirectory.FullName, useRootPath, ref doConfirm);
+                    file, printer, workingDirectory.FullName, useRootPath, ref doConfirm, renamePatterns);
             }
             catch (IOException e)
             {
@@ -91,57 +99,62 @@ public sealed class MediaFileRenamer : IPathOperation
             foreach (var error in errors)
                 printer.Print($" - #{number++}: {error}");
         }
-    }
 
-    private static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
-    {
-        return mediaFiles.GroupBy(n => GetConcatenatedArtists(n))
-            .ToDictionary(g => g.Key,
-                            g => g.Count());
+        static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
+        {
+            return mediaFiles.GroupBy(n => GetConcatenatedArtists(n))
+                .ToDictionary(g => g.Key,
+                                g => g.Count());
+        }
     }
 
     /// <summary>
     /// Renames a single file based upon its tags. The filename format is set manually.
-    /// TODO: Break down further into methods or local functions.
     /// </summary>
     /// <returns>A bool indicated whether the user cancelled the operation or not.</returns>
     private static bool RenameSingleFile(MediaFile file,
-                                            IPrinter printer,
-                                            string workingPath,
-                                            bool keepInRootFolder,
-                                            ref bool doConfirm)
+                                         IPrinter printer,
+                                         string workingPath,
+                                         bool keepInRootFolder,
+                                         ref bool doConfirm,
+                                         IEnumerable<string> renamePatterns)
     {
         ArgumentNullException.ThrowIfNull(file);
 
         // TODO: Refactor cancellation so this isn't needed.
         const bool shouldCancel = false;
 
-        var albumArtistText = HasAnyValues(file.AlbumArtists)
-            ? EnsurePathSafeString(string.Join(" && ", file.AlbumArtists)) + " ≡ "
-            : string.Empty;
-        var artistText = HasAnyValues(file.Artists)
-            ? EnsurePathSafeString(string.Join(" && ", file.Artists)) + " - "
-            : string.Empty;
-        var albumText = string.IsNullOrWhiteSpace(file.Album)
-            ? string.Empty
-            : EnsurePathSafeString(file.Album);
-        var titleText = EnsurePathSafeString(file.Title);
-        var trackText = file.TrackNo == 0
-            ? string.Empty
-            : file.TrackNo.ToString("000") + " - ";
-        var yearText = file.Year < 1000
-            ? string.Empty
-            : " [" + file.Year + "]";
-        var ext = Path.GetExtension(file.FileNameOnly);
+        // printer.Print($"• FILENAME: {file.FileNameOnly} (with {renamePatterns.Count()} patterns)");
 
-        var newFileName =
-            albumArtistText +
-            artistText +
-            string.Concat(string.IsNullOrWhiteSpace(albumText)
-                ? new[] {titleText, yearText}
-                : new[] {albumText, yearText, file.LacksArtists ? " = " : " - ", trackText, titleText}) + ext;
+        ImmutableList<string> fileTagNames = file.PopulatedTagNames();
 
-        var newFolderName = keepInRootFolder ? string.Empty : GetFolderName(file);
+        string? matchedRenamePattern = null;
+        var regex = new Regex(@"(?<=%)\w+(?=%)");
+        foreach (var pattern in renamePatterns) // NOT REGEXES!
+        {
+            var matches = regex.Matches(pattern);
+            var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
+
+            if (expectedTags.Count == fileTagNames.Count &&
+                expectedTags.All(expectedTag => fileTagNames.Contains(expectedTag!)))
+            {
+                // printer.Print("Match found!");
+                matchedRenamePattern = pattern;
+            }
+        }
+
+        if (matchedRenamePattern is null)
+        {
+            printer.Print($"No appropriate rename pattern was found, so cannot rename \"{file.FileNameOnly}\"",
+                          fgColor: ConsoleColor.Red);
+            return false;
+        }
+        // printer.Print($"Matched rename pattern: {matchedRenamePattern}");
+
+        var newFileName = GenerateNewFileName(file, fileTagNames, matchedRenamePattern);
+        // printer.Print($"New filename is: {newFileName}");
+
+        var newFolderName = keepInRootFolder ? string.Empty : GenerateSafeDirectoryName(file);
         var fullFolderPath = Path.Combine(workingPath, newFolderName);
         var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
         var proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
@@ -154,8 +167,7 @@ public sealed class MediaFileRenamer : IPathOperation
             return shouldCancel;
         }
 
-        // Create a duplicate file object for the new file.
-        var currentFile = new FileInfo(file.Path);
+        var currentFile = new FileInfo(file.Path); // Create a duplicate file object for the new file.
 
         var newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
 
@@ -164,7 +176,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
         if (currentFullPath == proposedFullPath)
         {
-            printer.Print($"No change needed for {currentFullPath}", fgColor: ConsoleColor.DarkGray);
+            printer.Print($"No rename needed for \"{currentFullPath}\".", fgColor: ConsoleColor.DarkGray);
             return shouldCancel;
         }
 
@@ -191,7 +203,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
             if (response == no)
             {
-                printer.Print("No updates made", ResultType.Neutral, 0, 1);
+                printer.Print("Not renamed.", ResultType.Neutral, 0, 1);
                 return shouldCancel;
             }
 
@@ -225,31 +237,45 @@ public sealed class MediaFileRenamer : IPathOperation
             return working;
         }
 
-        /// <summary>
-        /// Specifies whether the given collections has any valid values.
-        /// </summary>
-        static bool HasAnyValues(IEnumerable<string> tagValues)
+        static string GenerateNewFileName(MediaFile file, ICollection<string> fileTagNames, string renamePattern)
         {
-            if (tagValues?.Any() != true)
-                return false;
-
-            var asString = string.Concat(tagValues);
-
-            if (string.IsNullOrWhiteSpace(asString))
-                return false;
-
-            if (asString.Contains("<unknown>"))
-                return false;
-
-            return true;
+            StringBuilder fileNameBuilder = new(renamePattern);
+            foreach (var fileTagName in fileTagNames)
+            {
+                switch (fileTagName)
+                {
+                    case "ALBUMARTISTS":
+                        fileNameBuilder.Replace("%ALBUMARTISTS%", EnsurePathSafeString(string.Join(" && ", file.AlbumArtists)));
+                        break;
+                    case "ARTISTS":
+                        fileNameBuilder.Replace("%ARTISTS%", EnsurePathSafeString(string.Join(" && ", file.Artists)));
+                        break;
+                    case "ALBUM":
+                        fileNameBuilder.Replace("%ALBUM%", EnsurePathSafeString(file.Album));
+                        break;
+                    case "TITLE":
+                        fileNameBuilder.Replace("%TITLE%", EnsurePathSafeString(file.Title));
+                        break;
+                    case "YEAR":
+                        fileNameBuilder.Replace("%YEAR%", EnsurePathSafeString(file.Year.ToString()));
+                        break;
+                    case "TRACK":
+                        fileNameBuilder.Replace("%TRACK%", EnsurePathSafeString(file.TrackNo.ToString()));
+                        break;
+                }
+            }
+            return fileNameBuilder.ToString() + Path.GetExtension(file.FileNameOnly);
         }
 
-        static string GetFolderName(MediaFile file)
+        /// <summary>
+        /// Generates and returns a directory name for a file given its tags. Never returns null.
+        /// </summary>
+        static string GenerateSafeDirectoryName(MediaFile file)
         {
-            if (HasAnyValues(file.AlbumArtists))
+            if (MediaFile.HasAnyValues(file.AlbumArtists))
                 return EnsurePathSafeString(string.Join(" && ", file.AlbumArtists));
 
-            if (HasAnyValues(file.Artists))
+            if (MediaFile.HasAnyValues(file.Artists))
                 return EnsurePathSafeString(string.Join(" && ", file.Artists));
 
             if (!string.IsNullOrWhiteSpace(file.Album))
