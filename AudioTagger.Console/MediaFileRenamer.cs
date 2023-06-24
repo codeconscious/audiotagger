@@ -222,19 +222,18 @@ public sealed class MediaFileRenamer : IPathOperation
         return shouldCancel;
 
         /// <summary>
-        /// Replaces characters that are invalid in file path names with a safe character.
+        /// Replaces characters that are invalid in file path names with a specified safe character.
         /// </summary>
-        /// <returns>A corrected string, or the original if no changes were needed.</returns>
-        static string EnsurePathSafeString(string input)
+        /// <returns>A corrected string or the original if no changes were needed.</returns>
+        static string EnsurePathSafeString(string input, char replacementChar = '_')
         {
-            var working = input;
-
-            foreach (var ch in Path.GetInvalidFileNameChars())
-            {
-                working = working.Replace(ch, '_');
-            }
-
-            return working;
+            return Path.GetInvalidFileNameChars()
+                       .ToList()
+                       .Aggregate(
+                            new StringBuilder(input),
+                            (workingString, invalidChar) =>
+                                workingString.Replace(invalidChar, replacementChar))
+                       .ToString();
         }
 
         static string GenerateNewFileName(MediaFile file, ICollection<string> fileTagNames, string renamePattern)
