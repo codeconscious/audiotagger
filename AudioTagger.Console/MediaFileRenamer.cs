@@ -213,12 +213,8 @@ public sealed class MediaFileRenamer : IPathOperation
         return shouldCancel;
 
         /// <summary>
-        /// Generated an updated filename using the given rename pattern and tag names.
+        /// Generates and returns an updated filename using the given rename pattern and tag names.
         /// </summary>
-        /// <param name="file"></param>
-        /// <param name="fileTagNames"></param>
-        /// <param name="renamePattern"></param>
-        /// <returns></returns>
         static string GenerateNewFileName(MediaFile file, ICollection<string> fileTagNames, string renamePattern)
         {
             var newBaseFileName =
@@ -231,27 +227,27 @@ public sealed class MediaFileRenamer : IPathOperation
                             "ALBUMARTISTS" =>
                                 workingFileName.Replace(
                                     "%ALBUMARTISTS%",
-                                    MediaFile.EnsurePathSafeString(file.AlbumArtists)),
+                                    IOUtilities.EnsurePathSafeString(file.AlbumArtists)),
                             "ARTISTS" =>
                                 workingFileName.Replace(
                                     "%ARTISTS%",
-                                    MediaFile.EnsurePathSafeString(file.Artists)),
+                                    IOUtilities.EnsurePathSafeString(file.Artists)),
                             "ALBUM" =>
                                 workingFileName.Replace(
                                     "%ALBUM%",
-                                    MediaFile.EnsurePathSafeString(file.Album)),
+                                    IOUtilities.EnsurePathSafeString(file.Album)),
                             "TITLE" =>
                                 workingFileName.Replace(
                                     "%TITLE%",
-                                    MediaFile.EnsurePathSafeString(file.Title)),
+                                    IOUtilities.EnsurePathSafeString(file.Title)),
                             "YEAR" =>
                                 workingFileName.Replace(
                                     "%YEAR%",
-                                    MediaFile.EnsurePathSafeString(file.Year.ToString())),
+                                    IOUtilities.EnsurePathSafeString(file.Year.ToString())),
                             "TRACK" =>
                                 workingFileName.Replace(
                                     "%TRACK%",
-                                    MediaFile.EnsurePathSafeString(file.TrackNo.ToString())),
+                                    IOUtilities.EnsurePathSafeString(file.TrackNo.ToString())),
                             _ => throw new InvalidOperationException(""),
                         };
                     }
@@ -266,13 +262,13 @@ public sealed class MediaFileRenamer : IPathOperation
         static string GenerateSafeDirectoryName(MediaFile file)
         {
             if (MediaFile.HasAnyValues(file.AlbumArtists))
-                return MediaFile.EnsurePathSafeString(file.AlbumArtists);
+                return IOUtilities.EnsurePathSafeString(file.AlbumArtists);
 
             if (MediaFile.HasAnyValues(file.Artists))
-                return MediaFile.EnsurePathSafeString(file.Artists);
+                return IOUtilities.EnsurePathSafeString(file.Artists);
 
             if (!string.IsNullOrWhiteSpace(file.Album))
-                return MediaFile.EnsurePathSafeString(file.Album);
+                return IOUtilities.EnsurePathSafeString(file.Album);
 
             return "___UNSPECIFIED___";
         }
