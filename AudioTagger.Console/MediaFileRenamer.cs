@@ -238,32 +238,43 @@ public sealed class MediaFileRenamer : IPathOperation
 
         static string GenerateNewFileName(MediaFile file, ICollection<string> fileTagNames, string renamePattern)
         {
-            StringBuilder fileNameBuilder = new(renamePattern);
-            foreach (var fileTagName in fileTagNames)
-            {
-                switch (fileTagName)
-                {
-                    case "ALBUMARTISTS":
-                        fileNameBuilder.Replace("%ALBUMARTISTS%", EnsurePathSafeString(string.Join(" && ", file.AlbumArtists)));
-                        break;
-                    case "ARTISTS":
-                        fileNameBuilder.Replace("%ARTISTS%", EnsurePathSafeString(string.Join(" && ", file.Artists)));
-                        break;
-                    case "ALBUM":
-                        fileNameBuilder.Replace("%ALBUM%", EnsurePathSafeString(file.Album));
-                        break;
-                    case "TITLE":
-                        fileNameBuilder.Replace("%TITLE%", EnsurePathSafeString(file.Title));
-                        break;
-                    case "YEAR":
-                        fileNameBuilder.Replace("%YEAR%", EnsurePathSafeString(file.Year.ToString()));
-                        break;
-                    case "TRACK":
-                        fileNameBuilder.Replace("%TRACK%", EnsurePathSafeString(file.TrackNo.ToString()));
-                        break;
-                }
-            }
-            return fileNameBuilder.ToString() + Path.GetExtension(file.FileNameOnly);
+            var newBaseFileName =
+                fileTagNames.Aggregate(
+                    new StringBuilder(renamePattern),
+                    (workingFileName, tagName) =>
+                    {
+                        return tagName switch
+                        {
+                            "ALBUMARTISTS" =>
+                                workingFileName.Replace(
+                                    "%ALBUMARTISTS%",
+                                    EnsurePathSafeString(string.Join(" && ", file.AlbumArtists))),
+                            "ARTISTS" =>
+                                workingFileName.Replace(
+                                    "%ARTISTS%",
+                                    EnsurePathSafeString(string.Join(" && ", file.Artists))),
+                            "ALBUM" =>
+                                workingFileName.Replace(
+                                    "%ALBUM%",
+                                    EnsurePathSafeString(file.Album)),
+                            "TITLE" =>
+                                workingFileName.Replace(
+                                    "%TITLE%",
+                                    EnsurePathSafeString(file.Title)),
+                            "YEAR" =>
+                                workingFileName.Replace(
+                                    "%YEAR%",
+                                    EnsurePathSafeString(file.Year.ToString())),
+                            "TRACK" =>
+                                workingFileName.Replace(
+                                    "%TRACK%",
+                                    EnsurePathSafeString(file.TrackNo.ToString())),
+                            _ => throw new InvalidOperationException(""),
+                        };
+                    }
+                );
+
+            return newBaseFileName.ToString() + Path.GetExtension(file.FileNameOnly);
         }
 
         /// <summary>
