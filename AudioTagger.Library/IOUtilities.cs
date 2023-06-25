@@ -19,7 +19,6 @@ public static class IOUtilities
     /// Replaces characters that are invalid in file path names with a specified safe character.
     /// </summary>
     /// <returns>A corrected string or the original if no changes were needed.</returns>
-    /// <remarks>TODO: Make a new class for this (e.g., FileUtilities, etc.).</remarks>
     public static string EnsurePathSafeString(string path, char replacementChar = '_')
     {
         return System.IO.Path.GetInvalidFileNameChars()
@@ -36,7 +35,6 @@ public static class IOUtilities
     /// invalid in file path names with a specified safe character.
     /// </summary>
     /// <returns>A corrected string or the original if no changes were needed.</returns>
-    /// <remarks>TODO: Make a new class for this (e.g., FileUtilities, etc.).</remarks>
     public static string EnsurePathSafeString(
         IEnumerable<string> input,
         char replacementChar = '_',
