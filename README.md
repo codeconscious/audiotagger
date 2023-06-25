@@ -2,7 +2,7 @@
 
 A .NET 7 CLI program that can perform the following actions on audio files:
 
-- View IDE2 tags
+- View ID3v2 tags
 - Auto-update tags using filename patterns
 - Auto-rename and reorganize files using filename patterns
 - Reorganize files into folders using their tag data
