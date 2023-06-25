@@ -4,29 +4,30 @@ namespace AudioTagger;
 
 public static class IOUtilities
 {
-    // TODO: Change into a setting of supported file extensions.
+    private static readonly List<string> SupportedExtensions =
+        new() { ".mp3", ".ogg", ".mkv", ".mp4", ".m4a" };
+
     public static readonly Func<string, bool> IsSupportedFileExtension =
-        new(file => !string.IsNullOrWhiteSpace(file) &&
-                    !file.StartsWith(".") &&
-                    (file.EndsWith(".mp3", StringComparison.InvariantCultureIgnoreCase) ||
-                     file.EndsWith(".ogg", StringComparison.InvariantCultureIgnoreCase) ||
-                     file.EndsWith(".mkv", StringComparison.InvariantCultureIgnoreCase) ||
-                     file.EndsWith(".mp4", StringComparison.InvariantCultureIgnoreCase) ||
-                     file.EndsWith(".m4a", StringComparison.InvariantCultureIgnoreCase)));
+        new(
+            fileName =>
+                !string.IsNullOrWhiteSpace(fileName) &&
+                !fileName.StartsWith(".") && // Unix-based OS hidden files
+                SupportedExtensions.Any(ext =>
+                    fileName.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase)));
 
     /// <summary>
     /// Replaces characters that are invalid in file path names with a specified safe character.
     /// </summary>
     /// <returns>A corrected string or the original if no changes were needed.</returns>
     /// <remarks>TODO: Make a new class for this (e.g., FileUtilities, etc.).</remarks>
-    public static string EnsurePathSafeString(string input, char replacementChar = '_')
+    public static string EnsurePathSafeString(string path, char replacementChar = '_')
     {
         return System.IO.Path.GetInvalidFileNameChars()
                     .ToList()
                     .Aggregate(
-                        new StringBuilder(input),
-                        (workingString, invalidChar) =>
-                            workingString.Replace(invalidChar, replacementChar))
+                        new StringBuilder(path),
+                        (workingPath, invalidChar) =>
+                            workingPath.Replace(invalidChar, replacementChar))
                     .ToString();
     }
 

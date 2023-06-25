@@ -59,7 +59,8 @@ public sealed class MediaFileRenamer : IPathOperation
 
             if (file.Title?.Length == 0)
             {
-                printer.Print($"Skipping \"{file.FileNameOnly}\" because it has no title.", fgColor: ConsoleColor.DarkRed);
+                printer.Print($"Skipping \"{file.FileNameOnly}\" because it has no title.",
+                              fgColor: ConsoleColor.DarkRed);
                 continue;
             }
 
@@ -146,7 +147,7 @@ public sealed class MediaFileRenamer : IPathOperation
             return false;
         }
 
-        var newFileName = GenerateNewFileName(file, fileTagNames, matchedRenamePattern);
+        var newFileName = GenerateNewFileNameUsingTagData(file, fileTagNames, matchedRenamePattern);
         var newFolderName = keepInRootFolder ? string.Empty : GenerateSafeDirectoryName(file);
         var fullFolderPath = Path.Combine(workingPath, newFolderName);
         var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
@@ -215,7 +216,10 @@ public sealed class MediaFileRenamer : IPathOperation
         /// <summary>
         /// Generates and returns an updated filename using the given rename pattern and tag names.
         /// </summary>
-        static string GenerateNewFileName(MediaFile file, ICollection<string> fileTagNames, string renamePattern)
+        static string GenerateNewFileNameUsingTagData(
+            MediaFile file,
+            ICollection<string> fileTagNames,
+            string renamePattern)
         {
             var newBaseFileName =
                 fileTagNames.Aggregate(
