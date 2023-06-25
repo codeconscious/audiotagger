@@ -152,5 +152,10 @@ public static class Program
         }
 
         AnsiConsole.Write(table);
+
+        printer.Print("Additionally, the file `settings.json` should be present in the application directory. " +
+                      "A nearly-blank file will be automatically created if it does not exist. " +
+                      "See the GitHub repository's readme file for more.",
+                      prependLines: 1, appendLines: 1);
     }
 }
