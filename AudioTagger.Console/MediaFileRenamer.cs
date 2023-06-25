@@ -6,6 +6,8 @@ namespace AudioTagger.Console;
 
 public sealed class MediaFileRenamer : IPathOperation
 {
+    private static readonly Regex TagFinderRegex = new(@"(?<=%)\w+(?=%)");
+
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
@@ -126,12 +128,10 @@ public sealed class MediaFileRenamer : IPathOperation
         const bool shouldCancel = false;
 
         ImmutableList<string> fileTagNames = file.PopulatedTagNames();
-
         string? matchedRenamePattern = null;
-        var regex = new Regex(@"(?<=%)\w+(?=%)");
         foreach (var renamePattern in renamePatterns)
         {
-            var matches = regex.Matches(renamePattern);
+            var matches = TagFinderRegex.Matches(renamePattern);
             var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
             if (expectedTags.Count == fileTagNames.Count &&
                 expectedTags.All(expectedTag => fileTagNames.Contains(expectedTag!)))

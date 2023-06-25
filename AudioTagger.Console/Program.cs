@@ -71,10 +71,19 @@ public static class Program
 
             printer.Print($"Found {filesData.Count:#,##0} files in {elapsedMs:#,##0}ms.");
 
-            operation.Start(filesData,
-                            new DirectoryInfo(path),
-                            printer,
-                            settings);
+            try
+            {
+                operation.Start(
+                    filesData,
+                    new DirectoryInfo(path),
+                    printer,
+                    settings);
+            }
+            catch (Exception ex)
+            {
+                printer.Print($"ERROR: {ex.Message}", fgColor: ConsoleColor.Red);
+                return;
+            }
         }
     }
 
