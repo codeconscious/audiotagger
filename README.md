@@ -12,7 +12,11 @@ A .NET CLI program that can perform the following actions on audio files:
 
 This is a little labor-of-love project that I work on in my spare time. It's not particularly polished, but it's sufficient for my use case. It relies on the [TagLibSharp](https://github.com/mono/taglib-sharp) library.
 
-Requirements: .NET 7 runtime.
+## Requirements
+
+.NET 7 runtime.
+
+## Running
 
 Currently, you must run this app from the `AudioTagger.Console` folder using `dotnet run`. Passing no arguments will show the instructions.
 
@@ -48,6 +52,6 @@ Additionally, you need to create `settings.json` in the application directory fo
 ```
 
 Explanation of options:
-- `titleReplacements`: Substrings in titles that will be ignored when searching for duplicate files. This allows pairs like "My Song" and "My Song (Single Version)" to be consider identical.
-- `renamePatterns`: When renaming files, they will be renamed according to the first such pattern that matches the available tags in each file. For example, if a file contains only artist and title information, then it will be renamed per the third option above.
-- `regexPatterns`: When tagging files, these regexes are used to match against the filenames. When there is a match, then the appropriate ID3 tags are updated in the file.
+- `titleReplacements`: Optional. Substrings in titles that will be ignored when searching for duplicate files. This allows pairs like "My Song" and "My Song (Single Version)" to be considered identical. Otherwise, they would be considered separate titles.
+- `renamePatterns`: Mandatory. When renaming files, they will be renamed according to the first such pattern that matches the populated tags in each file. For example, if a file contains only artist and title information, then it will be renamed per the third option above.
+- `regexPatterns`: Mandatory. When tagging files, these regexes are used to match against the filenames. When there is a match, then the appropriate ID3 tags are updated in the file.
