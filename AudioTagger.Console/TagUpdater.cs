@@ -16,10 +16,8 @@ public class TagUpdater : IPathOperation
 
         var regexes = settings?.Tagging?.RegexPatterns;
         if (regexes?.Any() != true)
-        {
-            printer.Print("No regexes were found! Cannot continue.", fgColor: ConsoleColor.Red);
-            return;
-        }
+            throw new InvalidOperationException("No regexes were found! Cannot continue.");
+
         var regexCollection = new RegexCollection(regexes);
         printer.Print($"Found {regexCollection.Patterns.Count} regex expression(s).");
 
@@ -34,8 +32,7 @@ public class TagUpdater : IPathOperation
             }
             catch (Exception ex)
             {
-                printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
-                //printer.PrintException(ex);
+                printer.Error($"Error updating \"{mediaFile.FileNameOnly}\": {ex.Message}");
                 errorFiles.Add(mediaFile.FileNameOnly);
                 continue;
             }

@@ -81,7 +81,7 @@ public static class Program
             }
             catch (Exception ex)
             {
-                printer.Print($"ERROR: {ex.Message}", fgColor: ConsoleColor.Red);
+                printer.Error($"ERROR: {ex.Message}");
                 return;
             }
         }
@@ -131,7 +131,7 @@ public static class Program
         }
         catch (Exception ex)
         {
-            printer.Print($"There was an error creating \"{fileName}\": {ex.Message}", fgColor: ConsoleColor.Red);
+            printer.Error($"There was an error creating \"{fileName}\": {ex.Message}");
             return false;
         }
     }

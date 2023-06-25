@@ -142,8 +142,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
         if (matchedRenamePattern is null)
         {
-            printer.Print($"No appropriate rename pattern was found, so cannot rename \"{file.FileNameOnly}\"",
-                          fgColor: ConsoleColor.Red);
+            printer.Error($"No appropriate rename pattern was found, so cannot rename \"{file.FileNameOnly}\"");
             return false;
         }
 
