@@ -1,13 +1,6 @@
-﻿using System.IO;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace AudioTagger;
-
-public interface IRegexCollection
-{
-    IReadOnlyCollection<string> Patterns { get; }
-    Match? GetFirstFileMatch(string fileName);
-}
 
 public class RegexCollection : IRegexCollection
 {
@@ -16,26 +9,20 @@ public class RegexCollection : IRegexCollection
     /// </summary>
     public IReadOnlyCollection<string> Patterns { get; }
 
-    public RegexCollection(string fileContainingRegexPatterns)
+    public RegexCollection(IEnumerable<string> regexes)
     {
-        if (string.IsNullOrWhiteSpace(fileContainingRegexPatterns))
-            throw new ArgumentNullException(nameof(fileContainingRegexPatterns));
+        if (regexes is null)
+            throw new ArgumentNullException(nameof(regexes));
 
-        if (!File.Exists(fileContainingRegexPatterns))
-            throw new FileNotFoundException($"The regex file \"{fileContainingRegexPatterns}\" was not found.");
+        if (!regexes.Any())
+            throw new InvalidOperationException("No regex patterns were found.");
 
-        var patterns = File.ReadAllLines(fileContainingRegexPatterns)
-                           .Where(line =>
-                                !line.StartsWith("# ") &&  // Comments
-                                !line.StartsWith("// ") &&  // Comments
-                                !string.IsNullOrWhiteSpace(line))
-                           .Distinct()
-                           .ToList();
-
-        // if (patterns.Count == 0)
-        //     throw new InvalidDataException("No regex patterns were found.");
-
-        Patterns = patterns;
+        Patterns = regexes.Where(line =>
+                               !line.StartsWith("# ") &&  // Comments
+                               !line.StartsWith("// ") &&  // Comments
+                               !string.IsNullOrWhiteSpace(line))
+                          .Distinct()
+                          .ToList();
     }
 
     /// <summary>

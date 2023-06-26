@@ -4,6 +4,7 @@ global using System.Collections.Generic;
 global using System.Collections.Immutable;
 global using System.IO;
 using Spectre.Console;
+using System.Text.Json;
 
 namespace AudioTagger.Console;
 
@@ -19,23 +20,14 @@ public static class Program
             return;
         }
 
+        const string settingsFileName = "settings.json";
+        if (!EnsureSettingsFileExists(settingsFileName, printer)) return;
+        var settings = ReadSettings(settingsFileName, printer);
+
         var argQueue = new Queue<string>(args.Select(a => a.Trim()));
 
         // Select the desired operation using the first variable.
         IPathOperation? operation = OperationFactory(argQueue.Dequeue());
-
-        const string regexPath = "../AudioTagger.Library/Regexes.txt";
-        RegexCollection regexCollection;
-        try
-        {
-            regexCollection = new RegexCollection(regexPath);
-            printer.Print($"Found {regexCollection.Patterns.Count} regex(es).");
-        }
-        catch (FileNotFoundException)
-        {
-            printer.Error($"The file {regexPath} must exist.");
-            return;
-        }
 
         if (operation == null)
         {
@@ -79,9 +71,19 @@ public static class Program
 
             printer.Print($"Found {filesData.Count:#,##0} files in {elapsedMs:#,##0}ms.");
 
-            var directoryInfo = new DirectoryInfo(path);
-
-            operation.Start(filesData, directoryInfo, regexCollection, printer);
+            try
+            {
+                operation.Start(
+                    filesData,
+                    new DirectoryInfo(path),
+                    printer,
+                    settings);
+            }
+            catch (Exception ex)
+            {
+                printer.Error($"ERROR: {ex.Message}");
+                return;
+            }
         }
     }
 
@@ -93,6 +95,46 @@ public static class Program
     private static IPathOperation? OperationFactory(string modeArg)
     {
         return OperationLibrary.GetPathOperation(modeArg);
+    }
+
+    private static Settings? ReadSettings(string fileName, IPrinter printer)
+    {
+        try
+        {
+            var text = File.ReadAllText(fileName);
+            return JsonSerializer.Deserialize<Settings>(text);
+        }
+        catch (FileNotFoundException)
+        {
+            printer.Print("Continuing with no settings since `settings.json` was not found. (See the readme file for more.)", appendLines: 1);
+            return null;
+        }
+        catch (JsonException ex)
+        {
+            printer.Print($"The settings file is invalid: {ex.Message}");
+            printer.Print("Continuing without settings...", appendLines: 1);
+            return null;
+        }
+    }
+
+    private static bool EnsureSettingsFileExists(string fileName, IPrinter printer)
+    {
+        if (File.Exists(fileName))
+            return true;
+
+        try
+        {
+            var json = JsonSerializer.Serialize(new Settings(),
+                                                new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(fileName, json);
+            printer.Print($"Created empty settings file \"{fileName}\" successfully.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            printer.Error($"There was an error creating \"{fileName}\": {ex.Message}");
+            return false;
+        }
     }
 
     private static void PrintInstructions(IPrinter printer)
@@ -111,5 +153,10 @@ public static class Program
         }
 
         AnsiConsole.Write(table);
+
+        printer.Print("Additionally, the file `settings.json` should be present in the application directory. " +
+                      "A nearly-blank file will be automatically created if it does not exist. " +
+                      "See the GitHub repository's readme file for more.",
+                      prependLines: 1, appendLines: 1);
     }
 }

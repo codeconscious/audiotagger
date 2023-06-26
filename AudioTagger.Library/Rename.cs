@@ -8,8 +8,8 @@ public class FileRenamer : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> filesData,
                       DirectoryInfo workingDirectory,
-                      IRegexCollection regexCollection,
-                      IPrinter printer)
+                      IPrinter printer,
+                      Settings? settings = null)
     {
         foreach (var fileData in filesData)
         {
@@ -73,6 +73,6 @@ public class FileRenamer : IPathOperation
 
         Console.Read();
 
-        return (false, "Testing only");
+        return (false, "Testing only"); // TODO: Handle this...
     }
 }

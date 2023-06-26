@@ -13,16 +13,16 @@ public class LineSubString
         BgColor = bgColor;
     }
 
-    public string GetSpecterString()
+    public string GetSpectreString()
     {
         var sb = new System.Text.StringBuilder();
 
         if (FgColor.HasValue)
         {
-            sb.Append("[" + Utilities.ConvertToSpectreColor(FgColor.Value));
+            sb.Append('[').Append(Utilities.ConvertToSpectreColor(FgColor.Value));
 
             if (BgColor.HasValue)
-                sb.Append(" on " + Utilities.ConvertToSpectreColor(BgColor.Value));
+                sb.Append(" on ").Append(Utilities.ConvertToSpectreColor(BgColor.Value));
 
             sb.Append(']');
         }
@@ -33,6 +33,5 @@ public class LineSubString
             sb.Append("[/]");
 
         return sb.ToString();
-
     }
 }

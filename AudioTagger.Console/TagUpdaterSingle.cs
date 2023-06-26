@@ -13,8 +13,8 @@ public class TagUpdaterSingle : IPathOperation
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IRegexCollection regexCollection,
-                      IPrinter printer)
+                      IPrinter printer,
+                      Settings? settings = null)
     {
         if (!mediaFiles.Any())
         {

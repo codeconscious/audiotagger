@@ -7,14 +7,20 @@ public class TagUpdater : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IRegexCollection regexCollection,
-                      IPrinter printer)
+                      IPrinter printer,
+                      Settings? settings = null)
     {
         var cancelRequested = false;
         var doConfirm = true;
         var errorFiles = new List<string>();
 
-        // Process each file
+        var regexes = settings?.Tagging?.RegexPatterns;
+        if (regexes?.Any() != true)
+            throw new InvalidOperationException("No regexes were found! Cannot continue.");
+
+        var regexCollection = new RegexCollection(regexes);
+        printer.Print($"Found {regexCollection.Patterns.Count} regex expression(s).");
+
         foreach (var mediaFile in mediaFiles)
         {
             try
@@ -26,8 +32,7 @@ public class TagUpdater : IPathOperation
             }
             catch (Exception ex)
             {
-                printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
-                //printer.PrintException(ex);
+                printer.Error($"Error updating \"{mediaFile.FileNameOnly}\": {ex.Message}");
                 errorFiles.Add(mediaFile.FileNameOnly);
                 continue;
             }

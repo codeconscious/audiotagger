@@ -1,4 +1,6 @@
-﻿namespace AudioTagger;
+﻿using System.Text;
+
+namespace AudioTagger;
 
 public class MediaFile
 {
@@ -178,7 +180,7 @@ public class MediaFile
                                 searchSubDirectories
                                     ? System.IO.SearchOption.AllDirectories
                                     : System.IO.SearchOption.TopDirectoryOnly)
-                .Where(FileSelection.Filter)
+                .Where(IOUtilities.IsSupportedFileExtension)
                 .ToArray();
 
             foreach (var fileName in fileNames)
@@ -195,12 +197,54 @@ public class MediaFile
                                 .ToList();
         }
 
-        // If the path is a file
+        // Otherwise, if the path is a file
         if (System.IO.File.Exists(path))
         {
             return new List<MediaFile> { MediaFileFactory.CreateFileData(path) };
         }
 
         throw new InvalidOperationException($"The path \"{path}\" was invalid.");
+    }
+
+    /// <summary>
+    /// Generates and returns a list of tags that are populated in the file.
+    /// </summary>
+    public ImmutableList<string> PopulatedTagNames()
+    {
+        List<string> tags = new();
+
+        if (HasAnyValues(this.AlbumArtists))
+            tags.Add("ALBUMARTISTS");
+        if (HasAnyValues(this.Artists))
+            tags.Add("ARTISTS");
+        if (!string.IsNullOrWhiteSpace(this.Album))
+            tags.Add("ALBUM");
+        if (!string.IsNullOrWhiteSpace(this.Title))
+            tags.Add("TITLE");
+        if (this.Year != 0)
+            tags.Add("YEAR");
+        if (this.TrackNo != 0)
+            tags.Add("TRACK");
+
+        return tags.ToImmutableList();
+    }
+
+    /// <summary>
+    /// Specifies whether the given collection contains any non-whitespace values.
+    /// </summary>
+    public static bool HasAnyValues(IEnumerable<string> tagValues)
+    {
+        if (tagValues?.Any() != true)
+            return false;
+
+        var asString = string.Concat(tagValues);
+
+        if (string.IsNullOrWhiteSpace(asString))
+            return false;
+
+        if (asString.Contains("<unknown>"))
+            return false;
+
+        return true;
     }
 }
