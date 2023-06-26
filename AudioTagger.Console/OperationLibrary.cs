@@ -51,6 +51,10 @@ internal static class OperationLibrary
             new OperationFlags{"-n", "--normalize", "--replaygain"},
             "Apply track normalization.",
             new Normalization()),
+        new(
+            new OperationFlags{"-g", "--genres"},
+            "Read artist genres to the settings file (Under development!)",
+            new GenreExtractor()),
     };
 
     public static Dictionary<string, string> GenerateHelpTextPairs()
@@ -69,7 +73,7 @@ internal static class OperationLibrary
 
     internal class Operation
     {
-        public required List<string> Commands { get;set;}
+        public required List<string> Commands { get; set;}
         public required string Description { get; set; }
         public required IPathOperation PathOperation { get; set; }
 

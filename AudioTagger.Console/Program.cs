@@ -20,9 +20,8 @@ public static class Program
             return;
         }
 
-        const string settingsFileName = "settings.json";
-        if (!EnsureSettingsFileExists(settingsFileName, printer)) return;
-        var settings = ReadSettings(settingsFileName, printer);
+        SettingsService.EnsureSettingsFileExists(printer);
+        var settings = SettingsService.ReadSettings(printer);
 
         var argQueue = new Queue<string>(args.Select(a => a.Trim()));
 
@@ -95,46 +94,6 @@ public static class Program
     private static IPathOperation? OperationFactory(string modeArg)
     {
         return OperationLibrary.GetPathOperation(modeArg);
-    }
-
-    private static Settings? ReadSettings(string fileName, IPrinter printer)
-    {
-        try
-        {
-            var text = File.ReadAllText(fileName);
-            return JsonSerializer.Deserialize<Settings>(text);
-        }
-        catch (FileNotFoundException)
-        {
-            printer.Print("Continuing with no settings since `settings.json` was not found. (See the readme file for more.)", appendLines: 1);
-            return null;
-        }
-        catch (JsonException ex)
-        {
-            printer.Print($"The settings file is invalid: {ex.Message}");
-            printer.Print("Continuing without settings...", appendLines: 1);
-            return null;
-        }
-    }
-
-    private static bool EnsureSettingsFileExists(string fileName, IPrinter printer)
-    {
-        if (File.Exists(fileName))
-            return true;
-
-        try
-        {
-            var json = JsonSerializer.Serialize(new Settings(),
-                                                new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(fileName, json);
-            printer.Print($"Created empty settings file \"{fileName}\" successfully.");
-            return true;
-        }
-        catch (Exception ex)
-        {
-            printer.Error($"There was an error creating \"{fileName}\": {ex.Message}");
-            return false;
-        }
     }
 
     private static void PrintInstructions(IPrinter printer)

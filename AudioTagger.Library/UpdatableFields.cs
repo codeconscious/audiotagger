@@ -20,7 +20,7 @@ public class UpdatableFields
     /// maps the data to the correct tag name property.
     /// </summary>
     /// <param name="matchedGroups"></param>
-    public UpdatableFields(IEnumerable<Group> matchedGroups)
+    public UpdatableFields(IEnumerable<Group> matchedGroups, Settings? settings = null)
     {
         ArgumentNullException.ThrowIfNull(matchedGroups);
 
@@ -84,6 +84,14 @@ public class UpdatableFields
                 TrackNo = uint.TryParse(element.Value, out var parsed) ? parsed : null;
                 Count++;
             }
+        }
+
+        // If no genre was manually passed in, check the settings for one.
+        if ((Genres?.Any() != true) &&
+            settings?.ArtistGenres is not null &&
+            settings.ArtistGenres.ContainsKey(Artists[0]))
+        {
+            Genres = new[] { settings.ArtistGenres[Artists[0]] };
         }
     }
 

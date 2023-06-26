@@ -12,6 +12,9 @@ public record Settings
 
     [JsonPropertyName("renamePatterns")]
     public ImmutableList<string>? RenamePatterns { get; set; }
+
+    [JsonPropertyName("artistGenres")]
+    public Dictionary<string, string>? ArtistGenres { get; set; } = new();
 }
 
 public record Duplicates

@@ -25,7 +25,7 @@ public class TagUpdater : IPathOperation
         {
             try
             {
-                cancelRequested = UpdateTags(mediaFile, regexCollection, printer, ref doConfirm);
+                cancelRequested = UpdateTags(mediaFile, regexCollection, printer, settings, ref doConfirm);
 
                 if (cancelRequested)
                     break;
@@ -49,7 +49,11 @@ public class TagUpdater : IPathOperation
     /// Make proposed tag updates to the specified file if the user agrees.
     /// </summary>
     /// <returns>A bool indicating whether the following file should be processed.</returns>
-    private static bool UpdateTags(MediaFile mediaFile, IRegexCollection regexCollection, IPrinter printer, ref bool doConfirm)
+    private static bool UpdateTags(MediaFile mediaFile,
+                                   IRegexCollection regexCollection,
+                                   IPrinter printer,
+                                   Settings settings,
+                                   ref bool doConfirm)
     {
         // TODO: Refactor cancellation so this isn't needed.
         const bool shouldCancel = false;
@@ -75,7 +79,7 @@ public class TagUpdater : IPathOperation
             return shouldCancel;
         }
 
-        var updateableFields = new UpdatableFields(matchedTags);
+        var updateableFields = new UpdatableFields(matchedTags, settings);
 
         var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
@@ -119,7 +123,7 @@ public class TagUpdater : IPathOperation
 
             if (response == no)
             {
-                printer.Print("No updates made", ResultType.Neutral, 0, 1);
+                printer.Print("No updates made.", ResultType.Neutral, 0, 1);
                 return shouldCancel;
             }
 
@@ -130,7 +134,6 @@ public class TagUpdater : IPathOperation
             }
         }
 
-        // Make the tag updates
         UpdateFileTags(mediaFile, updateableFields);
         try
         {
@@ -152,7 +155,8 @@ public class TagUpdater : IPathOperation
     /// </summary>
     /// <param name="fileData"></param>
     /// <param name="updateableFields"></param>
-    private static void UpdateFileTags(MediaFile fileData, UpdatableFields updateableFields)
+    private static void UpdateFileTags(MediaFile fileData,
+                                       UpdatableFields updateableFields)
     {
         if (updateableFields.Title != null && updateableFields.Title != fileData.Title)
         {
