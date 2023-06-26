@@ -32,7 +32,7 @@ public class SpectrePrinter : IPrinter
         PrependLines(prependLines);
 
         var subString = new LineSubString(message, fgColor, bgColor);
-        AnsiConsole.MarkupLine(subString.GetSpecterString());
+        AnsiConsole.MarkupLine(subString.GetSpectreString());
 
         AppendLines(appendLines);
     }
@@ -56,7 +56,7 @@ public class SpectrePrinter : IPrinter
         {
             AnsiConsole.Markup(
                 new LineSubString(linePart.Text, linePart.FgColor, linePart.BgColor)
-                    .GetSpecterString());
+                    .GetSpectreString());
         }
 
         AppendLines(appendLines);
@@ -75,7 +75,7 @@ public class SpectrePrinter : IPrinter
             var lastLine = line.Line.Last();
             foreach (var lineParts in line.Line)
             {
-                AnsiConsole.Markup(lineParts.GetSpecterString());
+                AnsiConsole.Markup(lineParts.GetSpectreString());
 
                 if (lineParts == lastLine)
                     WriteLine();

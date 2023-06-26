@@ -106,8 +106,7 @@ public sealed class MediaFileRenamer : IPathOperation
         static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
         {
             return mediaFiles.GroupBy(n => GetConcatenatedArtists(n))
-                .ToDictionary(g => g.Key,
-                                g => g.Count());
+                .ToDictionary(g => g.Key, g => g.Count());
         }
     }
 

@@ -73,6 +73,6 @@ public class FileRenamer : IPathOperation
 
         Console.Read();
 
-        return (false, "Testing only");
+        return (false, "Testing only"); // TODO: Handle this...
     }
 }

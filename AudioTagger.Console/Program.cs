@@ -124,7 +124,8 @@ public static class Program
 
         try
         {
-            var json = JsonSerializer.Serialize(new Settings());
+            var json = JsonSerializer.Serialize(new Settings(),
+                                                new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(fileName, json);
             printer.Print($"Created empty settings file \"{fileName}\" successfully.");
             return true;
