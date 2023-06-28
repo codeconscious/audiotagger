@@ -1,7 +1,3 @@
-using System.Text;
-using System.Text.RegularExpressions;
-using Spectre.Console;
-
 namespace AudioTagger.Console;
 
 public sealed class GenreExtractor : IPathOperation
@@ -9,10 +5,10 @@ public sealed class GenreExtractor : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
-                      Settings? settings = null)
+                      Settings? settings = null) // # TODO: No need for nullability
     {
         if (settings is null)
-            throw new InvalidOperationException("Settings cannot be null");
+            throw new InvalidOperationException("Settings cannot be null.");
 
         if (!mediaFiles.Any())
         {
@@ -23,12 +19,12 @@ public sealed class GenreExtractor : IPathOperation
         var artistsWithGenres = mediaFiles
             .Where(f => f.Genres.Any() && f.Artists.Any())
             .GroupBy(f => f.Artists[0], f => f.Genres)
-            .ToImmutableDictionary(
+            .ToImmutableSortedDictionary(
                 f => f.Key,
                 f => f.First() // TODO: Get their most populous genre
             );
 
-        printer.Print($"Found {artistsWithGenres.Count} artists with genres.");
+        printer.Print($"Found {artistsWithGenres.Count:#,##0} artists with genres.");
 
         settings.ArtistGenres ??= new();
         foreach (var pair in artistsWithGenres)
@@ -36,7 +32,7 @@ public sealed class GenreExtractor : IPathOperation
             settings.ArtistGenres[pair.Key] = pair.Value[0];
         }
 
-        SettingsService.WriteSettingsFile(settings);
+        SettingsService.WriteSettingsToFile(settings, printer);
         printer.Print("Wrote to the settings file!");
     }
 }

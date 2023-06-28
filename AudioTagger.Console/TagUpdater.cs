@@ -8,8 +8,11 @@ public class TagUpdater : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
-                      Settings? settings = null)
+                      Settings settings)
     {
+        if (settings is null)
+            throw new InvalidOperationException("Settings cannot be null");
+
         var cancelRequested = false;
         var doConfirm = true;
         var errorFiles = new List<string>();
@@ -25,7 +28,7 @@ public class TagUpdater : IPathOperation
         {
             try
             {
-                cancelRequested = UpdateTags(mediaFile, regexCollection, printer, settings, ref doConfirm);
+                cancelRequested = UpdateTags(mediaFile, regexCollection, printer, settings!, ref doConfirm);
 
                 if (cancelRequested)
                     break;

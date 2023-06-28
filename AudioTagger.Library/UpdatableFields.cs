@@ -89,6 +89,8 @@ public class UpdatableFields
         // If no genre was manually passed in, check the settings for one.
         if ((Genres?.Any() != true) &&
             settings?.ArtistGenres is not null &&
+            settings.ArtistGenres.Any() &&
+            Artists is not null &&
             settings.ArtistGenres.ContainsKey(Artists[0]))
         {
             Genres = new[] { settings.ArtistGenres[Artists[0]] };

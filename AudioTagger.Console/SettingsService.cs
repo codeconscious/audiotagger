@@ -1,6 +1,4 @@
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using Spectre.Console;
 
 namespace AudioTagger.Console;
 
@@ -8,14 +6,14 @@ public static class SettingsService
 {
     private const string _settingsFileName = "settings.json";
 
-    public static bool EnsureSettingsFileExists(IPrinter printer)
+    public static bool CreateIfMissing(IPrinter printer)
     {
         if (File.Exists(_settingsFileName))
             return true;
 
         try
         {
-            return WriteSettingsFile(new Settings());
+            return WriteSettingsToFile(new Settings(), printer);
         }
         catch (Exception ex)
         {
@@ -24,27 +22,34 @@ public static class SettingsService
         }
     }
 
-    public static Settings? ReadSettings(IPrinter printer)
+    public static Settings? ReadSettings(IPrinter printer, bool createFileIfMissing = false)
     {
         try
         {
+            if (createFileIfMissing && !CreateIfMissing(printer))
+                return null;
+
             var text = File.ReadAllText(_settingsFileName);
-            return JsonSerializer.Deserialize<Settings>(text);
+            return JsonSerializer.Deserialize<Settings>(text) ?? throw new JsonException();
         }
         catch (FileNotFoundException)
         {
-            // printer.Print("Continuing with no settings since `settings.json` was not found. (See the readme file for more.)", appendLines: 1);
+            printer.Print($"Settings file \"{_settingsFileName}\" was unexpectedly not found");
             return null;
         }
         catch (JsonException ex)
         {
-            // printer.Print($"The settings file is invalid: {ex.Message}");
-            // printer.Print("Continuing without settings...", appendLines: 1);
+            printer.Print($"The settings file is invalid: {ex.Message}");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            printer.Print($"ERROR: {ex.Message}");
             return null;
         }
     }
 
-    public static bool WriteSettingsFile(Settings settings)
+    public static bool WriteSettingsToFile(Settings settings, IPrinter printer)
     {
         try
         {
@@ -53,23 +58,23 @@ public static class SettingsService
                 new JsonSerializerOptions
                 {
                     WriteIndented = true,
-                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All)
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(
+                        System.Text.Unicode.UnicodeRanges.All)
                 });
             File.WriteAllText(_settingsFileName, json);
             return true;
         }
         catch (FileNotFoundException)
         {
-            // printer.Print("Continuing with no settings since `settings.json` was not found. (See the readme file for more.)", appendLines: 1);
-            // return null;
-            throw new InvalidOperationException();
+            printer.Error($"Settings file \"{_settingsFileName}\" is missing.");
+            return false;
+            // throw new InvalidOperationException();
         }
         catch (JsonException ex)
         {
-            // printer.Print($"The settings file is invalid: {ex.Message}");
-            // printer.Print("Continuing without settings...", appendLines: 1);
-            // return null;
-            throw new InvalidOperationException();
+            printer.Print($"The settings file is invalid: {ex.Message}");
+            return false;
+            // throw new InvalidOperationException();
         }
     }
 }

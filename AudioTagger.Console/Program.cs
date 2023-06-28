@@ -4,7 +4,6 @@ global using System.Collections.Generic;
 global using System.Collections.Immutable;
 global using System.IO;
 using Spectre.Console;
-using System.Text.Json;
 
 namespace AudioTagger.Console;
 
@@ -20,8 +19,9 @@ public static class Program
             return;
         }
 
-        SettingsService.EnsureSettingsFileExists(printer);
-        var settings = SettingsService.ReadSettings(printer);
+        var settings = SettingsService.ReadSettings(printer, true);
+        if (settings is null)
+            return;
 
         var argQueue = new Queue<string>(args.Select(a => a.Trim()));
 
