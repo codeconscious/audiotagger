@@ -1,9 +1,9 @@
-﻿using System.Text;
-
-namespace AudioTagger;
+﻿namespace AudioTagger;
 
 public class MediaFile
 {
+    private const string _separator = ", ";
+
     public string Path { get; }
     private readonly TagLib.File _taggedFile;
 
@@ -36,6 +36,8 @@ public class MediaFile
                          .ToArray();
     }
 
+    public string AlbumArtistsCombined => string.Join(_separator, AlbumArtists);
+
     // TODO: Note why Performers is used instead of Artists.
     public string[] Artists
     {
@@ -48,6 +50,8 @@ public class MediaFile
                          .Select(a => a.Trim().Normalize())
                          .ToArray();
     }
+
+    public string ArtistsCombined => string.Join(_separator, AlbumArtists);
 
     public string Album
     {
