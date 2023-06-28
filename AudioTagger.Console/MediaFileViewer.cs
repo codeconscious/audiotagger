@@ -21,9 +21,9 @@ public class MediaFileViewer
         if (file.AlbumArtists.Any())
         {
             table.AddRow(tagNameFormatter("Album Artist"),
-                         string.Join(", ", file.AlbumArtists).EscapeMarkup());
+                         file.AlbumArtistsCombined.EscapeMarkup());
         }
-        table.AddRow(tagNameFormatter("Artist"), string.Join(", ", file.Artists).EscapeMarkup());
+        table.AddRow(tagNameFormatter("Artist"), file.ArtistsCombined.EscapeMarkup());
         table.AddRow(tagNameFormatter("Album"), file.Album.EscapeMarkup());
         if (file.TrackNo > 0)
             table.AddRow(tagNameFormatter("Track"), file.TrackNo.ToString());
@@ -32,8 +32,9 @@ public class MediaFileViewer
         table.AddRow(tagNameFormatter("Duration"), file.Duration.ToString("m\\:ss"));
 
         var genreCount = file.Genres.Length;
-        table.AddRow(tagNameFormatter("Genres"), string.Join(", ", file.Genres).EscapeMarkup() +
-                                 (genreCount > 1 ? $" ({genreCount})" : ""));
+        table.AddRow(tagNameFormatter("Genres"),
+                     file.GenresCombined.EscapeMarkup() +
+                        (genreCount > 1 ? $" ({genreCount})" : ""));
 
         var bitrate = file.BitRate.ToString();
         var sampleRate = file.SampleRate.ToString("#,##0");
@@ -44,7 +45,7 @@ public class MediaFileViewer
         {
             table.AddRow(
                 tagNameFormatter("Composers"),
-                string.Join("; ", file.Composers).EscapeMarkup());
+                file.ComposersCombined.EscapeMarkup());
         }
 
         if (!string.IsNullOrWhiteSpace(file.Comments))
@@ -74,12 +75,12 @@ public class MediaFileViewer
 
         var rows = new List<string>
         {
-            GetCombinedArtists(file.AlbumArtists, file.Artists),
+            file.AlbumArtistsAndArtistsCombined,
             file.Album.EscapeMarkup(),
             file.TrackNo == 0 ? string.Empty : file.TrackNo.ToString().EscapeMarkup(),
             file.Title.EscapeMarkup(),
             file.Year == 0 ? string.Empty : file.Year.ToString(),
-            string.Join(", ", file.Genres).EscapeMarkup(),
+            file.GenresCombined.EscapeMarkup(),
             file.Duration.ToString("m\\:ss"),
             file.ReplayGainTrack.ToString()
         };
@@ -87,19 +88,5 @@ public class MediaFileViewer
         var markups = rows.Select(r => new Markup(r));
 
         return new TableRow(markups);
-
-        static string GetCombinedArtists(string[] albumArtists, string[] artists)
-        {
-            var artistString = string.Join(", ", artists).EscapeMarkup();
-
-            if (!albumArtists.Any())
-                return artistString;
-
-            var albumArtistString = string.Join(", ", albumArtists).EscapeMarkup();
-
-            return albumArtistString == artistString
-                ? artistString
-                : $"{albumArtistString} ({artistString})";
-        }
     }
 }

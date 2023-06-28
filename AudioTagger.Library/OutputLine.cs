@@ -73,7 +73,7 @@ public class OutputLine
         var lines = new List<OutputLine>
         {
             TagDataWithHeader("Title", fileData.Title),
-            TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)),
+            TagDataWithHeader("Artist(s)", fileData.ArtistsCombined),
             TagDataWithHeader("Album", fileData.Album),
             TagDataWithHeader("Year", fileData.Year.ToString()),
             TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss"))
@@ -101,7 +101,7 @@ public class OutputLine
                 }));
 
         if (fileData.Composers?.Length > 0)
-            lines.Add(TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers)));
+            lines.Add(TagDataWithHeader("Composers", fileData.ComposersCombined));
 
         if (!string.IsNullOrWhiteSpace(fileData.Comments))
             lines.Add(TagDataWithHeader("Comment", fileData.Comments));
@@ -114,14 +114,14 @@ public class OutputLine
         var lines = new Dictionary<string, string>
         {
             { "Title", fileData.Title },
-            { "Artist(s)", string.Join(", ", fileData.Artists) },
+            { "Artist(s)", fileData.ArtistsCombined },
             { "Album", fileData.Album },
             { "Year", fileData.Year.ToString() },
             { "Duration", fileData.Duration.ToString("m\\:ss") }
         };
 
         var genreCount = fileData.Genres.Length;
-        lines.Add("Genre(s)", string.Join(", ", fileData.Genres) +
+        lines.Add("Genre(s)", fileData.GenresCombined +
                               (genreCount > 1 ? $" ({genreCount})" : ""));
 
         var bitrate = fileData.BitRate.ToString();

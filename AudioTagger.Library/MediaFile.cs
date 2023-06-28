@@ -2,7 +2,7 @@
 
 public class MediaFile
 {
-    private const string _separator = ", ";
+    private const string _separator = "; ";
 
     public string Path { get; }
     private readonly TagLib.File _taggedFile;
@@ -37,6 +37,17 @@ public class MediaFile
     }
 
     public string AlbumArtistsCombined => string.Join(_separator, AlbumArtists);
+
+    public string AlbumArtistsAndArtistsCombined
+    {
+        get
+        {
+            if (!AlbumArtists.Any() || AlbumArtistsCombined == ArtistsCombined)
+                return ArtistsCombined;
+
+            return $"{AlbumArtistsCombined} ({ArtistsCombined})";
+        }
+    }
 
     // TODO: Note why Performers is used instead of Artists.
     public string[] Artists
@@ -89,6 +100,8 @@ public class MediaFile
                                         ?? Array.Empty<string>();
     }
 
+    public string GenresCombined => string.Join(_separator, Genres);
+
     public string[] Composers
     {
         get => _taggedFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize()
@@ -101,6 +114,8 @@ public class MediaFile
                                                  .ToArray()
                                            ?? Array.Empty<string>();
     }
+
+    public string ComposersCombined => string.Join(_separator, AlbumArtists);
 
     public string Lyrics
     {
