@@ -18,7 +18,7 @@ public sealed class GenreExtractor : IPathOperation
 
         var artistsWithGenres = mediaFiles
             .Where(f => f.Genres.Any() && f.Artists.Any())
-            .GroupBy(f => f.Artists[0], f => f.Genres)
+            .GroupBy(f => f.ArtistsCombined, f => f.Genres)
             .ToImmutableSortedDictionary(
                 f => f.Key,
                 f => f.First() // TODO: Get their most populous genre
@@ -32,7 +32,9 @@ public sealed class GenreExtractor : IPathOperation
             settings.ArtistGenres[pair.Key] = pair.Value[0];
         }
 
-        SettingsService.WriteSettingsToFile(settings, printer);
-        printer.Print("Wrote to the settings file!");
+        if (SettingsService.WriteSettingsToFile(settings, printer))
+            printer.Print("Saved artists and genres to the settings file.");
+        else
+            printer.Print("An error occurred during the process.");
     }
 }
