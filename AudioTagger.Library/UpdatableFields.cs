@@ -4,7 +4,7 @@ using AudioTagger.Library.MediaFiles;
 
 namespace AudioTagger;
 
-public class UpdatableFields
+public sealed class UpdatableFields
 {
     public string[]? AlbumArtists { get; }
     public string[]? Artists { get; }

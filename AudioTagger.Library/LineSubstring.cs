@@ -1,6 +1,6 @@
 ﻿namespace AudioTagger;
 
-public class LineSubString
+public sealed class LineSubString
 {
     public string Text { get; set; }
     public ConsoleColor? FgColor { get; set; }

@@ -3,38 +3,28 @@ using Spectre.Console;
 
 namespace AudioTagger.Console;
 
-public class SpectrePrinter : IPrinter
+public sealed class SpectrePrinter : IPrinter
 {
-    private static void PrependLines(byte lines)
+    private static void AddLines(byte lines)
     {
         if (lines == 0)
             return;
 
-        for (var prepend = 0; prepend < lines; prepend++)
-            WriteLine();
+        WriteLine(Enumerable.Repeat(Environment.NewLine, lines));
     }
 
-    private static void AppendLines(byte lines)
-    {
-        if (lines == 0)
-            return;
-
-        for (var append = 0; append < lines; append++)
-            WriteLine();
-    }
-
-    public void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
-                      ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
+    public void Print(string message, byte prependLines = 0, byte appendLines = 0,
+                      string prependText = "", ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
     {
         if (string.IsNullOrWhiteSpace(message))
             throw new ArgumentNullException(nameof(message), "Message cannot be empty");
 
-        PrependLines(prependLines);
+        AddLines(prependLines);
 
         var subString = new LineSubString(message, fgColor, bgColor);
         AnsiConsole.MarkupLine(subString.GetSpectreString());
 
-        AppendLines(appendLines);
+        AddLines(appendLines);
     }
 
     public void Print(string message, ResultType type, byte prependLines = 0,
@@ -47,25 +37,31 @@ public class SpectrePrinter : IPrinter
     public void Print(IEnumerable<LineSubString> lineParts,
                       byte prependLines = 0, byte appendLines = 1)
     {
-        PrependLines(prependLines);
+        AddLines(prependLines);
 
         if (!lineParts.Any())
             return;
 
-        foreach (var linePart in lineParts)
+        // foreach (var linePart in lineParts)
+        // {
+        //     AnsiConsole.Markup(
+        //         new LineSubString(linePart.Text, linePart.FgColor, linePart.BgColor)
+        //             .GetSpectreString());
+        // }
+        lineParts.ToList().ForEach(p =>
         {
             AnsiConsole.Markup(
-                new LineSubString(linePart.Text, linePart.FgColor, linePart.BgColor)
+                new LineSubString(p.Text, p.FgColor, p.BgColor)
                     .GetSpectreString());
-        }
+        });
 
-        AppendLines(appendLines);
+        AddLines(appendLines);
     }
 
     public void Print(IEnumerable<OutputLine> lines,
                       byte prependLines = 0, byte appendLines = 1)
     {
-        PrependLines(prependLines);
+        AddLines(prependLines);
 
         if (!lines.Any())
             return; // TODO: Think about this.
@@ -82,7 +78,7 @@ public class SpectrePrinter : IPrinter
             }
         }
 
-        AppendLines(appendLines);
+        AddLines(appendLines);
     }
 
     public void Error(string message) => Print(message, 1, 1, "ERROR: ");
