@@ -16,25 +16,30 @@ public sealed class GenreExtractor : IPathOperation
             return;
         }
 
-        var artistsWithGenres = mediaFiles
+        var sortedArtistsWithGenres = mediaFiles
             .Where(f => f.Genres.Any() && f.Artists.Any())
-            .GroupBy(f => f.Artists.Join(), f => f.Genres)
+            .GroupBy(f =>
+                f.Artists[0], // Would be nice to split them
+                f => f.Genres.GroupBy(g => g)
+                             .OrderByDescending(grp => grp.Count())
+                             .Select(grp=>grp.Key)
+                             .First())
             .ToImmutableSortedDictionary(
                 f => f.Key,
-                f => f.First() // TODO: Get their most populous genre
+                f => f.First()
             );
 
-        printer.Print($"Found {artistsWithGenres.Count:#,##0} artists with genres.");
+        printer.Print($"Found {sortedArtistsWithGenres.Count:#,##0} unique artists with genres.");
 
         settings.ArtistGenres ??= new();
-        foreach (var pair in artistsWithGenres)
+        foreach (var pair in sortedArtistsWithGenres)
         {
-            settings.ArtistGenres[pair.Key] = pair.Value[0];
+            settings.ArtistGenres[pair.Key] = pair.Value;
         }
 
         if (SettingsService.WriteSettingsToFile(settings, printer))
             printer.Print("Saved artists and genres to the settings file.");
         else
-            printer.Print("An error occurred during the process.");
+            printer.Error("An error occurred during the process.");
     }
 }
