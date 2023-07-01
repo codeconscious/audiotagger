@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text;
 using System.Globalization;
+using AudioTagger.Library.MediaFiles;
 
 namespace AudioTagger;
 
@@ -49,10 +50,10 @@ public class FileRenamer : IPathOperation
 
         var newFileName = new StringBuilder();
 
-        var artist = string.Join("; ", fileData.Artists);
+        var artist = fileData.Artists.Join();
         var title = fileData.Title;
         var year = fileData.Year.ToString(CultureInfo.InvariantCulture);
-        var genre = string.Join("; ", fileData.Genres);
+        var genre = fileData.Genres.Join();
 
         if (!string.IsNullOrWhiteSpace(artist))
             newFileName.Append(artist).Append(" - ");

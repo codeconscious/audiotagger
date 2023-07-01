@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using AudioTagger.Library.MediaFiles;
 
 namespace AudioTagger;
 

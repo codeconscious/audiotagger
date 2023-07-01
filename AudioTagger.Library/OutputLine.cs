@@ -1,3 +1,5 @@
+using AudioTagger.Library.MediaFiles;
+
 namespace AudioTagger;
 
 public class OutputLine
@@ -56,8 +58,7 @@ public class OutputLine
     }
 
     public static OutputLine TagDataWithHeader(string tagName, string tagData,
-                                        string prependLine = "",
-                                        ConsoleColor headerColor = ConsoleColor.DarkGray)
+                                        string prependLine = "")
     {
         return TagDataWithHeader(
             tagName,
@@ -73,7 +74,7 @@ public class OutputLine
         var lines = new List<OutputLine>
         {
             TagDataWithHeader("Title", fileData.Title),
-            TagDataWithHeader("Artist(s)", string.Join(", ", fileData.Artists)),
+            TagDataWithHeader("Artist(s)", fileData.Artists.Join()),
             TagDataWithHeader("Album", fileData.Album),
             TagDataWithHeader("Year", fileData.Year.ToString()),
             TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss"))
@@ -101,7 +102,7 @@ public class OutputLine
                 }));
 
         if (fileData.Composers?.Length > 0)
-            lines.Add(TagDataWithHeader($"Composers", string.Join("; ", fileData.Composers)));
+            lines.Add(TagDataWithHeader("Composers", fileData.Composers.Join()));
 
         if (!string.IsNullOrWhiteSpace(fileData.Comments))
             lines.Add(TagDataWithHeader("Comment", fileData.Comments));
@@ -114,14 +115,14 @@ public class OutputLine
         var lines = new Dictionary<string, string>
         {
             { "Title", fileData.Title },
-            { "Artist(s)", string.Join(", ", fileData.Artists) },
+            { "Artist(s)", fileData.Artists.Join() },
             { "Album", fileData.Album },
             { "Year", fileData.Year.ToString() },
             { "Duration", fileData.Duration.ToString("m\\:ss") }
         };
 
         var genreCount = fileData.Genres.Length;
-        lines.Add("Genre(s)", string.Join(", ", fileData.Genres) +
+        lines.Add("Genre(s)", fileData.Genres.Join() +
                               (genreCount > 1 ? $" ({genreCount})" : ""));
 
         var bitrate = fileData.BitRate.ToString();

@@ -18,7 +18,7 @@ public sealed class GenreExtractor : IPathOperation
 
         var artistsWithGenres = mediaFiles
             .Where(f => f.Genres.Any() && f.Artists.Any())
-            .GroupBy(f => f.ArtistsCombined, f => f.Genres)
+            .GroupBy(f => f.Artists.Join(), f => f.Genres)
             .ToImmutableSortedDictionary(
                 f => f.Key,
                 f => f.First() // TODO: Get their most populous genre
