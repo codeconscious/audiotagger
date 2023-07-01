@@ -62,7 +62,7 @@ public class MediaFile
                          .ToArray();
     }
 
-    public string ArtistsCombined => string.Join(_separator, AlbumArtists);
+    public string ArtistsCombined => string.Join(_separator, Artists);
 
     public string Album
     {
