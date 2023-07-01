@@ -53,7 +53,7 @@ public class TagUpdater : IPathOperation
     /// </summary>
     /// <returns>A bool indicating whether the following file should be processed.</returns>
     private static bool UpdateTags(MediaFile mediaFile,
-                                   IRegexCollection regexCollection,
+                                   RegexCollection regexCollection,
                                    IPrinter printer,
                                    Settings settings,
                                    ref bool doConfirm)
@@ -61,7 +61,7 @@ public class TagUpdater : IPathOperation
         // TODO: Refactor cancellation so this isn't needed.
         const bool shouldCancel = false;
 
-        var match = regexCollection.GetFirstFileMatch(mediaFile.FileNameOnly);
+        var match = regexCollection.GetFirstMatch(mediaFile.FileNameOnly);
 
         // If there are no regex matches against the filename, we cannot continue.
         if (match == null)

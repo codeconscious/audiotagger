@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AudioTagger;
+﻿namespace AudioTagger;
 
 public enum ResultType
 {

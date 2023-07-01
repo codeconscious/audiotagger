@@ -437,7 +437,7 @@ public class RegexTests
     {
         var regexCollection = new RegexCollection("Regexes.txt");
 
-        var match = regexCollection.GetFirstFileMatch(expected.FileName);
+        var match = regexCollection.GetFirstMatch(expected.FileName);
 
         var matchedTags = match.Groups
                                .OfType<Group>()

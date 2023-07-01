@@ -2,7 +2,7 @@
 
 namespace AudioTagger;
 
-public class RegexCollection : IRegexCollection
+public sealed record class RegexCollection
 {
     /// <summary>
     /// The regexes used for reading tags from names.
@@ -24,18 +24,20 @@ public class RegexCollection : IRegexCollection
                           .Distinct()
                           .ToList();
     }
+}
 
+public static class RegexCollectionExtensionMethods
+{
     /// <summary>
     /// Returns the first found regex matches for a filename, or null if none.
     /// </summary>
     /// <returns>Matched tag data; otherwise, null if no matches are found.</returns>
-    public Match? GetFirstFileMatch(string fileName)
+    public static Match? GetFirstMatch(this RegexCollection regexes,
+                                       string fileName)
     {
-        foreach (var pattern in Patterns)
+        foreach (var pattern in regexes.Patterns)
         {
-            var match = Regex.Match(fileName,
-                                    pattern,
-                                    RegexOptions.CultureInvariant);
+            var match = Regex.Match(fileName, pattern, RegexOptions.CultureInvariant);
 
             if (match.Success)
                 return match;
