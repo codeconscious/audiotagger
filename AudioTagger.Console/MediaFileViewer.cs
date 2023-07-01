@@ -6,8 +6,6 @@ public class MediaFileViewer
 {
     public void PrintFileDetails(MediaFile file)
     {
-        ArgumentNullException.ThrowIfNull(file);
-
         // TODO: Handle colors more gracefully.
         var tagNameFormatter = (string s) => "[grey]" + s +"[/]";
 
@@ -71,11 +69,9 @@ public class MediaFileViewer
 
     public TableRow PrintFileSummary(MediaFile file)
     {
-        ArgumentNullException.ThrowIfNull(file);
-
         var rows = new List<string>
         {
-            file.AlbumArtistsAndArtistsCombined,
+            file.AlbumArtistsAndArtistsCombined.EscapeMarkup(),
             file.Album.EscapeMarkup(),
             file.TrackNo == 0 ? string.Empty : file.TrackNo.ToString().EscapeMarkup(),
             file.Title.EscapeMarkup(),
