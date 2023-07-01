@@ -49,10 +49,10 @@ public class FileRenamer : IPathOperation
 
         var newFileName = new StringBuilder();
 
-        var artist = fileData.ArtistsCombined;
+        var artist = fileData.Artists.Join();
         var title = fileData.Title;
         var year = fileData.Year.ToString(CultureInfo.InvariantCulture);
-        var genre = fileData.GenresCombined;
+        var genre = fileData.Genres.Join();
 
         if (!string.IsNullOrWhiteSpace(artist))
             newFileName.Append(artist).Append(" - ");
