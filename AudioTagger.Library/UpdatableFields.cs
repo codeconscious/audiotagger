@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using System.Globalization;
+using AudioTagger.Library.MediaFiles;
 
 namespace AudioTagger;
 

@@ -3,6 +3,7 @@ global using System.Linq;
 global using System.Collections.Generic;
 global using System.Collections.Immutable;
 global using System.IO;
+global using AudioTagger.Library.MediaFiles;
 using Spectre.Console;
 
 namespace AudioTagger.Console;

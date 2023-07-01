@@ -1,4 +1,4 @@
-﻿namespace AudioTagger;
+﻿namespace AudioTagger.Library.MediaFiles;
 
 public class MediaFile
 {
