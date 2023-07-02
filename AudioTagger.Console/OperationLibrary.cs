@@ -53,7 +53,7 @@ internal static class OperationLibrary
             new Normalization()),
         new(
             new OperationFlags{"-g", "--genres"},
-            "Read artist all genres to the settings file.",
+            "Save the primary genre for each artist to the settings file.",
             new GenreExtractor()),
     };
 
