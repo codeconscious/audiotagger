@@ -5,7 +5,7 @@ namespace AudioTagger.Console;
 /// <summary>
 /// Normalize audio using ReplayGain.
 /// </summary>
-public class Normalization : IPathOperation
+public sealed class Normalization : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,

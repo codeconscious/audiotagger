@@ -2,7 +2,7 @@ using Spectre.Console;
 
 namespace AudioTagger.Console;
 
-public class TagUpdaterYearOnly : IPathOperation
+public sealed class TagUpdaterYearOnly : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,

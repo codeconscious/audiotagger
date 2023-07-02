@@ -3,7 +3,7 @@ using System.Text;
 
 namespace AudioTagger.Console;
 
-public class TagDuplicateFinder : IPathOperation
+public sealed class TagDuplicateFinder : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,

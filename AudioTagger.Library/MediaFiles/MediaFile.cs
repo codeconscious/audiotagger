@@ -1,6 +1,6 @@
 ﻿namespace AudioTagger.Library.MediaFiles;
 
-public class MediaFile
+public sealed class MediaFile
 {
     public string Path { get; }
     private readonly TagLib.File _taggedFile;

@@ -4,7 +4,7 @@ using Spectre.Console;
 
 namespace AudioTagger.Console;
 
-public class TagStats : IPathOperation
+public sealed class TagStats : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
@@ -140,7 +140,7 @@ public class TagStats : IPathOperation
         }
     }
 
-    private class TitleComparer : IEqualityComparer<string>
+    private sealed class TitleComparer : IEqualityComparer<string>
     {
         public bool Equals(string? x, string? y)
         {

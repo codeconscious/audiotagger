@@ -71,7 +71,7 @@ internal static class OperationLibrary
                          .PathOperation;
     }
 
-    internal class Operation
+    internal sealed class Operation
     {
         public required List<string> Commands { get; set;}
         public required string Description { get; set; }

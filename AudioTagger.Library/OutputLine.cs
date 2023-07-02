@@ -2,7 +2,7 @@ using AudioTagger.Library.MediaFiles;
 
 namespace AudioTagger;
 
-public class OutputLine
+public sealed class OutputLine
 {
     public List<LineSubString> Line { get; set; } = new List<LineSubString>();
 

@@ -5,7 +5,7 @@ using AudioTagger.Library.MediaFiles;
 
 namespace AudioTagger;
 
-public class FileRenamer : IPathOperation
+public sealed class FileRenamer : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> filesData,
                       DirectoryInfo workingDirectory,

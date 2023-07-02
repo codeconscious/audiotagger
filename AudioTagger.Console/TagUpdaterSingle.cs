@@ -5,7 +5,7 @@ namespace AudioTagger.Console;
 /// <summary>
 /// Updates a single supported tag to a specified value for all files in a specific path.
 /// </summary>
-public class TagUpdaterSingle : IPathOperation
+public sealed class TagUpdaterSingle : IPathOperation
 {
     private enum TagUpdateType { Overwrite, Prepend, Append }
 

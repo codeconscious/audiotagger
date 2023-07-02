@@ -2,7 +2,7 @@ using Spectre.Console;
 
 namespace AudioTagger;
 
-public class MediaFileViewer
+public sealed class MediaFileViewer
 {
     public void PrintFileDetails(MediaFile file)
     {
@@ -67,7 +67,7 @@ public class MediaFileViewer
         AnsiConsole.Write(panel);
     }
 
-    public TableRow PrintFileSummary(MediaFile file)
+    public static TableRow PrintFileSummary(MediaFile file)
     {
         var rows = new List<string>
         {
