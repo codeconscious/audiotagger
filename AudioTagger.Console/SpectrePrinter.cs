@@ -5,7 +5,11 @@ namespace AudioTagger.Console;
 
 public sealed class SpectrePrinter : IPrinter
 {
-    private static void AddLines(byte count)
+    /// <summary>
+    /// Prints the requested number of blank lines.
+    /// </summary>
+    /// <param name="count"></param>
+    private static void PrintEmptyLines(byte count)
     {
         if (count == 0)
             return;
@@ -19,12 +23,12 @@ public sealed class SpectrePrinter : IPrinter
         if (string.IsNullOrWhiteSpace(message))
             throw new ArgumentNullException(nameof(message), "Message cannot be empty");
 
-        AddLines(prependLines);
+        PrintEmptyLines(prependLines);
 
         var subString = new LineSubString(message, fgColor, bgColor);
         AnsiConsole.MarkupLine(subString.GetSpectreString());
 
-        AddLines(appendLines);
+        PrintEmptyLines(appendLines);
     }
 
     public void Print(string message, ResultType type, byte prependLines = 0,
@@ -37,7 +41,7 @@ public sealed class SpectrePrinter : IPrinter
     public void Print(IEnumerable<LineSubString> lineParts,
                       byte prependLines = 0, byte appendLines = 1)
     {
-        AddLines(prependLines);
+        PrintEmptyLines(prependLines);
 
         if (!lineParts.Any())
             return;
@@ -49,13 +53,13 @@ public sealed class SpectrePrinter : IPrinter
                     .GetSpectreString());
         });
 
-        AddLines(appendLines);
+        PrintEmptyLines(appendLines);
     }
 
     public void Print(IEnumerable<OutputLine> lines,
                       byte prependLines = 0, byte appendLines = 1)
     {
-        AddLines(prependLines);
+        PrintEmptyLines(prependLines);
 
         if (!lines.Any())
             return; // TODO: Think about this.
@@ -72,7 +76,7 @@ public sealed class SpectrePrinter : IPrinter
             }
         }
 
-        AddLines(appendLines);
+        PrintEmptyLines(appendLines);
     }
 
     public void Error(string message) => Print(message, 1, 1, "ERROR: ");
