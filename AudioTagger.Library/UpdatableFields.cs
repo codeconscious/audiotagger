@@ -21,7 +21,7 @@ public sealed class UpdatableFields
     /// maps the data to the correct tag name property.
     /// </summary>
     /// <param name="matchedGroups"></param>
-    public UpdatableFields(IEnumerable<Group> matchedGroups, Settings? settings = null)
+    public UpdatableFields(IEnumerable<Group> matchedGroups, Settings settings)
     {
         ArgumentNullException.ThrowIfNull(matchedGroups);
 

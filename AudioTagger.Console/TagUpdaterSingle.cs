@@ -14,7 +14,7 @@ public class TagUpdaterSingle : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
-                      Settings? settings = null)
+                      Settings settings)
     {
         if (!mediaFiles.Any())
         {

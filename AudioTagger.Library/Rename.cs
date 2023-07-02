@@ -10,7 +10,7 @@ public class FileRenamer : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> filesData,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
-                      Settings? settings = null)
+                      Settings settings)
     {
         foreach (var fileData in filesData)
         {

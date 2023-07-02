@@ -5,11 +5,8 @@ public sealed class GenreExtractor : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
-                      Settings? settings = null) // # TODO: No need for nullability
+                      Settings settings)
     {
-        if (settings is null)
-            throw new InvalidOperationException("Settings cannot be null.");
-
         if (!mediaFiles.Any())
         {
             printer.Print("There are no files to work on. Cancelling...");
@@ -20,7 +17,7 @@ public sealed class GenreExtractor : IPathOperation
             .Where(f => f.Genres.Any() && f.Artists.Any())
             .GroupBy(f =>
                 f.Artists[0], // Would be nice to split them
-                f => f.Genres.GroupBy(g => g)
+                f => f.Genres.GroupBy(g => g) // Get most populous
                              .OrderByDescending(grp => grp.Count())
                              .Select(grp=>grp.Key)
                              .First())
