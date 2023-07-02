@@ -42,12 +42,6 @@ public sealed class SpectrePrinter : IPrinter
         if (!lineParts.Any())
             return;
 
-        // foreach (var linePart in lineParts)
-        // {
-        //     AnsiConsole.Markup(
-        //         new LineSubString(linePart.Text, linePart.FgColor, linePart.BgColor)
-        //             .GetSpectreString());
-        // }
         lineParts.ToList().ForEach(p =>
         {
             AnsiConsole.Markup(
@@ -82,35 +76,6 @@ public sealed class SpectrePrinter : IPrinter
     }
 
     public void Error(string message) => Print(message, 1, 1, "ERROR: ");
-
-    // private void PrintColor(LineSubString lineSubString)
-    // {
-    //     PrintColor(lineSubString.Text, lineSubString.FgColor, lineSubString.BgColor);
-    // }
-
-    // private void PrintColor(string text, ConsoleColor? fgColor,
-    //                                ConsoleColor? bgColor = null,
-    //                                bool addLineBreak = false)
-    // {
-    //     if (fgColor.HasValue)
-    //         System.Console.ForegroundColor = fgColor.Value;
-
-    //     if (bgColor.HasValue)
-    //         BackgroundColor = bgColor.Value;
-
-    //     Write(text);
-
-    //     if (addLineBreak)
-    //         WriteLine();
-
-    //     ResetColor();
-    // }
-
-    // // TODO: Check whether we can delete this.
-    // private void PrintColor()
-    // {
-    //     WriteLine();
-    // }
 
     public char GetResultSymbol(ResultType type)
     {

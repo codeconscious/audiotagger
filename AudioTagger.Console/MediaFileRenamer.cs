@@ -71,7 +71,7 @@ public sealed class MediaFileRenamer : IPathOperation
                 if (isCancelRequested)
                     break;
 
-                var useRootPath = artistCounts[GetConcatenatedArtists(file)] == 1;
+                var useRootPath = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] == 1;
 
                 isCancelRequested = RenameSingleFile(
                     file, printer, workingDirectory.FullName, useRootPath, ref doConfirm, renamePatterns);
@@ -105,7 +105,8 @@ public sealed class MediaFileRenamer : IPathOperation
 
         static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
         {
-            return mediaFiles.GroupBy(n => GetConcatenatedArtists(n))
+            return mediaFiles
+                .GroupBy(file => file.AlbumArtists.JoinWith(file.Artists))
                 .ToDictionary(g => g.Key, g => g.Count());
         }
     }
@@ -308,18 +309,5 @@ public sealed class MediaFileRenamer : IPathOperation
             foreach (var dir in deletedDirectories)
                 printer.Print("- " + dir);
         }
-    }
-
-    /// <summary>
-    /// Reads the album artists, if any, or else the artists of a file
-    /// and returns them in an unformatted, concatenated string.
-    /// </summary>
-    private static string GetConcatenatedArtists(MediaFile file)
-    {
-        // TODO: What if both fields are empty?
-        return string.Concat(
-            file.AlbumArtists.Any()
-                ? file.AlbumArtists
-                : file.Artists);
     }
 }
