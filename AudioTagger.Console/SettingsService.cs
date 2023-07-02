@@ -30,21 +30,22 @@ public static class SettingsService
                 return null;
 
             var text = File.ReadAllText(_settingsFileName);
-            return JsonSerializer.Deserialize<Settings>(text) ?? throw new JsonException();
+            return JsonSerializer.Deserialize<Settings>(text)
+                   ?? throw new JsonException();
         }
         catch (FileNotFoundException)
         {
-            printer.Print($"Settings file \"{_settingsFileName}\" was unexpectedly not found");
+            printer.Error($"Settings file \"{_settingsFileName}\" was unexpectedly not found.");
             return null;
         }
         catch (JsonException ex)
         {
-            printer.Print($"The settings file is invalid: {ex.Message}");
+            printer.Error($"The settings file is invalid: {ex.Message}");
             return null;
         }
         catch (Exception ex)
         {
-            printer.Print($"ERROR: {ex.Message}");
+            printer.Error(ex.Message);
             return null;
         }
     }
@@ -72,7 +73,7 @@ public static class SettingsService
         }
         catch (JsonException ex)
         {
-            printer.Print($"The settings file is invalid: {ex.Message}");
+            printer.Error($"The settings file is invalid: {ex.Message}");
             return false;
             // throw new InvalidOperationException();
         }

@@ -76,17 +76,17 @@ public sealed class MediaFileRenamer : IPathOperation
                 isCancelRequested = RenameSingleFile(
                     file, printer, workingDirectory.FullName, useRootPath, ref doConfirm, renamePatterns);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
-                printer.PrintException(e);
-                errors.Add(e.Message); // The message should contain the file name.
+                printer.Error($"Error updating \"{file.FileNameOnly}\": {ex.Message}");
+                printer.PrintException(ex);
+                errors.Add(ex.Message); // The message should contain the file name.
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException ex)
             {
-                printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
-                printer.PrintException(e);
-                errors.Add(e.Message);
+                printer.Error($"Error updating \"{file.FileNameOnly}\": {ex.Message}");
+                printer.PrintException(ex);
+                errors.Add(ex.Message);
             }
         }
 
