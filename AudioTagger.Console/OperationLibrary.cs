@@ -53,7 +53,7 @@ internal static class OperationLibrary
             new Normalization()),
         new(
             new OperationFlags{"-g", "--genres"},
-            "Read artist genres to the settings file (Under development!)",
+            "Read artist all genres to the settings file.",
             new GenreExtractor()),
     };
 

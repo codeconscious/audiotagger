@@ -5,12 +5,12 @@ namespace AudioTagger.Console;
 
 public sealed class SpectrePrinter : IPrinter
 {
-    private static void AddLines(byte lines)
+    private static void AddLines(byte count)
     {
-        if (lines == 0)
+        if (count == 0)
             return;
 
-        WriteLine(Enumerable.Repeat(Environment.NewLine, lines));
+        Write(string.Concat(Enumerable.Repeat(Environment.NewLine, count)));
     }
 
     public void Print(string message, byte prependLines = 0, byte appendLines = 0,
