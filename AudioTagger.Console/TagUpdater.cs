@@ -10,9 +10,6 @@ public class TagUpdater : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        if (settings is null)
-            throw new InvalidOperationException("Settings cannot be null");
-
         var cancelRequested = false;
         var doConfirm = true;
         var errorFiles = new List<string>();
