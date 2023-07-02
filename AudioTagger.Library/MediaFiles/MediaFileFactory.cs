@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
-namespace AudioTagger;
+namespace AudioTagger.Library.MediaFiles;
 
 public static class MediaFileFactory
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AudioTagger;
+﻿namespace AudioTagger;
 
 public enum ResultType
 {
@@ -12,7 +9,7 @@ public enum ResultType
     Unknown
 }
 
-public record ResultProperties(ConsoleColor? Color, string Symbol = "");
+public sealed record ResultProperties(ConsoleColor? Color, string Symbol = "");
 
 public static class ResultsMap
 {

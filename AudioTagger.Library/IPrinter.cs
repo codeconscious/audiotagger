@@ -1,4 +1,6 @@
-﻿namespace AudioTagger;
+﻿using AudioTagger.Library.MediaFiles;
+
+namespace AudioTagger;
 
 public interface IPrinter
 {

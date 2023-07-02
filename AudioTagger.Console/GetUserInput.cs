@@ -12,7 +12,7 @@ public enum UserResponse
     Cancel
 }
 
-public record KeyResponse
+public sealed record KeyResponse
 {
     public char Key { get; init; }
     public UserResponse Response { get; init; }

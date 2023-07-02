@@ -11,7 +11,7 @@ public sealed class MediaFileRenamer : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
-                      Settings? settings = null)
+                      Settings settings)
     {
         if (!ConfirmContinue(workingDirectory, printer))
         {
@@ -71,22 +71,22 @@ public sealed class MediaFileRenamer : IPathOperation
                 if (isCancelRequested)
                     break;
 
-                var useRootPath = artistCounts[GetConcatenatedArtists(file)] == 1;
+                var useRootPath = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] == 1;
 
                 isCancelRequested = RenameSingleFile(
                     file, printer, workingDirectory.FullName, useRootPath, ref doConfirm, renamePatterns);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
-                printer.PrintException(e);
-                errors.Add(e.Message); // The message should contain the file name.
+                printer.Error($"Error updating \"{file.FileNameOnly}\": {ex.Message}");
+                printer.PrintException(ex);
+                errors.Add(ex.Message); // The message should contain the file name.
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException ex)
             {
-                printer.Error($"Error updating \"{file.FileNameOnly}\": {e.Message}");
-                printer.PrintException(e);
-                errors.Add(e.Message);
+                printer.Error($"Error updating \"{file.FileNameOnly}\": {ex.Message}");
+                printer.PrintException(ex);
+                errors.Add(ex.Message);
             }
         }
 
@@ -105,7 +105,8 @@ public sealed class MediaFileRenamer : IPathOperation
 
         static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
         {
-            return mediaFiles.GroupBy(n => GetConcatenatedArtists(n))
+            return mediaFiles
+                .GroupBy(file => file.AlbumArtists.JoinWith(file.Artists))
                 .ToDictionary(g => g.Key, g => g.Count());
         }
     }
@@ -308,18 +309,5 @@ public sealed class MediaFileRenamer : IPathOperation
             foreach (var dir in deletedDirectories)
                 printer.Print("- " + dir);
         }
-    }
-
-    /// <summary>
-    /// Reads the album artists, if any, or else the artists of a file
-    /// and returns them in an unformatted, concatenated string.
-    /// </summary>
-    private static string GetConcatenatedArtists(MediaFile file)
-    {
-        // TODO: What if both fields are empty?
-        return string.Concat(
-            file.AlbumArtists.Any()
-                ? file.AlbumArtists
-                : file.Artists);
     }
 }

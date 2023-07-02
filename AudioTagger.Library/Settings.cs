@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace AudioTagger;
 
-public record Settings
+public sealed record Settings
 {
     [JsonPropertyName("duplicates")]
     public Duplicates Duplicates { get; set; } = new();
@@ -12,15 +12,18 @@ public record Settings
 
     [JsonPropertyName("renamePatterns")]
     public ImmutableList<string>? RenamePatterns { get; set; }
+
+    [JsonPropertyName("artistGenres")]
+    public Dictionary<string, string>? ArtistGenres { get; set; } = new();
 }
 
-public record Duplicates
+public sealed record Duplicates
 {
     [JsonPropertyName("titleReplacements")]
     public ImmutableList<string>? TitleReplacements { get; set; }
 }
 
-public record Tagging
+public sealed record Tagging
 {
     [JsonPropertyName("regexPatterns")]
     public ImmutableList<string>? RegexPatterns { get; set; }

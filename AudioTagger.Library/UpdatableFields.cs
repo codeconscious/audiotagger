@@ -1,9 +1,10 @@
 using System.Text.RegularExpressions;
 using System.Globalization;
+using AudioTagger.Library.MediaFiles;
 
 namespace AudioTagger;
 
-public class UpdatableFields
+public sealed class UpdatableFields
 {
     public string[]? AlbumArtists { get; }
     public string[]? Artists { get; }
@@ -20,7 +21,7 @@ public class UpdatableFields
     /// maps the data to the correct tag name property.
     /// </summary>
     /// <param name="matchedGroups"></param>
-    public UpdatableFields(IEnumerable<Group> matchedGroups)
+    public UpdatableFields(IEnumerable<Group> matchedGroups, Settings settings)
     {
         ArgumentNullException.ThrowIfNull(matchedGroups);
 
@@ -84,6 +85,16 @@ public class UpdatableFields
                 TrackNo = uint.TryParse(element.Value, out var parsed) ? parsed : null;
                 Count++;
             }
+        }
+
+        // If no genre was manually passed in, check the settings for one.
+        if ((Genres?.Any() != true) &&
+            settings?.ArtistGenres is not null &&
+            settings.ArtistGenres.Any() &&
+            Artists is not null &&
+            settings.ArtistGenres.ContainsKey(Artists[0]))
+        {
+            Genres = new[] { settings.ArtistGenres[Artists[0]] };
         }
     }
 

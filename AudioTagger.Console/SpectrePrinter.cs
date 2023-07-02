@@ -3,38 +3,32 @@ using Spectre.Console;
 
 namespace AudioTagger.Console;
 
-public class SpectrePrinter : IPrinter
+public sealed class SpectrePrinter : IPrinter
 {
-    private static void PrependLines(byte lines)
+    /// <summary>
+    /// Prints the requested number of blank lines.
+    /// </summary>
+    /// <param name="count"></param>
+    private static void PrintEmptyLines(byte count)
     {
-        if (lines == 0)
+        if (count == 0)
             return;
 
-        for (var prepend = 0; prepend < lines; prepend++)
-            WriteLine();
+        Write(string.Concat(Enumerable.Repeat(Environment.NewLine, count)));
     }
 
-    private static void AppendLines(byte lines)
-    {
-        if (lines == 0)
-            return;
-
-        for (var append = 0; append < lines; append++)
-            WriteLine();
-    }
-
-    public void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
-                      ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
+    public void Print(string message, byte prependLines = 0, byte appendLines = 0,
+                      string prependText = "", ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
     {
         if (string.IsNullOrWhiteSpace(message))
             throw new ArgumentNullException(nameof(message), "Message cannot be empty");
 
-        PrependLines(prependLines);
+        PrintEmptyLines(prependLines);
 
         var subString = new LineSubString(message, fgColor, bgColor);
         AnsiConsole.MarkupLine(subString.GetSpectreString());
 
-        AppendLines(appendLines);
+        PrintEmptyLines(appendLines);
     }
 
     public void Print(string message, ResultType type, byte prependLines = 0,
@@ -47,25 +41,25 @@ public class SpectrePrinter : IPrinter
     public void Print(IEnumerable<LineSubString> lineParts,
                       byte prependLines = 0, byte appendLines = 1)
     {
-        PrependLines(prependLines);
+        PrintEmptyLines(prependLines);
 
         if (!lineParts.Any())
             return;
 
-        foreach (var linePart in lineParts)
+        lineParts.ToList().ForEach(p =>
         {
             AnsiConsole.Markup(
-                new LineSubString(linePart.Text, linePart.FgColor, linePart.BgColor)
+                new LineSubString(p.Text, p.FgColor, p.BgColor)
                     .GetSpectreString());
-        }
+        });
 
-        AppendLines(appendLines);
+        PrintEmptyLines(appendLines);
     }
 
     public void Print(IEnumerable<OutputLine> lines,
                       byte prependLines = 0, byte appendLines = 1)
     {
-        PrependLines(prependLines);
+        PrintEmptyLines(prependLines);
 
         if (!lines.Any())
             return; // TODO: Think about this.
@@ -82,39 +76,10 @@ public class SpectrePrinter : IPrinter
             }
         }
 
-        AppendLines(appendLines);
+        PrintEmptyLines(appendLines);
     }
 
     public void Error(string message) => Print(message, 1, 1, "ERROR: ");
-
-    // private void PrintColor(LineSubString lineSubString)
-    // {
-    //     PrintColor(lineSubString.Text, lineSubString.FgColor, lineSubString.BgColor);
-    // }
-
-    // private void PrintColor(string text, ConsoleColor? fgColor,
-    //                                ConsoleColor? bgColor = null,
-    //                                bool addLineBreak = false)
-    // {
-    //     if (fgColor.HasValue)
-    //         System.Console.ForegroundColor = fgColor.Value;
-
-    //     if (bgColor.HasValue)
-    //         BackgroundColor = bgColor.Value;
-
-    //     Write(text);
-
-    //     if (addLineBreak)
-    //         WriteLine();
-
-    //     ResetColor();
-    // }
-
-    // // TODO: Check whether we can delete this.
-    // private void PrintColor()
-    // {
-    //     WriteLine();
-    // }
 
     public char GetResultSymbol(ResultType type)
     {

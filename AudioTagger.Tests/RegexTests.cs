@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace AudioTagger.Tests;
 
-public class RegexTests
+public sealed class RegexTests
 {
-    public class ParsedItem
+    public sealed class ParsedItem
     {
         /// <summary>
         /// The file name from which the other expected values while be parsed, as possible.
@@ -34,7 +34,7 @@ public class RegexTests
         #endregion
     }
 
-    private class TestDataSet : IEnumerable<object[]>
+    private sealed class TestDataSet : IEnumerable<object[]>
     {
         public IEnumerator<object[]> GetEnumerator()
         {
@@ -437,7 +437,7 @@ public class RegexTests
     {
         var regexCollection = new RegexCollection("Regexes.txt");
 
-        var match = regexCollection.GetFirstFileMatch(expected.FileName);
+        var match = regexCollection.GetFirstMatch(expected.FileName);
 
         var matchedTags = match.Groups
                                .OfType<Group>()

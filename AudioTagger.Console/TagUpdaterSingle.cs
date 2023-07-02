@@ -5,7 +5,7 @@ namespace AudioTagger.Console;
 /// <summary>
 /// Updates a single supported tag to a specified value for all files in a specific path.
 /// </summary>
-public class TagUpdaterSingle : IPathOperation
+public sealed class TagUpdaterSingle : IPathOperation
 {
     private enum TagUpdateType { Overwrite, Prepend, Append }
 
@@ -14,7 +14,7 @@ public class TagUpdaterSingle : IPathOperation
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
-                      Settings? settings = null)
+                      Settings settings)
     {
         if (!mediaFiles.Any())
         {
@@ -54,15 +54,15 @@ public class TagUpdaterSingle : IPathOperation
                 UpdateTags(file, tagName, tagValue, updateType);
                 successCount++;
             }
-            catch (FormatException e)
+            catch (FormatException ex)
             {
                 failureCount++;
-                printer.Print($"❌ ERROR: {e.Message} ({file.Path})");
+                printer.Error($"{ex.Message} ({file.Path})");
             }
-            catch
+            catch (Exception ex)
             {
                 failureCount++;
-                printer.Print($"❌ UNEXPECTED ERROR: {file.Path}");
+                printer.Error($"Error for \"{file.Path}\": {ex.Message}");
             }
         }
 
