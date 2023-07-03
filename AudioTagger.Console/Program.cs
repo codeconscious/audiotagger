@@ -6,6 +6,9 @@ global using System.IO;
 global using AudioTagger.Library.MediaFiles;
 using Spectre.Console;
 
+using VerifiedPaths = System.Collections.Immutable.ImmutableHashSet<string>;
+using FluentResults;
+
 namespace AudioTagger.Console;
 
 public static class Program
@@ -35,13 +38,14 @@ public static class Program
             return;
         }
 
-        if (!argQueue.Any())
+        var pathResult = VerifyPaths(argQueue.ToList());
+        if (pathResult.IsFailed)
         {
-            printer.Error("At least one file or directory path to process must be provided.");
+            pathResult.Errors.ForEach(e => printer.Error(e.Message));
             return;
         }
 
-        foreach (var path in argQueue)
+        foreach (var path in pathResult.Value)
         {
             printer.Print($"Processing path \"{path}\"...");
 
@@ -61,7 +65,7 @@ public static class Program
 
             if (!filesData.Any())
             {
-                printer.Error($"No files found at \"{path}\".");
+                printer.Error("No files found.");
                 continue;
             }
 
@@ -118,5 +122,20 @@ public static class Program
                       "A nearly-blank file will be automatically created if it does not exist. " +
                       "See the GitHub repository's readme file for more.",
                       prependLines: 1, appendLines: 1);
+    }
+
+    /// <summary>
+    /// A result potentially containing a collection of verified paths that are expected to be valid.
+    /// </summary>
+    public static Result<VerifiedPaths> VerifyPaths(ICollection<string> maybePaths)
+    {
+        if (maybePaths?.Any() != true)
+            return Result.Fail("No paths were passed in.");
+
+        var invalid = maybePaths.Where(p => !Path.Exists(p));
+        if (invalid.Any())
+            return Result.Fail($"Invalid path(s): \"{string.Join("\" and \"", invalid)}\".");
+
+        return Result.Ok(maybePaths.ToImmutableHashSet());
     }
 }
