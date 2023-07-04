@@ -17,6 +17,18 @@ public static class Program
     {
         IPrinter printer = new SpectrePrinter();
 
+        try
+        {
+            Run(args, printer);
+        }
+        catch (Exception ex)
+        {
+            printer.Error($"ERROR: {ex.Message}");
+        }
+    }
+
+    private static void Run(string[] args, IPrinter printer)
+    {
         if (args.Length == 0)
         {
             PrintInstructions(printer);
@@ -38,14 +50,17 @@ public static class Program
             return;
         }
 
-        var pathResult = VerifyPaths(argQueue.ToList());
-        if (pathResult.IsFailed)
+        var pathVerificationResult = VerifyPaths(argQueue.ToList());
+        VerifiedPaths verifiedPaths = pathVerificationResult switch
         {
-            pathResult.Errors.ForEach(e => printer.Error(e.Message));
-            return;
-        }
+            { IsSuccess: true } => pathVerificationResult.Value,
+            _ => throw new InvalidOperationException(
+                string.Join(
+                    Environment.NewLine,
+                    pathVerificationResult.Errors))
+        };
 
-        foreach (var path in pathResult.Value)
+        foreach (var path in verifiedPaths)
         {
             printer.Print($"Processing path \"{path}\"...");
 
@@ -125,7 +140,8 @@ public static class Program
     }
 
     /// <summary>
-    /// A result potentially containing a collection of verified paths that are expected to be valid.
+    /// A result containing a collection of verified paths that are expected to be valid
+    /// if successful; otherwise, an error message.
     /// </summary>
     public static Result<VerifiedPaths> VerifyPaths(ICollection<string> maybePaths)
     {
