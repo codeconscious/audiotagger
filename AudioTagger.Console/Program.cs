@@ -35,7 +35,7 @@ public static class Program
             return;
         }
 
-        var settings = SettingsService.ReadSettings(printer, true);
+        var settings = SettingsService.Read(printer, true);
         if (settings is null)
             return;
 

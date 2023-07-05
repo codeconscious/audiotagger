@@ -35,6 +35,12 @@ public static class SettingsService
 {
     private const string _settingsFileName = "settings.json";
 
+    /// <summary>
+    /// Creates the specified settings file if it is missing.
+    /// Otherwise, does nothing.
+    /// </summary>
+    /// <param name="printer"></param>
+    /// <returns>A bool indicating success or no action (true) or else failure (false).</returns>
     public static bool CreateIfMissing(IPrinter printer)
     {
         if (File.Exists(_settingsFileName))
@@ -42,7 +48,7 @@ public static class SettingsService
 
         try
         {
-            return WriteSettingsToFile(new Settings(), printer);
+            return Write(new Settings(), printer);
         }
         catch (Exception ex)
         {
@@ -51,7 +57,13 @@ public static class SettingsService
         }
     }
 
-    public static Settings? ReadSettings(IPrinter printer, bool createFileIfMissing = false)
+    /// <summary>
+    /// Reads the settings file and parses the JSON to a Settings object.
+    /// </summary>
+    /// <param name="printer"></param>
+    /// <param name="createFileIfMissing"></param>
+    /// <returns>Settings or null.</returns>
+    public static Settings? Read(IPrinter printer, bool createFileIfMissing = false)
     {
         try
         {
@@ -79,7 +91,13 @@ public static class SettingsService
         }
     }
 
-    public static bool WriteSettingsToFile(Settings settings, IPrinter printer)
+    /// <summary>
+    /// Write settings to the specified file.
+    /// </summary>
+    /// <param name="settings"></param>
+    /// <param name="printer"></param>
+    /// <returns>A bool indicating success or failure.</returns>
+    public static bool Write(Settings settings, IPrinter printer)
     {
         try
         {
