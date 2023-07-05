@@ -60,15 +60,12 @@ public static class SettingsService
     /// <summary>
     /// Reads the settings file and parses the JSON to a Settings object.
     /// </summary>
-    /// <param name="printer"></param>
-    /// <param name="createFileIfMissing"></param>
-    /// <returns>Settings or null.</returns>
-    public static Settings? Read(IPrinter printer, bool createFileIfMissing = false)
+    public static Settings Read(IPrinter printer, bool createFileIfMissing = false)
     {
         try
         {
             if (createFileIfMissing && !CreateIfMissing(printer))
-                return null;
+                throw new FileNotFoundException($"Settings file \"{_settingsFileName}\" missing.");
 
             var text = File.ReadAllText(_settingsFileName);
             return JsonSerializer.Deserialize<Settings>(text)
@@ -76,18 +73,15 @@ public static class SettingsService
         }
         catch (FileNotFoundException)
         {
-            printer.Error($"Settings file \"{_settingsFileName}\" was unexpectedly not found.");
-            return null;
+            throw new InvalidOperationException($"Settings file \"{_settingsFileName}\" not found.");
         }
         catch (JsonException ex)
         {
-            printer.Error($"The settings file is invalid: {ex.Message}");
-            return null;
+            throw new JsonException($"Settings file JSON is invalid: {ex.Message}");
         }
         catch (Exception ex)
         {
-            printer.Error(ex.Message);
-            return null;
+            throw new InvalidOperationException(ex.Message);
         }
     }
 

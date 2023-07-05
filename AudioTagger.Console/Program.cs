@@ -4,10 +4,11 @@ global using System.Collections.Generic;
 global using System.Collections.Immutable;
 global using System.IO;
 global using AudioTagger.Library.MediaFiles;
+using FluentResults;
 using Spectre.Console;
+using System.Text.Json;
 
 using VerifiedPaths = System.Collections.Immutable.ImmutableHashSet<string>;
-using FluentResults;
 
 namespace AudioTagger.Console;
 
@@ -21,9 +22,17 @@ public static class Program
         {
             Run(args, printer);
         }
+        catch (FileNotFoundException ex)
+        {
+            printer.Error($"Missing file error: {ex.Message}");
+        }
+        catch (JsonException ex)
+        {
+            printer.Error($"JSON error: {ex.Message}");
+        }
         catch (Exception ex)
         {
-            printer.Error($"ERROR: {ex.Message}");
+            printer.Error($"Unrecoverable error: {ex.Message}");
         }
     }
 
@@ -35,9 +44,7 @@ public static class Program
             return;
         }
 
-        var settings = SettingsService.Read(printer, true);
-        if (settings is null)
-            return;
+        Settings settings = SettingsService.Read(printer, createFileIfMissing: false);
 
         var argQueue = new Queue<string>(args.Select(a => a.Trim()));
 
