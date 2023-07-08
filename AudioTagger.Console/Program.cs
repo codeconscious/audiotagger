@@ -73,47 +73,52 @@ public static class Program
 
         foreach (var path in verifiedPaths)
         {
-            printer.Print($"Processing path \"{path}\"...");
+            ProcessPath(path, operation, settings, printer);
+        }
+    }
 
-            var stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
+    private static void ProcessPath(string path, IPathOperation operation, Settings settings, IPrinter printer)
+    {
+        printer.Print($"Processing path \"{path}\"...");
 
-            IReadOnlyCollection<MediaFile> filesData;
-            try
-            {
-                filesData = MediaFile.PopulateFileData(path, searchSubDirectories: true);
-            }
-            catch (InvalidOperationException ex)
-            {
-                printer.Error($"Path \"{path}\" could not be parsed: " + ex.Message);
-                continue;
-            }
+        var stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Start();
 
-            if (!filesData.Any())
-            {
-                printer.Error("No files found.");
-                continue;
-            }
+        IReadOnlyCollection<MediaFile> filesData;
+        try
+        {
+            filesData = MediaFile.PopulateFileData(path, searchSubDirectories: true);
+        }
+        catch (InvalidOperationException ex)
+        {
+            printer.Error($"Path \"{path}\" could not be parsed: " + ex.Message);
+            return;
+        }
 
-            // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
-            // Reference: https://stackoverflow.com/q/5113750/11767771
-            var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
+        if (!filesData.Any())
+        {
+            printer.Error("No files found.");
+            return;
+        }
 
-            printer.Print($"Found {filesData.Count:#,##0} files in {elapsedMs:#,##0}ms.");
+        // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
+        // Reference: https://stackoverflow.com/q/5113750/11767771
+        var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
 
-            try
-            {
-                operation.Start(
-                    filesData,
-                    new DirectoryInfo(path),
-                    printer,
-                    settings);
-            }
-            catch (Exception ex)
-            {
-                printer.Error($"ERROR: {ex.Message}");
-                return;
-            }
+        printer.Print($"Found {filesData.Count:#,##0} files in {elapsedMs:#,##0}ms.");
+
+        try
+        {
+            operation.Start(
+                filesData,
+                new DirectoryInfo(path),
+                printer,
+                settings);
+        }
+        catch (Exception ex)
+        {
+            printer.Error($"ERROR: {ex.Message}");
+            return;
         }
     }
 
