@@ -32,7 +32,7 @@ public static class Program
         }
         catch (Exception ex)
         {
-            printer.Error($"Unrecoverable error: {ex.Message}");
+            printer.Error($"{ex.Message}");
         }
     }
 
@@ -46,13 +46,17 @@ public static class Program
 
         Settings settings = SettingsService.Read(printer, createFileIfMissing: false);
 
-        var argQueue = new Queue<string>(args.Select(a => a.Trim()));
+        Queue<string> argQueue = new(args.Select(a => a.Trim()));
 
         // Select the desired operation using the first variable.
-        IPathOperation? operation = OperationFactory(argQueue.Dequeue());
-
-        if (operation == null)
+        IPathOperation operation;
+        try
         {
+            operation = OperationFactory(argQueue.Dequeue());
+        }
+        catch
+        {
+            printer.Error("Invalid operation requested.");
             PrintInstructions(printer);
             return;
         }
@@ -118,7 +122,7 @@ public static class Program
     /// </summary>
     /// <param name="modeArg">The argument passed from the console.</param>
     /// <returns>A class for performing operations on files.</returns>
-    private static IPathOperation? OperationFactory(string modeArg)
+    private static IPathOperation OperationFactory(string modeArg)
     {
         return OperationLibrary.GetPathOperation(modeArg);
     }
@@ -155,9 +159,9 @@ public static class Program
         if (maybePaths?.Any() != true)
             return Result.Fail("No paths were passed in.");
 
-        var invalid = maybePaths.Where(p => !Path.Exists(p));
-        if (invalid.Any())
-            return Result.Fail($"Invalid path(s): \"{string.Join("\" and \"", invalid)}\".");
+        var invalidPaths = maybePaths.Where(p => !Path.Exists(p));
+        if (invalidPaths.Any())
+            return Result.Fail($"Invalid path(s): \"{string.Join("\" and \"", invalidPaths)}\".");
 
         return Result.Ok(maybePaths.ToImmutableHashSet());
     }
