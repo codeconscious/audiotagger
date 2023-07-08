@@ -74,14 +74,16 @@ internal static class OperationLibrary
 
     internal sealed class Operation
     {
-        public required List<string> Commands { get; set;}
+        public required OperationFlags Commands { get; set;}
         public required string Description { get; set; }
         public required IPathOperation PathOperation { get; set; }
 
         private Operation() { }
 
         [SetsRequiredMembers]
-        public Operation(List<string> options, string description, IPathOperation pathOperation)
+        public Operation(OperationFlags options,
+                         string description,
+                         IPathOperation pathOperation)
         {
             Commands = options;
             Description = description;
