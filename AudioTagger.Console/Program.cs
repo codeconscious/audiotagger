@@ -43,7 +43,17 @@ public static class Program
             return;
         }
 
-        Settings settings = SettingsService.Read(printer, createFileIfMissing: false);
+        Settings settings;
+        var settingsResult = SettingsService.Read(printer, createFileIfMissing: false);
+        if (settingsResult.IsSuccess)
+        {
+            settings = settingsResult.Value;
+        }
+        else
+        {
+            printer.Error(settingsResult.Errors[0].Message);
+            return;
+        }
 
         Queue<string> argQueue = new(args.Select(a => a.Trim()));
 
@@ -60,8 +70,7 @@ public static class Program
             return;
         }
 
-        VerifiedPaths verifiedPaths = VerifyPaths(argQueue.ToList());
-        foreach (var path in verifiedPaths)
+        foreach (string path in VerifyPaths(argQueue.ToList()))
         {
             try
             {

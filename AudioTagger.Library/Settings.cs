@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FluentResults;
 
 namespace AudioTagger;
 
@@ -60,28 +61,21 @@ public static class SettingsService
     /// <summary>
     /// Reads the settings file and parses the JSON to a Settings object.
     /// </summary>
-    public static Settings Read(IPrinter printer, bool createFileIfMissing = false)
+    public static Result<Settings> Read(IPrinter printer, bool createFileIfMissing = false)
     {
         try
         {
             if (createFileIfMissing && !CreateIfMissing(printer))
-                throw new FileNotFoundException($"Settings file \"{_settingsFileName}\" missing.");
+                return Result.Fail($"Settings file \"{_settingsFileName}\" missing.");
 
             var text = File.ReadAllText(_settingsFileName);
-            return JsonSerializer.Deserialize<Settings>(text)
-                   ?? throw new JsonException();
-        }
-        catch (FileNotFoundException)
-        {
-            throw new InvalidOperationException($"Settings file \"{_settingsFileName}\" not found.");
+            var json = JsonSerializer.Deserialize<Settings>(text)
+                       ?? throw new JsonException();
+            return Result.Ok(json);
         }
         catch (JsonException ex)
         {
-            throw new JsonException($"Settings file JSON is invalid: {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException(ex.Message);
+            return Result.Fail($"Settings file JSON is invalid: {ex.Message}");
         }
     }
 
