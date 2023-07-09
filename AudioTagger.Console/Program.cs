@@ -73,7 +73,14 @@ public static class Program
 
         foreach (var path in verifiedPaths)
         {
-            ProcessPath(path, operation, settings, printer);
+            try
+            {
+                ProcessPath(path, operation, settings, printer);
+            }
+            catch (InvalidOperationException ex)
+            {
+                printer.Error($"Error processing path \"{path}\": {ex.Message}");
+            }
         }
     }
 
