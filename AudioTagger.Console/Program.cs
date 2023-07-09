@@ -4,7 +4,6 @@ global using System.Collections.Generic;
 global using System.Collections.Immutable;
 global using System.IO;
 global using AudioTagger.Library.MediaFiles;
-using FluentResults;
 using Spectre.Console;
 using System.Text.Json;
 
