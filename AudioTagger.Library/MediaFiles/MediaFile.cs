@@ -1,4 +1,7 @@
-﻿namespace AudioTagger.Library.MediaFiles;
+﻿using TagLib;
+using TagLib.Id3v2;
+
+namespace AudioTagger.Library.MediaFiles;
 
 public sealed class MediaFile
 {
@@ -58,7 +61,14 @@ public sealed class MediaFile
     public uint Year
     {
         get => _taggedFile.Tag.Year;
-        set => _taggedFile.Tag.Year = value;
+        set {
+            _taggedFile.Tag.Year = value;
+
+            // Original release date, via https://stackoverflow.com/a/34508728/11767771
+            TagLib.Id3v2.Tag tag = (TagLib.Id3v2.Tag)_taggedFile.GetTag(TagTypes.Id3v2); // You can add a true parameter to the GetTag function if the file doesn't already have a tag.
+            PrivateFrame frame = PrivateFrame.Get(tag, "TORY", true);
+            frame.PrivateData = System.Text.Encoding.Unicode.GetBytes(value.ToString());
+        }
     }
 
     public uint TrackNo
