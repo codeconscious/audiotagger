@@ -61,16 +61,7 @@ public static class Program
             return;
         }
 
-        var pathVerificationResult = VerifyPaths(argQueue.ToList());
-        VerifiedPaths verifiedPaths = pathVerificationResult switch
-        {
-            { IsSuccess: true } => pathVerificationResult.Value,
-            _ => throw new InvalidOperationException(
-                string.Join(
-                    Environment.NewLine,
-                    pathVerificationResult.Errors))
-        };
-
+        VerifiedPaths verifiedPaths = VerifyPaths(argQueue.ToList());
         foreach (var path in verifiedPaths)
         {
             try
@@ -166,15 +157,15 @@ public static class Program
     /// A result containing a collection of verified paths that are expected to be valid
     /// if successful; otherwise, an error message.
     /// </summary>
-    public static Result<VerifiedPaths> VerifyPaths(ICollection<string> maybePaths)
+    public static VerifiedPaths VerifyPaths(ICollection<string> maybePaths)
     {
         if (maybePaths?.Any() != true)
-            return Result.Fail("No paths were passed in.");
+            throw new InvalidOperationException("No paths were passed in.");
 
         var invalidPaths = maybePaths.Where(p => !Path.Exists(p));
         if (invalidPaths.Any())
-            return Result.Fail($"Invalid path(s): \"{string.Join("\" and \"", invalidPaths)}\".");
+            throw new InvalidOperationException($"Invalid path(s): \"{string.Join("\" and \"", invalidPaths)}\".");
 
-        return Result.Ok(maybePaths.ToImmutableHashSet());
+        return maybePaths.ToImmutableHashSet();
     }
 }
