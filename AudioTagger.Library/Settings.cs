@@ -36,6 +36,27 @@ public static class SettingsService
 {
     private const string _settingsFileName = "settings.json";
 
+    public enum Id3v2Version : byte
+    {
+        TwoPoint2 = 2,
+        TwoPoint3 = 3,
+        TwoPoint4 = 4,
+    }
+
+    /// <summary>
+    /// Lock the ID3v2.x version to a valid one and optionally force that version.
+    /// </summary>
+    /// <param name="version">The ID3 version 2 subversion to use.</param>
+    /// <param name="forceAsDefault">
+    ///     When true, forces the specified version when writing the file.
+    ///     When false, will defer to the version within the file, if any.
+    /// </param>
+    public static void SetId3v2Version(Id3v2Version version, bool forceAsDefault)
+    {
+        TagLib.Id3v2.Tag.DefaultVersion = (byte)version;
+        TagLib.Id3v2.Tag.ForceDefaultVersion = forceAsDefault;
+    }
+
     /// <summary>
     /// Creates the specified settings file if it is missing.
     /// Otherwise, does nothing.

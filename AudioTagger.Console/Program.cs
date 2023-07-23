@@ -17,10 +17,6 @@ public static class Program
     {
         IPrinter printer = new SpectrePrinter();
 
-        // Force ID3 version 2.3
-        TagLib.Id3v2.Tag.DefaultVersion = 3;
-        TagLib.Id3v2.Tag.ForceDefaultVersion = true;
-
         try
         {
             Run(args, printer);
@@ -58,6 +54,10 @@ public static class Program
             printer.Error(settingsResult.Errors[0].Message);
             return;
         }
+
+        SettingsService.SetId3v2Version(
+            version: SettingsService.Id3v2Version.TwoPoint3,
+            forceAsDefault: true);
 
         Queue<string> argQueue = new(args.Select(a => a.Trim()));
 
