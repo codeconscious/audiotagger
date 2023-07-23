@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FluentResults;
 
 namespace AudioTagger;
 
@@ -35,6 +36,12 @@ public static class SettingsService
 {
     private const string _settingsFileName = "settings.json";
 
+    /// <summary>
+    /// Creates the specified settings file if it is missing.
+    /// Otherwise, does nothing.
+    /// </summary>
+    /// <param name="printer"></param>
+    /// <returns>A bool indicating success or no action (true) or else failure (false).</returns>
     public static bool CreateIfMissing(IPrinter printer)
     {
         if (File.Exists(_settingsFileName))
@@ -42,7 +49,7 @@ public static class SettingsService
 
         try
         {
-            return WriteSettingsToFile(new Settings(), printer);
+            return Write(new Settings(), printer);
         }
         catch (Exception ex)
         {
@@ -51,35 +58,34 @@ public static class SettingsService
         }
     }
 
-    public static Settings? ReadSettings(IPrinter printer, bool createFileIfMissing = false)
+    /// <summary>
+    /// Reads the settings file and parses the JSON to a Settings object.
+    /// </summary>
+    public static Result<Settings> Read(IPrinter printer, bool createFileIfMissing = false)
     {
         try
         {
             if (createFileIfMissing && !CreateIfMissing(printer))
-                return null;
+                return Result.Fail($"Settings file \"{_settingsFileName}\" missing.");
 
             var text = File.ReadAllText(_settingsFileName);
-            return JsonSerializer.Deserialize<Settings>(text)
-                   ?? throw new JsonException();
-        }
-        catch (FileNotFoundException)
-        {
-            printer.Error($"Settings file \"{_settingsFileName}\" was unexpectedly not found.");
-            return null;
+            var json = JsonSerializer.Deserialize<Settings>(text)
+                       ?? throw new JsonException();
+            return Result.Ok(json);
         }
         catch (JsonException ex)
         {
-            printer.Error($"The settings file is invalid: {ex.Message}");
-            return null;
-        }
-        catch (Exception ex)
-        {
-            printer.Error(ex.Message);
-            return null;
+            return Result.Fail($"Settings file JSON is invalid: {ex.Message}");
         }
     }
 
-    public static bool WriteSettingsToFile(Settings settings, IPrinter printer)
+    /// <summary>
+    /// Write settings to the specified file.
+    /// </summary>
+    /// <param name="settings"></param>
+    /// <param name="printer"></param>
+    /// <returns>A bool indicating success or failure.</returns>
+    public static bool Write(Settings settings, IPrinter printer)
     {
         try
         {

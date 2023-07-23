@@ -34,7 +34,7 @@ public sealed class GenreExtractor : IPathOperation
             settings.ArtistGenres[pair.Key] = pair.Value;
         }
 
-        if (SettingsService.WriteSettingsToFile(settings, printer))
+        if (SettingsService.Write(settings, printer))
             printer.Print("Saved artists and genres to the settings file.");
         else
             printer.Error("An error occurred during the process.");

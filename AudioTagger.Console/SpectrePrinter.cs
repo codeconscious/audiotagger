@@ -79,7 +79,8 @@ public sealed class SpectrePrinter : IPrinter
         PrintEmptyLines(appendLines);
     }
 
-    public void Error(string message) => Print(message, 1, 1, "ERROR: ");
+    public void Error(string message) =>
+        Print(message, prependText: "ERROR: ", fgColor: ConsoleColor.Red);
 
     public char GetResultSymbol(ResultType type)
     {
