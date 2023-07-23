@@ -14,6 +14,10 @@ public static class Program
     {
         IPrinter printer = new SpectrePrinter();
 
+        // Force ID3 version 2.3
+        TagLib.Id3v2.Tag.DefaultVersion = 3;
+        TagLib.Id3v2.Tag.ForceDefaultVersion = true;
+
         if (args.Length == 0)
         {
             PrintInstructions(printer);
