@@ -2,6 +2,7 @@ using System.IO;
 using System.Text;
 using System.Globalization;
 using AudioTagger.Library.MediaFiles;
+using AudioTagger.Library.Settings;
 
 namespace AudioTagger;
 
