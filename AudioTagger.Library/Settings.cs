@@ -44,7 +44,7 @@ public static class SettingsService
     }
 
     /// <summary>
-    /// Lock the ID3v2.x version to a valid one and optionally force that version.
+    /// Locks the ID3v2.x version to a valid one and optionally forces that version.
     /// </summary>
     /// <param name="version">The ID3 version 2 subversion to use.</param>
     /// <param name="forceAsDefault">

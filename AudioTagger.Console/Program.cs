@@ -43,17 +43,13 @@ public static class Program
             return;
         }
 
-        Settings settings;
-        var settingsResult = SettingsService.Read(printer, createFileIfMissing: false);
-        if (settingsResult.IsSuccess)
+        var readSettingsResult = SettingsService.Read(printer, createFileIfMissing: false);
+        if (readSettingsResult.IsFailed)
         {
-            settings = settingsResult.Value;
-        }
-        else
-        {
-            printer.Error(settingsResult.Errors[0].Message);
+            printer.Error(readSettingsResult.Errors[0].Message);
             return;
         }
+        Settings settings = readSettingsResult.Value;
 
         SettingsService.SetId3v2Version(
             version: SettingsService.Id3v2Version.TwoPoint3,
