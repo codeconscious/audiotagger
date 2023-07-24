@@ -1,46 +1,41 @@
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using FluentResults;
 
-namespace AudioTagger;
-
-public sealed record Settings
-{
-    [JsonPropertyName("duplicates")]
-    public Duplicates Duplicates { get; set; } = new();
-
-    [JsonPropertyName("tagging")]
-    public Tagging? Tagging { get; set; }
-
-    [JsonPropertyName("renamePatterns")]
-    public ImmutableList<string>? RenamePatterns { get; set; }
-
-    [JsonPropertyName("artistGenres")]
-    public Dictionary<string, string>? ArtistGenres { get; set; } = new();
-}
-
-public sealed record Duplicates
-{
-    [JsonPropertyName("titleReplacements")]
-    public ImmutableList<string>? TitleReplacements { get; set; }
-}
-
-public sealed record Tagging
-{
-    [JsonPropertyName("regexPatterns")]
-    public ImmutableList<string>? RegexPatterns { get; set; }
-}
+namespace AudioTagger.Library.Settings;
 
 public static class SettingsService
 {
     private const string _settingsFileName = "settings.json";
 
     /// <summary>
+    /// Subversions of ID3 version 2 (such as 2.3 or 2.4).
+    /// </summary>
+    public enum Id3v2Version : byte
+    {
+        TwoPoint2 = 2,
+        TwoPoint3 = 3,
+        TwoPoint4 = 4,
+    }
+
+    /// <summary>
+    /// Locks the ID3v2.x version to a valid one and optionally forces that version.
+    /// </summary>
+    /// <param name="version">The ID3 version 2 subversion to use.</param>
+    /// <param name="forceAsDefault">
+    ///     When true, forces the specified version when writing the file.
+    ///     When false, will defer to the version within the file, if any.
+    /// </param>
+    public static void SetId3v2Version(Id3v2Version version, bool forceAsDefault)
+    {
+        TagLib.Id3v2.Tag.DefaultVersion = (byte)version;
+        TagLib.Id3v2.Tag.ForceDefaultVersion = forceAsDefault;
+    }
+
+    /// <summary>
     /// Creates the specified settings file if it is missing.
     /// Otherwise, does nothing.
     /// </summary>
-    /// <param name="printer"></param>
     /// <returns>A bool indicating success or no action (true) or else failure (false).</returns>
     public static bool CreateIfMissing(IPrinter printer)
     {
