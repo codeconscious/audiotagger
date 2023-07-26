@@ -18,10 +18,13 @@ public sealed class TagStats : IPathOperation
         }
 
         const int topArtistCount = 25;
+        var ignoreArtists = new string[] { string.Empty, "Various", "Various Artists", "<unknown>" };
 
         var topArtists = mediaFiles
-            .Where(m => m.Artists.Any() && !m.Genres.Contains("日本語会話"))
-            // .GroupBy(a => a.Artists, new ArtistsComparer())
+            .Where(m => m.Artists.Any() &&
+                        m.AlbumArtists.All(a => !ignoreArtists.Contains(a)) &&
+                        !ignoreArtists.Intersect(m.Artists).Any() &&
+                        !m.Genres.Contains("日本語会話"))
             .GroupBy(a => a.AlbumArtists.Any() ? a.AlbumArtists : a.Artists, new ArtistsComparer())
             .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value)
@@ -36,7 +39,7 @@ public sealed class TagStats : IPathOperation
         const int mostCommonTitleCount = 15;
 
         var mostCommonTitles = mediaFiles
-            .GroupBy(a => a.Title.Trim(), new TitleComparer())
+            .GroupBy(a => a.Title.Trim(), new CaseInsensitiveStringComparer())
             .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value)
             .Take(mostCommonTitleCount);
@@ -45,6 +48,32 @@ public sealed class TagStats : IPathOperation
             $"Top {mostCommonTitleCount} track titles:",
             new[] { "Title", "Count" },
             mostCommonTitles.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
+            new List<Justify>() { Justify.Left, Justify.Right });
+
+        const int mostCommonGenreCount = 20;
+
+        var genresWithCounts = mediaFiles
+            .SelectMany(file => file.Genres)
+            .GroupBy(g => g.Trim(), new CaseInsensitiveStringComparer())
+            .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
+            .OrderByDescending(g => g.Value);
+
+        var mostCommonGenres = genresWithCounts.Take(mostCommonGenreCount);
+
+        PrintToTable(
+            $"Top {mostCommonGenreCount} genres:",
+            new[] { "Genre", "Count" },
+            mostCommonGenres.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
+            new List<Justify>() { Justify.Left, Justify.Right });
+
+        const int leastCommonGenreCount = 10;
+
+        var leastCommonGenres = genresWithCounts.TakeLast(leastCommonGenreCount);
+
+        PrintToTable(
+            $"Bottom {leastCommonGenreCount} genres:",
+            new[] { "Genre", "Count" },
+            leastCommonGenres.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Right });
 
         const int mostCommonYearCount = 15;
@@ -92,7 +121,7 @@ public sealed class TagStats : IPathOperation
         };
         table.AddColumns(columnNames.Select(n => $"[gray]{n}[/]").ToArray());
         table.Columns[0].Width = rows.Max(r => r[0].Length + 3);
-        table.Columns[1].Width = rows.Max(r => r[1].Length + 3);
+        table.Columns[1].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
         if (justifications != null)
         {
             for (int i = 0; i < justifications.Count; i++)
@@ -140,7 +169,7 @@ public sealed class TagStats : IPathOperation
         }
     }
 
-    private sealed class TitleComparer : IEqualityComparer<string>
+    private sealed class CaseInsensitiveStringComparer : IEqualityComparer<string>
     {
         public bool Equals(string? x, string? y)
         {
