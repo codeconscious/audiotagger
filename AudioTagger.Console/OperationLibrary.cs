@@ -64,12 +64,14 @@ internal static class OperationLibrary
             o => o.Description);
     }
 
-    public static IPathOperation GetPathOperation(string requestedOperation)
+    public static Result<IPathOperation> GetPathOperation(string requestedOperation)
     {
-        return Operations.Where(o => o.Commands.Contains(requestedOperation.ToLowerInvariant()))?
-                         .SingleOrDefault()?
-                         .PathOperation
-               ?? throw new InvalidOperationException("Invalid operation requested.");
+        var loweredOperation = requestedOperation.ToLowerInvariant();
+        var maybeOperation = Operations.FirstOrDefault(o => o.Commands.Contains(loweredOperation))?
+                                       .PathOperation;
+        return maybeOperation is null
+            ? Result.Fail($"No valid operation for {requestedOperation} was found.")
+            : Result.Ok(maybeOperation);
     }
 
     internal sealed class Operation

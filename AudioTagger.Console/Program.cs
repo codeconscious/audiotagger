@@ -5,6 +5,7 @@ global using System.Collections.Immutable;
 global using System.IO;
 global using AudioTagger.Library.MediaFiles;
 global using AudioTagger.Library.Settings;
+global using FluentResults;
 using Spectre.Console;
 using System.Text.Json;
 
@@ -38,7 +39,7 @@ public static class Program
 
     private static void Run(string[] args, IPrinter printer)
     {
-        if (args.Length == 0)
+        if (args.Length < 2)
         {
             PrintInstructions(printer);
             return;
@@ -56,22 +57,22 @@ public static class Program
             version: SettingsService.Id3v2Version.TwoPoint3,
             forceAsDefault: true);
 
-        Queue<string> argQueue = new(args.Select(a => a.Trim()));
+        SettingsService.SetId3v2Version(
+            version: SettingsService.Id3v2Version.TwoPoint3,
+            forceAsDefault: true);
 
-        // Select the desired operation using the first variable.
-        IPathOperation operation;
-        try
+        var (operationArg, pathArgs) = (args[0], args[1..].Distinct().ToImmutableList());
+
+        var operationResult = OperationFactory(operationArg);
+        if (operationResult.IsFailed)
         {
-            operation = OperationFactory(argQueue.Dequeue());
-        }
-        catch
-        {
-            printer.Error("Invalid operation requested.");
+            readSettingsResult.Errors.ForEach(x => printer.Error(x.Message));
             PrintInstructions(printer);
             return;
         }
+        IPathOperation operation = operationResult.Value;
 
-        foreach (string path in VerifyPaths(argQueue.ToList()))
+        foreach (string path in VerifyPaths(pathArgs))
         {
             try
             {
@@ -79,7 +80,7 @@ public static class Program
             }
             catch (InvalidOperationException ex)
             {
-                printer.Error($"Error processing path \"{path}\": {ex.Message}");
+                printer.Error($"Error processing \"{path}\": {ex.Message}");
             }
         }
     }
@@ -91,10 +92,10 @@ public static class Program
         var stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
 
-        IReadOnlyCollection<MediaFile> filesData;
+        ImmutableList<MediaFile> mediaFiles;
         try
         {
-            filesData = MediaFile.PopulateFileData(path, searchSubDirectories: true);
+            mediaFiles = MediaFile.PopulateFileData(path, searchSubDirectories: true);
         }
         catch (InvalidOperationException ex)
         {
@@ -102,7 +103,7 @@ public static class Program
             return;
         }
 
-        if (!filesData.Any())
+        if (!mediaFiles.Any())
         {
             printer.Print("No files found.");
             return;
@@ -112,12 +113,12 @@ public static class Program
         // Reference: https://stackoverflow.com/q/5113750/11767771
         var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
 
-        printer.Print($"Found {filesData.Count:#,##0} files in {elapsedMs:#,##0}ms.");
+        printer.Print($"Found {mediaFiles.Count:#,##0} files in {elapsedMs:#,##0}ms.");
 
         try
         {
             operation.Start(
-                filesData,
+                mediaFiles,
                 new DirectoryInfo(path),
                 printer,
                 settings);
@@ -134,7 +135,7 @@ public static class Program
     /// </summary>
     /// <param name="modeArg">The argument passed from the console.</param>
     /// <returns>A class for performing operations on files.</returns>
-    private static IPathOperation OperationFactory(string modeArg)
+    private static Result<IPathOperation> OperationFactory(string modeArg)
     {
         return OperationLibrary.GetPathOperation(modeArg);
     }

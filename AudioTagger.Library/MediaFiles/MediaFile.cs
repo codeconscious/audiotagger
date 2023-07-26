@@ -165,7 +165,7 @@ public sealed class MediaFile
     /// </summary>
     /// <param name="path">A directory or file path</param>
     /// <returns>A collection of MediaFile.</returns>
-    public static IReadOnlyCollection<MediaFile> PopulateFileData(string path, bool searchSubDirectories = false)
+    public static ImmutableList<MediaFile> PopulateFileData(string path, bool searchSubDirectories = false)
     {
         // If the path is a directory
         if (System.IO.Directory.Exists(path))
@@ -192,13 +192,13 @@ public sealed class MediaFile
 
             return mediaFiles.OrderBy(f => f.Path)
                                 .AsEnumerable()
-                                .ToList();
+                                .ToImmutableList();
         }
 
         // Otherwise, if the path is a file
         if (System.IO.File.Exists(path))
         {
-            return new List<MediaFile> { MediaFileFactory.CreateFileData(path) };
+            return new MediaFile[] { MediaFileFactory.CreateFileData(path) }.ToImmutableList();
         }
 
         throw new InvalidOperationException($"The path \"{path}\" was invalid.");
