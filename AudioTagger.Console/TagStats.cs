@@ -18,9 +18,13 @@ public sealed class TagStats : IPathOperation
         }
 
         const int topArtistCount = 25;
+        var ignoreArtists = new string[] { string.Empty, "Various", "Various Artists", "<unknown>" };
 
         var topArtists = mediaFiles
-            .Where(m => m.Artists.Any() && !m.Genres.Contains("日本語会話"))
+            .Where(m => m.Artists.Any() &&
+                        m.AlbumArtists.All(a => !ignoreArtists.Contains(a)) &&
+                        !ignoreArtists.Intersect(m.Artists).Any() &&
+                        !m.Genres.Contains("日本語会話"))
             .GroupBy(a => a.AlbumArtists.Any() ? a.AlbumArtists : a.Artists, new ArtistsComparer())
             .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value)
