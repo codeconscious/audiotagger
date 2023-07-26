@@ -21,7 +21,6 @@ public sealed class TagStats : IPathOperation
 
         var topArtists = mediaFiles
             .Where(m => m.Artists.Any() && !m.Genres.Contains("日本語会話"))
-            // .GroupBy(a => a.Artists, new ArtistsComparer())
             .GroupBy(a => a.AlbumArtists.Any() ? a.AlbumArtists : a.Artists, new ArtistsComparer())
             .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value)
@@ -47,19 +46,30 @@ public sealed class TagStats : IPathOperation
             mostCommonTitles.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Right });
 
-        const int mostCommonGenreCount = 50;
+        const int mostCommonGenreCount = 20;
 
-        var mostCommonGenres = mediaFiles
+        var genresWithCounts = mediaFiles
             .SelectMany(file => file.Genres)
             .GroupBy(g => g.Trim(), new CaseInsensitiveStringComparer())
             .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
-            .OrderByDescending(g => g.Value)
-            .Take(mostCommonGenreCount);
+            .OrderByDescending(g => g.Value);
+
+        var mostCommonGenres = genresWithCounts.Take(mostCommonGenreCount);
 
         PrintToTable(
             $"Top {mostCommonGenreCount} genres:",
             new[] { "Genre", "Count" },
             mostCommonGenres.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
+            new List<Justify>() { Justify.Left, Justify.Right });
+
+        const int leastCommonGenreCount = 10;
+
+        var leastCommonGenres = genresWithCounts.TakeLast(leastCommonGenreCount);
+
+        PrintToTable(
+            $"Bottom {leastCommonGenreCount} genres:",
+            new[] { "Genre", "Count" },
+            leastCommonGenres.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Right });
 
         const int mostCommonYearCount = 15;
@@ -107,7 +117,7 @@ public sealed class TagStats : IPathOperation
         };
         table.AddColumns(columnNames.Select(n => $"[gray]{n}[/]").ToArray());
         table.Columns[0].Width = rows.Max(r => r[0].Length + 3);
-        table.Columns[1].Width = rows.Max(r => r[1].Length + 3);
+        table.Columns[1].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
         if (justifications != null)
         {
             for (int i = 0; i < justifications.Count; i++)
