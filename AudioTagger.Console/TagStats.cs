@@ -36,7 +36,7 @@ public sealed class TagStats : IPathOperation
         const int mostCommonTitleCount = 15;
 
         var mostCommonTitles = mediaFiles
-            .GroupBy(a => a.Title.Trim(), new TitleComparer())
+            .GroupBy(a => a.Title.Trim(), new CaseInsensitiveStringComparer())
             .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value)
             .Take(mostCommonTitleCount);
@@ -45,6 +45,20 @@ public sealed class TagStats : IPathOperation
             $"Top {mostCommonTitleCount} track titles:",
             new[] { "Title", "Count" },
             mostCommonTitles.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
+            new List<Justify>() { Justify.Left, Justify.Right });
+
+        const int mostCommonGenreCount = 50;
+
+        var mostCommonGenres = mediaFiles
+            .GroupBy(a => string.Join(",", a.Genres), new CaseInsensitiveStringComparer())
+            .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
+            .OrderByDescending(g => g.Value)
+            .Take(mostCommonGenreCount);
+
+        PrintToTable(
+            $"Top {mostCommonTitleCount} genres:",
+            new[] { "Genre", "Count" },
+            mostCommonGenres.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Right });
 
         const int mostCommonYearCount = 15;
@@ -140,7 +154,7 @@ public sealed class TagStats : IPathOperation
         }
     }
 
-    private sealed class TitleComparer : IEqualityComparer<string>
+    private sealed class CaseInsensitiveStringComparer : IEqualityComparer<string>
     {
         public bool Equals(string? x, string? y)
         {
