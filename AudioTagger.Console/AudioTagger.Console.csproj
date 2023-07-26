@@ -12,20 +12,20 @@
     <DebugSymbols>false</DebugSymbols>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "/>
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
     <DefineConstants>_WINDOWS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="TagLibSharp" Version="2.3.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.3" />
-    <PackageReference Include="runtime.osx.10.10-x64.CoreCompat.System.Drawing" Version="6.0.5.128" />
-    <PackageReference Include="Spectre.Console" Version="0.45.0" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0"/>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0"/>
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0"/>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.3"/>
+    <PackageReference Include="runtime.osx.10.10-x64.CoreCompat.System.Drawing" Version="6.0.5.128"/>
+    <PackageReference Include="Spectre.Console" Version="0.45.0"/>
+    <PackageReference Include="FluentResults" Version="3.15.2"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AudioTagger.Library\AudioTagger.Library.csproj" />
+    <ProjectReference Include="..\AudioTagger.Library\AudioTagger.Library.csproj"/>
   </ItemGroup>
 </Project>

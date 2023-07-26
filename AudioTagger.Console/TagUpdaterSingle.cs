@@ -9,8 +9,6 @@ public sealed class TagUpdaterSingle : IPathOperation
 {
     private enum TagUpdateType { Overwrite, Prepend, Append }
 
-    public TagUpdaterSingle() { }
-
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
@@ -216,7 +214,10 @@ public sealed class TagUpdaterSingle : IPathOperation
             };
         }
 
-        static string[] GetUpdatedValues(string[] currentValues, string[] newValues, TagUpdateType updateType)
+        static string[] GetUpdatedValues(
+            string[] currentValues,
+            string[] newValues,
+            TagUpdateType updateType)
         {
             return updateType switch
             {

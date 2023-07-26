@@ -22,7 +22,6 @@ public sealed class MediaFileRenamer : IPathOperation
             throw new InvalidOperationException("The settings contained no rename patterns. Cannot continue.");
 
         printer.Print($"Found {settings.RenamePatterns.Count} rename patterns.");
-
         RenameFiles(mediaFiles, workingDirectory, printer, settings.RenamePatterns);
         DeleteEmptySubDirectories(workingDirectory.FullName, printer);
     }
@@ -159,9 +158,7 @@ public sealed class MediaFileRenamer : IPathOperation
         }
 
         var currentFile = new FileInfo(file.Path); // Create a duplicate file object for the new file.
-
         var newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
-
         var currentFullPath = file.Path.Replace(workingPath, "");
         var proposedFullPath = Path.Combine(newFolderName, newPathFileName).Replace(workingPath, "");
 
