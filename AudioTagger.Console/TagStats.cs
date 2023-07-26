@@ -50,13 +50,14 @@ public sealed class TagStats : IPathOperation
         const int mostCommonGenreCount = 50;
 
         var mostCommonGenres = mediaFiles
-            .GroupBy(a => string.Join(",", a.Genres), new CaseInsensitiveStringComparer())
+            .SelectMany(file => file.Genres)
+            .GroupBy(g => g.Trim(), new CaseInsensitiveStringComparer())
             .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value)
             .Take(mostCommonGenreCount);
 
         PrintToTable(
-            $"Top {mostCommonTitleCount} genres:",
+            $"Top {mostCommonGenreCount} genres:",
             new[] { "Genre", "Count" },
             mostCommonGenres.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Right });
