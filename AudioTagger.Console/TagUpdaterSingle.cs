@@ -99,6 +99,7 @@ public sealed class TagUpdaterSingle : IPathOperation
         // TODO: Refactor with UpdatableFields.cs to DRY things up.
         var dict = new Dictionary<string, string>
         {
+            {"Title", "title"},
             {"Album Artists", "albumArtists"},
             {"Artists", "artists"},
             {"Album", "album"},
@@ -136,6 +137,15 @@ public sealed class TagUpdaterSingle : IPathOperation
     {
         switch (tagName)
         {
+            case "title":
+                var sanitizedTitle = tagValue.Trim().Normalize()
+                                             .Replace("___", "　")
+                                             .Replace("__", " ");
+                mediaFile.Title = GetUpdatedValue(mediaFile.Title,
+                                                  sanitizedTitle,
+                                                  updateType,
+                                                  false);
+                break;
             case "albumArtists":
                 var sanitizedAlbumArtists = tagValue.Replace("___", "　")
                                                     .Replace("__", " ")
