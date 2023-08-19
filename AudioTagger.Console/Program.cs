@@ -57,10 +57,6 @@ public static class Program
             version: SettingsService.Id3v2Version.TwoPoint3,
             forceAsDefault: true);
 
-        SettingsService.SetId3v2Version(
-            version: SettingsService.Id3v2Version.TwoPoint3,
-            forceAsDefault: true);
-
         var (operationArg, pathArgs) = (args[0], args[1..].Distinct().ToImmutableList());
 
         var operationResult = OperationFactory(operationArg);
