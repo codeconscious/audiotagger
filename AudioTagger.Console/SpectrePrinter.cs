@@ -14,7 +14,7 @@ public sealed class SpectrePrinter : IPrinter
         if (count == 0)
             return;
 
-        Write(string.Concat(Enumerable.Repeat(Environment.NewLine, count)));
+        Write(string.Concat(Enumerable.Repeat(Environment.NewLine, count - 1)));
     }
 
     public void Print(string message, byte prependLines = 0, byte appendLines = 0,
