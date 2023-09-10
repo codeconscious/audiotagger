@@ -101,7 +101,7 @@ public sealed class TagStats : IPathOperation
 
         PrintToTable(
             $"{longestTrackCount} Longest Tracks",
-            new[] { "Artist", "Title", "Duration" },
+            new[] { "Artist", "Title", "Duration", "Size" },
             longestTracks.Select(t => new[] { t.Artists.First(), t.Title, t.Duration.ToString() }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Left, Justify.Right });
     }
