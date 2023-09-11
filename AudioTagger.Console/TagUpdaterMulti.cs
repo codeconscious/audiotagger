@@ -51,6 +51,7 @@ public sealed class TagUpdaterMulti : IPathOperation
             return;
         }
 
+        var tagName = ConfirmUpdateTagName();
         var updateType = ConfirmUpdateType(_tagName);
 
         var table = new Table();
