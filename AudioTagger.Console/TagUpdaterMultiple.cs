@@ -5,10 +5,9 @@ namespace AudioTagger.Console;
 /// <summary>
 /// Updates a single supported tag to a specified value for all files in a specific path.
 /// </summary>
-public sealed class TagUpdaterMulti : IPathOperation
+public sealed class TagUpdaterMultiple : IPathOperation
 {
     private static readonly string _inputFile = "input.txt";
-    private static readonly string _tagName = "title";
 
     private enum TagUpdateType { Overwrite, Prepend, Append }
 
@@ -52,14 +51,14 @@ public sealed class TagUpdaterMulti : IPathOperation
         }
 
         var tagName = ConfirmUpdateTagName();
-        var updateType = ConfirmUpdateType(_tagName);
+        var updateType = ConfirmUpdateType(tagName);
 
         var table = new Table();
         table.AddColumns("Filename", "Current", "Proposed new");
         for (var i = 0; i < lines.Length; i++)
         {
             var thisFile = mediaFileList[i];
-             table.AddRow(Markup.Escape(thisFile.FileNameOnly), thisFile.Title, lines[i]);
+             table.AddRow(Markup.Escape(thisFile.FileNameOnly), GetTagValue(thisFile, tagName), lines[i]);
         }
         AnsiConsole.Write(table);
 
@@ -83,7 +82,7 @@ public sealed class TagUpdaterMulti : IPathOperation
 
             try
             {
-                UpdateTags(pair.File, _tagName, pair.NewTitle, updateType);
+                UpdateTags(pair.File, tagName, pair.NewTitle, updateType);
                 successCount++;
             }
             catch (FormatException ex)
@@ -157,6 +156,20 @@ public sealed class TagUpdaterMulti : IPathOperation
 
         return shouldProceed == yes;
     }
+
+    private static string GetTagValue(MediaFile mediaFile, string tagName) =>
+        tagName switch
+        {
+            "title"        => mediaFile.Title,
+            "albumArtists" => string.Join("; ", mediaFile.AlbumArtists),
+            "artists"      => string.Join("; ", mediaFile.Artists),
+            "album"        => mediaFile.Album,
+            "genres"       => string.Join("; ", mediaFile.Genres),
+            "year"         => mediaFile.Year.ToString(),
+            "comment"      => mediaFile.Comments,
+            "trackNo"      => mediaFile.TrackNo.ToString(),
+            _              => throw new ArgumentException($"\"{tagName}\" is an invalid tagName.")
+        };
 
     private static void UpdateTags(MediaFile mediaFile,
                                    string tagName,

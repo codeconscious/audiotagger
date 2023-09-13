@@ -58,7 +58,7 @@ internal static class OperationLibrary
         new(
             new OperationFlags{"-m", "--tag-multiple"},
             "Update the tag titles of multiple files.",
-            new TagUpdaterMulti()),
+            new TagUpdaterMultiple()),
     };
 
     public static Dictionary<string, string> GenerateHelpTextPairs()
