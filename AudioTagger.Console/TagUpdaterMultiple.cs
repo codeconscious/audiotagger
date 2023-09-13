@@ -158,18 +158,19 @@ public sealed class TagUpdaterMultiple : IPathOperation
     }
 
     private static string GetTagValue(MediaFile mediaFile, string tagName) =>
-        tagName switch
-        {
-            "title"        => mediaFile.Title,
-            "albumArtists" => string.Join("; ", mediaFile.AlbumArtists),
-            "artists"      => string.Join("; ", mediaFile.Artists),
-            "album"        => mediaFile.Album,
-            "genres"       => string.Join("; ", mediaFile.Genres),
-            "year"         => mediaFile.Year.ToString(),
-            "comment"      => mediaFile.Comments,
-            "trackNo"      => mediaFile.TrackNo.ToString(),
-            _              => throw new ArgumentException($"\"{tagName}\" is an invalid tagName.")
-        };
+        Markup.Escape(
+            tagName switch
+            {
+                "title"        => mediaFile.Title,
+                "albumArtists" => string.Join("; ", mediaFile.AlbumArtists),
+                "artists"      => string.Join("; ", mediaFile.Artists),
+                "album"        => mediaFile.Album,
+                "genres"       => string.Join("; ", mediaFile.Genres),
+                "year"         => mediaFile.Year.ToString(),
+                "comment"      => mediaFile.Comments,
+                "trackNo"      => mediaFile.TrackNo.ToString(),
+                _              => throw new ArgumentException($"\"{tagName}\" is an invalid tagName.")
+            });
 
     private static void UpdateTags(MediaFile mediaFile,
                                    string tagName,
