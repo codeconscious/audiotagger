@@ -28,8 +28,8 @@ internal static class OperationLibrary
             new TagUpdaterSingle()
         ),
         new(
-            new OperationFlags{"-m", "--tag-multiple"},
-            "Update a single tags for multiple files.",
+            new OperationFlags{"-m", "--multiple"},
+            "Update a single tag with multiple values for multiple files.",
             new TagUpdaterMultiple()),
         new(
             new OperationFlags{"-y", "--update-year"},
