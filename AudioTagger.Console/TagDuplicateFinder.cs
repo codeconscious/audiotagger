@@ -26,7 +26,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         stopwatch.Start();
 
         var duplicateGroups = mediaFiles
-            .ToLookup(m => ConcatenateArtists(m.Artists) +
+            .ToLookup(m => ConcatenateArtistsForComparison(m.Artists) +
                            RemoveUnneededText(m.Title, titleReplacements))
             .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
             .OrderBy(m => m.Key)
@@ -38,7 +38,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         // Reference: https://stackoverflow.com/q/5113750/11767771
         var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
 
-        printer.Print($"Found {count} duplicate{(count == 1 ? "" : "s")} in {elapsedMs:#,##0}ms.");
+        printer.Print($"Found {count} duplicate group{(count == 1 ? "" : "s")} in {elapsedMs:#,##0}ms.");
 
         PrintResults(duplicateGroups, printer);
     }
@@ -52,19 +52,19 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         foreach (IGrouping<string, MediaFile> dupeGroup in duplicateGroups)
         {
-            int longestTitleLength = dupeGroup.Max(file => SummarizeMediaFileArtistTitle(file).Length);
+            int longestTitleLength = dupeGroup.Max(file => SummarizeArtistTitle(file).Length);
 
             foreach (MediaFile mediaFile in dupeGroup)
             {
                 var header = innerIndex == 0
                     ? groupIndex.ToString().PadLeft(groupIndexPadding) + groupIndexAppend
                     : new string(' ', groupIndexPadding + groupIndexAppend.Length);
-                var titleArtist = SummarizeMediaFileArtistTitle(mediaFile);
+                var titleArtist = SummarizeArtistTitle(mediaFile);
                 var titleArtistFormatted = new LineSubString(header + titleArtist);
                 var separator = new LineSubString(new string(' ', longestTitleLength - titleArtist.Length));
                 var metadata = new LineSubString(
-                    "  " + SummarizeMediaFileMetadata(mediaFile) + Environment.NewLine,
-                    ConsoleColor.Gray
+                    "  " + SummarizeMetadata(mediaFile) + Environment.NewLine, // TODO: Make the new line unnecessary.
+                    ConsoleColor.Gray // TODO: Figure out why this doesn't work.
                 );
                 printer.Print(new[] { titleArtistFormatted, separator, metadata});
 
@@ -75,14 +75,14 @@ public sealed class TagDuplicateFinder : IPathOperation
             innerIndex = 0;
         }
 
-        static string SummarizeMediaFileArtistTitle(MediaFile mediaFile)
+        static string SummarizeArtistTitle(MediaFile mediaFile)
         {
             var artist = string.Join("; ", mediaFile.Artists);
             var title = mediaFile.Title;
             return $"{artist} / {title}";
         }
 
-        static string SummarizeMediaFileMetadata(MediaFile mediaFile)
+        static string SummarizeMetadata(MediaFile mediaFile)
         {
             var ext = Path.GetExtension(mediaFile.Path).ToUpperInvariant();
             var bitrate = mediaFile.BitRate + " kpbs";
@@ -96,7 +96,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         }
     }
 
-    private static string ConcatenateArtists(IEnumerable<string> artists)
+    private static string ConcatenateArtistsForComparison(IEnumerable<string> artists)
     {
         return
             Regex.Replace(
