@@ -92,7 +92,7 @@ public sealed class TagDuplicateFinder : IPathOperation
             var seconds = Math.Ceiling(mediaFile.Duration.TotalSeconds % 60);
             var time = $"{minutes}:{seconds:00}";
 
-            return $"({ext[1..]}; {bitrate}; {fileSize}; {time})";
+            return $"({ext[1..]}; {bitrate}; {time}; {fileSize})";
         }
     }
 
