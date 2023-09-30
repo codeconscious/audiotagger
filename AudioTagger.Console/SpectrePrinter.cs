@@ -48,9 +48,10 @@ public sealed class SpectrePrinter : IPrinter
 
         lineParts.ToList().ForEach(p =>
         {
-            AnsiConsole.Markup(
-                new LineSubString(p.Text, p.FgColor, p.BgColor).GetSpectreString()
-            );
+            if (p.AddLineBreak)
+                AnsiConsole.MarkupLine(new LineSubString(p.Text, p.FgColor, p.BgColor).GetSpectreString());
+            else
+                AnsiConsole.Markup(new LineSubString(p.Text, p.FgColor, p.BgColor).GetSpectreString());
         });
 
         PrintEmptyLines(appendLines);
