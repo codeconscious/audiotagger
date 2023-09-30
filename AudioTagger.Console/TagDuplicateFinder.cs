@@ -43,6 +43,22 @@ public sealed class TagDuplicateFinder : IPathOperation
         PrintResults(duplicateGroups, printer);
     }
 
+    private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
+    {
+        uint index = 0;
+        int indexPadding = duplicateGroups.Count.ToString().Length + 2;
+
+        foreach (var dupeGroup in duplicateGroups)
+        {
+            index++;
+            var firstDupe = dupeGroup.MaxBy(mediaFile => mediaFile.FileNameOnly.Length);
+            var artist = string.Concat(firstDupe!.Artists);
+            var title = firstDupe.Title;
+            var bitrate = "(" + string.Join(", ", dupeGroup.Select(d => d.BitRate + "kpbs")) + ")";
+            printer.Print($"{index.ToString().PadLeft(indexPadding)}. {artist} / {title}  {bitrate}");
+        }
+    }
+
     private static string ConcatenateArtists(IEnumerable<string> artists)
     {
         return
@@ -55,15 +71,14 @@ public sealed class TagDuplicateFinder : IPathOperation
     }
 
     /// <summary>
-    /// Remove specified text from a given string.
+    /// Removes each occurrence of text using a given collection of strings.
     /// </summary>
-    /// <param name="title"></param>
     /// <returns>The modified string.</returns>
     private static string RemoveUnneededText(string title, ImmutableList<string> terms)
     {
         return terms switch
         {
-            null => title,
+            null         => title,
             { Count: 0 } => title,
             _ => terms.ToList()
                       .Aggregate(
@@ -71,21 +86,5 @@ public sealed class TagDuplicateFinder : IPathOperation
                           (sb, term) => sb.Replace(term, string.Empty),
                           sb => sb.ToString().Trim())
         };
-    }
-
-    private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
-    {
-        uint index = 0;
-        int indexPadding = duplicateGroups.Count.ToString().Length + 2;
-
-        foreach (var dupeGroup in duplicateGroups)
-        {
-            index++;
-            var firstDupe = dupeGroup.First();
-            var artist = string.Concat(firstDupe.Artists);
-            var title = firstDupe.Title;
-            var bitrate = "(" + string.Join(", ", dupeGroup.Select(d => d.BitRate + "kpbs")) + ")";
-            printer.Print($"{index.ToString().PadLeft(indexPadding)}. {artist} / {title}  {bitrate}");
-        }
     }
 }
