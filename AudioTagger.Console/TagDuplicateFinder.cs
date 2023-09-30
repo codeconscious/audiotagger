@@ -61,12 +61,12 @@ public sealed class TagDuplicateFinder : IPathOperation
                     : new string(' ', groupIndexPadding + groupIndexAppend.Length);
                 var titleArtist = SummarizeArtistTitle(mediaFile);
                 var titleArtistFormatted = new LineSubString(header + titleArtist);
-                var separator = new LineSubString(new string(' ', longestTitleLength - titleArtist.Length));
+                var separator = new LineSubString(new string(' ', longestTitleLength - titleArtist.Length + 1));
                 var metadata = new LineSubString(
                     "  " + SummarizeMetadata(mediaFile) + Environment.NewLine, // TODO: Make the new line unnecessary.
                     ConsoleColor.Gray // TODO: Figure out why this doesn't work.
                 );
-                printer.Print(new[] { titleArtistFormatted, separator, metadata});
+                printer.Print(new[] { titleArtistFormatted, separator, metadata });
 
                 innerIndex++;
             }
@@ -79,7 +79,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         {
             var artist = string.Join("; ", mediaFile.Artists);
             var title = mediaFile.Title;
-            return $"{artist} / {title}";
+            return $"{artist}  /  {title}";
         }
 
         static string SummarizeMetadata(MediaFile mediaFile)
