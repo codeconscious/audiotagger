@@ -64,7 +64,7 @@ public sealed class TagDuplicateFinder : IPathOperation
                 var separator = new LineSubString(new string(' ', longestTitleLength - titleArtist.Length + 1));
                 var metadata = new LineSubString(
                     "  " + SummarizeMetadata(mediaFile) + Environment.NewLine, // TODO: Make the new line unnecessary.
-                    ConsoleColor.Gray // TODO: Figure out why this doesn't work.
+                    ConsoleColor.Cyan
                 );
                 printer.Print(new[] { titleArtistFormatted, separator, metadata });
 
