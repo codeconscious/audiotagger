@@ -48,15 +48,26 @@ public sealed class TagDuplicateFinder : IPathOperation
         int groupIndex = 1;
         int groupIndexPadding = duplicateGroups.Count.ToString().Length + 2;
         int innerIndex = 0;
+        const string groupIndexAppend = ". ";
 
         foreach (IGrouping<string, MediaFile> dupeGroup in duplicateGroups)
         {
+            int longestTitleLength = dupeGroup.Max(file => SummarizeMediaFileArtistTitle(file).Length);
+
             foreach (MediaFile mediaFile in dupeGroup)
             {
                 var header = innerIndex == 0
-                    ? groupIndex.ToString().PadLeft(groupIndexPadding) + ". "
-                    : new string(' ', groupIndexPadding + 2); // 2 for the length of ". "
-                printer.Print(header + SummarizeMediaFile(mediaFile));
+                    ? groupIndex.ToString().PadLeft(groupIndexPadding) + groupIndexAppend
+                    : new string(' ', groupIndexPadding + groupIndexAppend.Length);
+                var titleArtist = SummarizeMediaFileArtistTitle(mediaFile);
+                var titleArtistFormatted = new LineSubString(header + titleArtist);
+                var separator = new LineSubString(new string(' ', longestTitleLength - titleArtist.Length));
+                var metadata = new LineSubString(
+                    "  " + SummarizeMediaFileMetadata(mediaFile) + Environment.NewLine,
+                    ConsoleColor.Gray
+                );
+                printer.Print(new[] { titleArtistFormatted, separator, metadata});
+
                 innerIndex++;
             }
 
@@ -64,13 +75,24 @@ public sealed class TagDuplicateFinder : IPathOperation
             innerIndex = 0;
         }
 
-        static string SummarizeMediaFile(MediaFile mediaFile)
+        static string SummarizeMediaFileArtistTitle(MediaFile mediaFile)
         {
             var artist = string.Join("; ", mediaFile.Artists);
             var title = mediaFile.Title;
+            return $"{artist} / {title}";
+        }
+
+        static string SummarizeMediaFileMetadata(MediaFile mediaFile)
+        {
             var ext = Path.GetExtension(mediaFile.Path).ToUpperInvariant();
-            var bitrate = mediaFile.BitRate + "kpbs";
-            return $"{artist} / {title}  ({ext[1..]}, {bitrate})";
+            var bitrate = mediaFile.BitRate + " kpbs";
+            var fileSize = mediaFile.FileSizeInBytes.ToString("#,##0") + " bytes";
+
+            var minutes = Math.Floor(mediaFile.Duration.TotalSeconds / 60);
+            var seconds = Math.Ceiling(mediaFile.Duration.TotalSeconds % 60);
+            var time = $"{minutes}:{seconds:00}";
+
+            return $"({ext[1..]}; {bitrate}; {fileSize}; {time})";
         }
     }
 
