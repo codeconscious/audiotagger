@@ -45,17 +45,32 @@ public sealed class TagDuplicateFinder : IPathOperation
 
     private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
     {
-        uint index = 0;
-        int indexPadding = duplicateGroups.Count.ToString().Length + 2;
+        int groupIndex = 1;
+        int groupIndexPadding = duplicateGroups.Count.ToString().Length + 2;
+        int innerIndex = 0;
 
-        foreach (var dupeGroup in duplicateGroups)
+        foreach (IGrouping<string, MediaFile> dupeGroup in duplicateGroups)
         {
-            index++;
-            var firstDupe = dupeGroup.MaxBy(mediaFile => mediaFile.FileNameOnly.Length);
-            var artist = string.Concat(firstDupe!.Artists);
-            var title = firstDupe.Title;
-            var bitrate = "(" + string.Join(", ", dupeGroup.Select(d => d.BitRate + "kpbs")) + ")";
-            printer.Print($"{index.ToString().PadLeft(indexPadding)}. {artist} / {title}  {bitrate}");
+            foreach (MediaFile mediaFile in dupeGroup)
+            {
+                var header = innerIndex == 0
+                    ? groupIndex.ToString().PadLeft(groupIndexPadding) + ". "
+                    : new string(' ', groupIndexPadding + 2); // 2 for the length of ". "
+                printer.Print(header + SummarizeMediaFile(mediaFile));
+                innerIndex++;
+            }
+
+            groupIndex++;
+            innerIndex = 0;
+        }
+
+        static string SummarizeMediaFile(MediaFile mediaFile)
+        {
+            var artist = string.Join("; ", mediaFile.Artists);
+            var title = mediaFile.Title;
+            var ext = Path.GetExtension(mediaFile.Path).ToUpperInvariant();
+            var bitrate = mediaFile.BitRate + "kpbs";
+            return $"{artist} / {title}  ({ext[1..]}, {bitrate})";
         }
     }
 
