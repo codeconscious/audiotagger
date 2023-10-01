@@ -56,10 +56,10 @@ public sealed class TagDuplicateFinder : IPathOperation
 
             foreach (MediaFile mediaFile in dupeGroup)
             {
-                var header = innerIndex == 0
+                string header = innerIndex == 0
                     ? groupIndex.ToString().PadLeft(groupIndexPadding) + groupIndexAppend
                     : new string(' ', groupIndexPadding + groupIndexAppend.Length);
-                var titleArtist = SummarizeArtistTitle(mediaFile);
+                string titleArtist = SummarizeArtistTitle(mediaFile);
                 var titleArtistFormatted = new LineSubString(header + titleArtist);
                 var separator = new LineSubString(new string(' ', longestTitleLength - titleArtist.Length + 1));
                 var metadata = new LineSubString(
@@ -68,7 +68,7 @@ public sealed class TagDuplicateFinder : IPathOperation
                     bgColor: null,
                     addLineBreak: true
                 );
-                printer.Print(new[] { titleArtistFormatted, separator, metadata });
+                printer.Print(new LineSubString[] { titleArtistFormatted, separator, metadata });
 
                 innerIndex++;
             }
@@ -98,6 +98,13 @@ public sealed class TagDuplicateFinder : IPathOperation
         }
     }
 
+    /// <summary>
+    /// Removes parts of a string that should be ignored for comparison.
+    /// For example, "The Beatles" would convert to "Beatles" because "The"
+    /// should not be included in the comparison.
+    /// </summary>
+    /// <param name="artists"></param>
+    /// <returns></returns>
     private static string ConcatenateArtistsForComparison(IEnumerable<string> artists)
     {
         return
