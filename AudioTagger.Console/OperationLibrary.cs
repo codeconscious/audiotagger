@@ -28,8 +28,12 @@ internal static class OperationLibrary
             new TagUpdaterSingle()
         ),
         new(
+            new OperationFlags{"-m", "--multiple"},
+            "Update a single tag with multiple values for multiple files.",
+            new TagUpdaterMultiple()),
+        new(
             new OperationFlags{"-y", "--update-year"},
-            "Update years using Date Created from file properties. (Must do before other updates.)",
+            "Update the year using media file's own dates of creation. (Must do before other updates.)",
             new TagUpdaterYearOnly()
         ),
         new(
@@ -39,12 +43,12 @@ internal static class OperationLibrary
         ),
         new(
             new OperationFlags{"-d", "--duplicates"},
-            "List tracks with identical artists and titles. No files are deleted.",
+            "List tracks with identical artists and titles. No files are modified or deleted.",
             new TagDuplicateFinder()
         ),
         new(
             new OperationFlags{"-s", "--stats"},
-            "Display file statistics using tag data.",
+            "Display file statistics based on tag data.",
             new TagStats()
         ),
         new(
@@ -55,6 +59,10 @@ internal static class OperationLibrary
             new OperationFlags{"-g", "--genres"},
             "Save the primary genre for each artist to the settings file.",
             new GenreExtractor()),
+        new(
+            new OperationFlags{"-p", "--parse"},
+            "Get a single tag value by parsing the data of another (generally Comments).",
+            new TagParser()),
     };
 
     public static Dictionary<string, string> GenerateHelpTextPairs()

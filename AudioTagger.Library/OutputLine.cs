@@ -110,7 +110,7 @@ public sealed class OutputLine
         return lines;
     }
 
-    public static Dictionary<string, string> GetTagKeyValuePairs(MediaFile fileData)
+    public static Dictionary<string, string> GetTagKeyValuePairs(MediaFile fileData, bool includeComments)
     {
         var lines = new Dictionary<string, string>
         {
@@ -137,7 +137,7 @@ public sealed class OutputLine
         if (fileData.Composers?.Length > 0)
             lines.Add("Composers", string.Join("; ", fileData.Composers));
 
-        if (!string.IsNullOrWhiteSpace(fileData.Comments))
+        if (includeComments && !string.IsNullOrWhiteSpace(fileData.Comments))
             lines.Add("Comment", fileData.Comments);
 
         return lines;

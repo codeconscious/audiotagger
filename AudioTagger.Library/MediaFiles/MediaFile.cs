@@ -16,6 +16,8 @@ public sealed class MediaFile
 
     public string FileNameOnly => System.IO.Path.GetFileName(Path);
 
+    public long FileSizeInBytes => new System.IO.FileInfo(Path).Length;
+
     public string Title
     {
         get => _taggedFile.Tag.Title?.Normalize() ?? string.Empty;
