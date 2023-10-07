@@ -96,14 +96,16 @@ public sealed class TagStats : IPathOperation
             .OrderByDescending(f => f.Duration)
             .Take(longestTrackCount);
 
-        // Debugging use only // TODO: Delete
-        longestTracks.ToList().ForEach(t => System.Console.WriteLine(t.Title));
-
         PrintToTable(
             $"{longestTrackCount} Longest Tracks",
             new[] { "Artist", "Title", "Duration", "Size" },
-            longestTracks.Select(t => new[] { t.Artists.First(), t.Title, t.Duration.ToString() }).ToList(),
-            new List<Justify>() { Justify.Left, Justify.Left, Justify.Right });
+            longestTracks.Select(t => new[] {
+                t.Artists.Any() ? t.Artists.First() : "(Unknown Artist)",
+                t.Title,
+                t.Duration.ToString(),
+                $"{t.FileSizeInBytes:#,##0} bytes"
+            }).ToList(),
+            new List<Justify>() { Justify.Left, Justify.Left, Justify.Right, Justify.Right });
     }
 
     private static void PrintToTable(string title,
