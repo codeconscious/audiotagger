@@ -26,7 +26,10 @@ public class TagParser : IPathOperation
 
             try
             {
-                mediaFile.Album = match.Value;
+                if (mediaFile.Album != match.Value)
+                {
+                    mediaFile.Album = match.Value;
+                }
                 mediaFile.SaveUpdates();
                 printer.Print($"Wrote album \"{match.Value}\" to file \"{mediaFile.FileNameOnly}\"...");
             }
