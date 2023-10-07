@@ -98,14 +98,15 @@ public sealed class TagStats : IPathOperation
 
         PrintToTable(
             $"{longestTrackCount} Longest Tracks",
-            new[] { "Artist", "Title", "Duration", "Size" },
+            new[] { "Artist", "Title", "Duration", "Format", "Size" },
             longestTracks.Select(t => new[] {
                 t.Artists.Any() ? t.Artists.First() : "(Unknown Artist)",
                 t.Title,
                 t.Duration.ToString(),
+                Path.GetExtension(t.FileNameOnly),
                 $"{t.FileSizeInBytes:#,##0} bytes"
             }).ToList(),
-            new List<Justify>() { Justify.Left, Justify.Left, Justify.Right, Justify.Right });
+            new List<Justify>() { Justify.Left, Justify.Left, Justify.Right, Justify.Right, Justify.Right });
     }
 
     private static void PrintToTable(string title,
