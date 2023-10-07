@@ -59,6 +59,10 @@ internal static class OperationLibrary
             new OperationFlags{"-g", "--genres"},
             "Save the primary genre for each artist to the settings file.",
             new GenreExtractor()),
+        new(
+            new OperationFlags{"-p", "--parse"},
+            "Get a single tag value by parsing the data of another (generally Comments).",
+            new TagParser()),
     };
 
     public static Dictionary<string, string> GenerateHelpTextPairs()
