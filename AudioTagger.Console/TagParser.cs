@@ -15,7 +15,7 @@ public class TagParser : IPathOperation
             return;
         }
 
-        Regex regex = new("""(?<=アルバム[『「]).+(?=[」』])"""); // Make class-level?
+        Regex regex = new("""(?<=[アルバム|シングル][『「]).+(?=[」』])"""); // Make class-level?
 
         foreach (MediaFile mediaFile in mediaFiles)
         {
