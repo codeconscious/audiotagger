@@ -98,13 +98,13 @@ public sealed class TagStats : IPathOperation
 
         PrintToTable(
             $"{longestTrackCount} Longest Tracks",
-            new[] { "Artist", "Title", "Duration", "Format", "Size" },
+            new[] { "Artist", "Title", "Duration", "Format", "Size (in bytes)" },
             longestTracks.Select(t => new[] {
                 t.Artists.Any() ? t.Artists.First() : "(Unknown Artist)",
                 t.Title,
-                t.Duration.ToString(),
+                string.Format("{0:D2}:{1:D2}", (int) t.Duration.TotalMinutes, t.Duration.Seconds), // mm:ss
                 Path.GetExtension(t.FileNameOnly),
-                $"{t.FileSizeInBytes:#,##0} bytes"
+                $"{t.FileSizeInBytes:#,##0}"
             }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Left, Justify.Right, Justify.Right, Justify.Right });
     }
@@ -137,12 +137,12 @@ public sealed class TagStats : IPathOperation
             Border = TableBorder.None
         };
         table.AddColumns(columnNames.Select(n => $"[gray]{n}[/]").ToArray());
-        table.Columns[0].Width = rows.Max(r => r[0].Length + 3);
-        table.Columns[1].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
-        if (columnNames.Count > 2)
-        {
-            table.Columns[2].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
-        }
+        // table.Columns[0].Width = rows.Max(r => r[0].Length + 3);
+        // table.Columns[1].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
+        // if (columnNames.Count > 2)
+        // {
+        //     table.Columns[2].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
+        // }
         if (justifications != null)
         {
             for (int i = 0; i < justifications.Count; i++)
