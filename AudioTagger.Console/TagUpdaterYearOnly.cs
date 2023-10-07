@@ -62,7 +62,7 @@ public sealed class TagUpdaterYearOnly : IPathOperation
             return shouldCancel;
         }
 
-        printer.PrintTagDataToTable(mediaFile, proposedUpdates);
+        printer.PrintTagDataToTable(mediaFile, proposedUpdates, false);
 
         if (doConfirm)
         {

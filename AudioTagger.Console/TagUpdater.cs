@@ -96,7 +96,7 @@ public sealed class TagUpdater : IPathOperation
         // Print the current tag data.
         // printer.Print(OutputLine.GetTagPrintedLines(mediaFile), 1, 0);
 
-        printer.PrintTagDataToTable(mediaFile, proposedUpdates);
+        printer.PrintTagDataToTable(mediaFile, proposedUpdates, false);
 
         // Show the proposed updates and ask the user to confirm.
         // printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);

@@ -95,7 +95,7 @@ public sealed class SpectrePrinter : IPrinter
         };
     }
 
-    public void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string> proposedUpdates)
+    public void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string> proposedUpdates, bool includeComments)
     {
         ArgumentNullException.ThrowIfNull(proposedUpdates);
 
@@ -108,7 +108,7 @@ public sealed class SpectrePrinter : IPrinter
         tagTable.AddColumns("Tag Name", "Tag Value"); // Hidden on the next line, though.
         tagTable.ShowHeaders = false;
 
-        foreach (var line in OutputLine.GetTagKeyValuePairs(mediaFile))
+        foreach (var line in OutputLine.GetTagKeyValuePairs(mediaFile, includeComments))
         {
             tagTable.AddRow(line.Key, line.Value.EscapeMarkup());
         }
