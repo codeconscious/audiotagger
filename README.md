@@ -4,10 +4,11 @@ A .NET CLI program that can perform the following actions on audio files:
 
 - View ID3v2 tags
 - Auto-update tags using filename patterns
+- Update a single tag for multiple files at once
 - Auto-rename and reorganize files using filename patterns
 - Reorganize files into folders using their tag data
 - Find duplicate files by their tags
-- Auto-write genres
+- Auto-write genres for registered artists
 - See folder stats
 - Apply audio normalization (ReplayGain)
 

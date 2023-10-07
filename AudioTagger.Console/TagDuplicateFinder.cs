@@ -26,7 +26,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         stopwatch.Start();
 
         var duplicateGroups = mediaFiles
-            .ToLookup(m => ConcatenateArtists(m.Artists) +
+            .ToLookup(m => ConcatenateArtistsForComparison(m.Artists) +
                            RemoveUnneededText(m.Title, titleReplacements))
             .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
             .OrderBy(m => m.Key)
@@ -38,12 +38,74 @@ public sealed class TagDuplicateFinder : IPathOperation
         // Reference: https://stackoverflow.com/q/5113750/11767771
         var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
 
-        printer.Print($"Found {count} duplicate{(count == 1 ? "" : "s")} in {elapsedMs:#,##0}ms.");
+        printer.Print($"Found {count} duplicate group{(count == 1 ? "" : "s")} in {elapsedMs:#,##0}ms.");
 
         PrintResults(duplicateGroups, printer);
     }
 
-    private static string ConcatenateArtists(IEnumerable<string> artists)
+    private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
+    {
+        int groupIndex = 1;
+        int groupIndexPadding = duplicateGroups.Count.ToString().Length + 2;
+        int innerIndex = 0;
+        const string groupIndexAppend = ". ";
+
+        foreach (IGrouping<string, MediaFile> dupeGroup in duplicateGroups)
+        {
+            int longestTitleLength = dupeGroup.Max(file => SummarizeArtistTitle(file).Length);
+
+            foreach (MediaFile mediaFile in dupeGroup)
+            {
+                string header = innerIndex == 0
+                    ? groupIndex.ToString().PadLeft(groupIndexPadding) + groupIndexAppend
+                    : new string(' ', groupIndexPadding + groupIndexAppend.Length);
+                string titleArtist = SummarizeArtistTitle(mediaFile);
+                var titleArtistFormatted = new LineSubString(header + titleArtist);
+                var separator = new LineSubString(new string(' ', longestTitleLength - titleArtist.Length + 1));
+                var metadata = new LineSubString(
+                    text: "  " + SummarizeMetadata(mediaFile),
+                    fgColor: ConsoleColor.Cyan,
+                    bgColor: null,
+                    addLineBreak: true
+                );
+                printer.Print(new LineSubString[] { titleArtistFormatted, separator, metadata });
+
+                innerIndex++;
+            }
+
+            groupIndex++;
+            innerIndex = 0;
+        }
+
+        static string SummarizeArtistTitle(MediaFile mediaFile)
+        {
+            var artist = string.Join("; ", mediaFile.Artists);
+            var title = mediaFile.Title;
+            return $"{artist}  /  {title}";
+        }
+
+        static string SummarizeMetadata(MediaFile mediaFile)
+        {
+            var ext = Path.GetExtension(mediaFile.Path).ToUpperInvariant();
+            var bitrate = mediaFile.BitRate + " kpbs";
+            var fileSize = mediaFile.FileSizeInBytes.ToString("#,##0") + " bytes";
+
+            var minutes = Math.Floor(mediaFile.Duration.TotalSeconds / 60);
+            var seconds = Math.Ceiling(mediaFile.Duration.TotalSeconds % 60);
+            var time = $"{minutes}:{seconds:00}";
+
+            return $"({ext[1..]}; {bitrate}; {time}; {fileSize})";
+        }
+    }
+
+    /// <summary>
+    /// Removes parts of a string that should be ignored for comparison.
+    /// For example, "The Beatles" would convert to "Beatles" because "The"
+    /// should not be included in the comparison.
+    /// </summary>
+    /// <param name="artists"></param>
+    /// <returns></returns>
+    private static string ConcatenateArtistsForComparison(IEnumerable<string> artists)
     {
         return
             Regex.Replace(
@@ -55,15 +117,14 @@ public sealed class TagDuplicateFinder : IPathOperation
     }
 
     /// <summary>
-    /// Remove specified text from a given string.
+    /// Removes each occurrence of text using a given collection of strings.
     /// </summary>
-    /// <param name="title"></param>
     /// <returns>The modified string.</returns>
     private static string RemoveUnneededText(string title, ImmutableList<string> terms)
     {
         return terms switch
         {
-            null => title,
+            null         => title,
             { Count: 0 } => title,
             _ => terms.ToList()
                       .Aggregate(
@@ -71,21 +132,5 @@ public sealed class TagDuplicateFinder : IPathOperation
                           (sb, term) => sb.Replace(term, string.Empty),
                           sb => sb.ToString().Trim())
         };
-    }
-
-    private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
-    {
-        uint index = 0;
-        int indexPadding = duplicateGroups.Count.ToString().Length + 2;
-
-        foreach (var dupeGroup in duplicateGroups)
-        {
-            index++;
-            var firstDupe = dupeGroup.First();
-            var artist = string.Concat(firstDupe.Artists);
-            var title = firstDupe.Title;
-            var bitrate = "(" + string.Join(", ", dupeGroup.Select(d => d.BitRate + "kpbs")) + ")";
-            printer.Print($"{index.ToString().PadLeft(indexPadding)}. {artist} / {title}  {bitrate}");
-        }
     }
 }
