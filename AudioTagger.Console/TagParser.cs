@@ -21,15 +21,14 @@ public class TagParser : IPathOperation
         {
             var match = regex.Match(mediaFile.Comments);
 
-            if (!match.Success)
+            if (!match.Success || mediaFile.Album == match.Value)
+            {
+                printer.Print($"No changes needed for \"{mediaFile.FileNameOnly}\".");
                 continue;
+            }
 
             try
             {
-                if (mediaFile.Album != match.Value)
-                {
-                    mediaFile.Album = match.Value;
-                }
                 mediaFile.SaveUpdates();
                 printer.Print($"Wrote album \"{match.Value}\" to file \"{mediaFile.FileNameOnly}\"...");
             }
