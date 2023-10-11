@@ -33,7 +33,8 @@ public sealed class MediaFileRenamer : IPathOperation
     {
         var directoryResponse = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title($"All files will be saved under directory \"{workingDirectory.FullName}\"")
+                // Escaped because substrings like "[1984]" will be misinterpreted as formatting codes.
+                .Title($"All files will be saved under directory \"{Markup.Escape(workingDirectory.FullName)}\"")
                 .AddChoices(new[] {"Continue", "Cancel"}));
 
         if (directoryResponse == "Continue")
