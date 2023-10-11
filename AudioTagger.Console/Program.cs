@@ -122,7 +122,7 @@ public static class Program
         }
         catch (Exception ex)
         {
-            printer.Error($"ERROR: {ex.Message}");
+            printer.Error($"Error in main operation: {ex.Message}");
             return;
         }
     }
