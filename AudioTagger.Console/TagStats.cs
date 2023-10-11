@@ -98,7 +98,7 @@ public sealed class TagStats : IPathOperation
 
         PrintToTable(
             $"{longestTrackCount} Longest Tracks",
-            new[] { "Artist", "Title", "Duration", "Format", "Size (in bytes)" },
+            new[] { "Artist", "Title", "Duration", "Format", "Size (bytes)" },
             longestTracks.Select(t => new[] {
                 t.Artists.Any() ? t.Artists.First() : "(Unknown Artist)",
                 t.Title,
