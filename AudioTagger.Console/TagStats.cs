@@ -86,10 +86,27 @@ public sealed class TagStats : IPathOperation
             .Take(mostCommonYearCount);
 
         PrintToTable(
-            $"Top {mostCommonTitleCount} Years",
+            $"Top {mostCommonYearCount} Years",
             new[] { "Year", "Count" },
             mostCommonYears.Select(y => new[] { y.Key.ToString(), y.Value.ToString("#,##0") }).ToList(),
             new List<Justify>() { Justify.Left, Justify.Right });
+
+        const int longestTrackCount = 15;
+        var longestTracks = mediaFiles
+            .OrderByDescending(f => f.Duration)
+            .Take(longestTrackCount);
+
+        PrintToTable(
+            $"{longestTrackCount} Longest Tracks",
+            new[] { "Artist", "Title", "Duration", "Format", "Size (bytes)" },
+            longestTracks.Select(t => new[] {
+                t.Artists.Any() ? t.Artists.First() : "(Unknown Artist)",
+                t.Title,
+                string.Format("{0:D2}:{1:D2}", (int) t.Duration.TotalMinutes, t.Duration.Seconds), // mm:ss
+                Path.GetExtension(t.FileNameOnly),
+                $"{t.FileSizeInBytes:#,##0}"
+            }).ToList(),
+            new List<Justify>() { Justify.Left, Justify.Left, Justify.Right, Justify.Right, Justify.Right });
     }
 
     private static void PrintToTable(string title,
@@ -120,8 +137,12 @@ public sealed class TagStats : IPathOperation
             Border = TableBorder.None
         };
         table.AddColumns(columnNames.Select(n => $"[gray]{n}[/]").ToArray());
-        table.Columns[0].Width = rows.Max(r => r[0].Length + 3);
-        table.Columns[1].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
+        // table.Columns[0].Width = rows.Max(r => r[0].Length + 3);
+        // table.Columns[1].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
+        // if (columnNames.Count > 2)
+        // {
+        //     table.Columns[2].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
+        // }
         if (justifications != null)
         {
             for (int i = 0; i < justifications.Count; i++)
@@ -136,6 +157,7 @@ public sealed class TagStats : IPathOperation
         {
             Header = new PanelHeader(title)
         };
+
         AnsiConsole.Write(panel);
     }
 

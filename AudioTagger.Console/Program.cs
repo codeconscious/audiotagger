@@ -33,7 +33,8 @@ public static class Program
         }
         catch (Exception ex)
         {
-            printer.Error($"{ex.Message}");
+            printer.Error($"Unexpected error: {ex.Message}");
+            AnsiConsole.WriteException(ex);
         }
     }
 
@@ -121,7 +122,7 @@ public static class Program
         }
         catch (Exception ex)
         {
-            printer.Error($"ERROR: {ex.Message}");
+            printer.Error($"Error in main operation: {ex.Message}");
             return;
         }
     }

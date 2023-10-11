@@ -18,24 +18,23 @@ public sealed class FileRenamer : IPathOperation
             if (fileData == null)
             {
                 printer.Error("Skipped invalid file.");
+                continue;
             }
-            else
+
+            try
             {
-                try
-                {
-                    var (wasDone, message) = RenameFile(fileData, printer);
-                    printer.Print(wasDone ? "◯ " : "× " + message); // TODO: Refactor
-                }
-                catch (TagLib.CorruptFileException e)
-                {
-                    printer.Error("The file's tag metadata was corrupt or missing: " + e.Message);
-                    continue;
-                }
-                catch (Exception e)
-                {
-                    printer.Error("An error occurred: " + e.Message);
-                    continue;
-                }
+                var (wasDone, message) = RenameFile(fileData, printer);
+                printer.Print(wasDone ? "◯ " : "× " + message); // TODO: Refactor
+            }
+            catch (TagLib.CorruptFileException e)
+            {
+                printer.Error("The file's tag metadata was corrupt or missing: " + e.Message);
+                continue;
+            }
+            catch (Exception e)
+            {
+                printer.Error("An error occurred during renaming: " + e.Message);
+                continue;
             }
         }
     }

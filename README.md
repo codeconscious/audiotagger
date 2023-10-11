@@ -4,13 +4,15 @@ A .NET CLI program that can perform the following actions on audio files:
 
 - View ID3v2 tags
 - Auto-update tags using filename patterns
+- Update a single tag for multiple files at once
 - Auto-rename and reorganize files using filename patterns
 - Reorganize files into folders using their tag data
 - Find duplicate files by their tags
+- Auto-write genres for registered artists
 - See folder stats
 - Apply audio normalization (ReplayGain)
 
-This is a little labor-of-love project that I work on in my spare time. It's not particularly polished, but it's sufficient for my use case. It relies on the [TagLibSharp](https://github.com/mono/taglib-sharp) library for tag-related operations.
+This is a little labor-of-love project that I work on in my spare time. It's not particularly polished, but it's sufficient for my use case. It relies on the [TagLibSharp](https://github.com/mono/taglib-sharp) library for tag reading and writing.
 
 ## Requirements
 

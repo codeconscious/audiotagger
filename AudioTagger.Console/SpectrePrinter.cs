@@ -14,7 +14,7 @@ public sealed class SpectrePrinter : IPrinter
         if (count == 0)
             return;
 
-        Write(string.Concat(Enumerable.Repeat(Environment.NewLine, count)));
+        Write(string.Concat(Enumerable.Repeat(Environment.NewLine, count - 1)));
     }
 
     public void Print(string message, byte prependLines = 0, byte appendLines = 0,
@@ -48,9 +48,10 @@ public sealed class SpectrePrinter : IPrinter
 
         lineParts.ToList().ForEach(p =>
         {
-            AnsiConsole.Markup(
-                new LineSubString(p.Text, p.FgColor, p.BgColor)
-                    .GetSpectreString());
+            if (p.AddLineBreak)
+                AnsiConsole.MarkupLine(new LineSubString(p.Text, p.FgColor, p.BgColor).GetSpectreString());
+            else
+                AnsiConsole.Markup(new LineSubString(p.Text, p.FgColor, p.BgColor).GetSpectreString());
         });
 
         PrintEmptyLines(appendLines);
@@ -94,7 +95,7 @@ public sealed class SpectrePrinter : IPrinter
         };
     }
 
-    public void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string> proposedUpdates)
+    public void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string> proposedUpdates, bool includeComments)
     {
         ArgumentNullException.ThrowIfNull(proposedUpdates);
 
@@ -107,7 +108,7 @@ public sealed class SpectrePrinter : IPrinter
         tagTable.AddColumns("Tag Name", "Tag Value"); // Hidden on the next line, though.
         tagTable.ShowHeaders = false;
 
-        foreach (var line in OutputLine.GetTagKeyValuePairs(mediaFile))
+        foreach (var line in OutputLine.GetTagKeyValuePairs(mediaFile, includeComments))
         {
             tagTable.AddRow(line.Key, line.Value.EscapeMarkup());
         }
