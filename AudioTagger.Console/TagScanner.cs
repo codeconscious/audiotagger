@@ -35,10 +35,12 @@ public sealed class TagScanner : IPathOperation
                     urlRegex.Match(mp3.Comments) is Match match &&
                     match.Success)
                 {
+                    // URL found
                     badFilesByUrl.AppendLine($"{match.Value};{mp3.Path}");
                 }
                 else
                 {
+                    // No URL found, so noting a metadata summary.
                     badFilesByTags.AppendLine($"{string.Join(", ", mp3.Artists)}; {mp3.Album}; {mp3.Title}");
                 }
             }
@@ -56,9 +58,9 @@ public sealed class TagScanner : IPathOperation
         }
         catch (Exception ex)
         {
-            printer.Error($"{ex.Message}");
+            printer.Error($"Error writing file: {ex.Message}");
         }
 
-        printer.Print("Done, with 3 .log files written.");
+        printer.Print("Done with 3 log files written.");
     }
 }
