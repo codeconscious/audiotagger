@@ -63,11 +63,20 @@ internal static class OperationLibrary
             new OperationFlags{"-p", "--parse"},
             "Get a single tag value by parsing the data of another (generally Comments).",
             new TagParser()),
+        new(
+            new OperationFlags{"--scan"},
+            "Maintenance scanning work. (Not intended for normal use.)",
+            new TagScanner(),
+            isHidden: true),
     };
 
-    public static Dictionary<string, string> GenerateHelpTextPairs()
+    public static Dictionary<string, string> GenerateHelpTextPairs(bool includeHidden)
     {
-        return Operations.ToDictionary(
+        IReadOnlyList<Operation> operations = includeHidden
+            ? Operations
+            : Operations.Where(o => !o.IsHidden).ToList();
+
+        return operations.ToDictionary(
             o => string.Join(", " , o.Commands),
             o => o.Description);
     }
@@ -84,20 +93,23 @@ internal static class OperationLibrary
 
     internal sealed class Operation
     {
-        public required OperationFlags Commands { get; set;}
-        public required string Description { get; set; }
-        public required IPathOperation PathOperation { get; set; }
+        public required OperationFlags Commands { get; init; }
+        public required string Description { get; init; }
+        public required IPathOperation PathOperation { get; init; }
+        public required bool IsHidden { get; init; }
 
         private Operation() { }
 
         [SetsRequiredMembers]
         public Operation(OperationFlags options,
                          string description,
-                         IPathOperation pathOperation)
+                         IPathOperation pathOperation,
+                         bool isHidden = false)
         {
             Commands = options;
             Description = description;
             PathOperation = pathOperation;
+            IsHidden = isHidden;
         }
     };
 }
