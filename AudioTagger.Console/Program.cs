@@ -147,7 +147,7 @@ public static class Program
         table.AddColumns("Commands", "Descriptions");
         table.Border = TableBorder.Rounded;
 
-        foreach (var pair in OperationLibrary.GenerateHelpTextPairs())
+        foreach (var pair in OperationLibrary.GenerateHelpTextPairs(includeHidden: false))
         {
             table.AddRow(pair.Key, pair.Value);
         }
