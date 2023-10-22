@@ -64,8 +64,8 @@ internal static class OperationLibrary
             "Get a single tag value by parsing the data of another (generally Comments).",
             new TagParser()),
         new(
-            new OperationFlags{"--maintenance"},
-            "Maintenance work",
+            new OperationFlags{"--scan"},
+            "Maintenance scanning work. (Not intended for normal use.)",
             new ScanTags(),
             isHidden: true),
     };
