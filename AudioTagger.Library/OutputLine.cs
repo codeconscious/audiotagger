@@ -6,11 +6,7 @@ public sealed class OutputLine
 {
     public List<LineSubString> Line { get; set; } = new List<LineSubString>();
 
-    // TODO: Can we delete this?
-    public OutputLine()
-    {
-        //Line.Add(lineParts);
-    }
+    public OutputLine() { }
 
     public OutputLine(LineSubString lineParts)
     {
