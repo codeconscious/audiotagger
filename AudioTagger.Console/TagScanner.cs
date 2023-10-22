@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace AudioTagger.Console;
 
-public sealed class ScanTags : IPathOperation
+public sealed class TagScanner : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,

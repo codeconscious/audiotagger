@@ -66,7 +66,7 @@ internal static class OperationLibrary
         new(
             new OperationFlags{"--scan"},
             "Maintenance scanning work. (Not intended for normal use.)",
-            new ScanTags(),
+            new TagScanner(),
             isHidden: true),
     };
 
