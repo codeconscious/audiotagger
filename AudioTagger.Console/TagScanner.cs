@@ -35,7 +35,7 @@ public sealed class TagScanner : IPathOperation
                     urlRegex.Match(mp3.Comments) is Match match &&
                     match.Success)
                 {
-                    badFilesByUrl.AppendLine(match.Value);
+                    badFilesByUrl.AppendLine($"{match.Value};{mp3.Path}");
                 }
                 else
                 {
