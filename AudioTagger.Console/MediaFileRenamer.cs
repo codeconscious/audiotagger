@@ -146,10 +146,10 @@ public sealed class MediaFileRenamer : IPathOperation
             return false;
         }
 
-        var newFileName = GenerateNewFileNameUsingTagData(file, fileTagNames, matchedRenamePattern);
         var newFolderName = keepInRootFolder ? string.Empty : GenerateSafeDirectoryName(file);
         var fullFolderPath = Path.Combine(workingPath, newFolderName);
         var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
+        var newFileName = GenerateNewFileNameUsingTagData(file, fileTagNames, matchedRenamePattern);
         var proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
 
         if (previousFolderFileName == proposedFolderFileName)
