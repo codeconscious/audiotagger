@@ -127,14 +127,14 @@ public sealed class MediaFileRenamer : IPathOperation
         // TODO: Refactor cancellation so this isn't needed.
         const bool shouldCancel = false;
 
-        ImmutableList<string> fileTagNames = file.PopulatedTagNames();
+        ImmutableList<string> populatedTagNames = file.PopulatedTagNames();
         string? matchedRenamePattern = null;
         foreach (var renamePattern in renamePatterns)
         {
-            var matches = TagFinderRegex.Matches(renamePattern);
-            var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
-            if (expectedTags.Count == fileTagNames.Count &&
-                expectedTags.All(expectedTag => fileTagNames.Contains(expectedTag!)))
+            MatchCollection matches = TagFinderRegex.Matches(renamePattern);
+            List<string> expectedTags = matches.Cast<Match>().Select(m => m.Value).ToList();
+            if (expectedTags.Count == populatedTagNames.Count &&
+                expectedTags.All(expectedTag => populatedTagNames.Contains(expectedTag)))
             {
                 matchedRenamePattern = renamePattern;
             }
@@ -149,7 +149,7 @@ public sealed class MediaFileRenamer : IPathOperation
         var newFolderName = keepInRootFolder ? string.Empty : GenerateSafeDirectoryName(file);
         var fullFolderPath = Path.Combine(workingPath, newFolderName);
         var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
-        var newFileName = GenerateNewFileNameUsingTagData(file, fileTagNames, matchedRenamePattern);
+        var newFileName = GenerateNewFileNameUsingTagData(file, populatedTagNames, matchedRenamePattern);
         var proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
 
         if (previousFolderFileName == proposedFolderFileName)
