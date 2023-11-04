@@ -228,33 +228,34 @@ public sealed class MediaFileRenamer : IPathOperation
                             "ALBUMARTISTS" =>
                                 workingFileName.Replace(
                                     "%ALBUMARTISTS%",
-                                    IOUtilities.EnsurePathSafeString(file.AlbumArtists)),
+                                    IOUtilities.SanitizePath(file.AlbumArtists)),
                             "ARTISTS" =>
                                 workingFileName.Replace(
                                     "%ARTISTS%",
-                                    IOUtilities.EnsurePathSafeString(file.Artists)),
+                                    IOUtilities.SanitizePath(file.Artists)),
                             "ALBUM" =>
                                 workingFileName.Replace(
                                     "%ALBUM%",
-                                    IOUtilities.EnsurePathSafeString(file.Album)),
+                                    IOUtilities.SanitizePath(file.Album)),
                             "TITLE" =>
                                 workingFileName.Replace(
                                     "%TITLE%",
-                                    IOUtilities.EnsurePathSafeString(file.Title)),
+                                    IOUtilities.SanitizePath(file.Title)),
                             "YEAR" =>
                                 workingFileName.Replace(
                                     "%YEAR%",
-                                    IOUtilities.EnsurePathSafeString(file.Year.ToString())),
+                                    IOUtilities.SanitizePath(file.Year.ToString())),
                             "TRACK" =>
                                 workingFileName.Replace(
                                     "%TRACK%",
-                                    IOUtilities.EnsurePathSafeString(file.TrackNo.ToString())),
+                                    IOUtilities.SanitizePath(file.TrackNo.ToString())),
                             _ => throw new InvalidOperationException(""),
                         };
                     }
                 );
 
-            return newBaseFileName.ToString() + Path.GetExtension(file.FileNameOnly);
+            var unsanitizedName = newBaseFileName.ToString() + Path.GetExtension(file.FileNameOnly);
+            return IOUtilities.SanitizePath(unsanitizedName);
         }
 
         /// <summary>
@@ -263,13 +264,13 @@ public sealed class MediaFileRenamer : IPathOperation
         static string GenerateSafeDirectoryName(MediaFile file)
         {
             if (MediaFile.HasAnyValues(file.AlbumArtists))
-                return IOUtilities.EnsurePathSafeString(file.AlbumArtists);
+                return IOUtilities.SanitizePath(file.AlbumArtists);
 
             if (MediaFile.HasAnyValues(file.Artists))
-                return IOUtilities.EnsurePathSafeString(file.Artists);
+                return IOUtilities.SanitizePath(file.Artists);
 
             if (!string.IsNullOrWhiteSpace(file.Album))
-                return IOUtilities.EnsurePathSafeString(file.Album);
+                return IOUtilities.SanitizePath(file.Album);
 
             return "___UNSPECIFIED___";
         }

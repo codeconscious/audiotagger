@@ -7,6 +7,11 @@ public static class IOUtilities
     private static readonly List<string> SupportedExtensions =
         new() { ".mp3", ".ogg", ".mkv", ".mp4", ".m4a" };
 
+    /// <summary>
+    /// Characters considered invalid for use in file paths.
+    /// </summary>
+    private static readonly char[] UnsafePathChars = new char[] { ':', '?', '/', };
+
     public static readonly Func<string, bool> IsSupportedFileExtension =
         new(
             fileName =>
@@ -16,13 +21,17 @@ public static class IOUtilities
                     fileName.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase)));
 
     /// <summary>
-    /// Replaces characters that are invalid in file path names with a specified safe character.
+    /// Replaces invalid characters in file path names with a specified safe character.
     /// </summary>
     /// <returns>A corrected string or the original if no changes were needed.</returns>
-    public static string EnsurePathSafeString(string path, char replacementChar = '_')
+    /// <remarks>It might be nice to allow specifying custom replacements for each invalid character.</remarks>
+    public static string SanitizePath(string path, char replacementChar = '_')
     {
-        return System.IO.Path.GetInvalidFileNameChars()
-                    .ToList()
+        var invalidChars = System.IO.Path.GetInvalidPathChars()
+                                .Concat(System.IO.Path.GetInvalidFileNameChars())
+                                .Concat(UnsafePathChars);
+
+        return invalidChars
                     .Aggregate(
                         new StringBuilder(path),
                         (workingPath, invalidChar) =>
@@ -31,16 +40,15 @@ public static class IOUtilities
     }
 
     /// <summary>
-    /// Concatenates multiple inputs to a string, then replaces characters that are
-    /// invalid in file path names with a specified safe character.
+    /// Concatenates multiple inputs to a string with a given separator, then replaces invalid
+    /// characters in file path names with a specified safe character.
     /// </summary>
     /// <returns>A corrected string or the original if no changes were needed.</returns>
-    public static string EnsurePathSafeString(
-        IEnumerable<string> input,
-        char replacementChar = '_',
-        string joinWith = " && ")
+    public static string SanitizePath(IEnumerable<string> input,
+                                      char replacementChar = '_',
+                                      string joinWith = " && ")
     {
-        return EnsurePathSafeString(
+        return SanitizePath(
             string.Join(joinWith, input),
             replacementChar);
     }
