@@ -127,14 +127,14 @@ public sealed class MediaFileRenamer : IPathOperation
         // TODO: Refactor cancellation so this isn't needed.
         const bool shouldCancel = false;
 
-        ImmutableList<string> fileTagNames = file.PopulatedTagNames();
+        ImmutableList<string> populatedTagNames = file.PopulatedTagNames();
         string? matchedRenamePattern = null;
         foreach (var renamePattern in renamePatterns)
         {
-            var matches = TagFinderRegex.Matches(renamePattern);
-            var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
-            if (expectedTags.Count == fileTagNames.Count &&
-                expectedTags.All(expectedTag => fileTagNames.Contains(expectedTag!)))
+            MatchCollection matches = TagFinderRegex.Matches(renamePattern);
+            List<string> expectedTags = matches.Cast<Match>().Select(m => m.Value).ToList();
+            if (expectedTags.Count == populatedTagNames.Count &&
+                expectedTags.All(expectedTag => populatedTagNames.Contains(expectedTag)))
             {
                 matchedRenamePattern = renamePattern;
             }
@@ -146,10 +146,10 @@ public sealed class MediaFileRenamer : IPathOperation
             return false;
         }
 
-        var newFileName = GenerateNewFileNameUsingTagData(file, fileTagNames, matchedRenamePattern);
         var newFolderName = keepInRootFolder ? string.Empty : GenerateSafeDirectoryName(file);
         var fullFolderPath = Path.Combine(workingPath, newFolderName);
         var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
+        var newFileName = GenerateNewFileNameUsingTagData(file, populatedTagNames, matchedRenamePattern);
         var proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
 
         if (previousFolderFileName == proposedFolderFileName)
@@ -228,33 +228,34 @@ public sealed class MediaFileRenamer : IPathOperation
                             "ALBUMARTISTS" =>
                                 workingFileName.Replace(
                                     "%ALBUMARTISTS%",
-                                    IOUtilities.EnsurePathSafeString(file.AlbumArtists)),
+                                    IOUtilities.SanitizePath(file.AlbumArtists)),
                             "ARTISTS" =>
                                 workingFileName.Replace(
                                     "%ARTISTS%",
-                                    IOUtilities.EnsurePathSafeString(file.Artists)),
+                                    IOUtilities.SanitizePath(file.Artists)),
                             "ALBUM" =>
                                 workingFileName.Replace(
                                     "%ALBUM%",
-                                    IOUtilities.EnsurePathSafeString(file.Album)),
+                                    IOUtilities.SanitizePath(file.Album)),
                             "TITLE" =>
                                 workingFileName.Replace(
                                     "%TITLE%",
-                                    IOUtilities.EnsurePathSafeString(file.Title)),
+                                    IOUtilities.SanitizePath(file.Title)),
                             "YEAR" =>
                                 workingFileName.Replace(
                                     "%YEAR%",
-                                    IOUtilities.EnsurePathSafeString(file.Year.ToString())),
+                                    IOUtilities.SanitizePath(file.Year.ToString())),
                             "TRACK" =>
                                 workingFileName.Replace(
                                     "%TRACK%",
-                                    IOUtilities.EnsurePathSafeString(file.TrackNo.ToString())),
+                                    IOUtilities.SanitizePath(file.TrackNo.ToString())),
                             _ => throw new InvalidOperationException(""),
                         };
                     }
                 );
 
-            return newBaseFileName.ToString() + Path.GetExtension(file.FileNameOnly);
+            var unsanitizedName = newBaseFileName.ToString() + Path.GetExtension(file.FileNameOnly);
+            return IOUtilities.SanitizePath(unsanitizedName);
         }
 
         /// <summary>
@@ -263,13 +264,13 @@ public sealed class MediaFileRenamer : IPathOperation
         static string GenerateSafeDirectoryName(MediaFile file)
         {
             if (MediaFile.HasAnyValues(file.AlbumArtists))
-                return IOUtilities.EnsurePathSafeString(file.AlbumArtists);
+                return IOUtilities.SanitizePath(file.AlbumArtists);
 
             if (MediaFile.HasAnyValues(file.Artists))
-                return IOUtilities.EnsurePathSafeString(file.Artists);
+                return IOUtilities.SanitizePath(file.Artists);
 
             if (!string.IsNullOrWhiteSpace(file.Album))
-                return IOUtilities.EnsurePathSafeString(file.Album);
+                return IOUtilities.SanitizePath(file.Album);
 
             return "___UNSPECIFIED___";
         }

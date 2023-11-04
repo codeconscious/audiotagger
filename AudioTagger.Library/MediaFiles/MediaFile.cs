@@ -33,6 +33,7 @@ public sealed class MediaFile
         set => _taggedFile.Tag.AlbumArtists =
                     value.Where(a => !string.IsNullOrWhiteSpace(a))
                          .Select(a => a.Trim().Normalize())
+                         .Distinct()
                          .ToArray();
     }
 
@@ -46,6 +47,7 @@ public sealed class MediaFile
         set => _taggedFile.Tag.Performers =
                     value.Where(a => !string.IsNullOrWhiteSpace(a))
                          .Select(a => a.Trim().Normalize())
+                         .Distinct()
                          .ToArray();
     }
 
