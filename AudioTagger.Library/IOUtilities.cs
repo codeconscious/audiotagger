@@ -10,7 +10,8 @@ public static class IOUtilities
     /// <summary>
     /// Characters considered invalid for use in file paths.
     /// </summary>
-    private static readonly char[] UnsafePathChars = new char[] { ':', '?', '/', };
+    private static readonly char[] UnsafePathChars =
+        new char[] { ':', '?', '/', '"' };
 
     public static readonly Func<string, bool> IsSupportedFileExtension =
         new(
