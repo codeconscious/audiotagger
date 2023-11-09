@@ -22,7 +22,8 @@ public sealed class TagUpdaterMultiple : IPathOperation
             return;
         }
 
-        var mediaFileList = mediaFiles.ToList();
+        List<MediaFile> mediaFileList = mediaFiles.OrderBy(f => $"{f.TrackNo:00000}{f.Title}")
+                                                  .ToList();
 
         printer.Print($"Will update the title tag of {mediaFileList.Count} file(s):");
         foreach (MediaFile file in mediaFileList)
