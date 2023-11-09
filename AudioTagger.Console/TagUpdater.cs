@@ -18,10 +18,10 @@ public sealed class TagUpdater : IPathOperation
         if (regexes?.Any() != true)
             throw new InvalidOperationException("No regexes were found! Cannot continue.");
 
-        var regexCollection = new RegexCollection(regexes);
+        RegexCollection regexCollection = new(regexes);
         printer.Print($"Found {regexCollection.Patterns.Count} regex expression(s).");
 
-        foreach (var mediaFile in mediaFiles)
+        foreach (MediaFile mediaFile in mediaFiles)
         {
             try
             {
@@ -58,7 +58,7 @@ public sealed class TagUpdater : IPathOperation
         // TODO: Refactor cancellation so this isn't needed.
         const bool shouldCancel = false;
 
-        var match = regexCollection.GetFirstMatch(mediaFile.FileNameOnly);
+        Match? match = regexCollection.GetFirstMatch(mediaFile.FileNameOnly);
 
         // If there are no regex matches against the filename, we cannot continue.
         if (match == null)

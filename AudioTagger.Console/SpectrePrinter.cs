@@ -25,7 +25,7 @@ public sealed class SpectrePrinter : IPrinter
 
         PrintEmptyLines(prependLines);
 
-        var subString = new LineSubString(message, fgColor, bgColor);
+        LineSubString subString = new(message, fgColor, bgColor);
         AnsiConsole.MarkupLine(subString.GetSpectreString());
 
         PrintEmptyLines(appendLines);
@@ -65,10 +65,10 @@ public sealed class SpectrePrinter : IPrinter
         if (!lines.Any())
             return; // TODO: Think about this.
 
-        foreach (var line in lines)
+        foreach (OutputLine line in lines)
         {
-            var lastLine = line.Line.Last();
-            foreach (var lineParts in line.Line)
+            LineSubString lastLine = line.Line.Last();
+            foreach (LineSubString lineParts in line.Line)
             {
                 AnsiConsole.Markup(lineParts.GetSpectreString());
 
@@ -99,16 +99,17 @@ public sealed class SpectrePrinter : IPrinter
     {
         ArgumentNullException.ThrowIfNull(proposedUpdates);
 
-        var table = new Table();
+        Table table = new();
         table.Border(TableBorder.Rounded);
         table.AddColumn($"[aqua]{mediaFile.FileNameOnly.EscapeMarkup()}[/]");
 
-        var tagTable = new Table();
+        Table tagTable = new();
         tagTable.Border(TableBorder.None);
         tagTable.AddColumns("Tag Name", "Tag Value"); // Hidden on the next line, though.
         tagTable.ShowHeaders = false;
 
-        foreach (var line in OutputLine.GetTagKeyValuePairs(mediaFile, includeComments))
+        foreach (KeyValuePair<string, string> line in
+                 OutputLine.GetTagKeyValuePairs(mediaFile, includeComments))
         {
             tagTable.AddRow(line.Key, line.Value.EscapeMarkup());
         }
@@ -116,7 +117,7 @@ public sealed class SpectrePrinter : IPrinter
         table.AddRow(tagTable);
         tagTable.AddEmptyRow();
 
-        foreach (var update in proposedUpdates)
+        foreach (KeyValuePair<string, string> update in proposedUpdates)
         {
             tagTable.AddRow($"[olive]{update.Key}[/]", $"[yellow]{update.Value.EscapeMarkup()}[/]");
         }

@@ -29,13 +29,13 @@ public sealed class MediaFileViewer
             table.AddRow(tagNameFormatter("Year"), file.Year.ToString());
         table.AddRow(tagNameFormatter("Duration"), file.Duration.ToString("m\\:ss"));
 
-        var genreCount = file.Genres.Length;
+        int genreCount = file.Genres.Length;
         table.AddRow(tagNameFormatter("Genres"),
                      file.Genres.Join().EscapeMarkup() +
                         (genreCount > 1 ? $" ({genreCount})" : ""));
 
-        var bitrate = file.BitRate.ToString();
-        var sampleRate = file.SampleRate.ToString("#,##0");
+        string bitrate = file.BitRate.ToString();
+        string sampleRate = file.SampleRate.ToString("#,##0");
 
         table.AddRow(tagNameFormatter("Quality"), $"{bitrate} kbps @ {sampleRate} kHz | {file.ReplayGainSummary()}");
 
@@ -57,7 +57,7 @@ public sealed class MediaFileViewer
 
         table.Columns[0].Width(15);
 
-        var panel = new Panel(table);
+        Panel panel = new(table);
         panel.Header("[yellow]" + file.FileNameOnly.EscapeMarkup() + "[/]", Justify.Left);
         panel.Border = BoxBorder.Rounded;
         panel.BorderStyle = new Style(Color.Grey15);

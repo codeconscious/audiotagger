@@ -20,11 +20,11 @@ public sealed class Normalization : IPathOperation
 
         printer.Print($"Found {mediaFiles.Count} file(s) for normalization.");
 
-        foreach (var file in mediaFiles)
+        foreach (MediaFile file in mediaFiles)
         {
             printer.Print($"- {file.Path}");
 
-            var startInfo = new ProcessStartInfo()
+            ProcessStartInfo startInfo = new()
             {
                 FileName = "mp3gain",
                 Arguments = $"-r -k -p -s i \"{file.Path}\"",

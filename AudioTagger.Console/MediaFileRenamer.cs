@@ -31,7 +31,7 @@ public sealed class MediaFileRenamer : IPathOperation
     /// </summary>
     private static bool ConfirmContinue(DirectoryInfo workingDirectory, IPrinter printer)
     {
-        var directoryResponse = AnsiConsole.Prompt(
+        string directoryResponse = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 // Escaped because substrings like "[1984]" will be misinterpreted as formatting codes.
                 .Title($"All files will be saved under directory \"{Markup.Escape(workingDirectory.FullName)}\"")
@@ -53,11 +53,11 @@ public sealed class MediaFileRenamer : IPathOperation
         var doConfirm = true;
         var errors = new List<string>();
 
-        var artistCounts = GetArtistCounts(mediaFiles);
+        IDictionary<string, int> artistCounts = GetArtistCounts(mediaFiles);
 
-        for (var i = 0; i < mediaFiles.Count; i++)
+        for (int i = 0; i < mediaFiles.Count; i++)
         {
-            var file = mediaFiles.ElementAt(i);
+            MediaFile file = mediaFiles.ElementAt(i);
 
             if (file.Title?.Length == 0)
             {
@@ -71,7 +71,7 @@ public sealed class MediaFileRenamer : IPathOperation
                 if (isCancelRequested)
                     break;
 
-                var useRootPath = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] == 1;
+                bool useRootPath = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] == 1;
 
                 isCancelRequested = RenameSingleFile(
                     file, printer, workingDirectory.FullName, useRootPath, ref doConfirm, renamePatterns);
@@ -99,7 +99,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
             uint number = 1;
             printer.Print("ERRORS:");
-            foreach (var error in errors)
+            foreach (string error in errors)
                 printer.Print($" - #{number++}: {error}");
         }
 
@@ -129,7 +129,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
         ImmutableList<string> populatedTagNames = file.PopulatedTagNames();
         string? matchedRenamePattern = null;
-        foreach (var renamePattern in renamePatterns)
+        foreach (string renamePattern in renamePatterns)
         {
             MatchCollection matches = TagFinderRegex.Matches(renamePattern);
             List<string> expectedTags = matches.Cast<Match>().Select(m => m.Value).ToList();
@@ -146,11 +146,11 @@ public sealed class MediaFileRenamer : IPathOperation
             return false;
         }
 
-        var newFolderName = keepInRootFolder ? string.Empty : GenerateSafeDirectoryName(file);
-        var fullFolderPath = Path.Combine(workingPath, newFolderName);
-        var previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
-        var newFileName = GenerateNewFileNameUsingTagData(file, populatedTagNames, matchedRenamePattern);
-        var proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
+        string newFolderName = keepInRootFolder ? string.Empty : GenerateSafeDirectoryName(file);
+        string fullFolderPath = Path.Combine(workingPath, newFolderName);
+        string previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
+        string newFileName = GenerateNewFileNameUsingTagData(file, populatedTagNames, matchedRenamePattern);
+        string proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
 
         if (previousFolderFileName == proposedFolderFileName)
         {
@@ -158,10 +158,10 @@ public sealed class MediaFileRenamer : IPathOperation
             return shouldCancel;
         }
 
-        var currentFile = new FileInfo(file.Path); // Create a duplicate file object for the new file.
-        var newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
-        var currentFullPath = file.Path.Replace(workingPath, "");
-        var proposedFullPath = Path.Combine(newFolderName, newPathFileName).Replace(workingPath, "");
+        FileInfo currentFile = new(file.Path); // Create a duplicate file object for the new file.
+        string newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
+        string currentFullPath = file.Path.Replace(workingPath, "");
+        string proposedFullPath = Path.Combine(newFolderName, newPathFileName).Replace(workingPath, "");
 
         if (currentFullPath == proposedFullPath)
         {
@@ -179,7 +179,7 @@ public sealed class MediaFileRenamer : IPathOperation
             const string yesToAll = "Yes To All";
             const string cancel = "Cancel";
 
-            var response = AnsiConsole.Prompt(
+            string response = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Rename this file?")
                     .AddChoices(new[] {no, yes, yesToAll, cancel}));
@@ -218,7 +218,7 @@ public sealed class MediaFileRenamer : IPathOperation
             ICollection<string> fileTagNames,
             string renamePattern)
         {
-            var newBaseFileName =
+            StringBuilder newBaseFileName =
                 fileTagNames.Aggregate(
                     new StringBuilder(renamePattern),
                     (workingFileName, tagName) =>
@@ -254,7 +254,7 @@ public sealed class MediaFileRenamer : IPathOperation
                     }
                 );
 
-            var unsanitizedName = newBaseFileName.ToString() + Path.GetExtension(file.FileNameOnly);
+            string unsanitizedName = newBaseFileName.ToString() + Path.GetExtension(file.FileNameOnly);
             return IOUtilities.SanitizePath(unsanitizedName);
         }
 
@@ -283,7 +283,7 @@ public sealed class MediaFileRenamer : IPathOperation
     {
         var deletedDirectories = new List<string>();
 
-        foreach (var directory in Directory.GetDirectories(topDirectoryPath))
+        foreach (string directory in Directory.GetDirectories(topDirectoryPath))
         {
             DeleteEmptySubDirectories(directory, printer);
 
@@ -305,7 +305,7 @@ public sealed class MediaFileRenamer : IPathOperation
             }
 
             printer.Print("DELETED DIRECTORIES:");
-            foreach (var dir in deletedDirectories)
+            foreach (string dir in deletedDirectories)
                 printer.Print("- " + dir);
         }
     }

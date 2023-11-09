@@ -16,8 +16,8 @@ public sealed class TagDuplicateFinder : IPathOperation
             return;
         }
 
-        var titleReplacements = settings?.Duplicates?.TitleReplacements ??
-                                ImmutableList<string>.Empty;
+        ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ??
+                                                  ImmutableList<string>.Empty;
         printer.Print($"Found {titleReplacements.Count} replacement term(s).");
 
         printer.Print("Checking for duplicates by artist(s) and title...");
@@ -32,11 +32,11 @@ public sealed class TagDuplicateFinder : IPathOperation
             .OrderBy(m => m.Key)
             .ToImmutableArray();
 
-        var count = duplicateGroups.Length;
+        int count = duplicateGroups.Length;
 
         // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
         // Reference: https://stackoverflow.com/q/5113750/11767771
-        var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
+        double elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
 
         printer.Print($"Found {count} duplicate group{(count == 1 ? "" : "s")} in {elapsedMs:#,##0}ms.");
 
@@ -60,9 +60,9 @@ public sealed class TagDuplicateFinder : IPathOperation
                     ? groupIndex.ToString().PadLeft(groupIndexPadding) + groupIndexAppend
                     : new string(' ', groupIndexPadding + groupIndexAppend.Length);
                 string titleArtist = SummarizeArtistTitle(mediaFile);
-                var titleArtistFormatted = new LineSubString(header + titleArtist);
-                var separator = new LineSubString(new string(' ', longestTitleLength - titleArtist.Length + 1));
-                var metadata = new LineSubString(
+                LineSubString titleArtistFormatted = new(header + titleArtist);
+                LineSubString separator = new(new string(' ', longestTitleLength - titleArtist.Length + 1));
+                LineSubString metadata = new(
                     text: "  " + SummarizeMetadata(mediaFile),
                     fgColor: ConsoleColor.Cyan,
                     bgColor: null,
@@ -79,20 +79,20 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         static string SummarizeArtistTitle(MediaFile mediaFile)
         {
-            var artist = string.Join("; ", mediaFile.Artists);
-            var title = mediaFile.Title;
+            string artist = string.Join("; ", mediaFile.Artists);
+            string title = mediaFile.Title;
             return $"{artist}  /  {title}";
         }
 
         static string SummarizeMetadata(MediaFile mediaFile)
         {
-            var ext = Path.GetExtension(mediaFile.Path).ToUpperInvariant();
-            var bitrate = mediaFile.BitRate + " kpbs";
-            var fileSize = mediaFile.FileSizeInBytes.ToString("#,##0") + " bytes";
+            string ext = Path.GetExtension(mediaFile.Path).ToUpperInvariant();
+            string bitrate = mediaFile.BitRate + " kpbs";
+            string fileSize = mediaFile.FileSizeInBytes.ToString("#,##0") + " bytes";
 
-            var minutes = Math.Floor(mediaFile.Duration.TotalSeconds / 60);
-            var seconds = Math.Ceiling(mediaFile.Duration.TotalSeconds % 60);
-            var time = $"{minutes}:{seconds:00}";
+            double minutes = Math.Floor(mediaFile.Duration.TotalSeconds / 60);
+            double seconds = Math.Ceiling(mediaFile.Duration.TotalSeconds % 60);
+            string time = $"{minutes}:{seconds:00}";
 
             return $"({ext[1..]}; {bitrate}; {time}; {fileSize})";
         }
