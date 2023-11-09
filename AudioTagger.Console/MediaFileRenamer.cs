@@ -31,7 +31,7 @@ public sealed class MediaFileRenamer : IPathOperation
     /// </summary>
     private static bool ConfirmContinue(DirectoryInfo workingDirectory, IPrinter printer)
     {
-        var directoryResponse = AnsiConsole.Prompt(
+        string directoryResponse = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 // Escaped because substrings like "[1984]" will be misinterpreted as formatting codes.
                 .Title($"All files will be saved under directory \"{Markup.Escape(workingDirectory.FullName)}\"")
@@ -53,9 +53,9 @@ public sealed class MediaFileRenamer : IPathOperation
         var doConfirm = true;
         var errors = new List<string>();
 
-        var artistCounts = GetArtistCounts(mediaFiles);
+        IDictionary<string, int> artistCounts = GetArtistCounts(mediaFiles);
 
-        for (var i = 0; i < mediaFiles.Count; i++)
+        for (int i = 0; i < mediaFiles.Count; i++)
         {
             var file = mediaFiles.ElementAt(i);
 
@@ -71,7 +71,7 @@ public sealed class MediaFileRenamer : IPathOperation
                 if (isCancelRequested)
                     break;
 
-                var useRootPath = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] == 1;
+                bool useRootPath = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] == 1;
 
                 isCancelRequested = RenameSingleFile(
                     file, printer, workingDirectory.FullName, useRootPath, ref doConfirm, renamePatterns);
@@ -99,7 +99,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
             uint number = 1;
             printer.Print("ERRORS:");
-            foreach (var error in errors)
+            foreach (string error in errors)
                 printer.Print($" - #{number++}: {error}");
         }
 
@@ -129,7 +129,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
         ImmutableList<string> populatedTagNames = file.PopulatedTagNames();
         string? matchedRenamePattern = null;
-        foreach (var renamePattern in renamePatterns)
+        foreach (string renamePattern in renamePatterns)
         {
             MatchCollection matches = TagFinderRegex.Matches(renamePattern);
             List<string> expectedTags = matches.Cast<Match>().Select(m => m.Value).ToList();

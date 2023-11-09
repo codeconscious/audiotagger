@@ -52,8 +52,8 @@ public static class ResponseHandler
         // Take no action until a valid key is pressed.
         while (true)
         {
-            var keyInfo = System.Console.ReadKey(true);
-            var keyChar = char.ToLowerInvariant(keyInfo.KeyChar);
+            ConsoleKeyInfo keyInfo = System.Console.ReadKey(true);
+            char keyChar = char.ToLowerInvariant(keyInfo.KeyChar);
 
             KeyResponse? relevantKeyResponse =
                 allowedResponses
@@ -86,9 +86,9 @@ public static class ResponseHandler
 
         var allowedResponses = new List<KeyResponse>
         {
-            new KeyResponse('y', UserResponse.Yes),
-            new KeyResponse('n', UserResponse.No),
-            new KeyResponse('c', UserResponse.Cancel)
+            new('y', UserResponse.Yes),
+            new('n', UserResponse.No),
+            new('c', UserResponse.Cancel)
         };
 
         return AskUserQuestion(question, allowedResponses, printer);

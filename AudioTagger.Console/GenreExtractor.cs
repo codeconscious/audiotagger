@@ -29,7 +29,7 @@ public sealed class GenreExtractor : IPathOperation
         printer.Print($"Found {sortedArtistsWithGenres.Count:#,##0} unique artists with genres.");
 
         settings.ArtistGenres ??= new();
-        foreach (var pair in sortedArtistsWithGenres)
+        foreach (KeyValuePair<string, string> pair in sortedArtistsWithGenres)
         {
             settings.ArtistGenres[pair.Key] = pair.Value;
         }
