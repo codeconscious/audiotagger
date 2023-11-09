@@ -21,12 +21,12 @@ public sealed class TagUpdaterSingle : IPathOperation
         }
 
         printer.Print($"Will update a single tag in {mediaFiles.Count} files:");
-        foreach (var file in mediaFiles)
+        foreach (MediaFile file in mediaFiles)
             printer.Print($"- {file.Path}");
 
-        var tagName = ConfirmUpdateTagName();
-        var updateType = ConfirmUpdateType(tagName);
-        var tagValue = ConfirmTagValue(tagName, updateType);
+        string tagName = ConfirmUpdateTagName();
+        TagUpdateType updateType = ConfirmUpdateType(tagName);
+        string tagValue = ConfirmTagValue(tagName, updateType);
 
         printer.Print($"Will {updateType.ToString().ToUpperInvariant()} the {tagName.ToUpperInvariant()} tag using this text:");
         printer.Print(tagValue, appendLines: 1, fgColor: ConsoleColor.Magenta);
@@ -43,7 +43,7 @@ public sealed class TagUpdaterSingle : IPathOperation
         uint successCount = 0;
         uint failureCount = 0;
 
-        foreach (var file in mediaFiles)
+        foreach (MediaFile file in mediaFiles)
         {
             ArgumentNullException.ThrowIfNull(file);
 
@@ -68,14 +68,14 @@ public sealed class TagUpdaterSingle : IPathOperation
         // Reference: https://stackoverflow.com/q/5113750/11767771
         var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
 
-        var successLabel = successCount == 1 ? "success" : "successes";
-        var failureLabel = failureCount == 1 ? "failure" : "failures";
+        string successLabel = successCount == 1 ? "success" : "successes";
+        string failureLabel = failureCount == 1 ? "failure" : "failures";
         printer.Print($"Done in {elapsedMs:#,##0}ms with {successCount} {successLabel} and {failureCount} {failureLabel}");
     }
 
     private static string ConfirmTagValue(string tagName, TagUpdateType updateType)
     {
-        var updateTypeName = updateType.ToString().ToUpperInvariant();
+        string updateTypeName = updateType.ToString().ToUpperInvariant();
         return AnsiConsole.Ask<string>($"Enter the text to {updateTypeName} to {tagName.ToUpperInvariant()}: ");
     }
 
@@ -109,7 +109,7 @@ public sealed class TagUpdaterSingle : IPathOperation
             {"Track No.", "trackNo"},
         };
 
-        var response = AnsiConsole.Prompt(
+        string response = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("Which tag do you want to update?")
                 .AddChoices(dict.Keys));
@@ -122,7 +122,7 @@ public sealed class TagUpdaterSingle : IPathOperation
         const string no = "No!";
         const string yes = "Yes";
 
-        var shouldProceed = AnsiConsole.Prompt(
+        string shouldProceed = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("[yellow]Do you want to continue?[/]")
                 .AddChoices(new[] { no, yes }));
@@ -138,7 +138,7 @@ public sealed class TagUpdaterSingle : IPathOperation
         switch (tagName)
         {
             case "title":
-                var sanitizedTitle = tagValue.Trim().Normalize()
+                string sanitizedTitle = tagValue.Trim().Normalize()
                                              .Replace("___", "　")
                                              .Replace("__", " ");
                 mediaFile.Title = GetUpdatedValue(mediaFile.Title,
@@ -147,7 +147,7 @@ public sealed class TagUpdaterSingle : IPathOperation
                                                   false);
                 break;
             case "albumArtists":
-                var sanitizedAlbumArtists = tagValue.Replace("___", "　")
+                string[] sanitizedAlbumArtists = tagValue.Replace("___", "　")
                                                     .Replace("__", " ")
                                                     .Split(new[] { ";" },
                                                            StringSplitOptions.RemoveEmptyEntries |
@@ -159,7 +159,7 @@ public sealed class TagUpdaterSingle : IPathOperation
                                                           updateType);
                 break;
             case "artists":
-                var sanitizedArtists = tagValue.Replace("___", "　")
+                string[] sanitizedArtists = tagValue.Replace("___", "　")
                                                .Replace("__", " ")
                                                .Split(new[] { ";" },
                                                       StringSplitOptions.RemoveEmptyEntries |
@@ -171,7 +171,7 @@ public sealed class TagUpdaterSingle : IPathOperation
                                                      updateType);
                 break;
             case "album":
-                var sanitizedAlbum = tagValue.Trim().Normalize()
+                string sanitizedAlbum = tagValue.Trim().Normalize()
                                              .Replace("___", "　")
                                              .Replace("__", " ");
                 mediaFile.Album = GetUpdatedValue(mediaFile.Album,
@@ -180,7 +180,7 @@ public sealed class TagUpdaterSingle : IPathOperation
                                                   false);
                 break;
             case "genres":
-                var sanitizedGenres = tagValue.Replace("___", "　")
+                string[] sanitizedGenres = tagValue.Replace("___", "　")
                                               .Replace("__", " ")
                                               .Split(new[] { ";" },
                                                      StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -215,7 +215,7 @@ public sealed class TagUpdaterSingle : IPathOperation
         /// <returns></returns>
         static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType, bool useNewLines)
         {
-            var divider = useNewLines ? Environment.NewLine + Environment.NewLine : string.Empty;
+            string divider = useNewLines ? Environment.NewLine + Environment.NewLine : string.Empty;
             return updateType switch
             {
                 TagUpdateType.Overwrite => newValue,

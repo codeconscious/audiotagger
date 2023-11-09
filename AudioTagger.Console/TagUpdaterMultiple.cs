@@ -25,7 +25,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
         var mediaFileList = mediaFiles.ToList();
 
         printer.Print($"Will update the title tag of {mediaFileList.Count} file(s):");
-        foreach (var file in mediaFileList)
+        foreach (MediaFile file in mediaFileList)
             printer.Print($"- {file.Path}");
 
         string[] lines;
@@ -50,15 +50,18 @@ public sealed class TagUpdaterMultiple : IPathOperation
             return;
         }
 
-        var tagName = ConfirmUpdateTagName();
-        var updateType = ConfirmUpdateType(tagName);
+        string tagName = ConfirmUpdateTagName();
+        TagUpdateType updateType = ConfirmUpdateType(tagName);
 
-        var table = new Table();
+        Table table = new();
         table.AddColumns("Filename", "Current", "Proposed new");
-        for (var i = 0; i < lines.Length; i++)
+        for (int i = 0; i < lines.Length; i++)
         {
-            var thisFile = mediaFileList[i];
-             table.AddRow(Markup.Escape(thisFile.FileNameOnly), GetTagValue(thisFile, tagName), lines[i]);
+            MediaFile thisFile = mediaFileList[i];
+             table.AddRow(
+                Markup.Escape(thisFile.FileNameOnly),
+                GetTagValue(thisFile, tagName),
+                lines[i]);
         }
         AnsiConsole.Write(table);
 
@@ -76,7 +79,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
 
         var updateSet = mediaFileList.Zip(lines, (f, l) => (File: f, NewTitle: l));
 
-        foreach (var pair in updateSet)
+        foreach ((MediaFile File, string NewTitle) pair in updateSet)
         {
             ArgumentNullException.ThrowIfNull(pair);
 
@@ -99,10 +102,10 @@ public sealed class TagUpdaterMultiple : IPathOperation
 
         // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
         // Reference: https://stackoverflow.com/q/5113750/11767771
-        var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
+        double elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
 
-        var successLabel = successCount == 1 ? "success" : "successes";
-        var failureLabel = failureCount == 1 ? "failure" : "failures";
+        string successLabel = successCount == 1 ? "success" : "successes";
+        string failureLabel = failureCount == 1 ? "failure" : "failures";
         printer.Print($"Done in {elapsedMs:#,##0}ms with {successCount} {successLabel} and {failureCount} {failureLabel}");
     }
 
@@ -136,7 +139,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
             {"Track No.", "trackNo"},
         };
 
-        var response = AnsiConsole.Prompt(
+        string response = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("Which tag do you want to update?")
                 .AddChoices(dict.Keys));
@@ -149,7 +152,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
         const string no = "No!";
         const string yes = "Yes";
 
-        var shouldProceed = AnsiConsole.Prompt(
+        string shouldProceed = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("[yellow]Do you want to continue?[/]")
                 .AddChoices(new[] { no, yes }));
@@ -180,7 +183,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
         switch (tagName)
         {
             case "title":
-                var sanitizedTitle = tagValue.Trim().Normalize()
+                string sanitizedTitle = tagValue.Trim().Normalize()
                                              .Replace("___", "　")
                                              .Replace("__", " ");
                 mediaFile.Title = GetUpdatedValue(mediaFile.Title,
@@ -189,7 +192,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
                                                   false);
                 break;
             case "albumArtists":
-                var sanitizedAlbumArtists = tagValue.Replace("___", "　")
+                string[] sanitizedAlbumArtists = tagValue.Replace("___", "　")
                                                     .Replace("__", " ")
                                                     .Split(new[] { ";" },
                                                            StringSplitOptions.RemoveEmptyEntries |
@@ -201,7 +204,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
                                                           updateType);
                 break;
             case "artists":
-                var sanitizedArtists = tagValue.Replace("___", "　")
+                string[] sanitizedArtists = tagValue.Replace("___", "　")
                                                .Replace("__", " ")
                                                .Split(new[] { ";" },
                                                       StringSplitOptions.RemoveEmptyEntries |
@@ -213,7 +216,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
                                                      updateType);
                 break;
             case "album":
-                var sanitizedAlbum = tagValue.Trim().Normalize()
+                string sanitizedAlbum = tagValue.Trim().Normalize()
                                              .Replace("___", "　")
                                              .Replace("__", " ");
                 mediaFile.Album = GetUpdatedValue(mediaFile.Album,
@@ -222,7 +225,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
                                                   false);
                 break;
             case "genres":
-                var sanitizedGenres = tagValue.Replace("___", "　")
+                string[] sanitizedGenres = tagValue.Replace("___", "　")
                                               .Replace("__", " ")
                                               .Split(new[] { ";" },
                                                      StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -257,7 +260,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
         /// <returns></returns>
         static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType, bool useNewLines)
         {
-            var divider = useNewLines ? Environment.NewLine + Environment.NewLine : string.Empty;
+            string divider = useNewLines ? Environment.NewLine + Environment.NewLine : string.Empty;
             return updateType switch
             {
                 TagUpdateType.Overwrite => newValue,

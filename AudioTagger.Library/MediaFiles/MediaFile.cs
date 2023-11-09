@@ -132,8 +132,8 @@ public sealed class MediaFile
     public string ReplayGainSummary()
     {
         const string noData = "———";
-        var trackGain = double.IsNaN(ReplayGainTrack) ? noData : ReplayGainTrack.ToString();
-        var albumGain = double.IsNaN(ReplayGainAlbum) ? noData : ReplayGainAlbum.ToString();
+        string trackGain = double.IsNaN(ReplayGainTrack) ? noData : ReplayGainTrack.ToString();
+        string albumGain = double.IsNaN(ReplayGainAlbum) ? noData : ReplayGainAlbum.ToString();
         return $"Track: {trackGain}  |  Album: {albumGain}";
     }
 
@@ -185,7 +185,7 @@ public sealed class MediaFile
                 .Where(IOUtilities.IsSupportedFileExtension)
                 .ToArray();
 
-            foreach (var fileName in fileNames)
+            foreach (string fileName in fileNames)
             {
                 try
                 {
@@ -239,7 +239,7 @@ public sealed class MediaFile
         if (tagValues?.Any() != true)
             return false;
 
-        var asString = string.Concat(tagValues);
+        string asString = string.Concat(tagValues);
 
         if (string.IsNullOrWhiteSpace(asString))
             return false;

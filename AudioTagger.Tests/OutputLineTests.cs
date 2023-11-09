@@ -20,11 +20,11 @@ public class OutputLineTests
     {
         const string testString1 = "Test output 1";
         const string testString2 = "Test output 2";
-        var lineSubString1 = new LineSubString(testString1);
-        var lineSubString2 = new LineSubString(testString2);
-        var array = new[] { lineSubString1, lineSubString2 };
+        LineSubString lineSubString1 = new(testString1);
+        LineSubString lineSubString2 = new(testString2);
+        LineSubString[] array = new[] { lineSubString1, lineSubString2 };
 
-        var outputLine = new OutputLine(array);
+        OutputLine outputLine = new(array);
 
         Assert.Equal(testString1, outputLine.Line[0].Text);
         Assert.Equal(testString2, outputLine.Line[1].Text);

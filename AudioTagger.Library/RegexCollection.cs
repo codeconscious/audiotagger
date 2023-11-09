@@ -35,9 +35,9 @@ public static class RegexCollectionExtensionMethods
     public static Match? GetFirstMatch(this RegexCollection regexes,
                                        string fileName)
     {
-        foreach (var pattern in regexes.Patterns)
+        foreach (string pattern in regexes.Patterns)
         {
-            var match = Regex.Match(fileName, pattern, RegexOptions.CultureInvariant);
+            Match match = Regex.Match(fileName, pattern, RegexOptions.CultureInvariant);
 
             if (match.Success)
                 return match;

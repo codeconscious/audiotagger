@@ -10,9 +10,9 @@ public sealed class TagUpdater : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        var cancelRequested = false;
-        var doConfirm = true;
-        var errorFiles = new List<string>();
+        bool cancelRequested = false;
+        bool doConfirm = true;
+        List<string> errorFiles = new();
 
         var regexes = settings?.Tagging?.RegexPatterns;
         if (regexes?.Any() != true)
@@ -68,7 +68,7 @@ public sealed class TagUpdater : IPathOperation
             return shouldCancel;
         }
 
-        var matchedTags = match.Groups
+        IEnumerable<Group>? matchedTags = match.Groups
                                .OfType<Group>()
                                .Where(g => g.Success);
 
@@ -81,7 +81,7 @@ public sealed class TagUpdater : IPathOperation
 
         var updateableFields = new UpdatableFields(matchedTags, settings);
 
-        var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
+        Dictionary<string, string>? proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
         if (proposedUpdates?.Any() != true)
         {
@@ -110,7 +110,7 @@ public sealed class TagUpdater : IPathOperation
             const string yesToAll = "Yes To All";
             const string cancel = "Cancel";
 
-            var response = AnsiConsole.Prompt(
+            string response = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Apply these updates?")
                     .AddChoices(new[] { no, yes, yesToAll, cancel }));
