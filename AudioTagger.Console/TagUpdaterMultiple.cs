@@ -22,17 +22,16 @@ public sealed class TagUpdaterMultiple : IPathOperation
             return;
         }
 
-        List<MediaFile> mediaFileList = mediaFiles.OrderBy(f => $"{f.TrackNo:00000}{f.Title}")
-                                                  .ToList();
+        List<MediaFile> sortedMediaFiles = mediaFiles.OrderBy(f => $"{f.TrackNo:00000}{f.Title}")
+                                                     .ToList();
 
-        printer.Print($"Will update the title tag of {mediaFileList.Count} file(s):");
-        foreach (MediaFile file in mediaFileList)
-            printer.Print($"- {file.Path}");
+        printer.Print($"Will update the title tag of {sortedMediaFiles.Count} file(s):");
+        sortedMediaFiles.ForEach(f => printer.Print($"- {f.Path}"));
 
-        string[] lines;
+        string[] inputLines;
         try
         {
-            lines = File.ReadAllLines(_inputFile);
+            inputLines = File.ReadAllLines(_inputFile);
         }
         catch (FileNotFoundException)
         {
@@ -45,9 +44,9 @@ public sealed class TagUpdaterMultiple : IPathOperation
             return;
         }
 
-        if (lines.Length != mediaFileList.Count)
+        if (inputLines.Length != sortedMediaFiles.Count)
         {
-            printer.Error($"Cannot match the {lines.Length} input lines to the {mediaFileList.Count} media files.");
+            printer.Error($"Cannot match the {inputLines.Length} input lines to the {sortedMediaFiles.Count} media files.");
             return;
         }
 
@@ -56,13 +55,13 @@ public sealed class TagUpdaterMultiple : IPathOperation
 
         Table table = new();
         table.AddColumns("Filename", "Current", "Proposed new");
-        for (int i = 0; i < lines.Length; i++)
+        for (int i = 0; i < inputLines.Length; i++)
         {
-            MediaFile thisFile = mediaFileList[i];
-             table.AddRow(
+            MediaFile thisFile = sortedMediaFiles[i];
+            table.AddRow(
                 Markup.Escape(thisFile.FileNameOnly),
                 GetTagValue(thisFile, tagName),
-                lines[i]);
+                inputLines[i]);
         }
         AnsiConsole.Write(table);
 
@@ -78,7 +77,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
         uint successCount = 0;
         uint failureCount = 0;
 
-        var updateSet = mediaFileList.Zip(lines, (f, l) => (File: f, NewTitle: l));
+        var updateSet = sortedMediaFiles.Zip(inputLines, (f, l) => (File: f, NewTitle: l));
 
         foreach ((MediaFile File, string NewTitle) pair in updateSet)
         {
