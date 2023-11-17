@@ -26,7 +26,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         stopwatch.Start();
 
         var duplicateGroups = mediaFiles
-            .ToLookup(m => ConcatenateArtistsForComparison(m.Artists) +
+            .ToLookup(m => ConcatenateCollectionText(m.Artists) +
                            RemoveSubstrings(m.Title, titleReplacements))
             .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
             .OrderBy(m => m.Key)
@@ -103,24 +103,17 @@ public sealed class TagDuplicateFinder : IPathOperation
     /// For example, "The Beatles" would convert to "Beatles" because "The"
     /// should not be included in the comparison.
     /// </summary>
-    /// <param name="artists"></param>
-    /// <returns></returns>
-    private static string ConcatenateArtistsForComparison(IEnumerable<string> artists)
+    /// <param name="strings"></param>
+    private static string ConcatenateCollectionText(IEnumerable<string> strings)
     {
-        return
-            Regex.Replace(
-                string.Concat(artists)
-                      .ToLowerInvariant()
-                      .Trim(),
-                "^the",
-                "");
+        var concatenated = string.Concat(strings).ToLowerInvariant().Trim();
+        return Regex.Replace(concatenated, "^the", string.Empty);
     }
 
     /// <summary>
     /// Removes occurrences of each of a collection of substrings from a string.
     /// Returns the source string as-is if no replacement terms were passed in.
     /// </summary>
-    /// <returns>The modified string.</returns>
     private static string RemoveSubstrings(string source, ImmutableList<string> terms)
     {
         return terms switch
