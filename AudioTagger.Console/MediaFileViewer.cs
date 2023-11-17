@@ -81,7 +81,7 @@ public sealed class MediaFileViewer
             file.ReplayGainTrack.ToString()
         };
 
-        var markups = rows.Select(r => new Markup(r));
+        IEnumerable<Markup> markups = rows.Select(r => new Markup(r));
 
         return new TableRow(markups);
     }

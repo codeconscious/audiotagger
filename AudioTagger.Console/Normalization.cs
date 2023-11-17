@@ -12,7 +12,7 @@ public sealed class Normalization : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        if (!mediaFiles.Any())
+        if (mediaFiles.Count == 0)
         {
             printer.Print("There are no files to normalize. Cancelling...");
             return;

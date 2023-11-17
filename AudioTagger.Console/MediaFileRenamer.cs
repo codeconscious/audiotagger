@@ -160,7 +160,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
         FileInfo currentFile = new(file.Path); // Create a duplicate file object for the new file.
         string newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
-        string currentFullPath = file.Path.Replace(workingPath, "");
+        string currentFullPath = file.Path.Replace(workingPath, string.Empty);
         string proposedFullPath = Path.Combine(newFolderName, newPathFileName).Replace(workingPath, string.Empty);
 
         if (currentFullPath == proposedFullPath)
