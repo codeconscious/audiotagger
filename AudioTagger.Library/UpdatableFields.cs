@@ -223,7 +223,7 @@ public sealed class UpdatableFields
                     "; ", Genres) +
                     (genreCount > 1
                         ? $" ({genreCount})"
-                        : ""));
+                        : string.Empty));
         }
 
         return updateOutput;

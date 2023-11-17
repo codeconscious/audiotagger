@@ -99,7 +99,7 @@ public sealed class TagUpdater : IPathOperation
         printer.PrintTagDataToTable(mediaFile, proposedUpdates, false);
 
         // Show the proposed updates and ask the user to confirm.
-        // printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
+        // printer.Print("Apply these updates?", 0, 0, string.Empty, ConsoleColor.Yellow);
         // foreach (var update in proposedUpdates)
         //     printer.Print(update.Line);
 

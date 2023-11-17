@@ -74,7 +74,7 @@ public sealed class OutputLine
 
         int genreCount = fileData.Genres.Length;
         lines.Add(TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
-                                                (genreCount > 1 ? $" ({genreCount})" : "")));
+                                                (genreCount > 1 ? $" ({genreCount})" : string.Empty)));
 
         string bitrate = fileData.BitRate.ToString();
         string sampleRate = fileData.SampleRate.ToString("#,##0");

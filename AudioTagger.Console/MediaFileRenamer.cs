@@ -148,20 +148,20 @@ public sealed class MediaFileRenamer : IPathOperation
 
         string newFolderName = keepInRootFolder ? string.Empty : GenerateSafeDirectoryName(file);
         string fullFolderPath = Path.Combine(workingPath, newFolderName);
-        string previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, "");
+        string previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, string.Empty);
         string newFileName = GenerateNewFileNameUsingTagData(file, populatedTagNames, matchedRenamePattern);
         string proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
 
         if (previousFolderFileName == proposedFolderFileName)
         {
-            printer.Print($"No rename needed for \"{file.Path.Replace(workingPath, "")}\"");
+            printer.Print($"No rename needed for \"{file.Path.Replace(workingPath, string.Empty)}\"");
             return shouldCancel;
         }
 
         FileInfo currentFile = new(file.Path); // Create a duplicate file object for the new file.
         string newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
         string currentFullPath = file.Path.Replace(workingPath, "");
-        string proposedFullPath = Path.Combine(newFolderName, newPathFileName).Replace(workingPath, "");
+        string proposedFullPath = Path.Combine(newFolderName, newPathFileName).Replace(workingPath, string.Empty);
 
         if (currentFullPath == proposedFullPath)
         {
@@ -249,7 +249,7 @@ public sealed class MediaFileRenamer : IPathOperation
                                 workingFileName.Replace(
                                     "%TRACK%",
                                     IOUtilities.SanitizePath(file.TrackNo.ToString())),
-                            _ => throw new InvalidOperationException(""),
+                            _ => throw new InvalidOperationException(string.Empty),
                         };
                     }
                 );

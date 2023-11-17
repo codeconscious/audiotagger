@@ -132,8 +132,8 @@ public static class Program
     private static void PrintInstructions(IPrinter printer)
     {
         printer.Print("ID3 audio tagger utilities.");
-        printer.Print("Usage: ccaudiotagger [COMMAND] [FILES/DIRECTORIES]...", 0, 1, "");
-        printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
+        printer.Print("Usage: ccaudiotagger [COMMAND] [FILES/DIRECTORIES]...", 0, 1, string.Empty);
+        printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, string.Empty);
 
         Table table = new();
         table.AddColumns("Commands", "Descriptions");

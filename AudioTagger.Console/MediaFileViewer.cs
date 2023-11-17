@@ -10,7 +10,7 @@ public sealed class MediaFileViewer
         var tagNameFormatter = (string s) => "[grey]" + s +"[/]";
 
         var table = new Table();
-        table.AddColumns("", "");
+        table.AddColumns(string.Empty, string.Empty);
         table.Border = TableBorder.None;
         table.HideHeaders();
         table.Expand = true;
@@ -32,7 +32,7 @@ public sealed class MediaFileViewer
         int genreCount = file.Genres.Length;
         table.AddRow(tagNameFormatter("Genres"),
                      file.Genres.Join().EscapeMarkup() +
-                        (genreCount > 1 ? $" ({genreCount})" : ""));
+                        (genreCount > 1 ? $" ({genreCount})" : string.Empty));
 
         string bitrate = file.BitRate.ToString();
         string sampleRate = file.SampleRate.ToString("#,##0");

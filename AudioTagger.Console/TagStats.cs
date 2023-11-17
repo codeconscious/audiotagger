@@ -187,7 +187,7 @@ public sealed class TagStats : IPathOperation
                       .ToLowerInvariant()
                       .Trim(),
                 "^the",
-                "");
+                string.Empty);
         }
     }
 
