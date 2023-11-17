@@ -14,7 +14,7 @@ public sealed class TagUpdaterYearOnly : IPathOperation
         var errorFiles = new List<string>();
 
         // Process each file
-        foreach (var mediaFile in mediaFiles)
+        foreach (MediaFile mediaFile in mediaFiles)
         {
             try
             {
@@ -49,9 +49,9 @@ public sealed class TagUpdaterYearOnly : IPathOperation
         const bool shouldCancel = false;
         const string updateType = "year";
 
-        var createdDt = System.IO.File.GetCreationTime(mediaFile.Path);
+        DateTime createdDt = System.IO.File.GetCreationTime(mediaFile.Path);
 
-        var updateableFields = new UpdatableFields(updateType, createdDt.Year);
+        UpdatableFields updateableFields = new UpdatableFields(updateType, createdDt.Year);
 
         var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
@@ -71,7 +71,7 @@ public sealed class TagUpdaterYearOnly : IPathOperation
             const string yesToAll = "Yes To All";
             const string cancel = "Cancel";
 
-            var response = AnsiConsole.Prompt(
+            string response = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Apply these updates?")
                     .AddChoices(new[] { no, yes, yesToAll, cancel }));

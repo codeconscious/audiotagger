@@ -83,9 +83,11 @@ internal static class OperationLibrary
 
     public static Result<IPathOperation> GetPathOperation(string requestedOperation)
     {
-        var loweredOperation = requestedOperation.ToLowerInvariant();
-        var maybeOperation = Operations.FirstOrDefault(o => o.Commands.Contains(loweredOperation))?
-                                       .PathOperation;
+        string loweredOperation = requestedOperation.ToLowerInvariant();
+        IPathOperation? maybeOperation =
+            Operations
+                .FirstOrDefault(o => o.Commands.Contains(loweredOperation))?
+                .PathOperation;
         return maybeOperation is null
             ? Result.Fail($"No valid operation for {requestedOperation} was found.")
             : Result.Ok(maybeOperation);

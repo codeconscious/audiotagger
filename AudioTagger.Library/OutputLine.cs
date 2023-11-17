@@ -37,8 +37,7 @@ public sealed class OutputLine
                                         string prependLine = "")
     {
         const int spacesToPrepend = 4;
-        var spacesToAppend = 13 - tagName.Length; // TODO: Calculate this instead
-        //var separator = ": ";
+        int spacesToAppend = 13 - tagName.Length; // TODO: Calculate this instead
 
         var lineOutput = new OutputLine();
 
@@ -47,7 +46,7 @@ public sealed class OutputLine
         lineOutput.Add(tagName);
         lineOutput.Add(new string(' ', spacesToAppend));
 
-        foreach (var part in tagData)
+        foreach (LineSubString part in tagData)
             lineOutput.Add(part);
 
         return lineOutput;
@@ -58,10 +57,7 @@ public sealed class OutputLine
     {
         return TagDataWithHeader(
             tagName,
-            new List<LineSubString>
-            {
-                new LineSubString(tagData)
-            },
+            new List<LineSubString> { new(tagData) },
             prependLine);
     }
 
@@ -76,12 +72,12 @@ public sealed class OutputLine
             TagDataWithHeader("Duration", fileData.Duration.ToString("m\\:ss"))
         };
 
-        var genreCount = fileData.Genres.Length;
+        int genreCount = fileData.Genres.Length;
         lines.Add(TagDataWithHeader("Genre(s)", string.Join(", ", fileData.Genres) +
                                                 (genreCount > 1 ? $" ({genreCount})" : "")));
 
-        var bitrate = fileData.BitRate.ToString();
-        var sampleRate = fileData.SampleRate.ToString("#,##0");
+        string bitrate = fileData.BitRate.ToString();
+        string sampleRate = fileData.SampleRate.ToString("#,##0");
 
         // Create formatted quality line
         const string genreSeparator = "    ";
@@ -90,11 +86,11 @@ public sealed class OutputLine
                 "Quality",
                 new List<LineSubString>
                 {
-                    new LineSubString(bitrate),
-                    new LineSubString(" kbps" + genreSeparator, ConsoleColor.DarkGray),
-                    new LineSubString(sampleRate),
-                    new LineSubString(" kHz" + genreSeparator, ConsoleColor.DarkGray),
-                    new LineSubString(fileData.ReplayGainSummary())
+                    new(bitrate),
+                    new(" kbps" + genreSeparator, ConsoleColor.DarkGray),
+                    new(sampleRate),
+                    new(" kHz" + genreSeparator, ConsoleColor.DarkGray),
+                    new(fileData.ReplayGainSummary())
                 }));
 
         if (fileData.Composers?.Length > 0)
@@ -117,12 +113,12 @@ public sealed class OutputLine
             { "Duration", fileData.Duration.ToString("m\\:ss") }
         };
 
-        var genreCount = fileData.Genres.Length;
+        int genreCount = fileData.Genres.Length;
         lines.Add("Genre(s)", fileData.Genres.Join() +
                               (genreCount > 1 ? $" ({genreCount})" : ""));
 
-        var bitrate = fileData.BitRate.ToString();
-        var sampleRate = fileData.SampleRate.ToString("#,##0");
+        string bitrate = fileData.BitRate.ToString();
+        string sampleRate = fileData.SampleRate.ToString("#,##0");
 
         // Create formatted quality line
         const string separator = "  |  ";

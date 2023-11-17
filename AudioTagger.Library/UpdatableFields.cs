@@ -26,7 +26,7 @@ public sealed class UpdatableFields
     {
         ArgumentNullException.ThrowIfNull(matchedGroups);
 
-        foreach (var element in matchedGroups)
+        foreach (Group element in matchedGroups)
         {
             if (element.Name == "title")
             {
@@ -215,7 +215,7 @@ public sealed class UpdatableFields
 
         if (Genres?.All(a => fileData.Genres.Contains(a)) == false)
         {
-            var genreCount = Genres.Length;
+            int genreCount = Genres.Length;
 
             updateOutput.Add(
                 "Genres",

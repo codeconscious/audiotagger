@@ -63,9 +63,9 @@ public static class SettingsService
             if (createFileIfMissing && !CreateIfMissing(printer))
                 return Result.Fail($"Settings file \"{_settingsFileName}\" missing.");
 
-            var text = File.ReadAllText(_settingsFileName);
-            var json = JsonSerializer.Deserialize<Settings>(text)
-                       ?? throw new JsonException();
+            string text = File.ReadAllText(_settingsFileName);
+            Settings json = JsonSerializer.Deserialize<Settings>(text)
+                            ?? throw new JsonException();
             return Result.Ok(json);
         }
         catch (JsonException ex)

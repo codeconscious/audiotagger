@@ -19,7 +19,7 @@ public class TagParser : IPathOperation
 
         foreach (MediaFile mediaFile in mediaFiles)
         {
-            var match = regex.Match(mediaFile.Comments);
+            Match match = regex.Match(mediaFile.Comments);
 
             if (!match.Success || mediaFile.Album == match.Value)
             {

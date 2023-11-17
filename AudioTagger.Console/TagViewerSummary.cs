@@ -44,7 +44,7 @@ public sealed class TagViewerSummary : IPathOperation
             Expand = true
         };
 
-        foreach (var pair in columnPairs)
+        foreach ((string, Justify) pair in columnPairs)
         {
             var column = new TableColumn(pair.Item1);
 
@@ -69,7 +69,7 @@ public sealed class TagViewerSummary : IPathOperation
                                                ImmutableArray<MediaFile> orderedMediaFiles,
                                                IPrinter printer)
     {
-        foreach (var mediaFile in orderedMediaFiles)
+        foreach (MediaFile mediaFile in orderedMediaFiles)
         {
             try
             {

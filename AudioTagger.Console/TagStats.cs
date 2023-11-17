@@ -18,7 +18,7 @@ public sealed class TagStats : IPathOperation
         }
 
         const int topArtistCount = 25;
-        var ignoreArtists = new string[] { string.Empty, "Various", "Various Artists", "<unknown>" };
+        var ignoreArtists = new string[] { string.Empty, "VA", "Various", "Various Artists", "<unknown>" };
 
         var topArtists = mediaFiles
             .Where(m => m.Artists.Any() &&

@@ -108,7 +108,7 @@ public static class Program
 
         // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
         // Reference: https://stackoverflow.com/q/5113750/11767771
-        var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
+        double elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
 
         printer.Print($"Found {mediaFiles.Count:#,##0} files in {elapsedMs:#,##0}ms.");
 
@@ -143,11 +143,11 @@ public static class Program
         printer.Print("Usage: ccaudiotagger [COMMAND] [FILES/DIRECTORIES]...", 0, 1, "");
         printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
 
-        var table = new Table();
+        Table table = new();
         table.AddColumns("Commands", "Descriptions");
         table.Border = TableBorder.Rounded;
 
-        foreach (var pair in OperationLibrary.GenerateHelpTextPairs(includeHidden: false))
+        foreach (KeyValuePair<string, string> pair in OperationLibrary.GenerateHelpTextPairs(includeHidden: false))
         {
             table.AddRow(pair.Key, pair.Value);
         }

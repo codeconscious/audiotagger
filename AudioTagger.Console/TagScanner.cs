@@ -20,13 +20,13 @@ public sealed class TagScanner : IPathOperation
 
         printer.Print($"Found {mp3s.Count()} MP3 files.");
 
-        var urlRegex = new Regex("""(?<=URL: ).+""");
+        Regex urlRegex = new("""(?<=URL: ).+""");
 
         StringBuilder okFiles = new();
         StringBuilder badFilesByTags = new();
         StringBuilder badFilesByUrl = new();
 
-        foreach (var mp3 in mp3s)
+        foreach (MediaFile mp3 in mp3s)
         {
             if (mp3.SampleRate >= 48_000)
             {

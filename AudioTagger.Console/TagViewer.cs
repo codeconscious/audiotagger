@@ -9,7 +9,7 @@ public sealed class TagViewer : IPathOperation
     {
         ArgumentNullException.ThrowIfNull(mediaFiles);
 
-        foreach (var mediaFile in mediaFiles)
+        foreach (MediaFile mediaFile in mediaFiles)
         {
             try
             {
