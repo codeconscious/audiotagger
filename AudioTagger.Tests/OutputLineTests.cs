@@ -22,7 +22,7 @@ public class OutputLineTests
         const string testString2 = "Test output 2";
         LineSubString lineSubString1 = new(testString1);
         LineSubString lineSubString2 = new(testString2);
-        LineSubString[] array = new[] { lineSubString1, lineSubString2 };
+        LineSubString[] array = [lineSubString1, lineSubString2];
 
         OutputLine outputLine = new(array);
 

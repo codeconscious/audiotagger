@@ -113,7 +113,7 @@ public sealed class TagUpdater : IPathOperation
             string response = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Apply these updates?")
-                    .AddChoices(new[] { no, yes, yesToAll, cancel }));
+                    .AddChoices([no, yes, yesToAll, cancel]));
 
             if (response == cancel)
             {

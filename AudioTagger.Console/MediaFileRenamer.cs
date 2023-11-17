@@ -35,7 +35,7 @@ public sealed class MediaFileRenamer : IPathOperation
             new SelectionPrompt<string>()
                 // Escaped because substrings like "[1984]" will be misinterpreted as formatting codes.
                 .Title($"All files will be saved under directory \"{Markup.Escape(workingDirectory.FullName)}\"")
-                .AddChoices(new[] {"Continue", "Cancel"}));
+                .AddChoices(["Continue", "Cancel"]));
 
         if (directoryResponse == "Continue")
             return true;
@@ -182,7 +182,7 @@ public sealed class MediaFileRenamer : IPathOperation
             string response = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Rename this file?")
-                    .AddChoices(new[] {no, yes, yesToAll, cancel}));
+                    .AddChoices([no, yes, yesToAll, cancel]));
 
             if (response == cancel)
             {

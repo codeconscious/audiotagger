@@ -95,7 +95,7 @@ public sealed class UpdatableFields
             Artists is not null &&
             settings.ArtistGenres.ContainsKey(Artists[0]))
         {
-            Genres = new[] { settings.ArtistGenres[Artists[0]] };
+            Genres = [settings.ArtistGenres[Artists[0]]];
         }
     }
 

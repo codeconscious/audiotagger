@@ -155,7 +155,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
         string shouldProceed = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("[yellow]Do you want to continue?[/]")
-                .AddChoices(new[] { no, yes }));
+                .AddChoices([no, yes]));
 
         return shouldProceed == yes;
     }
