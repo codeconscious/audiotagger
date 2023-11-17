@@ -1,23 +1,15 @@
 ﻿namespace AudioTagger;
 
-public sealed class LineSubString
+public sealed class LineSubString(
+    string text,
+    ConsoleColor? fgColor = null,
+    ConsoleColor? bgColor = null,
+    bool addLineBreak = false)
 {
-    public string Text { get; set; }
-    public ConsoleColor? FgColor { get; set; }
-    public ConsoleColor? BgColor { get; set; }
-    public bool AddLineBreak { get; set; }
-
-    public LineSubString(
-        string text,
-        ConsoleColor? fgColor = null,
-        ConsoleColor? bgColor = null,
-        bool addLineBreak = false)
-    {
-        Text = text;
-        FgColor = fgColor;
-        BgColor = bgColor;
-        AddLineBreak = addLineBreak;
-    }
+    public string Text { get; set; } = text;
+    public ConsoleColor? FgColor { get; set; } = fgColor;
+    public ConsoleColor? BgColor { get; set; } = bgColor;
+    public bool AddLineBreak { get; set; } = addLineBreak;
 
     public string GetSpectreString()
     {

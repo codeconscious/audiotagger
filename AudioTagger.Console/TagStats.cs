@@ -25,8 +25,12 @@ public sealed class TagStats : IPathOperation
                         m.AlbumArtists.All(a => !ignoreArtists.Contains(a)) &&
                         !ignoreArtists.Intersect(m.Artists).Any() &&
                         !m.Genres.Contains("日本語会話"))
-            .GroupBy(a => a.AlbumArtists.Any() ? a.AlbumArtists : a.Artists, new ArtistsComparer())
-            .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
+            .GroupBy(a => a.AlbumArtists.Any()
+                ? a.AlbumArtists
+                : a.Artists, new ArtistsComparer())
+            .ToImmutableDictionary(g =>
+                string.Join(", ", g.Key),
+                g => g.Count())
             .OrderByDescending(g => g.Value)
             .Take(topArtistCount);
 

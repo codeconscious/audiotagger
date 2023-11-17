@@ -33,8 +33,9 @@ public sealed class OutputLine
         Line.Add(new LineSubString(text, fgColor, bgColor));
     }
 
-    public static OutputLine TagDataWithHeader(string tagName, IReadOnlyList<LineSubString> tagData,
-                                        string prependLine = "")
+    public static OutputLine TagDataWithHeader(string tagName,
+                                               IReadOnlyList<LineSubString> tagData,
+                                               string prependLine = "")
     {
         const int spacesToPrepend = 4;
         int spacesToAppend = 13 - tagName.Length; // TODO: Calculate this instead
@@ -53,7 +54,7 @@ public sealed class OutputLine
     }
 
     public static OutputLine TagDataWithHeader(string tagName, string tagData,
-                                        string prependLine = "")
+                                               string prependLine = "")
     {
         return TagDataWithHeader(
             tagName,
@@ -102,7 +103,9 @@ public sealed class OutputLine
         return lines;
     }
 
-    public static Dictionary<string, string> GetTagKeyValuePairs(MediaFile fileData, bool includeComments)
+    public static Dictionary<string, string> GetTagKeyValuePairs(
+        MediaFile fileData,
+        bool includeComments)
     {
         var lines = new Dictionary<string, string>
         {
