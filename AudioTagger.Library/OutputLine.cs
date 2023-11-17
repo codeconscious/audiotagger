@@ -4,13 +4,13 @@ namespace AudioTagger;
 
 public sealed class OutputLine
 {
-    public List<LineSubString> Line { get; set; } = new List<LineSubString>();
+    public List<LineSubString> Line { get; set; } = [];
 
     public OutputLine() { }
 
     public OutputLine(LineSubString lineParts)
     {
-        Line = new List<LineSubString> { lineParts };
+        Line = [lineParts];
     }
 
     public OutputLine(params LineSubString[] lineParts)

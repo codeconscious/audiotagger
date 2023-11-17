@@ -14,7 +14,7 @@ public sealed record Settings
     public ImmutableList<string>? RenamePatterns { get; set; }
 
     [JsonPropertyName("artistGenres")]
-    public Dictionary<string, string>? ArtistGenres { get; set; } = new();
+    public Dictionary<string, string>? ArtistGenres { get; set; } = [];
 }
 
 public sealed record Duplicates

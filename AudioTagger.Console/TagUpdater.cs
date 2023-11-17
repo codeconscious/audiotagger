@@ -12,7 +12,7 @@ public sealed class TagUpdater : IPathOperation
     {
         bool cancelRequested = false;
         bool doConfirm = true;
-        List<string> errorFiles = new();
+        List<string> errorFiles = [];
 
         var regexes = settings?.Tagging?.RegexPatterns;
         if (regexes?.Any() != true)

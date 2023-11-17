@@ -34,7 +34,7 @@ public sealed class TagStats : IPathOperation
             $"Top {topArtistCount} artists:",
             new[] { "Artist", "Count" },
             topArtists.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
-            new List<Justify>() { Justify.Left, Justify.Right });
+            [Justify.Left, Justify.Right]);
 
         const int mostCommonTitleCount = 15;
 
@@ -48,7 +48,7 @@ public sealed class TagStats : IPathOperation
             $"Top {mostCommonTitleCount} track titles:",
             new[] { "Title", "Count" },
             mostCommonTitles.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
-            new List<Justify>() { Justify.Left, Justify.Right });
+            [Justify.Left, Justify.Right]);
 
         const int mostCommonGenreCount = 20;
 
@@ -64,7 +64,7 @@ public sealed class TagStats : IPathOperation
             $"Top {mostCommonGenreCount} genres:",
             new[] { "Genre", "Count" },
             mostCommonGenres.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
-            new List<Justify>() { Justify.Left, Justify.Right });
+            [Justify.Left, Justify.Right]);
 
         const int leastCommonGenreCount = 10;
 
@@ -74,7 +74,7 @@ public sealed class TagStats : IPathOperation
             $"Bottom {leastCommonGenreCount} genres:",
             new[] { "Genre", "Count" },
             leastCommonGenres.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
-            new List<Justify>() { Justify.Left, Justify.Right });
+            [Justify.Left, Justify.Right]);
 
         const int mostCommonYearCount = 15;
 
@@ -89,7 +89,7 @@ public sealed class TagStats : IPathOperation
             $"Top {mostCommonYearCount} Years",
             new[] { "Year", "Count" },
             mostCommonYears.Select(y => new[] { y.Key.ToString(), y.Value.ToString("#,##0") }).ToList(),
-            new List<Justify>() { Justify.Left, Justify.Right });
+            [Justify.Left, Justify.Right]);
 
         const int longestTrackCount = 15;
         var longestTracks = mediaFiles
@@ -106,7 +106,7 @@ public sealed class TagStats : IPathOperation
                 Path.GetExtension(t.FileNameOnly),
                 $"{t.FileSizeInBytes:#,##0}"
             }).ToList(),
-            new List<Justify>() { Justify.Left, Justify.Left, Justify.Right, Justify.Right, Justify.Right });
+            [Justify.Left, Justify.Left, Justify.Right, Justify.Right, Justify.Right]);
     }
 
     private static void PrintToTable(string title,
