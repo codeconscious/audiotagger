@@ -27,7 +27,7 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         var duplicateGroups = mediaFiles
             .ToLookup(m => ConcatenateArtistsForComparison(m.Artists) +
-                           RemoveUnneededText(m.Title, titleReplacements))
+                           RemoveSubstrings(m.Title, titleReplacements))
             .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
             .OrderBy(m => m.Key)
             .ToImmutableArray();
@@ -117,20 +117,20 @@ public sealed class TagDuplicateFinder : IPathOperation
     }
 
     /// <summary>
-    /// Removes each occurrence of text using a given collection of strings.
+    /// Removes occurrences of each of a collection of substrings from a string.
+    /// Returns the source string as-is if no replacement terms were passed in.
     /// </summary>
     /// <returns>The modified string.</returns>
-    private static string RemoveUnneededText(string title, ImmutableList<string> terms)
+    private static string RemoveSubstrings(string source, ImmutableList<string> terms)
     {
         return terms switch
         {
-            null         => title,
-            { Count: 0 } => title,
-            _ => terms.ToList()
-                      .Aggregate(
-                          new StringBuilder(title),
-                          (sb, term) => sb.Replace(term, string.Empty),
-                          sb => sb.ToString().Trim())
+            null or { Count: 0 } => source,
+            _                    => terms.ToList()
+                                         .Aggregate(
+                                             new StringBuilder(source),
+                                             (sb, term) => sb.Replace(term, string.Empty),
+                                             sb => sb.ToString())
         };
     }
 }
