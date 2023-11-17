@@ -13,7 +13,7 @@ public sealed class GenreExtractor : IPathOperation
             return;
         }
 
-        var sortedArtistsWithGenres = mediaFiles
+        ImmutableList<(string Artist, string Genre)> sortedArtistsWithGenres = mediaFiles
             .Where(f => f.Genres.Any() && f.Artists.Any())
             .GroupBy(f =>
                 f.Artists[0], // Would be nice to split them
@@ -24,14 +24,19 @@ public sealed class GenreExtractor : IPathOperation
             .ToImmutableSortedDictionary(
                 f => f.Key,
                 f => f.First()
-            );
+            )
+            .Select(pair => (
+                Artist: pair.Key,
+                Genre: pair.Value
+            ))
+            .ToImmutableList();
 
         printer.Print($"Found {sortedArtistsWithGenres.Count:#,##0} unique artists with genres.");
 
-        settings.ArtistGenres ??= new();
-        foreach (KeyValuePair<string, string> pair in sortedArtistsWithGenres)
+        settings.ArtistGenres ??= [];
+        foreach ((string artist, string genre) in sortedArtistsWithGenres)
         {
-            settings.ArtistGenres[pair.Key] = pair.Value;
+            settings.ArtistGenres[artist] = genre;
         }
 
         if (SettingsService.Write(settings, printer))
