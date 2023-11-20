@@ -71,21 +71,27 @@ public sealed class MediaFileRenamer : IPathOperation
                 if (isCancelRequested)
                     break;
 
-                bool useArtistFolder = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] == 1;
+                // Ensure artists with multiple tracks are saved in folders.
+                bool useArtistFolder = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] > 1;
 
                 isCancelRequested = RenameSingleFile(
-                    file, printer, workingDirectory.FullName, useArtistFolder,
-                    false, ref doConfirm, renamePatterns);
+                    file,
+                    printer,
+                    workingDirectory.FullName,
+                    useArtistFolder: useArtistFolder,
+                    useAlbumFolders: false,
+                    ref doConfirm,
+                    renamePatterns);
             }
             catch (IOException ex)
             {
-                printer.Error($"Error updating \"{file.FileNameOnly}\": {ex.Message}");
+                printer.Error($"Error renaming \"{file.FileNameOnly}\": {ex.Message}");
                 printer.PrintException(ex);
                 errors.Add(ex.Message); // The message should contain the file name.
             }
             catch (KeyNotFoundException ex)
             {
-                printer.Error($"Error updating \"{file.FileNameOnly}\": {ex.Message}");
+                printer.Error($"Error renaming \"{file.FileNameOnly}\": {ex.Message}");
                 printer.PrintException(ex);
                 errors.Add(ex.Message);
             }
@@ -273,6 +279,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
     /// <summary>
     /// Recursively deletes all empty subdirectories beneath, and including, the given one.
+    /// Deletes standard system files, such as macOS `.DS_Store` files.
     /// </summary>
     private static void DeleteEmptySubDirectories(string topDirectoryPath, IPrinter printer)
     {
@@ -283,8 +290,18 @@ public sealed class MediaFileRenamer : IPathOperation
             DeleteEmptySubDirectories(directory, printer);
 
             if (Directory.GetFiles(directory).Length == 0 &&
-                Directory.GetDirectories(directory).Length == 0)
+                Directory.GetDirectories(directory).Length == 0) // No subdirectories
             {
+                Directory.Delete(directory, false);
+                deletedDirectories.Add(directory);
+            }
+            else if (Directory.GetFiles(directory).Length == 1 &&
+                     Directory.GetFiles(directory).First().EndsWith(".DS_Store") &&
+                     Directory.GetDirectories(directory).Length == 0)
+            {
+                var systemFile = Directory.GetFiles(directory).First();
+                File.Delete(systemFile);
+
                 Directory.Delete(directory, false);
                 deletedDirectories.Add(directory);
             }
