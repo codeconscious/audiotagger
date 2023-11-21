@@ -81,9 +81,9 @@ public sealed class TagUpdater : IPathOperation
 
         var updateableFields = new UpdatableFields(matchedTags, settings);
 
-        Dictionary<string, string>? proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
+        Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
-        if (proposedUpdates?.Any() != true)
+        if (!proposedUpdates.Any())
         {
             printer.Print($"No updates needed for \"{mediaFile.FileNameOnly}\".",
                           ResultType.Neutral);
