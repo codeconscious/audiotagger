@@ -157,8 +157,12 @@ public sealed class MediaFileRenamer : IPathOperation
 
         MediaFilePathInfo oldPathInfo = new(workingPath, file.Path);
 
-        string newArtistDir = useArtistFolder ? GenerateSafeDirectoryName(file) : string.Empty;
-        string newAlbumDir = useAlbumFolders && !string.IsNullOrWhiteSpace(file.Album) ? file.Album : string.Empty;
+        string newArtistDir = useArtistFolder
+            ? GenerateSafeDirectoryName(file)
+            : string.Empty;
+        string newAlbumDir = useAlbumFolders && useArtistFolder && !string.IsNullOrWhiteSpace(file.Album)
+            ? file.Album
+            : string.Empty;
         string newFileName = GenerateFileNameViaTagData(file, populatedTagNames, matchedRenamePattern);
         MediaFilePathInfo newPathInfo = new(workingPath, [newArtistDir, newAlbumDir], newFileName);
 
