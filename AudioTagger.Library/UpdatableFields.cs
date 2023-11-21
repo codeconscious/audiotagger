@@ -110,74 +110,19 @@ public sealed class UpdatableFields
             Year = (uint) newYear;
             Count++;
         }
+        else if (tagField.Equals("genre", StringComparison.OrdinalIgnoreCase) &&
+                 newValue is string newGenre)
+        {
+            Genres = [newGenre];
+            Count++;
+        }
+        else if (tagField.Equals("genre", StringComparison.OrdinalIgnoreCase) &&
+                 newValue is string[] newGenres)
+        {
+            Genres = newGenres;
+            Count++;
+        }
     }
-
-    // TODO: Delete if not used.
-    /*
-    public IList<OutputLine> GetUpdateOutput(MediaFile fileData)
-    {
-        var updateOutput = new List<OutputLine>();
-        const string prependLineWith = "";
-
-        if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
-        {
-            updateOutput.Add(
-                OutputLine.TagDataWithHeader(
-                    "Artists",
-                    string.Join("; ", Artists),
-                    prependLineWith));
-        }
-
-        if (Title != null && Title != fileData.Title)
-        {
-            updateOutput.Add(
-                OutputLine.TagDataWithHeader(
-                    "Title",
-                    Title,
-                    prependLineWith));
-        }
-
-        if (Album != null && Album != fileData.Album)
-        {
-            updateOutput.Add(
-                OutputLine.TagDataWithHeader(
-                    "Album",
-                    Album,
-                    prependLineWith));
-        }
-
-        if (Year != null && Year != fileData.Year)
-        {
-            updateOutput.Add(
-                OutputLine.TagDataWithHeader(
-                    "Year",
-                    Year.Value.ToString(CultureInfo.InvariantCulture),
-                    prependLineWith));
-        }
-
-        if (TrackNo != null && TrackNo != fileData.TrackNo)
-        {
-            updateOutput.Add(
-                OutputLine.TagDataWithHeader(
-                    "Track",
-                    TrackNo.Value.ToString(CultureInfo.InvariantCulture),
-                    prependLineWith));
-        }
-
-        if (Genres?.All(a => fileData.Genres.Contains(a)) == false)
-        {
-            var genreCount = Genres.Length;
-
-            updateOutput.Add(
-                OutputLine.TagDataWithHeader(
-                    "Genres",
-                    string.Join("; ", Genres) + (genreCount > 1 ? $" ({genreCount})" : ""),
-                    prependLineWith));
-        }
-
-        return updateOutput;
-    }
-    */
 
     public Dictionary<string, string> GetUpdateKeyValuePairs(MediaFile fileData)
     {

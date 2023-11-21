@@ -24,8 +24,13 @@ internal static class OperationLibrary
         ),
         new(
             ["-u1", "--update-single"],
-            "Update a single tag by manually specifying a value",
+            "Update a single tag by manually specifying a value.",
             new TagUpdaterSingle()
+        ),
+        new(
+            ["-ug", "--update-genres"],
+            "Update the genres in all files automatically during the artist-genre data in the settings.",
+            new TagUpdaterGenreOnly()
         ),
         new(
             ["-m", "--multiple"],
