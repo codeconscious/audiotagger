@@ -15,7 +15,10 @@ internal sealed class MediaFilePathInfo
     private List<string> SubDirectories { get; init; }
     private string FileName { get; init; }
 
-    public MediaFilePathInfo(string workingPath, IEnumerable<string> subDirectories, string fileName)
+    public MediaFilePathInfo(
+        string workingPath,
+        IEnumerable<string> subDirectories,
+        string fileName)
     {
         WorkingPath = workingPath;
         SubDirectories = subDirectories.Where(sd => !string.IsNullOrWhiteSpace(sd)).ToList();
