@@ -22,7 +22,7 @@ public sealed class MediaFileRenamer : IPathOperation
             throw new InvalidOperationException("The settings contained no rename patterns. Cannot continue.");
 
         printer.Print($"Found {settings.RenamePatterns.Count} rename patterns.");
-        RenameFiles(mediaFiles, workingDirectory, printer, settings.RenamePatterns);
+        RenameFiles(mediaFiles, workingDirectory, printer, settings.RenamePatterns, settings.RenameUseAlbumFolders);
         DeleteEmptySubDirectories(workingDirectory.FullName, printer);
     }
 
@@ -47,7 +47,8 @@ public sealed class MediaFileRenamer : IPathOperation
     private static void RenameFiles(IReadOnlyCollection<MediaFile> mediaFiles,
                                     DirectoryInfo workingDirectory,
                                     IPrinter printer,
-                                    IEnumerable<string> renamePatterns)
+                                    IEnumerable<string> renamePatterns,
+                                    bool useAlbumFolders)
     {
         var isCancelRequested = false;
         var doConfirm = true;
@@ -78,8 +79,8 @@ public sealed class MediaFileRenamer : IPathOperation
                     file,
                     printer,
                     workingDirectory.FullName,
-                    useArtistFolder: useArtistFolder,
-                    useAlbumFolders: false,
+                    useArtistFolder,
+                    useAlbumFolders,
                     ref doConfirm,
                     renamePatterns);
             }
