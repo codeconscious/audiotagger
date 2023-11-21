@@ -13,7 +13,6 @@ public sealed class TagUpdaterYearOnly : IPathOperation
         var doConfirm = true;
         var errorFiles = new List<string>();
 
-        // Process each file
         foreach (MediaFile mediaFile in mediaFiles)
         {
             try
@@ -96,9 +95,9 @@ public sealed class TagUpdaterYearOnly : IPathOperation
         }
 
         // Make the tag updates
-        UpdateFileTags(mediaFile, updateableFields);
         try
         {
+            UpdateFileTags(mediaFile, updateableFields);
             mediaFile.SaveUpdates();
         }
         catch (TagLib.CorruptFileException ex)
