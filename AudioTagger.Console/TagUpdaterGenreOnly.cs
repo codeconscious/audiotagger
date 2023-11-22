@@ -88,8 +88,7 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             return;
         }
 
-        //printer.Print("Updates saved", ResultType.Success, 0, 1);
-        AnsiConsole.MarkupLine("[green]Updates saved[/]" + Environment.NewLine);
+        printer.Print($"Updates saved to '{mediaFile.FileNameOnly}'", 0, 0, fgColor: ConsoleColor.Green);
         return;
     }
 
