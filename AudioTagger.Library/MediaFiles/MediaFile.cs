@@ -51,27 +51,22 @@ public sealed class MediaFile
                          .ToArray();
     }
 
+    /// <summary>
+    /// A summary of both album artists and/or track artists, otherwise a default "unknown artist" message.
+    /// </summary>
     public string ArtistSummary
     {
         get
         {
-            var formatter = (IEnumerable<string> a) => string.Join("; ", a);
+            static string formatter(IEnumerable<string> artists) => string.Join("; ", artists);
 
-            if (AlbumArtists.Any())
+            return (AlbumArtists, Artists) switch
             {
-                if (Artists.Any())
-                    return $"{formatter(AlbumArtists)} ({formatter(Artists)})";
-                else
-                    return formatter(Artists);
-            }
-            else if (Artists.Any())
-            {
-                return formatter(Artists);
-            }
-            else
-            {
-                return "(UNKNOWN ARTIST)";
-            }
+                ({ Length: > 0 }, { Length: > 0 }) => $"{formatter(AlbumArtists)} ({formatter(Artists)})",
+                ({ Length: > 0 }, { Length:   0 }) => $"{formatter(AlbumArtists)}",
+                ({ Length:   0 }, { Length: > 0 }) => $"{formatter(Artists)}",
+                _ => $"(Unknown Artist)",
+            };
         }
     }
 
