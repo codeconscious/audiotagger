@@ -18,7 +18,7 @@ public sealed class TagViewerSummary : IPathOperation
                                      .ThenBy(m => m.Title)
                                      .ToImmutableArray();
 
-        var table = CreateTableWithColumns(
+        Table table = CreateTableWithColumns(
             ("Artist(s)", Justify.Left),
             ("Album", Justify.Left),
             ("Trk", Justify.Right),

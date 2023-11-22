@@ -51,6 +51,30 @@ public sealed class MediaFile
                          .ToArray();
     }
 
+    public string ArtistSummary
+    {
+        get
+        {
+            var formatter = (IEnumerable<string> a) => string.Join("; ", a);
+
+            if (AlbumArtists.Any())
+            {
+                if (Artists.Any())
+                    return $"{formatter(AlbumArtists)} ({formatter(Artists)})";
+                else
+                    return formatter(Artists);
+            }
+            else if (Artists.Any())
+            {
+                return formatter(Artists);
+            }
+            else
+            {
+                return "(UNKNOWN ARTIST)";
+            }
+        }
+    }
+
     public string Album
     {
         get => _taggedFile.Tag.Album?.Normalize() ?? string.Empty;
