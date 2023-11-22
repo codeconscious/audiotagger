@@ -1,15 +1,7 @@
-﻿global using System;
-global using System.Linq;
-global using System.Collections.Generic;
-global using System.Collections.Immutable;
-global using System.IO;
-global using AudioTagger.Library.MediaFiles;
-global using AudioTagger.Library.Settings;
-global using FluentResults;
-using Spectre.Console;
+﻿using Spectre.Console;
 using System.Text.Json;
 
-using VerifiedPaths = System.Collections.Immutable.ImmutableHashSet<string>;
+using VerifiedPaths = System.Collections.Frozen.FrozenSet<string>;
 
 namespace AudioTagger.Console;
 
@@ -140,8 +132,8 @@ public static class Program
     private static void PrintInstructions(IPrinter printer)
     {
         printer.Print("ID3 audio tagger utilities.");
-        printer.Print("Usage: ccaudiotagger [COMMAND] [FILES/DIRECTORIES]...", 0, 1, "");
-        printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, "");
+        printer.Print("Usage: ccaudiotagger [COMMAND] [FILES/DIRECTORIES]...", 0, 1, string.Empty);
+        printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, string.Empty);
 
         Table table = new();
         table.AddColumns("Commands", "Descriptions");
@@ -173,6 +165,6 @@ public static class Program
         if (invalidPaths.Any())
             throw new InvalidOperationException($"Invalid path(s): \"{string.Join("\" and \"", invalidPaths)}\".");
 
-        return maybePaths.ToImmutableHashSet();
+        return maybePaths.ToFrozenSet();
     }
 }

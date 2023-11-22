@@ -213,7 +213,7 @@ public sealed class MediaFile
     /// </summary>
     public ImmutableList<string> PopulatedTagNames()
     {
-        List<string> tags = new();
+        List<string> tags = [];
 
         if (HasAnyValues(this.AlbumArtists))
             tags.Add("ALBUMARTISTS");

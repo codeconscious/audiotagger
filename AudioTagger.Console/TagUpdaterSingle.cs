@@ -125,7 +125,7 @@ public sealed class TagUpdaterSingle : IPathOperation
         string shouldProceed = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("[yellow]Do you want to continue?[/]")
-                .AddChoices(new[] { no, yes }));
+                .AddChoices([no, yes]));
 
         return shouldProceed == yes;
     }

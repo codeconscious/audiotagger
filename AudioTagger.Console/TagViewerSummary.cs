@@ -29,7 +29,6 @@ public sealed class TagViewerSummary : IPathOperation
             ("RG(Tr)", Justify.Right));
 
         table = AppendDataRowsToTable(table,
-                                      new MediaFileViewer(),
                                       orderedFiles,
                                       printer);
 
@@ -65,7 +64,6 @@ public sealed class TagViewerSummary : IPathOperation
     }
 
     private static Table AppendDataRowsToTable(Table table,
-                                               MediaFileViewer viewer,
                                                ImmutableArray<MediaFile> orderedMediaFiles,
                                                IPrinter printer)
     {

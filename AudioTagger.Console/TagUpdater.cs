@@ -12,7 +12,7 @@ public sealed class TagUpdater : IPathOperation
     {
         bool cancelRequested = false;
         bool doConfirm = true;
-        List<string> errorFiles = new();
+        List<string> errorFiles = [];
 
         var regexes = settings?.Tagging?.RegexPatterns;
         if (regexes?.Any() != true)
@@ -99,7 +99,7 @@ public sealed class TagUpdater : IPathOperation
         printer.PrintTagDataToTable(mediaFile, proposedUpdates, false);
 
         // Show the proposed updates and ask the user to confirm.
-        // printer.Print("Apply these updates?", 0, 0, "", ConsoleColor.Yellow);
+        // printer.Print("Apply these updates?", 0, 0, string.Empty, ConsoleColor.Yellow);
         // foreach (var update in proposedUpdates)
         //     printer.Print(update.Line);
 
@@ -113,7 +113,7 @@ public sealed class TagUpdater : IPathOperation
             string response = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Apply these updates?")
-                    .AddChoices(new[] { no, yes, yesToAll, cancel }));
+                    .AddChoices([no, yes, yesToAll, cancel]));
 
             if (response == cancel)
             {
