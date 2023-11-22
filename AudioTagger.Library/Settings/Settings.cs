@@ -15,6 +15,9 @@ public sealed record Settings
 
     [JsonPropertyName("artistGenres")]
     public Dictionary<string, string>? ArtistGenres { get; set; } = [];
+
+    [JsonPropertyName("renameUseAlbumFolders")]
+    public bool RenameUseAlbumFolders { get; set; } = false;
 }
 
 public sealed record Duplicates

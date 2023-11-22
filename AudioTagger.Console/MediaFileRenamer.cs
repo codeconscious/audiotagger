@@ -22,7 +22,7 @@ public sealed class MediaFileRenamer : IPathOperation
             throw new InvalidOperationException("The settings contained no rename patterns. Cannot continue.");
 
         printer.Print($"Found {settings.RenamePatterns.Count} rename patterns.");
-        RenameFiles(mediaFiles, workingDirectory, printer, settings.RenamePatterns);
+        RenameFiles(mediaFiles, workingDirectory, printer, settings.RenamePatterns, settings.RenameUseAlbumFolders);
         DeleteEmptySubDirectories(workingDirectory.FullName, printer);
     }
 
@@ -47,7 +47,8 @@ public sealed class MediaFileRenamer : IPathOperation
     private static void RenameFiles(IReadOnlyCollection<MediaFile> mediaFiles,
                                     DirectoryInfo workingDirectory,
                                     IPrinter printer,
-                                    IEnumerable<string> renamePatterns)
+                                    IEnumerable<string> renamePatterns,
+                                    bool useAlbumFolders)
     {
         var isCancelRequested = false;
         var doConfirm = true;
@@ -71,20 +72,27 @@ public sealed class MediaFileRenamer : IPathOperation
                 if (isCancelRequested)
                     break;
 
-                bool useRootPath = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] == 1;
+                // Ensure artists with multiple tracks are saved in folders.
+                bool useArtistFolder = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] > 1;
 
                 isCancelRequested = RenameSingleFile(
-                    file, printer, workingDirectory.FullName, useRootPath, ref doConfirm, renamePatterns);
+                    file,
+                    printer,
+                    workingDirectory.FullName,
+                    useArtistFolder,
+                    useAlbumFolders,
+                    ref doConfirm,
+                    renamePatterns);
             }
             catch (IOException ex)
             {
-                printer.Error($"Error updating \"{file.FileNameOnly}\": {ex.Message}");
+                printer.Error($"Error renaming \"{file.FileNameOnly}\": {ex.Message}");
                 printer.PrintException(ex);
                 errors.Add(ex.Message); // The message should contain the file name.
             }
             catch (KeyNotFoundException ex)
             {
-                printer.Error($"Error updating \"{file.FileNameOnly}\": {ex.Message}");
+                printer.Error($"Error renaming \"{file.FileNameOnly}\": {ex.Message}");
                 printer.PrintException(ex);
                 errors.Add(ex.Message);
             }
@@ -118,7 +126,8 @@ public sealed class MediaFileRenamer : IPathOperation
     private static bool RenameSingleFile(MediaFile file,
                                          IPrinter printer,
                                          string workingPath,
-                                         bool keepInRootFolder,
+                                         bool useArtistFolder,
+                                         bool useAlbumFolders,
                                          ref bool doConfirm,
                                          IEnumerable<string> renamePatterns)
     {
@@ -132,9 +141,9 @@ public sealed class MediaFileRenamer : IPathOperation
         foreach (string renamePattern in renamePatterns)
         {
             MatchCollection matches = TagFinderRegex.Matches(renamePattern);
-            List<string> expectedTags = matches.Cast<Match>().Select(m => m.Value).ToList();
+            var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
             if (expectedTags.Count == populatedTagNames.Count &&
-                expectedTags.All(expectedTag => populatedTagNames.Contains(expectedTag)))
+                expectedTags.All(tag => populatedTagNames.Contains(tag)))
             {
                 matchedRenamePattern = renamePattern;
             }
@@ -146,31 +155,25 @@ public sealed class MediaFileRenamer : IPathOperation
             return false;
         }
 
-        string newFolderName = keepInRootFolder ? string.Empty : GenerateSafeDirectoryName(file);
-        string fullFolderPath = Path.Combine(workingPath, newFolderName);
-        string previousFolderFileName = file.Path.Replace(workingPath + Path.DirectorySeparatorChar, string.Empty);
-        string newFileName = GenerateNewFileNameUsingTagData(file, populatedTagNames, matchedRenamePattern);
-        string proposedFolderFileName = Path.Combine(workingPath, newFolderName, newFileName);
+        MediaFilePathInfo oldPathInfo = new(workingPath, file.Path);
 
-        if (previousFolderFileName == proposedFolderFileName)
+        string newArtistDir = useArtistFolder
+            ? GenerateSafeDirectoryName(file)
+            : string.Empty;
+        string newAlbumDir = useAlbumFolders && useArtistFolder && !string.IsNullOrWhiteSpace(file.Album)
+            ? file.Album
+            : string.Empty;
+        string newFileName = GenerateFileNameViaTagData(file, populatedTagNames, matchedRenamePattern);
+        MediaFilePathInfo newPathInfo = new(workingPath, [newArtistDir, newAlbumDir], newFileName);
+
+        if (oldPathInfo.FullFilePath(true) == newPathInfo.FullFilePath(true))
         {
-            printer.Print($"No rename needed for \"{file.Path.Replace(workingPath, string.Empty)}\"");
+            printer.Print($"No rename needed for \"{oldPathInfo.FullFilePath(false)}\"");
             return shouldCancel;
         }
 
-        FileInfo currentFile = new(file.Path); // Create a duplicate file object for the new file.
-        string newPathFileName = Path.Combine(workingPath, newFolderName, newFileName);
-        string currentFullPath = file.Path.Replace(workingPath, string.Empty);
-        string proposedFullPath = Path.Combine(newFolderName, newPathFileName).Replace(workingPath, string.Empty);
-
-        if (currentFullPath == proposedFullPath)
-        {
-            printer.Print($"No rename needed for \"{currentFullPath}\".", fgColor: ConsoleColor.DarkGray);
-            return shouldCancel;
-        }
-
-        printer.Print("   Current name: " + currentFullPath);
-        printer.Print("  Proposed name: " + proposedFullPath, fgColor: ConsoleColor.Yellow);
+        printer.Print("   Current name: " + oldPathInfo.FullFilePath(true));
+        printer.Print("  Proposed name: " + newPathInfo.FullFilePath(true));;
 
         if (doConfirm)
         {
@@ -202,18 +205,21 @@ public sealed class MediaFileRenamer : IPathOperation
             }
         }
 
-        if (!Directory.Exists(fullFolderPath))
-            Directory.CreateDirectory(fullFolderPath);
+        if (!Directory.Exists(newPathInfo.DirectoryPath(true)))
+        {
+            Directory.CreateDirectory(newPathInfo.DirectoryPath(true));
+        }
 
-        currentFile.MoveTo(newPathFileName);
-        printer.Print("Rename OK");
+        FileInfo currentFile = new(file.Path); // Create a duplicate file object for the renamed file.
+        currentFile.MoveTo(newPathInfo.FullFilePath(true), overwrite: false);
+        printer.Print("Rename OK", fgColor: ConsoleColor.Green);
 
         return shouldCancel;
 
         /// <summary>
         /// Generates and returns an updated filename using the given rename pattern and tag names.
         /// </summary>
-        static string GenerateNewFileNameUsingTagData(
+        static string GenerateFileNameViaTagData(
             MediaFile file,
             ICollection<string> fileTagNames,
             string renamePattern)
@@ -278,6 +284,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
     /// <summary>
     /// Recursively deletes all empty subdirectories beneath, and including, the given one.
+    /// Deletes standard system files, such as macOS `.DS_Store` files.
     /// </summary>
     private static void DeleteEmptySubDirectories(string topDirectoryPath, IPrinter printer)
     {
@@ -288,8 +295,18 @@ public sealed class MediaFileRenamer : IPathOperation
             DeleteEmptySubDirectories(directory, printer);
 
             if (Directory.GetFiles(directory).Length == 0 &&
-                Directory.GetDirectories(directory).Length == 0)
+                Directory.GetDirectories(directory).Length == 0) // No subdirectories
             {
+                Directory.Delete(directory, false);
+                deletedDirectories.Add(directory);
+            }
+            else if (Directory.GetFiles(directory).Length == 1 &&
+                     Directory.GetFiles(directory).First().EndsWith(".DS_Store") &&
+                     Directory.GetDirectories(directory).Length == 0)
+            {
+                var systemFile = Directory.GetFiles(directory).First();
+                File.Delete(systemFile);
+
                 Directory.Delete(directory, false);
                 deletedDirectories.Add(directory);
             }
