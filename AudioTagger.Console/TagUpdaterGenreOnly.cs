@@ -2,25 +2,26 @@ using Spectre.Console;
 
 namespace AudioTagger.Console;
 
-public sealed class TagUpdaterYearOnly : IPathOperation
+public sealed class TagUpdaterGenreOnly : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
                       Settings settings)
     {
-        var isCancelled = false;
-        var doConfirm = true;
+        if (settings.ArtistGenres is null)
+        {
+            printer.Error("Cannot add genres to tracks because the settings do not contain artist genres.");
+            return;
+        }
+
         var errorFiles = new List<string>();
 
         foreach (MediaFile mediaFile in mediaFiles)
         {
             try
             {
-                isCancelled = UpdateTags(mediaFile, printer, ref doConfirm);
-
-                if (isCancelled)
-                    break;
+                UpdateGenreTag(mediaFile, settings, printer);
             }
             catch (Exception ex)
             {
@@ -42,57 +43,38 @@ public sealed class TagUpdaterYearOnly : IPathOperation
     /// Make proposed tag updates to the specified file if the user agrees.
     /// </summary>
     /// <returns>A bool indicating whether the following file should be processed.</returns>
-    private static bool UpdateTags(MediaFile mediaFile, IPrinter printer, ref bool doConfirm)
+    private static void UpdateGenreTag(MediaFile mediaFile, Settings settings, IPrinter printer)
     {
-        // TODO: Refactor cancellation so this isn't needed.
-        const bool shouldCancel = false;
-        const string updateType = "year";
+        string? artistName = mediaFile.AlbumArtists.FirstOrDefault() ?? mediaFile.Artists.FirstOrDefault();
+        if (artistName is null)
+        {
+            printer.Print($"Artist name not found, so skipping \"{mediaFile.FileNameOnly}\".");
+            return;
+        }
 
-        DateTime createdDt = System.IO.File.GetCreationTime(mediaFile.Path);
+        if (!settings.ArtistGenres!.ContainsKey(artistName))
+        {
+            printer.Print($"Artist name \"{artistName}\" not found in the list of genres, so skipping \"{mediaFile.FileNameOnly}\".");
+            return;
+        }
 
-        UpdatableFields updateableFields = new UpdatableFields(updateType, createdDt.Year);
+        if (mediaFile.Genres.FirstOrDefault() == settings.ArtistGenres[artistName])
+        {
+            // mediaFile.Genres = [settings.ArtistGenres[artistName]];
+            printer.Print($"Genre needs no updating, so skipping \"{mediaFile.FileNameOnly}\".");
+            return;
+        }
 
-        var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
-
-        if (proposedUpdates?.Any() != true)
+        const string updateType = "genre";
+        UpdatableFields updateableFields = new(updateType, settings.ArtistGenres[artistName]);
+        Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
+        if (!proposedUpdates.Any())
         {
             printer.Print($"No {updateType} updates needed for \"{mediaFile.FileNameOnly}\".",
-                          ResultType.Neutral);
-            return shouldCancel;
+                           ResultType.Neutral);
         }
 
-        printer.PrintTagDataToTable(mediaFile, proposedUpdates, false);
-
-        if (doConfirm)
-        {
-            const string no = "No";
-            const string yes = "Yes";
-            const string yesToAll = "Yes To All";
-            const string cancel = "Cancel";
-
-            string response = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("Apply these updates?")
-                    .AddChoices([no, yes, yesToAll, cancel]));
-
-            if (response == cancel)
-            {
-                printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
-                return true;
-            }
-
-            if (response == no)
-            {
-                printer.Print("No updates made", ResultType.Neutral, 0, 1);
-                return shouldCancel;
-            }
-
-            if (response == yesToAll)
-            {
-                // Avoid asking next time.
-                doConfirm = false;
-            }
-        }
+        // printer.PrintTagDataToTable(mediaFile, proposedUpdates, false);
 
         // Make the tag updates
         try
@@ -103,12 +85,12 @@ public sealed class TagUpdaterYearOnly : IPathOperation
         catch (TagLib.CorruptFileException ex)
         {
             printer.Error("Saving failed: " + ex.Message);
-            return shouldCancel;
+            return;
         }
 
         //printer.Print("Updates saved", ResultType.Success, 0, 1);
         AnsiConsole.MarkupLine("[green]Updates saved[/]" + Environment.NewLine);
-        return shouldCancel;
+        return;
     }
 
     /// <summary>
