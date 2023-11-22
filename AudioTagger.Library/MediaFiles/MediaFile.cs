@@ -52,7 +52,7 @@ public sealed class MediaFile
     }
 
     /// <summary>
-    /// A summary of both album artists and/or track artists, otherwise a default "unknown artist" message.
+    /// A summary of both album artists and/or track artists, otherwise an empty string.
     /// </summary>
     public string ArtistSummary
     {
@@ -65,7 +65,7 @@ public sealed class MediaFile
                 ({ Length: > 0 }, { Length: > 0 }) => $"{formatter(AlbumArtists)} ({formatter(Artists)})",
                 ({ Length: > 0 }, { Length:   0 }) => $"{formatter(AlbumArtists)}",
                 ({ Length:   0 }, { Length: > 0 }) => $"{formatter(Artists)}",
-                _ => $"(Unknown Artist)",
+                _ => string.Empty,
             };
         }
     }
