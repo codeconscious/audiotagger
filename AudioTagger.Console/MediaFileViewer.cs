@@ -9,7 +9,7 @@ public sealed class MediaFileViewer
         // TODO: Handle colors more gracefully.
         var tagNameFormatter = (string s) => "[grey]" + s +"[/]";
 
-        var table = new Table();
+        Table table = new();
         table.AddColumns(string.Empty, string.Empty);
         table.Border = TableBorder.None;
         table.HideHeaders();
@@ -71,7 +71,7 @@ public sealed class MediaFileViewer
     {
         var rows = new List<string>
         {
-            file.AlbumArtists.JoinWith(file.Artists).EscapeMarkup(),
+            file.ArtistSummary.EscapeMarkup(),
             file.Album.EscapeMarkup(),
             file.TrackNo == 0 ? string.Empty : file.TrackNo.ToString().EscapeMarkup(),
             file.Title.EscapeMarkup(),

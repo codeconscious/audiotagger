@@ -51,6 +51,11 @@ public sealed class MediaFile
                          .ToArray();
     }
 
+    /// <summary>
+    /// A summary of both album artists and/or track artists; otherwise, an empty string.
+    /// </summary>
+    public string ArtistSummary => AlbumArtists.JoinPrimaryWithSecondary(Artists, "; ");
+
     public string Album
     {
         get => _taggedFile.Tag.Album?.Normalize() ?? string.Empty;
