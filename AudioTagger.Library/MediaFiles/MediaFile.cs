@@ -58,7 +58,7 @@ public sealed class MediaFile
     {
         get
         {
-            static string formatter(IEnumerable<string> artists) => string.Join("; ", artists);
+            static string formatter(string[] artists) => string.Join("; ", artists);
 
             return (AlbumArtists, Artists) switch
             {
