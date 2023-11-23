@@ -52,23 +52,9 @@ public sealed class MediaFile
     }
 
     /// <summary>
-    /// A summary of both album artists and/or track artists, otherwise an empty string.
+    /// A summary of both album artists and/or track artists; otherwise, an empty string.
     /// </summary>
-    public string ArtistSummary
-    {
-        get
-        {
-            static string formatter(string[] artists) => string.Join("; ", artists);
-
-            return (AlbumArtists, Artists) switch
-            {
-                ({ Length: > 0 }, { Length: > 0 }) => $"{formatter(AlbumArtists)} ({formatter(Artists)})",
-                ({ Length: > 0 }, { Length:   0 }) => $"{formatter(AlbumArtists)}",
-                ({ Length:   0 }, { Length: > 0 }) => $"{formatter(Artists)}",
-                _ => string.Empty,
-            };
-        }
-    }
+    public string ArtistSummary => AlbumArtists.JoinPrimaryWithSecondary(Artists, "; ");
 
     public string Album
     {

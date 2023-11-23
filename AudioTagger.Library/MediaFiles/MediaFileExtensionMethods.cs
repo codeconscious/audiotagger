@@ -41,4 +41,23 @@ public static class MediaFileExtensionMethods
 
         return joinerFunc(first); // Identical collections of equal length, so only print the first.
     }
+
+    /// <summary>
+    /// Combines two string collections, enclosing the secondary one in parentheses if both are present.
+    /// </summary>
+    public static string JoinPrimaryWithSecondary(
+        this IList<string> primary,
+        IList<string> secondary,
+        string separator)
+    {
+        static string formatter(IList<string> artists, string separator) => string.Join(separator, artists);
+
+        return (primary, secondary) switch
+        {
+            ([..], [])   => $"{formatter(primary, separator)}",
+            ([], [..])   => $"{formatter(secondary, separator)}",
+            ([..], [..]) => $"{formatter(primary, separator)} ({formatter(secondary, separator)})",
+            _ => string.Empty,
+        };
+    }
 }
