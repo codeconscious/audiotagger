@@ -40,7 +40,7 @@ public class MediaFileTests
         }
 
         [Fact]
-        public void ContainsNoArtists_ReturnsExpectedString()
+        public void ContainsNoArtists_ReturnsEmptyString()
         {
             string[] albumArtists = [];
             string[] artists = [];
@@ -50,7 +50,7 @@ public class MediaFileTests
         }
 
         [Fact]
-        public void ContainsNullCollections_ReturnsExpectedString()
+        public void ContainsNullCollections_ReturnsEmptyString()
         {
             string[]? albumArtists = null;
             string[]? artists = null;
