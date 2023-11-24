@@ -56,6 +56,8 @@ public static class MediaFileExtensionMethods
         {
             ([..], [])   => $"{formatter(primary, separator)}",
             ([], [..])   => $"{formatter(secondary, separator)}",
+            ([..], [..]) when primary.All(secondary.Contains) && primary.Count == secondary.Count
+                         => $"{formatter(primary, separator)}",
             ([..], [..]) => $"{formatter(primary, separator)} ({formatter(secondary, separator)})",
             _ => string.Empty,
         };
