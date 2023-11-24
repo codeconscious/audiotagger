@@ -46,21 +46,21 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
     private static void UpdateGenreTag(MediaFile mediaFile, Settings settings, IPrinter printer)
     {
         string? artistName = mediaFile.AlbumArtists.FirstOrDefault() ?? mediaFile.Artists.FirstOrDefault();
+
         if (artistName is null)
         {
-            printer.Print($"Artist name not found, so skipping \"{mediaFile.FileNameOnly}\".");
+            printer.Print($"No artist name found, so skipping \"{mediaFile.FileNameOnly}\".");
             return;
         }
 
         if (!settings.ArtistGenres!.ContainsKey(artistName))
         {
-            printer.Print($"Artist name \"{artistName}\" not found in the list of genres, so skipping \"{mediaFile.FileNameOnly}\".");
+            printer.Print($"No genre found for artist \"{artistName}\", so skipping \"{mediaFile.FileNameOnly}\".");
             return;
         }
 
         if (mediaFile.Genres.FirstOrDefault() == settings.ArtistGenres[artistName])
         {
-            // mediaFile.Genres = [settings.ArtistGenres[artistName]];
             printer.Print($"Genre needs no updating, so skipping \"{mediaFile.FileNameOnly}\".");
             return;
         }
@@ -70,8 +70,7 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
         Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
         if (!proposedUpdates.Any())
         {
-            printer.Print($"No {updateType} updates needed for \"{mediaFile.FileNameOnly}\".",
-                           ResultType.Neutral);
+            printer.Print($"No {updateType} updates needed for \"{mediaFile.FileNameOnly}\".");
         }
 
         // printer.PrintTagDataToTable(mediaFile, proposedUpdates, false);
