@@ -88,7 +88,7 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             return;
         }
 
-        printer.Print($"Updates saved to '{mediaFile.FileNameOnly}'", 0, 0, fgColor: ConsoleColor.Green);
+        printer.Print($"Added \"{proposedUpdates["Genres"]}\" to '{mediaFile.FileNameOnly}'", 0, 0, fgColor: ConsoleColor.Green);
         return;
     }
 
