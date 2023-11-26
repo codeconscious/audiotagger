@@ -15,6 +15,8 @@ public interface IPrinter
 
     void Error(string message);
 
+    void Warning(string message);
+
     char GetResultSymbol(ResultType type);
 
     void PrintTagDataToTable(MediaFile mediaFile, IDictionary<string, string> proposedUpdates, bool includeComments);
