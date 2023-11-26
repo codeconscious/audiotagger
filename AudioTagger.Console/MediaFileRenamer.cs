@@ -23,7 +23,9 @@ public sealed class MediaFileRenamer : IPathOperation
 
         printer.Print($"Found {settings.RenamePatterns.Count} rename patterns.");
         RenameFiles(mediaFiles, workingDirectory, printer, settings.RenamePatterns, settings.RenameUseAlbumFolders);
-        DeleteEmptySubDirectories(workingDirectory.FullName, printer);
+
+        List<string> deletedDirs = DeleteEmptySubDirectories(workingDirectory.FullName, printer);
+        PrintDeletedDirectoryResults(deletedDirs, printer);
     }
 
     /// <summary>
@@ -286,44 +288,49 @@ public sealed class MediaFileRenamer : IPathOperation
     /// Recursively deletes all empty subdirectories beneath, and including, the given one.
     /// Deletes standard system files, such as macOS `.DS_Store` files.
     /// </summary>
-    private static void DeleteEmptySubDirectories(string topDirectoryPath, IPrinter printer)
+    private static List<string> DeleteEmptySubDirectories(string topDirectoryPath, IPrinter printer)
     {
-        var deletedDirectories = new List<string>();
+        var deletedDirs = new List<string>();
 
-        foreach (string directory in Directory.GetDirectories(topDirectoryPath))
+        foreach (string dir in Directory.GetDirectories(topDirectoryPath))
         {
-            DeleteEmptySubDirectories(directory, printer);
+            deletedDirs.AddRange(DeleteEmptySubDirectories(dir, printer));
+            string[] dirFiles = Directory.GetFiles(dir);
 
-            if (Directory.GetFiles(directory).Length == 0 &&
-                Directory.GetDirectories(directory).Length == 0) // No subdirectories
+            // Skip directories containing subfolders.
+            if (Directory.GetDirectories(dir).Length > 0)
             {
-                Directory.Delete(directory, false);
-                deletedDirectories.Add(directory);
+                continue;
             }
-            else if (Directory.GetFiles(directory).Length == 1 &&
-                     Directory.GetFiles(directory).First().EndsWith(".DS_Store") &&
-                     Directory.GetDirectories(directory).Length == 0)
-            {
-                var systemFile = Directory.GetFiles(directory).First();
-                File.Delete(systemFile);
 
-                Directory.Delete(directory, false);
-                deletedDirectories.Add(directory);
+            if (dirFiles.Length == 0)
+            {
+                Directory.Delete(dir, recursive: false);
+                deletedDirs.Add(dir);
+            }
+            else if (dirFiles.Length == 1 &&
+                     dirFiles.Single() is string soleFile &&
+                     soleFile.EndsWith(".DS_Store"))
+            {
+                File.Delete(soleFile);
+                Directory.Delete(dir, recursive: false);
+                deletedDirs.Add(dir);
             }
         }
 
-        PrintResults(deletedDirectories, printer);
+        return deletedDirs;
+    }
 
-        static void PrintResults(IList<string> deletedDirectories, IPrinter printer)
+    private static void PrintDeletedDirectoryResults(IList<string> dirs, IPrinter printer)
+    {
+        if (!dirs.Any())
         {
-            if (!deletedDirectories.Any())
-            {
-                return;
-            }
-
-            printer.Print("DELETED DIRECTORIES:");
-            foreach (string dir in deletedDirectories)
-                printer.Print("- " + dir);
+            printer.Print("No directories were deleted.");
+            return;
         }
+
+        printer.Print("Deleted directories:");
+        foreach (string dir in dirs)
+            printer.Print("- " + dir);
     }
 }
