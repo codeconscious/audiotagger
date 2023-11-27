@@ -24,20 +24,20 @@ internal static class OperationLibrary
         ),
         new(
             ["-u1", "--update-single"],
-            "Update a single tag by manually specifying a value.",
+            "Update a single tag in multiple files to a single, manually-specified value.",
             new TagUpdaterSingle()
         ),
         new(
             ["-ug", "--update-genres"],
-            "Update the genres in all files automatically during the artist-genre data in the settings.",
+            "Update the genres in all files automatically using the artist-genre data in the settings.",
             new TagUpdaterGenreOnly()
         ),
         new(
-            ["-m", "--multiple"],
+            ["-um", "--update-multiple"],
             "Update a single tag with multiple values for multiple files.",
             new TagUpdaterMultiple()),
         new(
-            ["-y", "--update-year"],
+            ["-uy", "--update-year"],
             "Update the year using media file's own dates of creation. (Must do before other updates.)",
             new TagUpdaterYearOnly()
         ),
