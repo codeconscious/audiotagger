@@ -83,6 +83,9 @@ public sealed class SpectrePrinter : IPrinter
     public void Error(string message) =>
         Print(message, prependText: "ERROR: ", fgColor: ConsoleColor.Red);
 
+    public void Warning(string message) =>
+        Print(message, prependText: "ERROR: ", fgColor: ConsoleColor.Yellow);
+
     public char GetResultSymbol(ResultType type)
     {
         return type switch

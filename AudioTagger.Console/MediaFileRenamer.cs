@@ -7,6 +7,7 @@ namespace AudioTagger.Console;
 public sealed class MediaFileRenamer : IPathOperation
 {
     private static readonly Regex TagFinderRegex = new(@"(?<=%)\w+(?=%)");
+    private static readonly List<string> SafeToDeleteFileExtensions = [".DS_Store"];
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
@@ -23,7 +24,9 @@ public sealed class MediaFileRenamer : IPathOperation
 
         printer.Print($"Found {settings.RenamePatterns.Count} rename patterns.");
         RenameFiles(mediaFiles, workingDirectory, printer, settings.RenamePatterns, settings.RenameUseAlbumFolders);
-        DeleteEmptySubDirectories(workingDirectory.FullName, printer);
+
+        List<string> deletedDirs = DeleteEmptySubDirectories(workingDirectory.FullName, printer);
+        PrintDeletedDirectoryResults(deletedDirs, printer);
     }
 
     /// <summary>
@@ -172,8 +175,8 @@ public sealed class MediaFileRenamer : IPathOperation
             return shouldCancel;
         }
 
-        printer.Print("   Current name: " + oldPathInfo.FullFilePath(true));
-        printer.Print("  Proposed name: " + newPathInfo.FullFilePath(true));;
+        printer.Print("   Old name: " + oldPathInfo.FullFilePath(true));
+        printer.Print("   New name: " + newPathInfo.FullFilePath(true));;
 
         if (doConfirm)
         {
@@ -189,7 +192,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
             if (response == cancel)
             {
-                printer.Print("All operations cancelled.", ResultType.Cancelled, 1, 1);
+                printer.Print("Renaming cancelled.", ResultType.Cancelled, 1, 1);
                 return true;
             }
 
@@ -201,7 +204,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
             if (response == yesToAll)
             {
-                doConfirm = false; // Avoid asking again.
+                doConfirm = false; // To avoid asking again.
             }
         }
 
@@ -227,35 +230,35 @@ public sealed class MediaFileRenamer : IPathOperation
             StringBuilder newBaseFileName =
                 fileTagNames.Aggregate(
                     new StringBuilder(renamePattern),
-                    (workingFileName, tagName) =>
+                    (workingNameSb, tagName) =>
                     {
                         return tagName switch
                         {
                             "ALBUMARTISTS" =>
-                                workingFileName.Replace(
+                                workingNameSb.Replace(
                                     "%ALBUMARTISTS%",
                                     IOUtilities.SanitizePath(file.AlbumArtists)),
                             "ARTISTS" =>
-                                workingFileName.Replace(
+                                workingNameSb.Replace(
                                     "%ARTISTS%",
                                     IOUtilities.SanitizePath(file.Artists)),
                             "ALBUM" =>
-                                workingFileName.Replace(
+                                workingNameSb.Replace(
                                     "%ALBUM%",
                                     IOUtilities.SanitizePath(file.Album)),
                             "TITLE" =>
-                                workingFileName.Replace(
+                                workingNameSb.Replace(
                                     "%TITLE%",
                                     IOUtilities.SanitizePath(file.Title)),
                             "YEAR" =>
-                                workingFileName.Replace(
+                                workingNameSb.Replace(
                                     "%YEAR%",
                                     IOUtilities.SanitizePath(file.Year.ToString())),
                             "TRACK" =>
-                                workingFileName.Replace(
+                                workingNameSb.Replace(
                                     "%TRACK%",
                                     IOUtilities.SanitizePath(file.TrackNo.ToString())),
-                            _ => throw new InvalidOperationException(string.Empty),
+                            _ => throw new InvalidOperationException($"File tag name \"{tagName} is not supported."),
                         };
                     }
                 );
@@ -286,44 +289,65 @@ public sealed class MediaFileRenamer : IPathOperation
     /// Recursively deletes all empty subdirectories beneath, and including, the given one.
     /// Deletes standard system files, such as macOS `.DS_Store` files.
     /// </summary>
-    private static void DeleteEmptySubDirectories(string topDirectoryPath, IPrinter printer)
+    private static List<string> DeleteEmptySubDirectories(string topDirectoryPath, IPrinter printer)
     {
-        var deletedDirectories = new List<string>();
+        var deletedDirs = new List<string>();
 
-        foreach (string directory in Directory.GetDirectories(topDirectoryPath))
+        foreach (string dir in Directory.GetDirectories(topDirectoryPath))
         {
-            DeleteEmptySubDirectories(directory, printer);
+            deletedDirs.AddRange(DeleteEmptySubDirectories(dir, printer));
+            string[] dirFiles = Directory.GetFiles(dir);
 
-            if (Directory.GetFiles(directory).Length == 0 &&
-                Directory.GetDirectories(directory).Length == 0) // No subdirectories
+            // Skip directories containing subfolders.
+            if (Directory.GetDirectories(dir).Length > 0)
             {
-                Directory.Delete(directory, false);
-                deletedDirectories.Add(directory);
+                continue;
             }
-            else if (Directory.GetFiles(directory).Length == 1 &&
-                     Directory.GetFiles(directory).First().EndsWith(".DS_Store") &&
-                     Directory.GetDirectories(directory).Length == 0)
-            {
-                var systemFile = Directory.GetFiles(directory).First();
-                File.Delete(systemFile);
 
-                Directory.Delete(directory, false);
-                deletedDirectories.Add(directory);
+            if (dirFiles.Length == 0)
+            {
+                try
+                {
+                    Directory.Delete(dir, recursive: false);
+                    deletedDirs.Add(dir);
+                }
+                catch (Exception ex)
+                {
+                    printer.Error(ex.Message);
+                }
+            }
+            else if (dirFiles.All(file => SafeToDeleteFileExtensions.Any(file.EndsWith)))
+            {
+                try
+                {
+                    foreach (var file in dirFiles)
+                    {
+                        File.Delete(file);
+                        Directory.Delete(dir, recursive: false);
+                        deletedDirs.Add(dir);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    printer.Error(ex.Message);
+                }
+
             }
         }
 
-        PrintResults(deletedDirectories, printer);
+        return deletedDirs;
+    }
 
-        static void PrintResults(IList<string> deletedDirectories, IPrinter printer)
+    private static void PrintDeletedDirectoryResults(IList<string> dirs, IPrinter printer)
+    {
+        if (!dirs.Any())
         {
-            if (!deletedDirectories.Any())
-            {
-                return;
-            }
-
-            printer.Print("DELETED DIRECTORIES:");
-            foreach (string dir in deletedDirectories)
-                printer.Print("- " + dir);
+            printer.Print("No directories were deleted.");
+            return;
         }
+
+        printer.Print("Deleted directories:");
+        foreach (string dir in dirs)
+            printer.Print("- " + dir);
     }
 }
