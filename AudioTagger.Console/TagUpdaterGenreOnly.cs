@@ -9,7 +9,7 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        if (settings.ArtistGenreCsvFilePath is null)
+        if (string.IsNullOrWhiteSpace(settings.ArtistGenreCsvFilePath))
         {
             printer.Error("No artist genre file has been specified in the settings, so cannot continue.");
             return;
