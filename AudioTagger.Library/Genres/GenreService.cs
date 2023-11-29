@@ -6,6 +6,8 @@ namespace AudioTagger.Library.Genres;
 
 public static class GenreService
 {
+    private static readonly string[] Delimiters = ["＼"];
+
     /// <summary>
     /// Write settings to the specified file.
     /// </summary>
@@ -18,7 +20,7 @@ public static class GenreService
             var lines = artistsWithGenres
                 .Where(ag => !string.IsNullOrWhiteSpace(ag.Key))
                 .OrderBy(ag => ag.Key)
-                .Select(ag => $"\"{EscapeQuotationMarks(ag.Key)}\",\"{EscapeQuotationMarks(ag.Value)}\"");
+                .Select(ag => $"{ag.Key}{Delimiters[0]}{ag.Value}");
             File.WriteAllLines(genreFileName, lines);
             return Result.Ok();
         }
@@ -43,9 +45,9 @@ public static class GenreService
         try
         {
             using TextFieldParser csvParser = new(genreFileName);
-            csvParser.CommentTokens = ["#"];
-            csvParser.SetDelimiters([","]);
-            csvParser.HasFieldsEnclosedInQuotes = true;
+            // csvParser.CommentTokens = ["#"];
+            csvParser.SetDelimiters(Delimiters);
+            csvParser.HasFieldsEnclosedInQuotes = false;
             // csvParser.ReadLine(); // Skip header row
 
             while (!csvParser.EndOfData)

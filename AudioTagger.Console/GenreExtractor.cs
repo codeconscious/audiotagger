@@ -20,10 +20,11 @@ public sealed class GenreExtractor : IPathOperation
             printer.Error("You must specify a comma-separated file (.csv) containing artist and genre data in your settings file under the 'artistGenresFilePath' key.");
             return;
         }
+        printer.Print($"Will save to \"{settings.ArtistGenreCsvFilePath}\".");
 
         if (File.Exists(settings.ArtistGenreCsvFilePath))
         {
-            printer.Warning("Will overwrite the existing genre file.");
+            printer.Warning("Overwriting the existing genre file.");
         }
 
         ImmutableSortedDictionary<string, string> artistsWithGenres = mediaFiles
@@ -44,7 +45,7 @@ public sealed class GenreExtractor : IPathOperation
         Result writeResult = GenreService.Write(settings.ArtistGenreCsvFilePath, artistsWithGenres);
 
         if (writeResult.IsSuccess)
-            printer.Success("File written successfully.");
+            printer.Success($"File written successfully.");
         else
             printer.Error(writeResult.Errors.First().Message);
     }

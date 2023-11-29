@@ -15,7 +15,6 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             return;
         }
 
-
         var readResult = GenreService.Read(settings.ArtistGenreCsvFilePath);
         if (readResult.IsFailed)
         {
@@ -41,7 +40,7 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
         if (errorFiles.Any())
         {
             printer.Print("Files with errors:");
-            errorFiles.ForEach(f => printer.Print("• " + f));
+            errorFiles.ForEach(f => printer.Print($"• {f}"));
         }
     }
 
