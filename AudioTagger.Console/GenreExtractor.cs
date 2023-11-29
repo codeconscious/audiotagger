@@ -15,13 +15,13 @@ public sealed class GenreExtractor : IPathOperation
             return;
         }
 
-        if (settings.ArtistGenresFilePath is null)
+        if (settings.ArtistGenreCsvFilePath is null)
         {
             printer.Error("You must specify a comma-separated file (.csv) containing artist and genre information in your settings file under the 'artistGenresFilePath' key.");
             return;
         }
 
-        if (File.Exists(settings.ArtistGenresFilePath))
+        if (File.Exists(settings.ArtistGenreCsvFilePath))
         {
             printer.Warning("Will overwrite the existing genre file.");
         }
@@ -41,7 +41,7 @@ public sealed class GenreExtractor : IPathOperation
 
         printer.Print($"Found {artistsWithGenres.Count:#,##0} unique artists with genres.");
 
-        Result writeResult = GenreService.Write(settings.ArtistGenresFilePath, artistsWithGenres);
+        Result writeResult = GenreService.Write(settings.ArtistGenreCsvFilePath, artistsWithGenres);
 
         if (writeResult.IsSuccess)
             printer.Success("File written successfully.");

@@ -9,14 +9,14 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        if (settings.ArtistGenresFilePath is null)
+        if (settings.ArtistGenreCsvFilePath is null)
         {
             printer.Error("No artist genre file has been specified in the settings, so cannot continue.");
             return;
         }
 
 
-        var readResult = GenreService.Read(settings.ArtistGenresFilePath);
+        var readResult = GenreService.Read(settings.ArtistGenreCsvFilePath);
         if (readResult.IsFailed)
         {
             printer.Error(readResult.Errors.First().Message);

@@ -81,7 +81,7 @@ public sealed class TagUpdater : IPathOperation
         }
 
         var artistsWithGenres =
-            GenreService.Read(settings.ArtistGenresFilePath) is { IsSuccess: true } result
+            GenreService.Read(settings.ArtistGenreCsvFilePath) is { IsSuccess: true } result
                 ? result.Value
                 : [];
 
