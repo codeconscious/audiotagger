@@ -115,6 +115,7 @@ public static class Program
         catch (Exception ex)
         {
             printer.Error($"Error in main operation: {ex.Message}");
+            printer.PrintException(ex);
             return;
         }
     }

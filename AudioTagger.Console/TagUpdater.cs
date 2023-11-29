@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using AudioTagger.Library.Genres;
 using Spectre.Console;
 
 namespace AudioTagger.Console;
@@ -79,8 +80,12 @@ public sealed class TagUpdater : IPathOperation
             return shouldCancel;
         }
 
-        var updateableFields = new UpdatableFields(matchedTags, settings);
+        var artistsWithGenres =
+            GenreService.Read(settings.ArtistGenresFilePath) is { IsSuccess: true } result
+                ? result.Value
+                : [];
 
+        UpdatableFields updateableFields = new(matchedTags, settings, artistsWithGenres);
         Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
         if (!proposedUpdates.Any())

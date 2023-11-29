@@ -1,3 +1,5 @@
+using AudioTagger.Library.Genres;
+
 namespace AudioTagger.Console;
 
 public sealed class GenreExtractor : IPathOperation
@@ -9,39 +11,41 @@ public sealed class GenreExtractor : IPathOperation
     {
         if (!mediaFiles.Any())
         {
-            printer.Print("There are no files to work on. Cancelling...");
+            printer.Warning("There are no media files to work on. Cancelling...");
             return;
         }
 
-        ImmutableList<(string Artist, string Genre)> sortedArtistsWithGenres = mediaFiles
+        if (settings.ArtistGenresFilePath is null)
+        {
+            printer.Error("You must specify a comma-separated file (.csv) containing artist and genre information in your settings file under the 'artistGenresFilePath' key.");
+            return;
+        }
+
+        if (File.Exists(settings.ArtistGenresFilePath))
+        {
+            printer.Warning("Will overwrite the existing genre file.");
+        }
+
+        ImmutableSortedDictionary<string, string> artistsWithGenres = mediaFiles
             .Where(f => f.Genres.Any() && f.Artists.Any())
             .GroupBy(f =>
                 f.Artists[0], // Would be nice to split them
-                f => f.Genres.GroupBy(g => g) // Get most populous
-                             .OrderByDescending(grp => grp.Count())
-                             .Select(grp=>grp.Key)
-                             .First())
+                f => f.Genres.GroupBy(g => g) // Get most populous...
+                             .OrderByDescending(grp => grp.Count()) // ...and keep at top.
+                             .Select(grp => grp.Key)
+                             .First()) // Keep only the most single most populous genre.
             .ToImmutableSortedDictionary(
                 f => f.Key,
                 f => f.First()
-            )
-            .Select(pair => (
-                Artist: pair.Key,
-                Genre: pair.Value
-            ))
-            .ToImmutableList();
+             );
 
-        printer.Print($"Found {sortedArtistsWithGenres.Count:#,##0} unique artists with genres.");
+        printer.Print($"Found {artistsWithGenres.Count:#,##0} unique artists with genres.");
 
-        settings.ArtistGenres ??= [];
-        foreach ((string artist, string genre) in sortedArtistsWithGenres)
-        {
-            settings.ArtistGenres[artist] = genre;
-        }
+        Result writeResult = GenreService.Write(settings.ArtistGenresFilePath, artistsWithGenres);
 
-        if (SettingsService.Write(settings, printer))
-            printer.Print("Saved artists and genres to the settings file.");
+        if (writeResult.IsSuccess)
+            printer.Success("File written successfully.");
         else
-            printer.Error("An error occurred during the process.");
+            printer.Error(writeResult.Errors.First().Message);
     }
 }

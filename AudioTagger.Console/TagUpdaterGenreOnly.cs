@@ -1,4 +1,4 @@
-using Spectre.Console;
+using AudioTagger.Library.Genres;
 
 namespace AudioTagger.Console;
 
@@ -9,24 +9,30 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        if (settings.ArtistGenres is null)
+        if (settings.ArtistGenresFilePath is null)
         {
-            printer.Error("Cannot add genres to tracks because the settings do not contain artist genres.");
+            printer.Error("No artist genre file has been specified in the settings, so cannot continue.");
             return;
         }
 
-        var errorFiles = new List<string>();
 
+        var readResult = GenreService.Read(settings.ArtistGenresFilePath);
+        if (readResult.IsFailed)
+        {
+            printer.Error(readResult.Errors.First().Message);
+            return;
+        }
+
+        List<string> errorFiles = [];
         foreach (MediaFile mediaFile in mediaFiles)
         {
             try
             {
-                UpdateGenreTag(mediaFile, settings, printer);
+                UpdateGenreTag(mediaFile, readResult.Value, printer);
             }
             catch (Exception ex)
             {
                 printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
-                //printer.PrintException(ex);
                 errorFiles.Add(mediaFile.FileNameOnly);
                 continue;
             }
@@ -35,7 +41,7 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
         if (errorFiles.Any())
         {
             printer.Print("Files with errors:");
-            errorFiles.ForEach(f => printer.Print("- " + f));
+            errorFiles.ForEach(f => printer.Print("• " + f));
         }
     }
 
@@ -43,30 +49,33 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
     /// Make proposed tag updates to the specified file if the user agrees.
     /// </summary>
     /// <returns>A bool indicating whether the following file should be processed.</returns>
-    private static void UpdateGenreTag(MediaFile mediaFile, Settings settings, IPrinter printer)
+    private static void UpdateGenreTag(MediaFile mediaFile,
+                                       Dictionary<string, string> artistsWithGenres,
+                                       IPrinter printer)
     {
-        string? artistName = mediaFile.AlbumArtists.FirstOrDefault() ?? mediaFile.Artists.FirstOrDefault();
+        string? artistName = mediaFile.AlbumArtists.FirstOrDefault()
+                             ?? mediaFile.Artists.FirstOrDefault();
 
         if (artistName is null)
         {
-            printer.Print($"No artist name found, so skipping \"{mediaFile.FileNameOnly}\".");
+            printer.Print($"No artist name found, so skipping file \"{mediaFile.FileNameOnly}\".");
             return;
         }
 
-        if (!settings.ArtistGenres!.ContainsKey(artistName))
+        if (!artistsWithGenres.ContainsKey(artistName))
         {
-            printer.Print($"No genre found for artist \"{artistName}\", so skipping \"{mediaFile.FileNameOnly}\".");
+            printer.Print($"No registered genre found for artist \"{artistName}\", so skipping \"{mediaFile.FileNameOnly}\".");
             return;
         }
 
-        if (mediaFile.Genres.FirstOrDefault() == settings.ArtistGenres[artistName])
+        if (mediaFile.Genres.FirstOrDefault() == artistsWithGenres[artistName])
         {
-            printer.Print($"Genre needs no updating, so skipping \"{mediaFile.FileNameOnly}\".");
+            printer.Print($"Genre is correct, so skipping \"{mediaFile.FileNameOnly}\".");
             return;
         }
 
         const string updateType = "genre";
-        UpdatableFields updateableFields = new(updateType, settings.ArtistGenres[artistName]);
+        UpdatableFields updateableFields = new(updateType, artistsWithGenres[artistName]);
         Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
         if (!proposedUpdates.Any())
         {
