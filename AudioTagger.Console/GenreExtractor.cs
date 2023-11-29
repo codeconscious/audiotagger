@@ -15,9 +15,9 @@ public sealed class GenreExtractor : IPathOperation
             return;
         }
 
-        if (settings.ArtistGenreCsvFilePath is null)
+        if (string.IsNullOrWhiteSpace(settings.ArtistGenreCsvFilePath))
         {
-            printer.Error("You must specify a comma-separated file (.csv) containing artist and genre information in your settings file under the 'artistGenresFilePath' key.");
+            printer.Error("You must specify a comma-separated file (.csv) containing artist and genre data in your settings file under the 'artistGenresFilePath' key.");
             return;
         }
 
@@ -29,9 +29,9 @@ public sealed class GenreExtractor : IPathOperation
         ImmutableSortedDictionary<string, string> artistsWithGenres = mediaFiles
             .Where(f => f.Genres.Any() && f.Artists.Any())
             .GroupBy(f =>
-                f.Artists[0], // Would be nice to split them
+                f.Artists[0], // Only the first artist (though it might be nice to process all someday)
                 f => f.Genres.GroupBy(g => g) // Get most populous...
-                             .OrderByDescending(grp => grp.Count()) // ...and keep at top.
+                             .OrderByDescending(grp => grp.Count()) // ...and keep them at the top.
                              .Select(grp => grp.Key)
                              .First()) // Keep only the most single most populous genre.
             .ToImmutableSortedDictionary(
