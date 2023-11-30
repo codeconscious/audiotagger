@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AudioTagger.Library.Genres;
 
 namespace AudioTagger.Console;
@@ -9,18 +10,17 @@ public sealed class GenreExtractor : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        if (!mediaFiles.Any())
-        {
-            printer.Warning("There are no media files to work on. Cancelling...");
-            return;
-        }
-
+        // TODO: If possible, front-load this so that it occurs before all the files are read.
+        // Reading all the files can take several minutes in some situations.
         if (string.IsNullOrWhiteSpace(settings.ArtistGenreCsvFilePath))
         {
-            printer.Error("You must specify a comma-separated file (.csv) containing artist and genre data in your settings file under the 'artistGenresFilePath' key.");
+            printer.Error("You must specify a comma-separated file (.csv) containing artist and genre data in your settings file under the 'artistGenreCsvFilePath' key.");
             return;
         }
         printer.Print($"Will save to \"{settings.ArtistGenreCsvFilePath}\".");
+
+        Stopwatch stopwatch = new();
+        stopwatch.Start();
 
         if (File.Exists(settings.ArtistGenreCsvFilePath))
         {
@@ -44,8 +44,9 @@ public sealed class GenreExtractor : IPathOperation
 
         Result writeResult = GenreService.Write(settings.ArtistGenreCsvFilePath, artistsWithGenres);
 
+        double elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
         if (writeResult.IsSuccess)
-            printer.Success($"File written successfully.");
+            printer.Success($"File written successfully after {elapsedMs:#,##0}ms.");
         else
             printer.Error(writeResult.Errors.First().Message);
     }
