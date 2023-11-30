@@ -11,14 +11,8 @@ public sealed class TagStats : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        if (!mediaFiles.Any())
-        {
-            printer.Print("There are no files to work on. Cancelling...");
-            return;
-        }
-
         const int topArtistCount = 25;
-        var ignoreArtists = new string[] { string.Empty, "VA", "Various", "Various Artists", "<unknown>" };
+        string[] ignoreArtists = [string.Empty, "VA", "Various", "Various Artists", "<unknown>"];
 
         var topArtists = mediaFiles
             .Where(m => m.Artists.Any() &&

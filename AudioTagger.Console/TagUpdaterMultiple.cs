@@ -16,12 +16,6 @@ public sealed class TagUpdaterMultiple : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        if (!mediaFiles.Any())
-        {
-            printer.Print("There are no files to work on. Cancelling...");
-            return;
-        }
-
         List<MediaFile> sortedMediaFiles = mediaFiles.OrderBy(f => $"{f.TrackNo:00000}{f.Title}")
                                                      .ToList();
 
