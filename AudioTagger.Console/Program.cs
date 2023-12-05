@@ -92,16 +92,15 @@ public static class Program
             return;
         }
 
-        if (!mediaFiles.Any())
+        if (mediaFiles.IsEmpty)
         {
-            printer.Print("No files found.");
+            printer.Warning("There are no media files to work on. Cancelling...");
             return;
         }
 
         // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
         // Reference: https://stackoverflow.com/q/5113750/11767771
         double elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
-
         printer.Print($"Found {mediaFiles.Count:#,##0} files in {elapsedMs:#,##0}ms.");
 
         try
@@ -115,6 +114,7 @@ public static class Program
         catch (Exception ex)
         {
             printer.Error($"Error in main operation: {ex.Message}");
+            printer.PrintException(ex);
             return;
         }
     }

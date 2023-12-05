@@ -7,19 +7,13 @@ namespace AudioTagger.Console;
 /// </summary>
 public sealed class TagUpdaterSingle : IPathOperation
 {
-    private enum TagUpdateType { Overwrite, Prepend, Append }
+    private enum TagUpdateType { Overwrite, Prepend, Append } // TODO: Add "Erase"
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       IPrinter printer,
                       Settings settings)
     {
-        if (!mediaFiles.Any())
-        {
-            printer.Print("There are no files to work on. Cancelling...");
-            return;
-        }
-
         printer.Print($"Will update a single tag in {mediaFiles.Count} files:");
         foreach (MediaFile file in mediaFiles)
             printer.Print($"- {file.Path}");

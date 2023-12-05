@@ -56,10 +56,10 @@ internal static class OperationLibrary
             "Display file statistics based on tag data.",
             new TagStats()
         ),
-        new(
-            ["-n", "--normalize", "--replaygain"],
-            "Apply track normalization.",
-            new Normalization()),
+        // new(
+        //     ["-n", "--normalize", "--replaygain"],
+        //     "Apply track normalization.",
+        //     new Normalization()),
         new(
             ["-g", "--genres"],
             "Save the primary genre for each artist to the settings file.",

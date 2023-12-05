@@ -9,12 +9,6 @@ public class TagParser : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        if (!mediaFiles.Any())
-        {
-            printer.Print("There are no files to work on. Cancelling...");
-            return;
-        }
-
         Regex regex = new("""(?<=[アルバム|シングル][『「]).+(?=[」』])"""); // Make class-level?
 
         foreach (MediaFile mediaFile in mediaFiles)

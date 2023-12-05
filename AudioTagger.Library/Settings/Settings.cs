@@ -13,8 +13,8 @@ public sealed record Settings
     [JsonPropertyName("renamePatterns")]
     public ImmutableList<string>? RenamePatterns { get; set; }
 
-    [JsonPropertyName("artistGenres")]
-    public Dictionary<string, string>? ArtistGenres { get; set; } = [];
+    [JsonPropertyName("artistGenreCsvFilePath")]
+    public string? ArtistGenreCsvFilePath { get; set; } = null;
 
     [JsonPropertyName("renameUseAlbumFolders")]
     public bool RenameUseAlbumFolders { get; set; } = false;
