@@ -10,12 +10,6 @@ public sealed class TagDuplicateFinder : IPathOperation
                       IPrinter printer,
                       Settings settings)
     {
-        if (!mediaFiles.Any())
-        {
-            printer.Print("There are no files to work on. Cancelling...");
-            return;
-        }
-
         ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ??
                                                   ImmutableList<string>.Empty;
         printer.Print($"Found {titleReplacements.Count} replacement term(s).");
