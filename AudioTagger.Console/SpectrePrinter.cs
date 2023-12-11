@@ -18,7 +18,8 @@ public sealed class SpectrePrinter : IPrinter
     }
 
     public void Print(string message, byte prependLines = 0, byte appendLines = 0,
-                      string prependText = "", ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
+                      string prependText = "", ConsoleColor? fgColor = null,
+                      ConsoleColor? bgColor = null, bool addLinebreak = true)
     {
         if (string.IsNullOrWhiteSpace(message))
             throw new ArgumentNullException(nameof(message), "Message cannot be empty");
@@ -26,7 +27,11 @@ public sealed class SpectrePrinter : IPrinter
         PrintEmptyLines(prependLines);
 
         LineSubString subString = new(message, fgColor, bgColor);
-        AnsiConsole.MarkupLine(subString.GetSpectreString());
+
+        if (addLinebreak)
+            AnsiConsole.MarkupLine(subString.GetSpectreString());
+        else
+            AnsiConsole.Markup(subString.GetSpectreString());
 
         PrintEmptyLines(appendLines);
     }

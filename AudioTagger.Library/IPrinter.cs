@@ -5,7 +5,7 @@ namespace AudioTagger;
 public interface IPrinter
 {
     void Print(string message, byte prependLines = 0, byte appendLines = 0, string prependText = "",
-               ConsoleColor? fgColor = null, ConsoleColor? bgColor = null);
+               ConsoleColor? fgColor = null, ConsoleColor? bgColor = null, bool addLinebreak = true);
 
     void Print(IEnumerable<LineSubString> lineParts, byte prependLines = 0, byte appendLines = 1);
 
