@@ -63,7 +63,8 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
 
         if (!artistsWithGenres.ContainsKey(artistName))
         {
-            printer.Print($"No registered genre found for artist \"{artistName}\", so skipping \"{mediaFile.FileNameOnly}\".");
+            printer.Print($"No registered genre found for artist \"{artistName}\", so skipping \"{mediaFile.FileNameOnly}\".",
+                fgColor: ConsoleColor.Gray);
             return;
         }
 
@@ -78,7 +79,7 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
         Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
         if (!proposedUpdates.Any())
         {
-            printer.Print($"No {updateType} updates needed for \"{mediaFile.FileNameOnly}\".");
+            printer.Print($"No {updateType} updates needed for \"{mediaFile.FileNameOnly}\".", fgColor: ConsoleColor.DarkGray);
         }
 
         // printer.PrintTagDataToTable(mediaFile, proposedUpdates, false);
