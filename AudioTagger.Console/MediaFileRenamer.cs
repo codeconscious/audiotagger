@@ -146,7 +146,7 @@ public sealed class MediaFileRenamer : IPathOperation
             MatchCollection matches = TagFinderRegex.Matches(renamePattern);
             var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
             if (expectedTags.Count == populatedTagNames.Count &&
-                expectedTags.All(tag => populatedTagNames.Contains(tag)))
+                expectedTags.TrueForAll(tag => populatedTagNames.Contains(tag)))
             {
                 matchedRenamePattern = renamePattern;
             }
