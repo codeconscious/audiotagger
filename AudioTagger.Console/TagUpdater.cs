@@ -85,7 +85,7 @@ public sealed class TagUpdater : IPathOperation
                 ? result.Value
                 : [];
 
-        UpdatableFields updateableFields = new(matchedTags, settings, artistsWithGenres);
+        UpdatableFields updateableFields = new(matchedTags, artistsWithGenres);
         Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
         if (!proposedUpdates.Any())

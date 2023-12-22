@@ -42,6 +42,11 @@ internal static class OperationLibrary
             new TagUpdaterYearOnly()
         ),
         new(
+            ["-urt", "--reverse-track-numbers"],
+            "Reverse the track numbers of the given files",
+            new TagUpdaterReverseTrackNumbers()
+        ),
+        new(
             ["-r", "--rename"],
             "Rename and reorganize files into folders based on tag data.",
             new MediaFileRenamer()

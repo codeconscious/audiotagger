@@ -22,7 +22,9 @@ public sealed class UpdatableFields
     /// maps the data to the correct tag name property.
     /// </summary>
     /// <param name="matchedGroups"></param>
-    public UpdatableFields(IEnumerable<Group> matchedGroups, Settings settings, IDictionary<string, string> artistsWithGenres)
+    public UpdatableFields(
+        IEnumerable<Group> matchedGroups,
+        IDictionary<string, string> artistsWithGenres)
     {
         ArgumentNullException.ThrowIfNull(matchedGroups);
 
@@ -88,7 +90,7 @@ public sealed class UpdatableFields
             }
         }
 
-        // If no genre was manually passed in, check the settings for one.
+        // If no genre was manually passed in, check the settings for a registered one.
         if (Genres?.Any() != true &&
             Artists?.Any() == true &&
             artistsWithGenres?.Any() == true)
