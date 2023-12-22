@@ -21,13 +21,13 @@ public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
         List<MediaFile> sortedMediaFiles = mediaFiles.OrderBy(f => $"{f.TrackNo:00000}{f.Title}")
                                                      .ToList();
 
-        printer.Print($"Will update the title tag of {sortedMediaFiles.Count} file(s):");
+        printer.Print($"Will update the track number tag of {sortedMediaFiles.Count} file(s):");
         sortedMediaFiles.ForEach(f => printer.Print($"- {f.Path}"));
 
         var reversedTrackNos = sortedMediaFiles.Select(f => f.TrackNo).Reverse().ToImmutableList();
         printer.Print("First no: " + reversedTrackNos[0]);
 
-        // Write a preview first.
+        // Display a preview first.
         Table table = new();
         table.AddColumns("Filename", "Current", "Proposed");
         for (int i = 0; i < sortedMediaFiles.Count; i++)
