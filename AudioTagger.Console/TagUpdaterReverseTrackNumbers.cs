@@ -25,18 +25,18 @@ public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
         sortedMediaFiles.ForEach(f => printer.Print($"- {f.Path}"));
 
         var reversedTrackNos = sortedMediaFiles.Select(f => f.TrackNo).Reverse().ToImmutableList();
-        printer.Print("First no: " + reversedTrackNos[0]);
+        var updateSets = sortedMediaFiles.Zip(reversedTrackNos,
+                                              (file, trackNo) => (File: file, NewTrackNo: trackNo));
 
         // Display a preview first.
         Table table = new();
         table.AddColumns("Filename", "Current", "Proposed");
-        for (int i = 0; i < sortedMediaFiles.Count; i++)
+        foreach ((MediaFile File, uint NewTrackNo) pair in updateSets)
         {
-            MediaFile thisFile = sortedMediaFiles[i];
             table.AddRow(
-                Markup.Escape(thisFile.FileNameOnly),
-                thisFile.TrackNo.ToString(),
-                reversedTrackNos[i].ToString());
+                Markup.Escape(pair.File.FileNameOnly),
+                pair.File.TrackNo.ToString(),
+                pair.NewTrackNo.ToString());
         }
         AnsiConsole.Write(table);
 
@@ -51,9 +51,6 @@ public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
 
         uint successCount = 0;
         uint failureCount = 0;
-
-        var updateSets = sortedMediaFiles.Zip(reversedTrackNos,
-                                              (file, trackNo) => (File: file, NewTrackNo: trackNo));
 
         foreach ((MediaFile File, uint NewTrackNo) pair in updateSets)
         {
