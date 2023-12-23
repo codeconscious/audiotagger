@@ -108,8 +108,8 @@ public static class Program
             operation.Start(
                 mediaFiles,
                 new DirectoryInfo(path),
-                printer,
-                settings);
+                settings,
+                printer);
         }
         catch (Exception ex)
         {

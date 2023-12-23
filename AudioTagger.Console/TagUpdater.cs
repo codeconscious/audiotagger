@@ -8,8 +8,8 @@ public sealed class TagUpdater : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         bool cancelRequested = false;
         bool doConfirm = true;

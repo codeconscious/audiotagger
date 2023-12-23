@@ -8,8 +8,8 @@ public sealed class TagStats : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         const int topArtistCount = 25;
         string[] ignoreArtists = [string.Empty, "VA", "Various", "Various Artists", "<unknown>"];

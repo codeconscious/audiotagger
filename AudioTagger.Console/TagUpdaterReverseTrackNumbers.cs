@@ -3,14 +3,14 @@ using Spectre.Console;
 namespace AudioTagger.Console;
 
 /// <summary>
-/// Updates a single supported tag to a specified value for all files in a specific path.
+/// Reverse the order of track numbers in the provided media files.
 /// </summary>
 public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         if (mediaFiles.Any(m => m.TrackNo is 0))
         {
@@ -18,20 +18,20 @@ public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
             return;
         }
 
-        List<MediaFile> sortedMediaFiles = mediaFiles.OrderBy(f => $"{f.TrackNo:00000}{f.Title}")
-                                                     .ToList();
+        var sortedFiles = mediaFiles.OrderBy(f => $"{f.TrackNo:00000}{f.Title}")
+                                    .ToList();
 
-        printer.Print($"Will update the track number tag of {sortedMediaFiles.Count} file(s):");
-        sortedMediaFiles.ForEach(f => printer.Print($"- {f.Path}"));
+        printer.Print($"Will update the track number tag of {sortedFiles.Count} file(s):");
+        sortedFiles.ForEach(f => printer.Print($"- {f.Path}"));
 
-        var reversedTrackNos = sortedMediaFiles.Select(f => f.TrackNo).Reverse().ToImmutableList();
-        var updateSets = sortedMediaFiles.Zip(reversedTrackNos,
-                                              (file, trackNo) => (File: file, NewTrackNo: trackNo));
+        var reversedTrackNos = sortedFiles.Select(f => f.TrackNo).Reverse().ToImmutableList();
+        var filesWithNewTrackNos = sortedFiles.Zip(reversedTrackNos,
+                                                   (file, trackNo) => (File: file, NewTrackNo: trackNo));
 
         // Display a preview first.
         Table table = new();
         table.AddColumns("Filename", "Current", "Proposed");
-        foreach ((MediaFile File, uint NewTrackNo) pair in updateSets)
+        foreach ((MediaFile File, uint NewTrackNo) pair in filesWithNewTrackNos)
         {
             table.AddRow(
                 Markup.Escape(pair.File.FileNameOnly),
@@ -48,22 +48,16 @@ public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
 
         var stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
-
         uint successCount = 0;
         uint failureCount = 0;
 
-        foreach ((MediaFile File, uint NewTrackNo) pair in updateSets)
+        foreach ((MediaFile File, uint NewTrackNo) pair in filesWithNewTrackNos)
         {
             try
             {
                 pair.File.TrackNo = pair.NewTrackNo;
                 pair.File.SaveUpdates();
                 successCount++;
-            }
-            catch (FormatException ex)
-            {
-                failureCount++;
-                printer.Error($"{ex.Message} ({pair.File.Path})");
             }
             catch (Exception ex)
             {
@@ -78,7 +72,7 @@ public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
 
         string successLabel = successCount == 1 ? "success" : "successes";
         string failureLabel = failureCount == 1 ? "failure" : "failures";
-        printer.Print($"Done in {elapsedMs:#,##0}ms with {successCount} {successLabel} and {failureCount} {failureLabel}");
+        printer.Print($"Done in {elapsedMs:#,##0}ms with {successCount} {successLabel} and {failureCount} {failureLabel}.");
     }
 
     private static bool ConfirmContinue()

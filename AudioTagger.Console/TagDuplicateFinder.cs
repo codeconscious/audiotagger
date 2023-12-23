@@ -7,8 +7,8 @@ public sealed class TagDuplicateFinder : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ??
                                                   ImmutableList<string>.Empty;
