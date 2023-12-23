@@ -6,8 +6,8 @@ public sealed class TagViewerSummary : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         ArgumentNullException.ThrowIfNull(mediaFiles);
 

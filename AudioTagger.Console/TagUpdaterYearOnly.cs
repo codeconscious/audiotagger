@@ -6,8 +6,8 @@ public sealed class TagUpdaterYearOnly : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         var isCancelled = false;
         var doConfirm = true;

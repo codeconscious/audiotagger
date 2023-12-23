@@ -7,8 +7,8 @@ public sealed class GenreExtractor : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         // TODO: If possible, front-load this so that it occurs before all the files are read.
         // Reading all the files can take several minutes in some situations.

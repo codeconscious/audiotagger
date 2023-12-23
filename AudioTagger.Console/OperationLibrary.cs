@@ -38,8 +38,13 @@ internal static class OperationLibrary
             new TagUpdaterMultiple()),
         new(
             ["-uy", "--update-year"],
-            "Update the year using media file's own dates of creation. (Must do before other updates.)",
+            "Update the year using media files' own dates of creation. (Must do before other updates, lest the creation date be modified.)",
             new TagUpdaterYearOnly()
+        ),
+        new(
+            ["-urt", "--reverse-track-numbers"],
+            "Reverse the track numbers of the given files.",
+            new TagUpdaterReverseTrackNumbers()
         ),
         new(
             ["-r", "--rename"],

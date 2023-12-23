@@ -6,8 +6,8 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         if (string.IsNullOrWhiteSpace(settings.ArtistGenreCsvFilePath))
         {

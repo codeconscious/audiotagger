@@ -8,8 +8,8 @@ public sealed class TagUpdater : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         bool cancelRequested = false;
         bool doConfirm = true;
@@ -85,7 +85,7 @@ public sealed class TagUpdater : IPathOperation
                 ? result.Value
                 : [];
 
-        UpdatableFields updateableFields = new(matchedTags, settings, artistsWithGenres);
+        UpdatableFields updateableFields = new(matchedTags, artistsWithGenres);
         Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
         if (!proposedUpdates.Any())

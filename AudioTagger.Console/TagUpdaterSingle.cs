@@ -11,8 +11,8 @@ public sealed class TagUpdaterSingle : IPathOperation
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         printer.Print($"Will update a single tag in {mediaFiles.Count} files:");
         foreach (MediaFile file in mediaFiles)

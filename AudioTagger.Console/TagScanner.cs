@@ -7,8 +7,8 @@ public sealed class TagScanner : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
-                      IPrinter printer,
-                      Settings settings)
+                      Settings settings,
+                      IPrinter printer)
     {
         var mp3s = mediaFiles.Where(f => Path.GetExtension(f.FileNameOnly) == ".mp3");
 
