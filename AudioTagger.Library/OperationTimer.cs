@@ -28,7 +28,6 @@ public sealed class OperationTimer
     /// </summary>
     public string ElapsedTime()
     {
-        // TODO: Convert to seconds, etc., as needed for larger values.
-        return $"{ElapsedMs:#,##0}ms";
+        return Utilities.FormatMsAsTime(ElapsedMs) + $"({ElapsedMs}ms)";
     }
 }

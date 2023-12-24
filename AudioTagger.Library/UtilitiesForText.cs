@@ -1,6 +1,6 @@
 namespace AudioTagger;
 
-public static class Utilities
+public static partial class Utilities
 {
     public static string ConvertToSpectreColor(ConsoleColor color)
     {
