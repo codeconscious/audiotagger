@@ -5,7 +5,7 @@ namespace AudioTagger.Console;
 /// <summary>
 /// A `Stopwatch` wrapper. Starts the enclosed `Stopwatch` upon instantiation.
 /// </summary>
-public class OperationTimer
+public sealed class OperationTimer
 {
     private readonly Stopwatch Stopwatch = new();
 

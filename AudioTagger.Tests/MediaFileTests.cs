@@ -3,9 +3,9 @@ using Xunit;
 
 namespace AudioTagger.Tests;
 
-public class MediaFileTests
+public sealed class MediaFileTests
 {
-    public class ArtistSummary
+    public sealed class ArtistSummary
     {
         private static readonly string Separator = "; ";
 

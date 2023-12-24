@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace AudioTagger.Console;
 
-public class TagParser : IPathOperation
+public sealed class TagParser : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
