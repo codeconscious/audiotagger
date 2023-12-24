@@ -16,7 +16,7 @@ public sealed class OperationTimer
     /// Using ticks because .ElapsedMilliseconds can be wildly inaccurate.
     /// Reference: https://stackoverflow.com/q/5113750/11767771
     /// </remarks>
-    private double ElapsedMs => TimeSpan.FromTicks(Stopwatch.ElapsedTicks).TotalMilliseconds;
+    private double ElapsedMs => TimeSpan.FromTicks(Stopwatch.Elapsed.Ticks).TotalMilliseconds;
 
     public OperationTimer()
     {
@@ -28,6 +28,22 @@ public sealed class OperationTimer
     /// </summary>
     public string ElapsedTime()
     {
-        return Utilities.FormatMsAsTime(ElapsedMs) + $"({ElapsedMs}ms)";
+        // return Utilities.FormatMsAsTime(ElapsedMs) + $"({ElapsedMs}ms)";
+
+        var formatString = GetFormatString(ElapsedMs);
+        // return string.Format("Time elapsed: {0:hh\\:mm\\:ss}", TimeSpan.FromTicks(Stopwatch.Elapsed.Ticks));
+        return TimeSpan.FromTicks(Stopwatch.Elapsed.Ticks).ToString(formatString.Item1) + formatString.Item2;
+    }
+
+    private static (string, string) GetFormatString(double milliseconds)
+    {
+        return milliseconds switch
+        {
+            > 3_600_000 => ("hh\\:mm\\:ss", string.Empty), // >= 1 hour
+            > 60_000 => ("mm\\:ss", string.Empty), // >= 1 minute
+            > 1_000 => ("ss\\:ff", string.Empty), // 1 second
+            _ => ("ss\\:fff", "ms"),
+            // _ => "",
+        };
     }
 }
