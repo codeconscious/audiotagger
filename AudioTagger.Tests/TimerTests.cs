@@ -4,7 +4,7 @@ using System;
 
 namespace AudioTagger.Tests;
 
-public sealed class UtilityMethodTests
+public sealed class TimerTests
 {
     [Fact]
     public void Milliseconds_OneDigit_FormatsCorrectly()
