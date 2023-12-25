@@ -10,6 +10,8 @@ public sealed class TagScanner : IPathOperation
                       Settings settings,
                       IPrinter printer)
     {
+        Timer timer = new();
+
         var mp3s = mediaFiles.Where(f => Path.GetExtension(f.FileNameOnly) == ".mp3");
 
         if (!mp3s.Any())
@@ -61,6 +63,6 @@ public sealed class TagScanner : IPathOperation
             printer.Error($"Error writing file: {ex.Message}");
         }
 
-        printer.Print("Done with 3 log files written.");
+        printer.Print($"Done in {timer.ElapsedTimeFriendly()} with 3 log files written.");
     }
 }

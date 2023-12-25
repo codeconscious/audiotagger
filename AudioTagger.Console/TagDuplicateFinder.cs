@@ -10,10 +10,8 @@ public sealed class TagDuplicateFinder : IPathOperation
                       Settings settings,
                       IPrinter printer)
     {
-        ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ??
-                                                  ImmutableList<string>.Empty;
+        ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ?? [];
         printer.Print($"Found {titleReplacements.Count} replacement term(s).");
-
         printer.Print("Checking for duplicates by artist(s) and title...");
 
         Timer timer = new();
@@ -28,7 +26,6 @@ public sealed class TagDuplicateFinder : IPathOperation
         int count = duplicateGroups.Length;
 
         printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {timer.ElapsedTimeFriendly()}.");
-
         PrintResults(duplicateGroups, printer);
     }
 

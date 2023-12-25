@@ -9,6 +9,8 @@ public sealed class TagParser : IPathOperation
                       Settings settings,
                       IPrinter printer)
     {
+        Timer timer = new();
+
         Regex regex = new("""(?<=[アルバム|シングル][『「]).+(?=[」』])"""); // Make class-level?
 
         foreach (MediaFile mediaFile in mediaFiles)
@@ -31,5 +33,7 @@ public sealed class TagParser : IPathOperation
                 printer.Error($"Error writing album to \"{mediaFile.FileNameOnly}\": {ex.Message}");
             }
         }
+
+        printer.Print($"Done in {timer.ElapsedTimeFriendly()}.");
     }
 }
