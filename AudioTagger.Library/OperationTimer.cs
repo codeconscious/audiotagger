@@ -22,7 +22,6 @@ public sealed class OperationTimer
     public OperationTimer()
     {
         Stopwatch.Start();
-        // System.Threading.Thread.Sleep(12000);
     }
 
     /// <summary>

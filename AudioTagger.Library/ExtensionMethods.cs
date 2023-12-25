@@ -15,8 +15,8 @@ public static class ExtensionMethods
         }
 
         int hours = timeSpan.Hours;
-        int min = timeSpan.Minutes;
-        int sec = timeSpan.Seconds;
+        int mins = timeSpan.Minutes;
+        int secs = timeSpan.Seconds;
 
         StringBuilder sb = new();
 
@@ -25,16 +25,16 @@ public static class ExtensionMethods
             sb.Append($"{hours}h");
         }
 
-        if (min > 0)
+        if (mins > 0)
         {
-            sb.Append(hours > 0 ? $"{min:00}m" : $"{min:0}m");
+            sb.Append(hours > 0 ? $"{mins:00}m" : $"{mins:0}m");
         }
 
-        if (sec > 0)
+        if (secs > 0)
         {
-            if (hours == 0 && min == 0)
+            if (hours == 0 && mins == 0)
                 sb.Append(timeSpan.ToString("s\\.ff") + "s");
-            else if (hours > 0 || min > 0)
+            else if (hours > 0 || mins > 0)
                 sb.Append(timeSpan.ToString("ss") + "s");
             else
                 sb.Append(timeSpan.ToString("s") + "s");
