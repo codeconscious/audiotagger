@@ -94,7 +94,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
 
         string successLabel = successCount == 1 ? "success" : "successes";
         string failureLabel = failureCount == 1 ? "failure" : "failures";
-        printer.Print($"Done in {timer.ElapsedTime()} with {successCount} {successLabel} and {failureCount} {failureLabel}");
+        printer.Print($"Done in {timer.ElapsedTimeFriendly()} with {successCount} {successLabel} and {failureCount} {failureLabel}");
     }
 
     private static TagUpdateType ConfirmUpdateType(string tagName)

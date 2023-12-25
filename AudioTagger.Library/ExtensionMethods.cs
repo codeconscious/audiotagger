@@ -1,13 +1,18 @@
 using System.Text;
 
-namespace AudioTagger;
+namespace AudioTagger.Library;
 
-public static partial class Utilities
+public static class ExtensionMethods
 {
-    public static string FormatMsAsTime(TimeSpan timeSpan)
+    /// <summary>
+    /// Get a friendly, human-readable version of a TimeSpan.
+    /// </summary>
+    public static string ElapsedFriendly(this TimeSpan timeSpan)
     {
         if (timeSpan.TotalMilliseconds < 1000)
+        {
             return $"{timeSpan.TotalMilliseconds:###0}ms";
+        }
 
         int hours = timeSpan.Hours;
         int min = timeSpan.Minutes;

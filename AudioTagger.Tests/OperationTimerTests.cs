@@ -1,5 +1,6 @@
 using Xunit;
 using AudioTagger.Library;
+using System;
 
 namespace AudioTagger.Tests;
 
@@ -8,8 +9,8 @@ public sealed class UtilityMethodTests
     [Fact]
     public void Milliseconds_OneDigit_FormatsCorrectly()
     {
-        double milliseconds = 1;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
+        TimeSpan timeSpan = TimeSpan.FromMilliseconds(1);
+        string actual = timeSpan.ElapsedFriendly();
         string expected = "1ms";
         Assert.Equal(expected, actual);
     }
@@ -17,8 +18,8 @@ public sealed class UtilityMethodTests
     [Fact]
     public void Milliseconds_TwoDigits_FormatsCorrectly()
     {
-        double milliseconds = 99;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
+        TimeSpan timeSpan = TimeSpan.FromMilliseconds(99);
+        string actual = timeSpan.ElapsedFriendly();
         string expected = "99ms";
         Assert.Equal(expected, actual);
     }
@@ -26,8 +27,8 @@ public sealed class UtilityMethodTests
     [Fact]
     public void Milliseconds_ThreeDigits_FormatsCorrectly()
     {
-        double milliseconds = 999;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
+        TimeSpan timeSpan = TimeSpan.FromMilliseconds(999);
+        string actual = timeSpan.ElapsedFriendly();
         string expected = "999ms";
         Assert.Equal(expected, actual);
     }
@@ -35,90 +36,108 @@ public sealed class UtilityMethodTests
     [Fact]
     public void Seconds_NoDecimals_FormatsCorrectly()
     {
-        double milliseconds = 3000;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
-        string expected = "3s";
+        TimeSpan timeSpan = new(0, 0, 3);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "3.00s";
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void Seconds_OneDecimal_FormatsCorrectly()
     {
-        double milliseconds = 3500;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
-        string expected = "3.5s";
+        TimeSpan timeSpan = new(0, 0, 0, 3, 500);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "3.50s";
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void Seconds_TwoDecimals_FormatsCorrectly()
     {
-        double milliseconds = 3520;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
+        TimeSpan timeSpan = new(0, 0, 0, 3, 520);
+        string actual = timeSpan.ElapsedFriendly();
         string expected = "3.52s";
         Assert.Equal(expected, actual);
     }
 
     [Fact]
-    public void Minutes_NoDecimals_FormatsCorrectly()
+    public void Minutes_NoSeconds_FormatsCorrectly()
     {
-        double milliseconds = 4_500_000;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
-        string expected = "75min";
+        TimeSpan timeSpan = new(0, 1, 0);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "1m exactly";
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void Minutes_OneDecimal_FormatsCorrectly()
     {
-        double milliseconds = 4_530_000;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
-        string expected = "75.5min";
+        TimeSpan timeSpan = new(0, 1, 30);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "1m30s";
         Assert.Equal(expected, actual);
     }
 
     [Fact]
-    public void Minutes_TwoDecimals_FormatsCorrectly()
+    public void Minutes_OverTen_NoSeconds_FormatsCorrectly()
     {
-        double milliseconds = 4_533_000;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
-        string expected = "75.55min";
+        TimeSpan timeSpan = new(0, 59, 0);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "59m exactly";
         Assert.Equal(expected, actual);
     }
 
     [Fact]
-    public void Hours_NoDecimals_FormatsCorrectly()
+    public void Minutes_OverTen_WithSeconds_FormatsCorrectly()
     {
-        double milliseconds = 25_200_000;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
-        string expected = "7hr";
+        TimeSpan timeSpan = new(0, 59, 30);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "59m30s";
         Assert.Equal(expected, actual);
     }
 
     [Fact]
-    public void Hours_OneDecimal_FormatsCorrectly()
+    public void SingleDigitHour_NoMinutes_NoSeconds_FormatsCorrectly()
     {
-        double milliseconds = 25_920_000;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
-        string expected = "7.2hr";
+        TimeSpan timeSpan = new(7, 20, 0);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "7h20m exactly";
         Assert.Equal(expected, actual);
     }
 
     [Fact]
-    public void Hours_TwoDecimals_FormatsCorrectly()
+    public void DoubleDigitHour_NoMinutes_NoSeconds_FormatsCorrectly()
     {
-        double milliseconds = 26_172_000;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
-        string expected = "7.27hr";
+        TimeSpan timeSpan = new(13, 0, 0);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "13h exactly";
         Assert.Equal(expected, actual);
     }
 
     [Fact]
-    public void Custom_FormatsCorrectly()
+    public void SingleDigitHour_SingleDigitMinutes_NoSeconds_FormatsCorrectly()
     {
-        double milliseconds = 5142.783;
-        string actual = Utilities.FormatMsAsTime(milliseconds);
-        string expected = "5.06s";
+        TimeSpan timeSpan = new(1, 5, 0);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "1h05m exactly";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void SingleDigitHour_DoubleDigitMinutes_NoSeconds_FormatsCorrectly()
+    {
+        TimeSpan timeSpan = new(1, 55, 0);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "1h55m exactly";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void SingleDigitHour_DoubleDigitMinutes_SingleDigitSeconds_FormatsCorrectly()
+    {
+        TimeSpan timeSpan = new(1, 55, 8);
+        string actual = timeSpan.ElapsedFriendly();
+        string expected = "1h55m08s";
         Assert.Equal(expected, actual);
     }
 }
