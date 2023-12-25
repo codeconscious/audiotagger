@@ -77,7 +77,7 @@ public static class Program
     {
         printer.Print($"Processing path \"{path}\"...");
 
-        var timer = new OperationTimer();
+        Timer timer = new();
 
         ImmutableList<MediaFile> mediaFiles;
         try

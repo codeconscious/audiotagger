@@ -16,7 +16,7 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         printer.Print("Checking for duplicates by artist(s) and title...");
 
-        var timer = new OperationTimer();
+        Timer timer = new();
 
         var duplicateGroups = mediaFiles
             .ToLookup(m => ConcatenateCollectionText(m.Artists) +

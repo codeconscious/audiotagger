@@ -65,7 +65,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
             return;
         }
 
-        var timer = new OperationTimer();
+        Timer timer = new();
         uint successCount = 0;
         uint failureCount = 0;
 

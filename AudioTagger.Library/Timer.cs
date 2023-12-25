@@ -6,7 +6,7 @@ namespace AudioTagger.Console;
 /// <summary>
 /// A `Stopwatch` wrapper. Starts the enclosed `Stopwatch` upon instantiation.
 /// </summary>
-public sealed class OperationTimer
+public sealed class Timer
 {
     private readonly Stopwatch Stopwatch = new();
 
@@ -19,7 +19,7 @@ public sealed class OperationTimer
     /// </remarks>
     private TimeSpan ElapsedTimeSpan => TimeSpan.FromTicks(Stopwatch.Elapsed.Ticks);
 
-    public OperationTimer()
+    public Timer()
     {
         Stopwatch.Start();
     }
