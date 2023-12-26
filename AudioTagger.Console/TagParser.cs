@@ -34,6 +34,6 @@ public sealed class TagParser : IPathOperation
             }
         }
 
-        printer.Print($"Done in {timer.ElapsedTimeFriendly()}.");
+        printer.Print($"Done in {timer.ElapsedFriendly}.");
     }
 }

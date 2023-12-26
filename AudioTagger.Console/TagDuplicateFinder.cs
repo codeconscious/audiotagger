@@ -25,7 +25,7 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         int count = duplicateGroups.Length;
 
-        printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {timer.ElapsedTimeFriendly()}.");
+        printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {timer.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
     }
 

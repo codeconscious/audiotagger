@@ -96,7 +96,7 @@ public static class Program
             return;
         }
 
-        printer.Print($"Found {mediaFiles.Count:#,##0} files in {timer.ElapsedTimeFriendly()}.");
+        printer.Print($"Found {mediaFiles.Count:#,##0} files in {timer.ElapsedFriendly}.");
 
         try
         {

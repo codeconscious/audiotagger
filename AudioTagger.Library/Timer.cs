@@ -11,24 +11,20 @@ public sealed class Timer
     private readonly Stopwatch Stopwatch = new();
 
     /// <summary>
-    /// The elapsed milliseconds since the stopwatch was started.
+    /// Returns a formatted version of the elapsed time since the timer was started.
     /// </summary>
     /// <remarks>
     /// Using ticks because .ElapsedMilliseconds can be wildly inaccurate.
-    /// Reference: https://stackoverflow.com/q/5113750/11767771
+    /// (Reference: https://stackoverflow.com/q/5113750/11767771)
+    /// Also, use `Stopwatch.Elapsed.Ticks` over `Stopwatch.ElapsedTicks`.
+    /// For some reason, the latter returns unexpected values.
     /// </remarks>
-    private TimeSpan ElapsedTimeSpan => TimeSpan.FromTicks(Stopwatch.Elapsed.Ticks);
+    public string ElapsedFriendly =>
+        TimeSpan.FromTicks(Stopwatch.Elapsed.Ticks)
+                .ElapsedFriendly();
 
     public Timer()
     {
         Stopwatch.Start();
-    }
-
-    /// <summary>
-    /// Returns a formatted version of the elapsed time since the timer was started.
-    /// </summary>
-    public string ElapsedTimeFriendly()
-    {
-        return ElapsedTimeSpan.ElapsedFriendly();
     }
 }

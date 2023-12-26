@@ -63,6 +63,6 @@ public sealed class TagScanner : IPathOperation
             printer.Error($"Error writing file: {ex.Message}");
         }
 
-        printer.Print($"Done in {timer.ElapsedTimeFriendly()} with 3 log files written.");
+        printer.Print($"Done in {timer.ElapsedFriendly} with 3 log files written.");
     }
 }

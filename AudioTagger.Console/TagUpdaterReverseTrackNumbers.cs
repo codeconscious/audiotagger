@@ -67,7 +67,7 @@ public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
 
         string successLabel = successCount == 1 ? "success" : "successes";
         string failureLabel = failureCount == 1 ? "failure" : "failures";
-        printer.Print($"Done in {timer.ElapsedTimeFriendly()} with {successCount} {successLabel} and {failureCount} {failureLabel}.");
+        printer.Print($"Done in {timer.ElapsedFriendly} with {successCount} {successLabel} and {failureCount} {failureLabel}.");
     }
 
     private static bool ConfirmContinue()
