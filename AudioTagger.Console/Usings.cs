@@ -7,3 +7,4 @@ global using System.IO;
 global using AudioTagger.Library.MediaFiles;
 global using AudioTagger.Library.Settings;
 global using FluentResults;
+global using Startwatch.Library;

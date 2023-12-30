@@ -31,9 +31,7 @@ public sealed class TagUpdaterSingle : IPathOperation
             return;
         }
 
-        var stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Start();
-
+        Watch watch = new();
         uint successCount = 0;
         uint failureCount = 0;
 
@@ -58,13 +56,9 @@ public sealed class TagUpdaterSingle : IPathOperation
             }
         }
 
-        // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
-        // Reference: https://stackoverflow.com/q/5113750/11767771
-        var elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
-
         string successLabel = successCount == 1 ? "success" : "successes";
         string failureLabel = failureCount == 1 ? "failure" : "failures";
-        printer.Print($"Done in {elapsedMs:#,##0}ms with {successCount} {successLabel} and {failureCount} {failureLabel}");
+        printer.Print($"Done in {watch.ElapsedFriendly} with {successCount} {successLabel} and {failureCount} {failureLabel}");
     }
 
     private static string ConfirmTagValue(string tagName, TagUpdateType updateType)

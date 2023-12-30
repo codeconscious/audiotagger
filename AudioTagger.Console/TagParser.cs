@@ -1,14 +1,17 @@
 using System.Text.RegularExpressions;
+using Startwatch.Library;
 
 namespace AudioTagger.Console;
 
-public class TagParser : IPathOperation
+public sealed class TagParser : IPathOperation
 {
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       Settings settings,
                       IPrinter printer)
     {
+        Watch watch = new();
+
         Regex regex = new("""(?<=[アルバム|シングル][『「]).+(?=[」』])"""); // Make class-level?
 
         foreach (MediaFile mediaFile in mediaFiles)
@@ -31,5 +34,7 @@ public class TagParser : IPathOperation
                 printer.Error($"Error writing album to \"{mediaFile.FileNameOnly}\": {ex.Message}");
             }
         }
+
+        printer.Print($"Done in {watch.ElapsedFriendly}.");
     }
 }

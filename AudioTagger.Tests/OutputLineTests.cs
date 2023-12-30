@@ -2,15 +2,13 @@
 
 namespace AudioTagger.Tests;
 
-public class OutputLineTests
+public sealed class OutputLineTests
 {
     [Fact]
     public void OutputLine_StringPassedIntoCtor_Succeeds()
     {
         const string testString = "Test output";
-
-        var outputLine = new OutputLine(testString);
-
+        OutputLine outputLine = new(testString);
         Assert.Equal(testString, outputLine.Line[0].Text);
     }
 

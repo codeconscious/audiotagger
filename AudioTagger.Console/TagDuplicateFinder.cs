@@ -10,14 +10,11 @@ public sealed class TagDuplicateFinder : IPathOperation
                       Settings settings,
                       IPrinter printer)
     {
-        ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ??
-                                                  ImmutableList<string>.Empty;
+        ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ?? [];
         printer.Print($"Found {titleReplacements.Count} replacement term(s).");
-
         printer.Print("Checking for duplicates by artist(s) and title...");
 
-        var stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Start();
+        Watch watch = new();
 
         var duplicateGroups = mediaFiles
             .ToLookup(m => ConcatenateCollectionText(m.Artists) +
@@ -28,12 +25,7 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         int count = duplicateGroups.Length;
 
-        // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
-        // Reference: https://stackoverflow.com/q/5113750/11767771
-        double elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
-
-        printer.Print($"Found {count} duplicate group{(count == 1 ? "" : "s")} in {elapsedMs:#,##0}ms.");
-
+        printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
     }
 

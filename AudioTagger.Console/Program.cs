@@ -1,6 +1,5 @@
 ﻿using Spectre.Console;
 using System.Text.Json;
-
 using VerifiedPaths = System.Collections.Frozen.FrozenSet<string>;
 
 namespace AudioTagger.Console;
@@ -78,8 +77,7 @@ public static class Program
     {
         printer.Print($"Processing path \"{path}\"...");
 
-        var stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Start();
+        Watch watch = new();
 
         ImmutableList<MediaFile> mediaFiles;
         try
@@ -98,10 +96,7 @@ public static class Program
             return;
         }
 
-        // Using ticks because .ElapsedMilliseconds was wildly inaccurate.
-        // Reference: https://stackoverflow.com/q/5113750/11767771
-        double elapsedMs = TimeSpan.FromTicks(stopwatch.ElapsedTicks).TotalMilliseconds;
-        printer.Print($"Found {mediaFiles.Count:#,##0} files in {elapsedMs:#,##0}ms.");
+        printer.Print($"Found {mediaFiles.Count:#,##0} files in {watch.ElapsedFriendly}.");
 
         try
         {

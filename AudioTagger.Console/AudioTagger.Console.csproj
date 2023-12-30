@@ -4,7 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- <PublishAot>true</PublishAot> -->
     <AssemblyName>Audiotagger.Console</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
@@ -26,6 +25,7 @@
     <PackageReference Include="runtime.osx.10.10-x64.CoreCompat.System.Drawing" Version="6.0.5.128"/>
     <PackageReference Include="Spectre.Console" Version="0.45.0"/>
     <PackageReference Include="FluentResults" Version="3.15.2"/>
+    <PackageReference Include="CodeConscious.Startwatch" Version="0.0.2"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AudioTagger.Library\AudioTagger.Library.csproj"/>
