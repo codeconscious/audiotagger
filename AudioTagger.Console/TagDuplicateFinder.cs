@@ -14,7 +14,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         printer.Print($"Found {titleReplacements.Count} replacement term(s).");
         printer.Print("Checking for duplicates by artist(s) and title...");
 
-        Timer timer = new();
+        Watch watch = new();
 
         var duplicateGroups = mediaFiles
             .ToLookup(m => ConcatenateCollectionText(m.Artists) +
@@ -25,7 +25,7 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         int count = duplicateGroups.Length;
 
-        printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {timer.ElapsedFriendly}.");
+        printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
     }
 

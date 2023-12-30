@@ -31,7 +31,7 @@ public sealed class TagUpdaterSingle : IPathOperation
             return;
         }
 
-        Timer timer = new();
+        Watch watch = new();
         uint successCount = 0;
         uint failureCount = 0;
 
@@ -58,7 +58,7 @@ public sealed class TagUpdaterSingle : IPathOperation
 
         string successLabel = successCount == 1 ? "success" : "successes";
         string failureLabel = failureCount == 1 ? "failure" : "failures";
-        printer.Print($"Done in {timer.ElapsedFriendly} with {successCount} {successLabel} and {failureCount} {failureLabel}");
+        printer.Print($"Done in {watch.ElapsedFriendly} with {successCount} {successLabel} and {failureCount} {failureLabel}");
     }
 
     private static string ConfirmTagValue(string tagName, TagUpdateType updateType)

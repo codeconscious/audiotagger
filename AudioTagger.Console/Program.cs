@@ -77,7 +77,7 @@ public static class Program
     {
         printer.Print($"Processing path \"{path}\"...");
 
-        Timer timer = new();
+        Watch watch = new();
 
         ImmutableList<MediaFile> mediaFiles;
         try
@@ -96,7 +96,7 @@ public static class Program
             return;
         }
 
-        printer.Print($"Found {mediaFiles.Count:#,##0} files in {timer.ElapsedFriendly}.");
+        printer.Print($"Found {mediaFiles.Count:#,##0} files in {watch.ElapsedFriendly}.");
 
         try
         {

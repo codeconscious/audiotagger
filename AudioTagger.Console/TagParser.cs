@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Startwatch.Library;
 
 namespace AudioTagger.Console;
 
@@ -9,7 +10,7 @@ public sealed class TagParser : IPathOperation
                       Settings settings,
                       IPrinter printer)
     {
-        Timer timer = new();
+        Watch watch = new();
 
         Regex regex = new("""(?<=[アルバム|シングル][『「]).+(?=[」』])"""); // Make class-level?
 
@@ -34,6 +35,6 @@ public sealed class TagParser : IPathOperation
             }
         }
 
-        printer.Print($"Done in {timer.ElapsedFriendly}.");
+        printer.Print($"Done in {watch.ElapsedFriendly}.");
     }
 }
