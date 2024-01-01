@@ -19,10 +19,11 @@ public sealed class TagStats : IPathOperation
                         m.AlbumArtists.All(a => !ignoreArtists.Contains(a)) &&
                         !ignoreArtists.Intersect(m.Artists).Any() &&
                         !m.Genres.Contains("日本語会話"))
-            .GroupBy(a => a.AlbumArtists.Any()
-                ? a.AlbumArtists
-                : a.Artists, new ArtistsComparer())
-            .ToImmutableDictionary(g =>
+            .GroupBy(a =>
+                a.AlbumArtists.Any()
+                    ? a.AlbumArtists
+                    : a.Artists, new ArtistsComparer())
+            .ToDictionary(g =>
                 string.Join(", ", g.Key),
                 g => g.Count())
             .OrderByDescending(g => g.Value)
@@ -30,7 +31,7 @@ public sealed class TagStats : IPathOperation
 
         PrintToTable(
             $"Top {topArtistCount} artists:",
-            new[] { "Artist", "Count" },
+            ["Artist", "Count"],
             topArtists.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             [Justify.Left, Justify.Right]);
 
@@ -38,13 +39,13 @@ public sealed class TagStats : IPathOperation
 
         var mostCommonTitles = mediaFiles
             .GroupBy(a => a.Title.Trim(), new CaseInsensitiveStringComparer())
-            .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
+            .ToDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value)
             .Take(mostCommonTitleCount);
 
         PrintToTable(
             $"Top {mostCommonTitleCount} track titles:",
-            new[] { "Title", "Count" },
+            ["Title", "Count"],
             mostCommonTitles.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             [Justify.Left, Justify.Right]);
 
@@ -53,14 +54,14 @@ public sealed class TagStats : IPathOperation
         var genresWithCounts = mediaFiles
             .SelectMany(file => file.Genres)
             .GroupBy(g => g.Trim(), new CaseInsensitiveStringComparer())
-            .ToImmutableDictionary(g => string.Join(", ", g.Key), g => g.Count())
+            .ToDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value);
 
         var mostCommonGenres = genresWithCounts.Take(mostCommonGenreCount);
 
         PrintToTable(
             $"Top {mostCommonGenreCount} genres:",
-            new[] { "Genre", "Count" },
+            ["Genre", "Count"],
             mostCommonGenres.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             [Justify.Left, Justify.Right]);
 
@@ -70,7 +71,7 @@ public sealed class TagStats : IPathOperation
 
         PrintToTable(
             $"Bottom {leastCommonGenreCount} genres:",
-            new[] { "Genre", "Count" },
+            ["Genre", "Count"],
             leastCommonGenres.Select(y => new[] { y.Key, y.Value.ToString("#,##0") }).ToList(),
             [Justify.Left, Justify.Right]);
 
@@ -79,13 +80,13 @@ public sealed class TagStats : IPathOperation
         var mostCommonYears = mediaFiles
             // .Where(f => f.Year != 0)
             .GroupBy(f => f.Year)
-            .ToImmutableDictionary(f => f.Key, f => f.Count())
+            .ToDictionary(f => f.Key, f => f.Count())
             .OrderByDescending(f => f.Value)
             .Take(mostCommonYearCount);
 
         PrintToTable(
             $"Top {mostCommonYearCount} Years",
-            new[] { "Year", "Count" },
+            ["Year", "Count"],
             mostCommonYears.Select(y => new[] { y.Key.ToString(), y.Value.ToString("#,##0") }).ToList(),
             [Justify.Left, Justify.Right]);
 
@@ -96,7 +97,7 @@ public sealed class TagStats : IPathOperation
 
         PrintToTable(
             $"{longestTrackCount} Longest Tracks",
-            new[] { "Artist", "Title", "Duration", "Format", "Size (bytes)" },
+            ["Artist", "Title", "Duration", "Format", "Size (bytes)"],
             longestTracks.Select(t => new[] {
                 t.Artists.Any() ? t.Artists.First() : "(Unknown Artist)",
                 t.Title,
@@ -193,13 +194,12 @@ public sealed class TagStats : IPathOperation
     {
         public bool Equals(string? x, string? y)
         {
-            if (x is null && y is null)
-                return true;
-
-            if (x is null || y is null)
-                return false;
-
-            return string.Equals(x.Trim(), y.Trim(), StringComparison.OrdinalIgnoreCase);
+            return (x, y) switch
+            {
+                (null, null)           => true,
+                (null, _) or (_, null) => false,
+                _ => string.Equals(x.Trim(), y.Trim(), StringComparison.OrdinalIgnoreCase)
+            };
         }
 
         public int GetHashCode([DisallowNull] string obj)
