@@ -11,8 +11,7 @@ public sealed record class RegexCollection
 
     public RegexCollection(IEnumerable<string> regexes)
     {
-        if (regexes is null)
-            throw new ArgumentNullException(nameof(regexes));
+        ArgumentNullException.ThrowIfNull(regexes);
 
         if (!regexes.Any())
             throw new InvalidOperationException("No regex patterns were found.");
