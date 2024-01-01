@@ -16,6 +16,7 @@ public sealed class TagParser : IPathOperation
 
         foreach (MediaFile mediaFile in mediaFiles)
         {
+            // The media field can be customized as needed.
             Match match = regex.Match(mediaFile.Comments);
 
             if (!match.Success || mediaFile.Album == match.Value)
@@ -23,6 +24,8 @@ public sealed class TagParser : IPathOperation
                 printer.Print($"No changes needed for \"{mediaFile.FileNameOnly}\".");
                 continue;
             }
+
+            mediaFile.Album = match.Value;
 
             try
             {
