@@ -9,17 +9,17 @@ public enum ResultType
     Unknown
 }
 
-public sealed record ResultProperties(ConsoleColor? Color, string Symbol = "");
+public readonly record struct ResultProperties(ConsoleColor? Color, string Symbol = "");
 
 public static class ResultsMap
 {
     public static IReadOnlyDictionary<ResultType, ResultProperties> Map =>
         new Dictionary<ResultType, ResultProperties>
         {
-            { ResultType.Neutral, new ResultProperties(ConsoleColor.DarkGray, "– ")},
-            { ResultType.Success, new ResultProperties(ConsoleColor.DarkGreen, "✔︎ ")},
-            { ResultType.Failure, new ResultProperties(ConsoleColor.DarkRed, "× ")},
-            { ResultType.Cancelled, new ResultProperties(ConsoleColor.DarkRed, "＊ ")},
-            { ResultType.Unknown, new ResultProperties(ConsoleColor.Blue, "? ")},
+            { ResultType.Neutral, new(ConsoleColor.DarkGray, "– ")},
+            { ResultType.Success, new(ConsoleColor.DarkGreen, "✔︎ ")},
+            { ResultType.Failure, new(ConsoleColor.DarkRed, "× ")},
+            { ResultType.Cancelled, new(ConsoleColor.DarkRed, "＊ ")},
+            { ResultType.Unknown, new(ConsoleColor.Blue, "? ")},
         };
 }
