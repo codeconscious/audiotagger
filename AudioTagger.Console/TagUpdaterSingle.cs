@@ -7,7 +7,7 @@ namespace AudioTagger.Console;
 /// </summary>
 public sealed class TagUpdaterSingle : IPathOperation
 {
-    private enum TagUpdateType { Overwrite, Prepend, Append } // TODO: Add "Erase"
+    private enum TagUpdateType { Overwrite, Prepend, Append } // TODO: Add "Clear"
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
@@ -220,8 +220,8 @@ public sealed class TagUpdaterSingle : IPathOperation
             return updateType switch
             {
                 TagUpdateType.Overwrite => newValues,
-                TagUpdateType.Prepend =>   newValues.Concat(currentValues).ToArray(),
-                _ =>                       currentValues.Concat(newValues).ToArray()
+                TagUpdateType.Prepend =>   [.. newValues, .. currentValues],
+                _ =>                       [.. currentValues, .. newValues]
             };
         }
     }
