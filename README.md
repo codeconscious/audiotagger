@@ -16,7 +16,7 @@ This is a little labor-of-love project that I work on in my spare time. It's not
 
 ## Requirements
 
-- .NET 8 runtime
+- [.NET 8 runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 ## Running
 
