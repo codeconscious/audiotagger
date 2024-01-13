@@ -16,8 +16,8 @@ public sealed class TagUpdaterMultiple : IPathOperation
                       Settings settings,
                       IPrinter printer)
     {
-        List<MediaFile> sortedMediaFiles = mediaFiles.OrderBy(f => $"{f.TrackNo:00000}{f.Title}")
-                                                     .ToList();
+        var sortedMediaFiles = mediaFiles.OrderBy(f => $"{f.TrackNo:00000}{f.Title}")
+                                         .ToList();
 
         printer.Print($"Will update the title tag of {sortedMediaFiles.Count} file(s):");
         sortedMediaFiles.ForEach(f => printer.Print($"- {f.Path}"));
@@ -54,8 +54,8 @@ public sealed class TagUpdaterMultiple : IPathOperation
             MediaFile thisFile = sortedMediaFiles[i];
             table.AddRow(
                 Markup.Escape(thisFile.FileNameOnly),
-                GetTagValue(thisFile, tagName),
-                inputLines[i]);
+                Markup.Escape(GetTagValue(thisFile, tagName)),
+                Markup.Escape(inputLines[i]));
         }
         AnsiConsole.Write(table);
 
