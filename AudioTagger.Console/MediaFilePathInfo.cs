@@ -21,7 +21,7 @@ internal sealed class MediaFilePathInfo
         string fileName)
     {
         WorkingPath = workingPath;
-        SubDirectories = subDirectories.Where(sd => !string.IsNullOrWhiteSpace(sd)).ToList();
+        SubDirectories = subDirectories.Where(sd => sd.HasText()).ToList();
         FileName = fileName;
     }
 

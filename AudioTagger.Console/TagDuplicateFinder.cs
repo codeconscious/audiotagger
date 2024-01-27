@@ -19,7 +19,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         var duplicateGroups = mediaFiles
             .ToLookup(m => ConcatenateCollectionText(m.Artists) +
                            RemoveSubstrings(m.Title, titleReplacements))
-            .Where(m => !string.IsNullOrWhiteSpace(m.Key) && m.Count() > 1)
+            .Where(m => m.Key.HasText() && m.Count() > 1)
             .OrderBy(m => m.Key)
             .ToImmutableArray();
 
