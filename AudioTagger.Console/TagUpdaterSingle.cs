@@ -3,11 +3,11 @@ using Spectre.Console;
 namespace AudioTagger.Console;
 
 /// <summary>
-/// Updates a single supported tag to a specified value for all files in a specific path.
+/// Updates a single supported tag to a specified value for all files in the specific path.
 /// </summary>
 public sealed class TagUpdaterSingle : IPathOperation
 {
-    private enum TagUpdateType { Overwrite, Prepend, Append } // TODO: Add "Clear"
+    private enum TagUpdateType { Overwrite, Prepend, Append, Clear }
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
@@ -23,7 +23,9 @@ public sealed class TagUpdaterSingle : IPathOperation
         string tagValue = ConfirmTagValue(tagName, updateType);
 
         printer.Print($"Will {updateType.ToString().ToUpperInvariant()} the {tagName.ToUpperInvariant()} tag using this text:");
-        printer.Print(tagValue, appendLines: 1, fgColor: ConsoleColor.Magenta);
+        printer.Print(string.IsNullOrEmpty(tagValue)
+            ? "(None)"
+            : tagValue, appendLines: 1, fgColor: ConsoleColor.Magenta);
 
         if (!ConfirmContinue())
         {
@@ -64,7 +66,11 @@ public sealed class TagUpdaterSingle : IPathOperation
     private static string ConfirmTagValue(string tagName, TagUpdateType updateType)
     {
         string updateTypeName = updateType.ToString().ToUpperInvariant();
-        return AnsiConsole.Ask<string>($"Enter the text to {updateTypeName} to {tagName.ToUpperInvariant()}: ");
+        return updateType switch
+        {
+            TagUpdateType.Clear => string.Empty,
+            _ => AnsiConsole.Ask<string>($"Enter the text to {updateTypeName} to {tagName.ToUpperInvariant()}: ")
+        };
     }
 
     private static TagUpdateType ConfirmUpdateType(string tagName)
@@ -135,25 +141,33 @@ public sealed class TagUpdaterSingle : IPathOperation
                                                   false);
                 break;
             case "albumArtists":
-                string[] sanitizedAlbumArtists = tagValue.Replace("___", "　")
-                                                    .Replace("__", " ")
-                                                    .Split(new[] { ";" },
-                                                           StringSplitOptions.RemoveEmptyEntries |
-                                                           StringSplitOptions.TrimEntries)
-                                                    .Select(a => a.Normalize())
-                                                    .ToArray();
+                string[] sanitizedAlbumArtists =
+                    updateType == TagUpdateType.Clear
+                        ? []
+                        : tagValue.Replace("___", "　")
+                            .Replace("__", " ")
+                            .Split(
+                                new[] { ";" },
+                                StringSplitOptions.RemoveEmptyEntries |
+                                    StringSplitOptions.TrimEntries)
+                            .Select(a => a.Normalize())
+                            .ToArray();
                 mediaFile.AlbumArtists = GetUpdatedValues(mediaFile.AlbumArtists,
                                                           sanitizedAlbumArtists,
                                                           updateType);
                 break;
             case "artists":
-                string[] sanitizedArtists = tagValue.Replace("___", "　")
-                                               .Replace("__", " ")
-                                               .Split(new[] { ";" },
-                                                      StringSplitOptions.RemoveEmptyEntries |
-                                                      StringSplitOptions.TrimEntries)
-                                               .Select(a => a.Normalize())
-                                               .ToArray();
+                string[] sanitizedArtists =
+                    updateType == TagUpdateType.Clear
+                        ? []
+                        : tagValue.Replace("___", "　")
+                            .Replace("__", " ")
+                            .Split(
+                                new[] { ";" },
+                                StringSplitOptions.RemoveEmptyEntries |
+                                    StringSplitOptions.TrimEntries)
+                            .Select(a => a.Normalize())
+                            .ToArray();
                 mediaFile.Artists = GetUpdatedValues(mediaFile.Artists,
                                                      sanitizedArtists,
                                                      updateType);
@@ -168,12 +182,17 @@ public sealed class TagUpdaterSingle : IPathOperation
                                                   false);
                 break;
             case "genres":
-                string[] sanitizedGenres = tagValue.Replace("___", "　")
-                                              .Replace("__", " ")
-                                              .Split(new[] { ";" },
-                                                     StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                                              .Select(g => g.Normalize())
-                                              .ToArray();
+                string[] sanitizedGenres =
+                    updateType == TagUpdateType.Clear
+                        ? []
+                        : tagValue.Replace("___", "　")
+                                  .Replace("__", " ")
+                                  .Split(
+                                      new[] { ";" },
+                                      StringSplitOptions.RemoveEmptyEntries |
+                                         StringSplitOptions.TrimEntries)
+                                  .Select(g => g.Normalize())
+                                  .ToArray();
                 mediaFile.Genres = GetUpdatedValues(mediaFile.Genres,
                                                     sanitizedGenres,
                                                     updateType);
@@ -200,18 +219,30 @@ public sealed class TagUpdaterSingle : IPathOperation
         /// <param name="newValue">The text to be added.</param>
         /// <param name="updateType"></param>
         /// <param name="useNewLine">Whether or not to add line breaks between the new and old text.</param>
-        /// <returns></returns>
-        static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType, bool useNewLines)
+        static string GetUpdatedValue(
+            string currentValue,
+            string newValue,
+            TagUpdateType updateType,
+            bool useNewLines)
         {
+            if (updateType == TagUpdateType.Clear)
+                return string.Empty;
+
             string divider = useNewLines ? Environment.NewLine + Environment.NewLine : string.Empty;
             return updateType switch
             {
                 TagUpdateType.Overwrite => newValue,
-                TagUpdateType.Prepend =>   newValue + divider + currentValue,
+                TagUpdateType.Prepend   => newValue + divider + currentValue,
                 _ =>                       currentValue + divider + newValue,
             };
         }
 
+        /// <summary>
+        /// Returns the new, updated values for a tag as a collection.
+        /// </summary>
+        /// <param name="currentValues">The original values to be modified.</param>
+        /// <param name="newValues">The new text to be added.</param>
+        /// <param name="updateType"></param>
         static string[] GetUpdatedValues(
             string[] currentValues,
             string[] newValues,
@@ -219,8 +250,9 @@ public sealed class TagUpdaterSingle : IPathOperation
         {
             return updateType switch
             {
+                TagUpdateType.Clear     => [],
                 TagUpdateType.Overwrite => newValues,
-                TagUpdateType.Prepend =>   [.. newValues, .. currentValues],
+                TagUpdateType.Prepend   => [.. newValues, .. currentValues],
                 _ =>                       [.. currentValues, .. newValues]
             };
         }
