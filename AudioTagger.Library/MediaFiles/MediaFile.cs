@@ -31,7 +31,7 @@ public sealed class MediaFile
                 ?? Array.Empty<string>();
 
         set => _taggedFile.Tag.AlbumArtists =
-                    value.Where(a => !string.IsNullOrWhiteSpace(a))
+                    value.Where(a => a.HasText())
                          .Select(a => a.Trim().Normalize())
                          .Distinct()
                          .ToArray();
@@ -45,7 +45,7 @@ public sealed class MediaFile
                 ?? Array.Empty<string>();
 
         set => _taggedFile.Tag.Performers =
-                    value.Where(a => !string.IsNullOrWhiteSpace(a))
+                    value.Where(a => a.HasText())
                          .Select(a => a.Trim().Normalize())
                          .Distinct()
                          .ToArray();
@@ -224,9 +224,9 @@ public sealed class MediaFile
             tags.Add("ALBUMARTISTS");
         if (HasAnyValues(this.Artists))
             tags.Add("ARTISTS");
-        if (!string.IsNullOrWhiteSpace(this.Album))
+        if (this.Album.HasText())
             tags.Add("ALBUM");
-        if (!string.IsNullOrWhiteSpace(this.Title))
+        if (this.Title.HasText())
             tags.Add("TITLE");
         if (this.Year != 0)
             tags.Add("YEAR");

@@ -1,3 +1,4 @@
+using AudioTagger.Library;
 using AudioTagger.Library.MediaFiles;
 
 namespace AudioTagger;
@@ -97,7 +98,7 @@ public sealed class OutputLine
         if (fileData.Composers?.Length > 0)
             lines.Add(TagDataWithHeader("Composers", fileData.Composers.Join()));
 
-        if (!string.IsNullOrWhiteSpace(fileData.Comments))
+        if (fileData.Comments.HasText())
             lines.Add(TagDataWithHeader("Comment", fileData.Comments));
 
         return lines;
@@ -132,7 +133,7 @@ public sealed class OutputLine
         if (fileData.Composers?.Length > 0)
             lines.Add("Composers", string.Join("; ", fileData.Composers));
 
-        if (includeComments && !string.IsNullOrWhiteSpace(fileData.Comments))
+        if (includeComments && fileData.Comments.HasText())
             lines.Add("Comment", fileData.Comments);
 
         return lines;

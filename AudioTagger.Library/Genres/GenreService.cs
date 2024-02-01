@@ -18,7 +18,7 @@ public static class GenreService
         try
         {
             var lines = artistsWithGenres
-                .Where(ag => !string.IsNullOrWhiteSpace(ag.Key))
+                .Where(ag => ag.Key.HasText())
                 .OrderBy(ag => ag.Key)
                 .Select(ag => $"{ag.Key}{Delimiters[0]}{ag.Value}");
             File.WriteAllLines(genreFileName, lines);

@@ -1,3 +1,4 @@
+using AudioTagger.Console;
 using Spectre.Console;
 
 namespace AudioTagger;
@@ -46,13 +47,13 @@ public sealed class MediaFileViewer
                 file.Composers.Join().EscapeMarkup());
         }
 
-        if (!string.IsNullOrWhiteSpace(file.Comments))
+        if (file.Comments.HasText())
             table.AddRow(tagNameFormatter("Comments"), file.Comments.EscapeMarkup());
 
-        if (!string.IsNullOrWhiteSpace(file.Description))
+        if (file.Description.HasText())
             table.AddRow(tagNameFormatter("Comments"), file.Description.EscapeMarkup());
 
-        if (!string.IsNullOrWhiteSpace(file.Lyrics))
+        if (file.Lyrics.HasText())
             table.AddRow(tagNameFormatter("Lyrics"), file.Lyrics[..25].EscapeMarkup() + "...");
 
         table.Columns[0].Width(15);

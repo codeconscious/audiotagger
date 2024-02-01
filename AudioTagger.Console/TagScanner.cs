@@ -33,7 +33,7 @@ public sealed class TagScanner : IPathOperation
             if (mp3.SampleRate >= 48_000)
             {
                 // Check for URLs in the comments.
-                if (!string.IsNullOrWhiteSpace(mp3.Comments) &&
+                if (mp3.Comments.HasText() &&
                     urlRegex.Match(mp3.Comments) is Match match &&
                     match.Success)
                 {

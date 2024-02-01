@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace AudioTagger;
+namespace AudioTagger.Library;
 
 public static class IOUtilities
 {
@@ -16,7 +16,7 @@ public static class IOUtilities
     public static readonly Func<string, bool> IsSupportedFileExtension =
         new(
             fileName =>
-                !string.IsNullOrWhiteSpace(fileName) &&
+                fileName.HasText() &&
                 !fileName.StartsWith(".") && // Unix-based OS hidden files
                 SupportedExtensions.Any(ext =>
                     fileName.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase)));
