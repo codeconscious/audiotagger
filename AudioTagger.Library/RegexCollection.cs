@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using AudioTagger.Library;
 
 namespace AudioTagger;
 
@@ -18,8 +19,8 @@ public sealed record class RegexCollection
 
         Patterns = regexes.Where(line =>
                                !line.StartsWith("# ") &&  // Comments
-                               !line.StartsWith("// ") &&  // Comments
-                               !string.IsNullOrWhiteSpace(line))
+                               !line.StartsWith("// ") && // Comments
+                               line.HasText())
                           .Distinct()
                           .ToList();
     }
