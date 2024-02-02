@@ -1,6 +1,5 @@
 ﻿using Spectre.Console;
 using System.Text.Json;
-using VerifiedPaths = System.Collections.Frozen.FrozenSet<string>;
 
 namespace AudioTagger.Console;
 
@@ -60,20 +59,37 @@ public static class Program
         }
         IPathOperation operation = operationResult.Value;
 
-        foreach (string path in VerifyPaths(pathArgs))
+        var (validPaths, invalidPaths) = CheckPaths(pathArgs);
+
+        if (invalidPaths.Any())
+        {
+            invalidPaths.ForEach(p => printer.Error($"The path \"{p}\" is invalid."));
+
+            if (!validPaths.Any())
+            {
+                printer.Error("No valid paths were found.");
+                return;
+            }
+        }
+
+        foreach (string path in validPaths)
         {
             try
             {
                 ProcessPath(path, operation, settings, printer);
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
                 printer.Error($"Error processing \"{path}\": {ex.Message}");
             }
         }
     }
 
-    private static void ProcessPath(string path, IPathOperation operation, Settings settings, IPrinter printer)
+    private static void ProcessPath(
+        string path,
+        IPathOperation operation,
+        Settings settings,
+        IPrinter printer)
     {
         printer.Print($"Processing path \"{path}\"...");
 
@@ -84,7 +100,7 @@ public static class Program
         {
             mediaFiles = MediaFile.PopulateFileData(path, searchSubDirectories: true);
         }
-        catch (InvalidOperationException ex)
+        catch (ArgumentException ex)
         {
             printer.Error($"Path \"{path}\" could not be parsed: " + ex.Message);
             return;
@@ -148,18 +164,25 @@ public static class Program
     }
 
     /// <summary>
-    /// A result containing a collection of verified paths that are expected to be valid
-    /// if successful; otherwise, an error message.
+    /// Checks each of a collection of paths, returning the valid and invalid ones as tuple members.
     /// </summary>
-    public static VerifiedPaths VerifyPaths(ICollection<string> maybePaths)
+    private static (ImmutableList<string> Valid, ImmutableList<string> Invalid) CheckPaths(
+        ICollection<string> maybePaths)
     {
         if (maybePaths?.Any() != true)
-            throw new InvalidOperationException("No paths were passed in.");
+            return new ([], []);
 
-        var invalidPaths = maybePaths.Where(p => !Path.Exists(p));
-        if (invalidPaths.Any())
-            throw new InvalidOperationException($"Invalid path(s): \"{string.Join("\" and \"", invalidPaths)}\".");
+        List<string> valid = [];
+        List<string> invalid = [];
 
-        return maybePaths.ToFrozenSet();
+        foreach (string path in maybePaths)
+        {
+            if (Path.Exists(path))
+                valid.Add(path);
+            else
+                invalid.Add(path);
+        }
+
+        return new ([.. valid], [.. invalid]);
     }
 }

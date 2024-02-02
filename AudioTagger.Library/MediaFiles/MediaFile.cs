@@ -210,7 +210,7 @@ public sealed class MediaFile
             return new MediaFile[] { MediaFileFactory.CreateFileData(path) }.ToImmutableList();
         }
 
-        throw new InvalidOperationException($"The path \"{path}\" was invalid.");
+        throw new ArgumentException($"The path \"{path}\" was invalid.");
     }
 
     /// <summary>
