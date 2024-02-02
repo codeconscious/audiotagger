@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Spectre.Console;
+using AudioTagger.Library;
 
 namespace AudioTagger.Console;
 
