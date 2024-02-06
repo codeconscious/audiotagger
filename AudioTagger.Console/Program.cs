@@ -64,12 +64,12 @@ public static class Program
         if (invalidPaths.Any())
         {
             invalidPaths.ForEach(p => printer.Error($"The path \"{p}\" is invalid."));
+        }
 
-            if (!validPaths.Any())
-            {
-                printer.Error("No valid paths were found.");
-                return;
-            }
+        if (!validPaths.Any())
+        {
+            printer.Error("No valid paths were found, so cannot continue.");
+            return;
         }
 
         foreach (string path in validPaths)
@@ -108,7 +108,7 @@ public static class Program
 
         if (mediaFiles.IsEmpty)
         {
-            printer.Warning("There are no media files to work on. Cancelling...");
+            printer.Warning("There are no media files to work on. Skipping...");
             return;
         }
 
@@ -167,15 +167,15 @@ public static class Program
     /// Checks each of a collection of paths, returning the valid and invalid ones as tuple members.
     /// </summary>
     private static (ImmutableList<string> Valid, ImmutableList<string> Invalid) CheckPaths(
-        ICollection<string> maybePaths)
+        ICollection<string> paths)
     {
-        if (maybePaths?.Any() != true)
+        if (paths?.Any() != true)
             return new ([], []);
 
         List<string> valid = [];
         List<string> invalid = [];
 
-        foreach (string path in maybePaths)
+        foreach (string path in paths)
         {
             if (Path.Exists(path))
                 valid.Add(path);
