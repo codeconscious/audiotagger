@@ -34,7 +34,7 @@ public sealed class TagGenreExtractor : IPathOperation
             mediaFiles
                 .Where(f => f.Genres.Any() && f.Artists.Any())
                 .GroupBy(f =>
-                    f.Artists[0], // Only the first artist (though it might be nice to process all someday)
+                    f.Artists[0].Trim(), // Only the first artist (though it might be nice to process all someday)
                     f => f.Genres.GroupBy(g => g) // Get most populous...
                                  .OrderByDescending(grp => grp.Count()) // ...and keep them at the top.
                                  .Select(grp => grp.Key)
