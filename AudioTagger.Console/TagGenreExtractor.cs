@@ -11,7 +11,7 @@ public sealed class TagGenreExtractor : IPathOperation
     {
         if (string.IsNullOrWhiteSpace(settings.ArtistGenreCsvFilePath))
         {
-            printer.Error("You must specify a comma-separated file (.csv) containing artist and genre data in your settings file under the 'artistGenreCsvFilePath' key.");
+            printer.Error("You must specify a .csv containing artist and genre data in your settings file under the 'artistGenreCsvFilePath' key.");
             return;
         }
 
@@ -46,7 +46,6 @@ public sealed class TagGenreExtractor : IPathOperation
 
         printer.Print($"Found {latestGenres.Count:#,##0} unique artists with genres in the files.");
 
-        // Merge two dictionaries.
         var mergedGenres = latestGenres
             .Concat(existingGenres)
             .GroupBy(e => e.Key)
