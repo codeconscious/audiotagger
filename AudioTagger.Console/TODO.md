@@ -4,3 +4,5 @@ Features that I might consider as features or improvements in the future. Not al
 
 - Double-check that renaming is stripping out invalid characters.
 - Stop checking for `.Any()` files when starting requested operations.
+- Genre-extraction: Create a local file containing tag data so that the files don't have to be re-read (but maybe not worth it since this operation isn't done much?)
+- Extract all metadata to JSON or XML?
