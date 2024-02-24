@@ -38,7 +38,8 @@ public sealed class TagGenreExtractor : IPathOperation
                     f => f.Genres.GroupBy(g => g) // Get most populous...
                                  .OrderByDescending(grp => grp.Count()) // ...and keep them at the top.
                                  .Select(grp => grp.Key)
-                                 .First()) // Keep only the most single most populous genre.
+                                 .First() // Keep only the most single most populous genre.
+                                 .Trim())
                 .ToImmutableSortedDictionary(
                     f => f.Key,
                     f => f.First()
