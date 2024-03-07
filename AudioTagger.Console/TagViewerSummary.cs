@@ -11,8 +11,7 @@ public sealed class TagViewerSummary : IPathOperation
     {
         ArgumentNullException.ThrowIfNull(mediaFiles);
 
-        var orderedFiles = mediaFiles.OrderBy(m => string.Concat(m.AlbumArtists) ?? string.Empty)
-                                     .ThenBy(m => string.Concat(m.Artists) ?? string.Empty)
+        var orderedFiles = mediaFiles.OrderBy(m => string.Concat(m.AlbumArtists ?? m.Artists) ?? string.Empty)
                                      .ThenBy(m => m.Album ?? string.Empty)
                                      .ThenBy(m => m.TrackNo)
                                      .ThenBy(m => m.Title)
