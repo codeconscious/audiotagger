@@ -67,8 +67,8 @@ internal static class OperationLibrary
         //     new Normalization()),
         new(
             ["-g", "--genres"],
-            "Save the primary genre for each artist to the settings file.",
-            new GenreExtractor()),
+            "Save the primary genre for each artist to a genre file.",
+            new TagGenreExtractor()),
         new(
             ["-p", "--parse"],
             "Get a single tag value by parsing the data of another (generally Comments).",

@@ -11,12 +11,20 @@ public sealed class TagViewerSummary : IPathOperation
     {
         ArgumentNullException.ThrowIfNull(mediaFiles);
 
-        var orderedFiles = mediaFiles.OrderBy(m => string.Concat(m.AlbumArtists) ?? string.Empty)
-                                     .ThenBy(m => string.Concat(m.Artists) ?? string.Empty)
-                                     .ThenBy(m => m.Album ?? string.Empty)
-                                     .ThenBy(m => m.TrackNo)
-                                     .ThenBy(m => m.Title)
-                                     .ToImmutableArray();
+        var orderedFiles = mediaFiles
+            .OrderBy(m => {
+                return string.Concat(
+                    m.AlbumArtists?.Any() == true
+                    ? m.AlbumArtists
+                    : m.Artists?.Any() == true
+                        ? m.Artists
+                        : []
+                );
+            })
+            .ThenBy(m => m.Album ?? string.Empty)
+            .ThenBy(m => m.TrackNo)
+            .ThenBy(m => m.Title)
+            .ToImmutableArray();
 
         Table table = CreateTableWithColumns(
             ("Artist(s)", Justify.Left),

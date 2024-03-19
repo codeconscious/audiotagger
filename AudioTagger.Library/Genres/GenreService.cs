@@ -54,7 +54,7 @@ public static class GenreService
             {
                 // Read current line and move pointer to the following line.
                 string[] fields = csvParser.ReadFields() ?? [];
-                artistsWithGenres.Add(fields[0], fields[1]);
+                artistsWithGenres.Add(fields[0].Trim(), fields[1].Trim());
             }
 
             return Result.Ok(artistsWithGenres);
