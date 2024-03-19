@@ -55,7 +55,7 @@ public sealed class TagGenreExtractor : IPathOperation
         Result writeResult = GenreService.Write(settings.ArtistGenreCsvFilePath, mergedGenres);
 
         if (writeResult.IsSuccess)
-            printer.Success($"File written successfully after {watch.ElapsedFriendly}.");
+            printer.Success($"Genres written to \"{settings.ArtistGenreCsvFilePath}\" in {watch.ElapsedFriendly}.");
         else
             printer.Error(writeResult.Errors.First().Message);
     }
