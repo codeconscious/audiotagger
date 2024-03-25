@@ -28,9 +28,15 @@ public sealed class TagDuplicateFinder : IPathOperation
         printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
 
-        var searchFor = "";
-        var replaceWith = "Music/";
-        CreateM3uPlaylistFile(duplicateGroups, (searchFor, replaceWith), printer);
+        static string? TextOrNull(string? text) => text switch
+        {
+            null => null,
+            { Length: 0 } => null,
+            _ => text
+        };
+        var searchFor = TextOrNull(settings?.Duplicates?.PathSearchFor);
+        var replaceWith = TextOrNull(settings?.Duplicates?.PathReplaceWith);
+        CreatePlaylistFile(duplicateGroups, (searchFor, replaceWith), printer);
     }
 
     private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
@@ -117,12 +123,18 @@ public sealed class TagDuplicateFinder : IPathOperation
         };
     }
 
-    private static void CreateM3uPlaylistFile(
-        IList<IGrouping<string, MediaFile>> duplicateGroups,
-        (string SearchFor, string ReplaceWith) replacements,
+    /// <summary>
+    /// Creates a playlist list in M3U playlist format.
+    /// </summary>
+    /// <param name="duplicateGroups"></param>
+    /// <param name="replacements">Optionally replace parts of the file paths.</param>
+    /// <param name="printer"></param>
+    private static void CreatePlaylistFile(
+        ImmutableArray<IGrouping<string, MediaFile>> duplicateGroups,
+        (string? SearchFor, string? ReplaceWith) replacements,
         IPrinter printer)
     {
-        var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        var now = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         var filename = $"Duplicates by AudioTagger - {now}.m3u";
         var contents = new StringBuilder("#EXTM3U\n");
 
@@ -136,14 +148,17 @@ public sealed class TagDuplicateFinder : IPathOperation
                 var extInf = $"#EXTINF:{seconds},{artistTitle}";
                 contents.AppendLine(extInf);
 
-                var updatedPath = m.Path.Replace(replacements.SearchFor, replacements.ReplaceWith);
+                var updatedPath = replacements.SearchFor is null || replacements.ReplaceWith is null
+                    ? m.Path
+                    : m.Path.Replace(replacements.SearchFor, replacements.ReplaceWith);
+
                 contents.AppendLine(updatedPath);
             });
 
         try
         {
             File.WriteAllText(filename, contents.ToString());
-            printer.Print($"Created playlist file at \"{filename}\".");
+            printer.Print($"Saved playlist file to \"{filename}\".");
         }
         catch (Exception ex)
         {
