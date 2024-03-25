@@ -24,6 +24,12 @@ public sealed record Duplicates
 {
     [JsonPropertyName("titleReplacements")]
     public ImmutableList<string>? TitleReplacements { get; set; }
+
+    [JsonPropertyName("pathSearchFor")]
+    public string? PathSearchFor { get; set; }
+
+    [JsonPropertyName("pathReplaceWith")]
+    public string? PathReplaceWith { get; set; }
 }
 
 public sealed record Tagging
