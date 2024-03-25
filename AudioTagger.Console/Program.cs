@@ -116,11 +116,7 @@ public static class Program
 
         try
         {
-            operation.Start(
-                mediaFiles,
-                new DirectoryInfo(path),
-                settings,
-                printer);
+            operation.Start(mediaFiles, new DirectoryInfo(path), settings, printer);
         }
         catch (Exception ex)
         {
