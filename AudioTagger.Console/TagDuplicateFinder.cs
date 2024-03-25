@@ -1,5 +1,5 @@
-using System.Text.RegularExpressions;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AudioTagger.Console;
 
@@ -27,6 +27,10 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
+
+        var searchFor = "";
+        var replaceWith = "Music/";
+        CreateM3uPlaylistFile(duplicateGroups, (searchFor, replaceWith), printer);
     }
 
     private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
@@ -111,5 +115,39 @@ public sealed class TagDuplicateFinder : IPathOperation
                                              (sb, term) => sb.Replace(term, string.Empty),
                                              sb => sb.ToString())
         };
+    }
+
+    private static void CreateM3uPlaylistFile(
+        IList<IGrouping<string, MediaFile>> duplicateGroups,
+        (string SearchFor, string ReplaceWith) replacements,
+        IPrinter printer)
+    {
+        var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        var filename = $"Duplicates by AudioTagger - {now}.m3u";
+        var contents = new StringBuilder("#EXTM3U\n");
+
+        duplicateGroups
+            .SelectMany(g => g)
+            .ToList()
+            .ForEach(m =>
+            {
+                var seconds = m.Duration.TotalSeconds;
+                var artistTitle = $"{string.Join(", ", m.ArtistSummary)} - {m.Title}";
+                var extInf = $"#EXTINF:{seconds},{artistTitle}";
+                contents.AppendLine(extInf);
+
+                var updatedPath = m.Path.Replace(replacements.SearchFor, replacements.ReplaceWith);
+                contents.AppendLine(updatedPath);
+            });
+
+        try
+        {
+            File.WriteAllText(filename, contents.ToString());
+            printer.Print($"Created playlist file at \"{filename}\".");
+        }
+        catch (Exception ex)
+        {
+            printer.Error($"Couldn't write to playlist file: {ex.Message}");
+        }
     }
 }
