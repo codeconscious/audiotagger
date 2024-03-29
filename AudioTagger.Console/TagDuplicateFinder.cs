@@ -5,10 +5,11 @@ namespace AudioTagger.Console;
 
 public sealed class TagDuplicateFinder : IPathOperation
 {
-    public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                      DirectoryInfo workingDirectory,
-                      Settings settings,
-                      IPrinter printer)
+    public void Start(
+        IReadOnlyCollection<MediaFile> mediaFiles,
+        DirectoryInfo workingDirectory,
+        Settings settings,
+        IPrinter printer)
     {
         ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ?? [];
         printer.Print($"Found {titleReplacements.Count} replacement term(s).");
@@ -33,7 +34,9 @@ public sealed class TagDuplicateFinder : IPathOperation
         CreatePlaylistFile(duplicateGroups, (searchFor, replaceWith), printer);
     }
 
-    private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
+    private static void PrintResults(
+        IList<IGrouping<string, MediaFile>> duplicateGroups,
+        IPrinter printer)
     {
         int groupIndex = 1;
         int groupIndexPadding = duplicateGroups.Count.ToString().Length + 2;
