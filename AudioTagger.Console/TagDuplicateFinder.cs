@@ -28,14 +28,8 @@ public sealed class TagDuplicateFinder : IPathOperation
         printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
 
-        static string? TextOrNull(string? text) => text switch
-        {
-            null => null,
-            { Length: 0 } => null,
-            _ => text
-        };
-        var searchFor = TextOrNull(settings?.Duplicates?.PathSearchFor);
-        var replaceWith = TextOrNull(settings?.Duplicates?.PathReplaceWith);
+        var searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
+        var replaceWith = settings?.Duplicates?.PathReplaceWith?.TextOrNull();
         CreatePlaylistFile(duplicateGroups, (searchFor, replaceWith), printer);
     }
 
@@ -115,11 +109,11 @@ public sealed class TagDuplicateFinder : IPathOperation
         return terms switch
         {
             null or { Count: 0 } => source,
-            _                    => terms.ToList()
-                                         .Aggregate(
-                                             new StringBuilder(source),
-                                             (sb, term) => sb.Replace(term, string.Empty),
-                                             sb => sb.ToString())
+            _ => terms.ToList()
+                       .Aggregate(
+                           new StringBuilder(source),
+                           (sb, term) => sb.Replace(term, string.Empty),
+                           sb => sb.ToString())
         };
     }
 
@@ -134,21 +128,23 @@ public sealed class TagDuplicateFinder : IPathOperation
         (string? SearchFor, string? ReplaceWith) replacements,
         IPrinter printer)
     {
-        var now = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        var filename = $"Duplicates by AudioTagger - {now}.m3u";
-        var contents = new StringBuilder("#EXTM3U\n");
+        StringBuilder contents = new("#EXTM3U\n");
+
+        string now = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string filename = $"Duplicates by AudioTagger - {now}.m3u";
 
         duplicateGroups
             .SelectMany(g => g)
             .ToList()
             .ForEach(m =>
             {
-                var seconds = m.Duration.TotalSeconds;
-                var artistTitle = $"{string.Join(", ", m.ArtistSummary)} - {m.Title}";
-                var extInf = $"#EXTINF:{seconds},{artistTitle}";
+                double seconds = m.Duration.TotalSeconds;
+                string artistTitle = $"{string.Join(", ", m.ArtistSummary)} - {m.Title}";
+                string extInf = $"#EXTINF:{seconds},{artistTitle}";
                 contents.AppendLine(extInf);
 
-                var updatedPath = replacements.SearchFor is null || replacements.ReplaceWith is null
+                string updatedPath = replacements.SearchFor is null ||
+                                     replacements.ReplaceWith is null
                     ? m.Path
                     : m.Path.Replace(replacements.SearchFor, replacements.ReplaceWith);
 

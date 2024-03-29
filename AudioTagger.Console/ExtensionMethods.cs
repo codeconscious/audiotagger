@@ -7,4 +7,11 @@ public static class ExtensionMethods
     /// </summary>
     /// <remarks>I just got tired of `!string.IsNullOrWhiteSpace` everywhere...</remarks>
     public static bool HasText(this string? str) => !string.IsNullOrWhiteSpace(str);
+
+    public static string? TextOrNull(this string? text) =>
+        text switch
+        {
+            null or { Length: 0 } => null,
+            _ => text
+        };
 }
