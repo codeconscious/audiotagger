@@ -1,14 +1,15 @@
-using System.Text.RegularExpressions;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AudioTagger.Console;
 
 public sealed class TagDuplicateFinder : IPathOperation
 {
-    public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                      DirectoryInfo workingDirectory,
-                      Settings settings,
-                      IPrinter printer)
+    public void Start(
+        IReadOnlyCollection<MediaFile> mediaFiles,
+        DirectoryInfo workingDirectory,
+        Settings settings,
+        IPrinter printer)
     {
         ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ?? [];
         printer.Print($"Found {titleReplacements.Count} replacement term(s).");
@@ -27,9 +28,15 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
+
+        var searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
+        var replaceWith = settings?.Duplicates?.PathReplaceWith?.TextOrNull();
+        CreatePlaylistFile(duplicateGroups, (searchFor, replaceWith), printer);
     }
 
-    private static void PrintResults(IList<IGrouping<string, MediaFile>> duplicateGroups, IPrinter printer)
+    private static void PrintResults(
+        IList<IGrouping<string, MediaFile>> duplicateGroups,
+        IPrinter printer)
     {
         int groupIndex = 1;
         int groupIndexPadding = duplicateGroups.Count.ToString().Length + 2;
@@ -105,11 +112,56 @@ public sealed class TagDuplicateFinder : IPathOperation
         return terms switch
         {
             null or { Count: 0 } => source,
-            _                    => terms.ToList()
-                                         .Aggregate(
-                                             new StringBuilder(source),
-                                             (sb, term) => sb.Replace(term, string.Empty),
-                                             sb => sb.ToString())
+            _ => terms.ToList()
+                       .Aggregate(
+                           new StringBuilder(source),
+                           (sb, term) => sb.Replace(term, string.Empty),
+                           sb => sb.ToString())
         };
+    }
+
+    /// <summary>
+    /// Creates a playlist list in M3U playlist format.
+    /// </summary>
+    /// <param name="duplicateGroups"></param>
+    /// <param name="replacements">Optionally replace parts of the file paths.</param>
+    /// <param name="printer"></param>
+    private static void CreatePlaylistFile(
+        ImmutableArray<IGrouping<string, MediaFile>> duplicateGroups,
+        (string? SearchFor, string? ReplaceWith) replacements,
+        IPrinter printer)
+    {
+        StringBuilder contents = new("#EXTM3U\n");
+
+        string now = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string filename = $"Duplicates by AudioTagger - {now}.m3u";
+
+        duplicateGroups
+            .SelectMany(g => g)
+            .ToList()
+            .ForEach(m =>
+            {
+                double seconds = m.Duration.TotalSeconds;
+                string artistTitle = $"{string.Join(", ", m.ArtistSummary)} - {m.Title}";
+                string extInf = $"#EXTINF:{seconds},{artistTitle}";
+                contents.AppendLine(extInf);
+
+                string updatedPath = replacements.SearchFor is null ||
+                                     replacements.ReplaceWith is null
+                    ? m.Path
+                    : m.Path.Replace(replacements.SearchFor, replacements.ReplaceWith);
+
+                contents.AppendLine(updatedPath);
+            });
+
+        try
+        {
+            File.WriteAllText(filename, contents.ToString());
+            printer.Print($"Saved playlist file to \"{filename}\".");
+        }
+        catch (Exception ex)
+        {
+            printer.Error($"Couldn't write to playlist file: {ex.Message}");
+        }
     }
 }
