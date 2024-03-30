@@ -30,6 +30,9 @@ public sealed record Duplicates
 
     [JsonPropertyName("pathReplaceWith")]
     public string? PathReplaceWith { get; set; }
+
+    [JsonPropertyName("savePlaylistDirectory")]
+    public string? SavePlaylistDirectory { get; set; }
 }
 
 public sealed record Tagging
