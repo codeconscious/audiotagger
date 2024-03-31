@@ -31,7 +31,11 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         var searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
         var replaceWith = settings?.Duplicates?.PathReplaceWith?.TextOrNull();
-        CreatePlaylistFile(duplicateGroups, (searchFor, replaceWith), printer);
+        CreatePlaylistFile(
+            duplicateGroups,
+            settings?.Duplicates?.SavePlaylistDirectory,
+            (searchFor, replaceWith),
+            printer);
     }
 
     private static void PrintResults(
@@ -128,13 +132,26 @@ public sealed class TagDuplicateFinder : IPathOperation
     /// <param name="printer"></param>
     private static void CreatePlaylistFile(
         ImmutableArray<IGrouping<string, MediaFile>> duplicateGroups,
+        string? saveDirectory,
         (string? SearchFor, string? ReplaceWith) replacements,
         IPrinter printer)
     {
-        StringBuilder contents = new("#EXTM3U\n");
+        if (saveDirectory is null)
+        {
+            string appDir = AppContext.BaseDirectory;
+            printer.Warning($"No playlist save directory was specified, so saving to the application directory at \"{appDir}\".");
+            saveDirectory = appDir;
+        }
+        else if (!Path.Exists(saveDirectory))
+        {
+            printer.Error($"Cannot save playlist because \"{saveDirectory}\" doesn't exist.");
+            return;
+        }
 
+        StringBuilder contents = new("#EXTM3U\n");
         string now = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         string filename = $"Duplicates by AudioTagger - {now}.m3u";
+        string fullPath = Path.Combine(saveDirectory, filename);
 
         duplicateGroups
             .SelectMany(g => g)
@@ -156,12 +173,12 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         try
         {
-            File.WriteAllText(filename, contents.ToString());
+            File.WriteAllText(fullPath, contents.ToString());
             printer.Print($"Saved playlist file to \"{filename}\".");
         }
         catch (Exception ex)
         {
-            printer.Error($"Couldn't write to playlist file: {ex.Message}");
+            printer.Error($"Couldn't write to playlist file at \"{fullPath}\": {ex.Message}");
         }
     }
 }
