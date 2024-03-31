@@ -22,6 +22,7 @@ public sealed class TagGenreExtractor : IPathOperation
         if (readResult.IsSuccess)
         {
             existingGenres = readResult.Value;
+            printer.Print($"Found {existingGenres.Count} genres.");
             printer.Print($"Will update \"{settings.ArtistGenreCsvFilePath}\".");
         }
         else
@@ -35,22 +36,24 @@ public sealed class TagGenreExtractor : IPathOperation
                 .Where(f => f.Genres.Any() && f.Artists.Any())
                 .GroupBy(f =>
                     f.Artists[0].Trim(), // Only the first artist (though it might be nice to process all someday)
-                    f => f.Genres.GroupBy(g => g) // Get most populous...
-                                 .OrderByDescending(grp => grp.Count()) // ...and keep them at the top.
+                    f => f.Genres.GroupBy(g => g)
+                                 .OrderByDescending(grp => grp.Count())
                                  .Select(grp => grp.Key)
-                                 .First() // Keep only the most single most populous genre.
+                                 .First() // Keep only the most populous genre.
                                  .Trim())
                 .ToImmutableSortedDictionary(
                     f => f.Key,
                     f => f.First()
                 );
 
-        printer.Print($"Found {latestGenres.Count:#,##0} unique artists with genres in the files.");
+        printer.Print($"Found {latestGenres.Count:#,##0} unique artists with genres.");
 
         var mergedGenres = latestGenres
             .Concat(existingGenres)
             .GroupBy(e => e.Key)
             .ToDictionary(g => g.Key, g => g.First().Value); // Prioritize the first dictionary's values.
+
+        WriteSummary(existingGenres.Count, mergedGenres.Count, printer);
 
         Result writeResult = GenreService.Write(settings.ArtistGenreCsvFilePath, mergedGenres);
 
@@ -58,5 +61,14 @@ public sealed class TagGenreExtractor : IPathOperation
             printer.Success($"Genres written to \"{settings.ArtistGenreCsvFilePath}\" in {watch.ElapsedFriendly}.");
         else
             printer.Error(writeResult.Errors.First().Message);
+
+        static void WriteSummary(int beforeCount, int afterCount, IPrinter printer)
+        {
+            int countDiff = afterCount - beforeCount;
+            var actionTaken = countDiff < 0 ? "removed" : "added";
+            var beforeVsAfter = $"{beforeCount:#,##0} → {afterCount:#,##0}";
+            var diffSummary = $"In total, {Math.Abs(countDiff)} genres to be {actionTaken} ({beforeVsAfter}).";
+            printer.Print(diffSummary);
+        }
     }
 }
