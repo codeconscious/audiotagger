@@ -53,8 +53,10 @@ public sealed class TagGenreExtractor : IPathOperation
             .GroupBy(e => e.Key)
             .ToDictionary(g => g.Key, g => g.First().Value); // Prioritize the first dictionary's values.
 
-        int countDiff = mergedGenres.Count - existingGenres.Count;
-        var diffSummary = $"In total, {Math.Abs(countDiff)} genres to be {(countDiff < 0 ? "removed" : "added")}.";
+        int beforeCount = existingGenres.Count;
+        int afterCount = mergedGenres.Count;
+        int countDiff = afterCount - beforeCount;
+        var diffSummary = $"In total, {Math.Abs(countDiff)} genres to be {(countDiff < 0 ? "removed" : "added")} ({beforeCount:#,##0} → {afterCount:#,##0}).";
         printer.Print(diffSummary);
 
         Result writeResult = GenreService.Write(settings.ArtistGenreCsvFilePath, mergedGenres);
