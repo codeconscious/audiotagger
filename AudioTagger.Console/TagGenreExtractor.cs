@@ -22,6 +22,7 @@ public sealed class TagGenreExtractor : IPathOperation
         if (readResult.IsSuccess)
         {
             existingGenres = readResult.Value;
+            printer.Print($"Found {existingGenres.Count} genres.");
             printer.Print($"Will update \"{settings.ArtistGenreCsvFilePath}\".");
         }
         else
@@ -38,19 +39,23 @@ public sealed class TagGenreExtractor : IPathOperation
                     f => f.Genres.GroupBy(g => g) // Get most populous...
                                  .OrderByDescending(grp => grp.Count()) // ...and keep them at the top.
                                  .Select(grp => grp.Key)
-                                 .First() // Keep only the most single most populous genre.
+                                 .First() // Keep only the single most populous genre.
                                  .Trim())
                 .ToImmutableSortedDictionary(
                     f => f.Key,
                     f => f.First()
                 );
 
-        printer.Print($"Found {latestGenres.Count:#,##0} unique artists with genres in the files.");
+        printer.Print($"Found {latestGenres.Count:#,##0} unique artists with genres.");
 
         var mergedGenres = latestGenres
             .Concat(existingGenres)
             .GroupBy(e => e.Key)
             .ToDictionary(g => g.Key, g => g.First().Value); // Prioritize the first dictionary's values.
+
+        int countDiff = mergedGenres.Count - existingGenres.Count;
+        var diffSummary = $"In total, {Math.Abs(countDiff)} genres to be {(countDiff < 0 ? "removed" : "added")}.";
+        printer.Print(diffSummary);
 
         Result writeResult = GenreService.Write(settings.ArtistGenreCsvFilePath, mergedGenres);
 
