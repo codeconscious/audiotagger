@@ -175,12 +175,12 @@ public sealed class TagUpdater : IPathOperation
 
         if (updateableFields.AlbumArtists?.All(a => fileData.AlbumArtists.Contains(a)) == false)
         {
-            fileData.AlbumArtists = updateableFields.AlbumArtists;
+            fileData.AlbumArtists = updateableFields.AlbumArtists.Distinct().ToArray();
         }
 
         if (updateableFields.Artists?.All(a => fileData.Artists.Contains(a)) == false)
         {
-            fileData.Artists = updateableFields.Artists;
+            fileData.Artists = updateableFields.Artists.Distinct().ToArray();
         }
 
         if (updateableFields.Year != null && updateableFields.Year != fileData.Year)
@@ -195,7 +195,7 @@ public sealed class TagUpdater : IPathOperation
 
         if (updateableFields.Genres?.All(a => fileData.Genres.Contains(a)) == false)
         {
-            fileData.Genres = updateableFields.Genres;
+            fileData.Genres = updateableFields.Genres.Distinct().ToArray();
         }
     }
 }
