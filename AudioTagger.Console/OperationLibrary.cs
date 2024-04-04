@@ -75,7 +75,7 @@ internal static class OperationLibrary
             new TagParser()),
         new(
             ["--scan"],
-            "Maintenance scanning work. (Not intended for normal use.)",
+            "Ad-hoc maintenance scanning work. (Not intended for normal use.)",
             new TagScanner(),
             isHidden: true),
     };

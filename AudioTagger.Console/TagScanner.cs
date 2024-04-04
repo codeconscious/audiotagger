@@ -12,57 +12,80 @@ public sealed class TagScanner : IPathOperation
     {
         Watch watch = new();
 
-        var mp3s = mediaFiles.Where(f => Path.GetExtension(f.FileNameOnly) == ".mp3");
+        printer.Print($"Found {mediaFiles.Count} audio files.");
 
-        if (!mp3s.Any())
-        {
-            printer.Print("There are no MP3 files to work on. Cancelling...");
-            return;
-        }
-
-        printer.Print($"Found {mp3s.Count()} MP3 files.");
-
-        Regex urlRegex = new("""(?<=URL: ).+""");
+        Regex playlistUrlRegex = new("""(?<=Playlist URL: ).+""");
+        Regex videoUrlRegex = new("""(?<=URL: ).+""");
 
         StringBuilder okFiles = new();
-        StringBuilder badFilesByTags = new();
-        StringBuilder badFilesByUrl = new();
+        StringBuilder lowBitRateNoUrl = new();
+        StringBuilder lowBitRateWithVideoUrl = new();
+        StringBuilder lowBitRateWithPlaylistUrl = new();
+        StringBuilder highSampleRateNoUrl = new();
+        StringBuilder highSampleRateWithVideoUrl = new();
+        StringBuilder highSampleRateWithPlaylistUrl = new();
 
-        foreach (MediaFile mp3 in mp3s)
+        foreach (MediaFile file in mediaFiles)
         {
-            if (mp3.SampleRate >= 48_000)
+            if (file.SampleRate >= 48_000)
             {
-                // Check for URLs in the comments.
-                if (mp3.Comments.HasText() &&
-                    urlRegex.Match(mp3.Comments) is Match match &&
-                    match.Success)
+                if (file.Comments.HasText() &&
+                    playlistUrlRegex.Match(file.Comments) is Match playlistMatch &&
+                    playlistMatch.Success)
                 {
-                    // URL found
-                    badFilesByUrl.AppendLine($"{match.Value};{mp3.Path}");
+                    highSampleRateWithPlaylistUrl.AppendLine($"{playlistMatch.Value};{file.Path}");
+                }
+                else if (file.Comments.HasText() &&
+                         videoUrlRegex.Match(file.Comments) is Match videoMatch &&
+                         videoMatch.Success)
+                {
+                    highSampleRateWithVideoUrl.AppendLine($"{videoMatch.Value};{file.Path}");
                 }
                 else
                 {
-                    // No URL found, so noting a metadata summary.
-                    badFilesByTags.AppendLine($"{string.Join(", ", mp3.Artists)}; {mp3.Album}; {mp3.Title}");
+                    highSampleRateNoUrl.AppendLine($"{string.Join(", ", file.Artists)}; {file.Album}; {file.Title}; {file.Path}");
+                }
+            }
+            else if (file.BitRate < 110)
+            {
+                if (file.Comments.HasText() &&
+                    playlistUrlRegex.Match(file.Comments) is Match playlistMatch &&
+                    playlistMatch.Success)
+                {
+                    lowBitRateWithPlaylistUrl.AppendLine($"{playlistMatch.Value};{file.Path}");
+                }
+                else if (file.Comments.HasText() &&
+                         videoUrlRegex.Match(file.Comments) is Match videoMatch &&
+                         videoMatch.Success)
+                {
+                    lowBitRateWithVideoUrl.AppendLine($"{videoMatch.Value};{file.Path}");
+                }
+                else
+                {
+                    lowBitRateNoUrl.AppendLine($"{string.Join(", ", file.Artists)}; {file.Album}; {file.Title}; {file.Path}");
                 }
             }
             else
             {
-                okFiles.AppendLine($"{mp3.FileNameOnly} ({mp3.SampleRate}Hz)");
+                okFiles.AppendLine($"{file.FileNameOnly} [{file.SampleRate}Hz) @ {file.BitRate}kbps]");
             }
         }
 
         try
         {
-            File.WriteAllText("1-ok.log",       okFiles.ToString());
-            File.WriteAllText("2-bad-tags.log", badFilesByTags.ToString());
-            File.WriteAllText("3-bad-urls.log", badFilesByUrl.ToString());
+            File.WriteAllText("results-ok.log", okFiles.ToString());
+            File.WriteAllText("results-low-bit-rate-no-url.log", lowBitRateNoUrl.ToString());
+            File.WriteAllText("results-low-bit-rate-video-url.log", lowBitRateWithVideoUrl.ToString());
+            File.WriteAllText("results-low-bit-rate-playlist-url.log", lowBitRateWithPlaylistUrl.ToString());
+            File.WriteAllText("results-high-sample-rate-no-url.log", highSampleRateNoUrl.ToString());
+            File.WriteAllText("results-high-sample-rate-video-url.log", highSampleRateWithVideoUrl.ToString());
+            File.WriteAllText("results-high-sample-rate-playlist-url.log", highSampleRateWithPlaylistUrl.ToString());
         }
         catch (Exception ex)
         {
-            printer.Error($"Error writing file: {ex.Message}");
+            printer.Error($"Error writing files: {ex.Message}");
         }
 
-        printer.Print($"Done in {watch.ElapsedFriendly} with 3 log files written.");
+        printer.Print($"Done in {watch.ElapsedFriendly}.");
     }
 }
