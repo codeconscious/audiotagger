@@ -140,7 +140,7 @@ public sealed class MediaFileRenamer : IPathOperation
         // TODO: Refactor cancellation so this isn't needed.
         const bool shouldCancel = false;
 
-        ImmutableList<string> populatedTagNames = file.PopulatedTagNames();
+        var populatedTagNames = file.PopulatedTagNames();
         string? matchedRenamePattern = null;
         foreach (string renamePattern in renamePatterns)
         {
@@ -155,7 +155,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
         if (matchedRenamePattern is null)
         {
-            printer.Error($"No appropriate rename pattern was found, so cannot rename \"{file.FileNameOnly}\"");
+            printer.Error($"No appropriate rename pattern found for \"{file.FileNameOnly}\".");
             return false;
         }
 
