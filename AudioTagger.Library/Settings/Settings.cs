@@ -18,6 +18,9 @@ public sealed record Settings
 
     [JsonPropertyName("renameUseAlbumFolders")]
     public bool RenameUseAlbumFolders { get; set; } = false;
+
+    [JsonPropertyName("resetSavedArtistGenres")]
+    public bool ResetSavedArtistGenres { get; set; } = false;
 }
 
 public sealed record Duplicates

@@ -18,24 +18,32 @@ public sealed class TagGenreExtractor : IPathOperation
         Watch watch = new();
 
         Dictionary<string, string> existingGenres;
-        var readResult = GenreService.Read(settings.ArtistGenreCsvFilePath);
-        if (readResult.IsSuccess)
+        if (settings.ResetSavedArtistGenres)
         {
-            existingGenres = readResult.Value;
-            printer.Print($"Found {existingGenres.Count} genres.");
-            printer.Print($"Will update \"{settings.ArtistGenreCsvFilePath}\".");
+            printer.Print("Will reset any existing genre data.");
+            existingGenres = [];
         }
         else
         {
-            existingGenres = [];
-            printer.Print($"Will create \"{settings.ArtistGenreCsvFilePath}\".");
+            var readResult = GenreService.Read(settings.ArtistGenreCsvFilePath);
+            if (readResult.IsSuccess)
+            {
+                printer.Print($"Will update \"{settings.ArtistGenreCsvFilePath}\".");
+                existingGenres = readResult.Value;
+                printer.Print($"Found {existingGenres.Count} genres.");
+            }
+            else
+            {
+                printer.Print($"Will create \"{settings.ArtistGenreCsvFilePath}\".");
+                existingGenres = [];
+            }
         }
 
         var latestGenres =
             mediaFiles
                 .Where(f => f.Genres.Any() && f.Artists.Any())
                 .GroupBy(f =>
-                    f.Artists[0].Trim(), // Only the first artist (though it might be nice to process all someday)
+                    f.Artists[0].Trim(), // Only the first artist.
                     f => f.Genres.GroupBy(g => g)
                                  .OrderByDescending(grp => grp.Count())
                                  .Select(grp => grp.Key)
