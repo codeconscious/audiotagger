@@ -44,9 +44,9 @@ public sealed class TagGenreExtractor : IPathOperation
                 .Where(f => f.Genres.Any() && f.Artists.Any())
                 .GroupBy(f =>
                     f.Artists[0].Trim(), // Only the first artist.
-                    f => f.Genres.GroupBy(g => g)
-                                 .OrderByDescending(grp => grp.Count())
-                                 .Select(grp => grp.Key)
+                    f => f.Genres.GroupBy(genre => genre)
+                                 .OrderByDescending(group => group.Count())
+                                 .Select(group => group.Key)
                                  .First() // Keep only the most populous genre.
                                  .Trim())
                 .ToImmutableSortedDictionary(
