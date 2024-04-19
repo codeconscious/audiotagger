@@ -4,6 +4,18 @@ namespace AudioTagger.Console;
 
 public sealed class TagGenreExtractor : IPathOperation
 {
+    private static string ArtistName(IGrouping<string, MediaFile> group) =>
+        group.Key;
+
+    private static string MostPopulousGenre(IGrouping<string, MediaFile> group) =>
+        group
+            .Select(f => f.Genres.First())
+            .GroupBy(genre => genre)
+            .OrderByDescending(group => group.Count())
+            .Select(group => group.Key)
+            .First() // Keep only the most populous genre.
+            .Trim();
+
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       Settings settings,
@@ -11,7 +23,7 @@ public sealed class TagGenreExtractor : IPathOperation
     {
         if (string.IsNullOrWhiteSpace(settings.ArtistGenreCsvFilePath))
         {
-            printer.Error("You must specify a .csv containing artist and genre data in your settings file under the 'artistGenreCsvFilePath' key.");
+            printer.Error("You must specify a .csv file path for artist and genre data in your settings file under the 'artistGenreCsvFilePath' key.");
             return;
         }
 
@@ -20,7 +32,7 @@ public sealed class TagGenreExtractor : IPathOperation
         Dictionary<string, string> existingGenres;
         if (settings.ResetSavedArtistGenres)
         {
-            printer.Print("Will reset any existing genre data.");
+            printer.Print("Will delete any existing genre data.");
             existingGenres = [];
         }
         else
@@ -44,14 +56,8 @@ public sealed class TagGenreExtractor : IPathOperation
                 .Where(f => f.Genres.Any() && f.Artists.Any())
                 .GroupBy(f => f.Artists[0].Trim())
                 .ToImmutableSortedDictionary(
-                    g => g.Key,
-                    g => g.Select(f => f.Genres.First())
-                          .GroupBy(genre => genre)
-                          .OrderByDescending(group => group.Count())
-                          .Select(group => group.Key)
-                          .First() // Keep only the most populous genre.
-                          .Trim()
-                );
+                    ArtistName,
+                    MostPopulousGenre);
 
         // foreach (var file in latestGenres)
         // {
@@ -62,7 +68,7 @@ public sealed class TagGenreExtractor : IPathOperation
 
         var mergedGenres = latestGenres
             .Concat(existingGenres)
-            .GroupBy(e => e.Key)
+            .GroupBy(g => g.Key)
             .ToDictionary(g => g.Key, g => g.First().Value); // Prioritize the first dictionary's values.
 
         WriteSummary(existingGenres.Count, mergedGenres.Count, printer);
