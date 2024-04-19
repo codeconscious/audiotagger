@@ -42,17 +42,21 @@ public sealed class TagGenreExtractor : IPathOperation
         var latestGenres =
             mediaFiles
                 .Where(f => f.Genres.Any() && f.Artists.Any())
-                .GroupBy(f =>
-                    f.Artists[0].Trim(), // Only the first artist.
-                    f => f.Genres.GroupBy(genre => genre)
-                                 .OrderByDescending(group => group.Count())
-                                 .Select(group => group.Key)
-                                 .First() // Keep only the most populous genre.
-                                 .Trim())
+                .GroupBy(f => f.Artists[0].Trim())
                 .ToImmutableSortedDictionary(
-                    f => f.Key,
-                    f => f.First()
+                    g => g.Key,
+                    g => g.Select(f => f.Genres.First())
+                          .GroupBy(genre => genre)
+                          .OrderByDescending(group => group.Count())
+                          .Select(group => group.Key)
+                          .First() // Keep only the most populous genre.
+                          .Trim()
                 );
+
+        // foreach (var file in latestGenres)
+        // {
+        //     printer.Print($"- {file.Key}: {file.Value}");
+        // }
 
         printer.Print($"Found {latestGenres.Count:#,##0} unique artists with genres.");
 
@@ -70,6 +74,7 @@ public sealed class TagGenreExtractor : IPathOperation
         else
             printer.Error(writeResult.Errors.First().Message);
 
+        // TODO: When resetting data, no need for the beforeVsAfter statement, so remove it.
         static void WriteSummary(int beforeCount, int afterCount, IPrinter printer)
         {
             int countDiff = afterCount - beforeCount;
