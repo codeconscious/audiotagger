@@ -97,8 +97,8 @@ public sealed class TagGenreExtractor : IPathOperation
             string actionTaken = countDiff < 0 ? "removed" : "added";
             string beforeVsAfter = beforeCount == 0
                 ? string.Empty
-                : $"{beforeCount:#,##0} → {afterCount:#,##0}";
-            string diffSummary = $"In total, {Math.Abs(countDiff)} genres to be {actionTaken} ({beforeVsAfter}).";
+                : $" ({beforeCount:#,##0} → {afterCount:#,##0})";
+            string diffSummary = $"In total, {Math.Abs(countDiff)} genres to be {actionTaken}{beforeVsAfter}.";
             printer.Print(diffSummary);
         }
     }
