@@ -4,11 +4,11 @@ namespace AudioTagger.Console;
 
 public sealed class TagGenreExtractor : IPathOperation
 {
-    private static bool HasGenresAndArtists(MediaFile f) =>
-        f.Genres.Any() && f.Artists.Any();
+    private static bool HasGenresAndArtists(MediaFile file) =>
+        file.Genres.Length != 0 && file.Artists.Length != 0;
 
-    private static string FirstArtistTrimmed(MediaFile f) =>
-        f.Artists[0].Trim();
+    private static string FirstArtistTrimmed(MediaFile file) =>
+        file.Artists[0].Trim();
 
     private static string ArtistName(IGrouping<string, MediaFile> group) =>
         group.Key;
@@ -58,22 +58,27 @@ public sealed class TagGenreExtractor : IPathOperation
             }
         }
 
+        var relevantFiles = mediaFiles.Where(HasGenresAndArtists);
+        if (!relevantFiles.Any())
+        {
+            printer.Error("There are no media files with an artist and genre to process.");
+            return;
+        }
+
         var latestGenres =
-            mediaFiles
-                .Where(HasGenresAndArtists)
+            relevantFiles
                 .GroupBy(FirstArtistTrimmed)
-                .ToImmutableSortedDictionary(
-                    ArtistName,
-                    MostPopulousGenre);
+                .ToImmutableSortedDictionary(ArtistName, MostPopulousGenre);
 
         printer.Print($"Found {latestGenres.Count:#,##0} unique artists with genres.");
 
-        var mergedGenres = latestGenres
-            .Concat(existingGenres)
-            .GroupBy(g => g.Key)
-            .ToDictionary(
-                g =>g.Key,
-                g => g.First().Value); // Prioritize the first dictionary's values.
+        var mergedGenres =
+            latestGenres
+                .Concat(existingGenres)
+                .GroupBy(g => g.Key)
+                .ToImmutableDictionary(
+                    g =>g.Key,
+                    g => g.First().Value); // Prioritize the first dictionary's values.
 
         WriteSummary(existingGenres.Count, mergedGenres.Count, printer);
 
