@@ -55,7 +55,7 @@ public sealed class TagGenreExtractor : IPathOperation
         Dictionary<string, string> existingGenres;
         if (settings.ResetSavedArtistGenres)
         {
-            printer.Print("Will delete any existing genre data.");
+            printer.Print("Will delete previous genre data, if any.");
             existingGenres = [];
         }
         else
@@ -65,7 +65,7 @@ public sealed class TagGenreExtractor : IPathOperation
             {
                 printer.Print($"Will update \"{settings.ArtistGenreCsvFilePath}\".");
                 existingGenres = readResult.Value;
-                printer.Print($"Found {existingGenres.Count} genres.");
+                printer.Print($"Found previous genre data for {existingGenres.Count} artist(s).");
             }
             else
             {
@@ -91,13 +91,14 @@ public sealed class TagGenreExtractor : IPathOperation
         else
             printer.Error(writeResult.Errors.First().Message);
 
-        // TODO: When resetting data, no need for the beforeVsAfter statement, so remove it.
         static void WriteSummary(int beforeCount, int afterCount, IPrinter printer)
         {
             int countDiff = afterCount - beforeCount;
-            var actionTaken = countDiff < 0 ? "removed" : "added";
-            var beforeVsAfter = $"{beforeCount:#,##0} → {afterCount:#,##0}";
-            var diffSummary = $"In total, {Math.Abs(countDiff)} genres to be {actionTaken} ({beforeVsAfter}).";
+            string actionTaken = countDiff < 0 ? "removed" : "added";
+            string beforeVsAfter = beforeCount == 0
+                ? string.Empty
+                : $"{beforeCount:#,##0} → {afterCount:#,##0}";
+            string diffSummary = $"In total, {Math.Abs(countDiff)} genres to be {actionTaken} ({beforeVsAfter}).";
             printer.Print(diffSummary);
         }
     }
