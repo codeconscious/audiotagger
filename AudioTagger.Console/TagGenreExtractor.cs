@@ -4,6 +4,12 @@ namespace AudioTagger.Console;
 
 public sealed class TagGenreExtractor : IPathOperation
 {
+    private static bool HasGenresAndArtists(MediaFile f) =>
+        f.Genres.Any() && f.Artists.Any();
+
+    private static string FirstArtistTrimmed(MediaFile f) =>
+        f.Artists[0].Trim();
+
     private static string ArtistName(IGrouping<string, MediaFile> group) =>
         group.Key;
 
@@ -16,10 +22,11 @@ public sealed class TagGenreExtractor : IPathOperation
             .First() // Keep only the most populous genre.
             .Trim();
 
-    public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                      DirectoryInfo workingDirectory,
-                      Settings settings,
-                      IPrinter printer)
+    public void Start(
+        IReadOnlyCollection<MediaFile> mediaFiles,
+        DirectoryInfo workingDirectory,
+        Settings settings,
+        IPrinter printer)
     {
         if (string.IsNullOrWhiteSpace(settings.ArtistGenreCsvFilePath))
         {
@@ -53,23 +60,20 @@ public sealed class TagGenreExtractor : IPathOperation
 
         var latestGenres =
             mediaFiles
-                .Where(f => f.Genres.Any() && f.Artists.Any())
-                .GroupBy(f => f.Artists[0].Trim())
+                .Where(HasGenresAndArtists)
+                .GroupBy(FirstArtistTrimmed)
                 .ToImmutableSortedDictionary(
                     ArtistName,
                     MostPopulousGenre);
-
-        // foreach (var file in latestGenres)
-        // {
-        //     printer.Print($"- {file.Key}: {file.Value}");
-        // }
 
         printer.Print($"Found {latestGenres.Count:#,##0} unique artists with genres.");
 
         var mergedGenres = latestGenres
             .Concat(existingGenres)
             .GroupBy(g => g.Key)
-            .ToDictionary(g => g.Key, g => g.First().Value); // Prioritize the first dictionary's values.
+            .ToDictionary(
+                g =>g.Key,
+                g => g.First().Value); // Prioritize the first dictionary's values.
 
         WriteSummary(existingGenres.Count, mergedGenres.Count, printer);
 
