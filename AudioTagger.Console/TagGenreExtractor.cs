@@ -36,6 +36,22 @@ public sealed class TagGenreExtractor : IPathOperation
 
         Watch watch = new();
 
+        var relevantFiles = mediaFiles.Where(HasGenresAndArtists);
+        if (!relevantFiles.Any())
+        {
+            printer.Error("There are no media files with an artist and genre to process.");
+            return;
+        }
+
+        var latestGenres =
+            relevantFiles
+                .GroupBy(FirstArtistTrimmed)
+                .ToImmutableSortedDictionary(
+                    ArtistName,
+                    MostPopulousGenre);
+
+        printer.Print($"Found {latestGenres.Count:#,##0} unique artists with genres.");
+
         Dictionary<string, string> existingGenres;
         if (settings.ResetSavedArtistGenres)
         {
@@ -57,20 +73,6 @@ public sealed class TagGenreExtractor : IPathOperation
                 existingGenres = [];
             }
         }
-
-        var relevantFiles = mediaFiles.Where(HasGenresAndArtists);
-        if (!relevantFiles.Any())
-        {
-            printer.Error("There are no media files with an artist and genre to process.");
-            return;
-        }
-
-        var latestGenres =
-            relevantFiles
-                .GroupBy(FirstArtistTrimmed)
-                .ToImmutableSortedDictionary(ArtistName, MostPopulousGenre);
-
-        printer.Print($"Found {latestGenres.Count:#,##0} unique artists with genres.");
 
         var mergedGenres =
             latestGenres
