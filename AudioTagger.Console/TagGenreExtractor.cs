@@ -5,7 +5,8 @@ namespace AudioTagger.Console;
 public sealed class TagGenreExtractor : IPathOperation
 {
     private static bool HasGenresAndArtists(MediaFile file) =>
-        file.Genres.Length != 0 && file.Artists.Length != 0;
+        file.Genres.Length != 0 &&
+        file.Artists.Length != 0;
 
     private static string FirstArtistTrimmed(MediaFile file) =>
         file.Artists[0].Trim();
