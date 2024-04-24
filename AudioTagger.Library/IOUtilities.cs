@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using FluentResults;
 
 namespace AudioTagger.Library;
 
@@ -20,6 +21,38 @@ public static class IOUtilities
                 !fileName.StartsWith(".") && // Unix-based OS hidden files
                 SupportedExtensions.Any(ext =>
                     fileName.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase)));
+
+    public static Result<ImmutableArray<string>> GetAllFileNames(string path, bool searchSubDirectories)
+    {
+        try
+        {
+            if (System.IO.Directory.Exists(path))
+            {
+                var files = System.IO.Directory
+                    .EnumerateFiles(
+                        path,
+                        "*.*",
+                        searchSubDirectories
+                            ? System.IO.SearchOption.AllDirectories
+                            : System.IO.SearchOption.TopDirectoryOnly)
+                    .Where(IsSupportedFileExtension)
+                    .ToImmutableArray();
+                return Result.Ok(files);
+            }
+
+            if (System.IO.File.Exists(path))
+            {
+                var file = new string[] { path }.ToImmutableArray();
+                return Result.Ok(file);
+            }
+
+            throw new ArgumentException($"The path \"{path}\" was invalid.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail(ex.Message);
+        }
+    }
 
     /// <summary>
     /// Replaces invalid characters in file path names with a specified safe character.

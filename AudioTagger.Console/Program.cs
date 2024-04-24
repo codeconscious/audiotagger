@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using AudioTagger.Library;
+using Spectre.Console;
 using System.Text.Json;
 
 namespace AudioTagger.Console;
@@ -95,24 +96,38 @@ public static class Program
 
         Watch watch = new();
 
-        ImmutableList<MediaFile> mediaFiles;
-        try
+        var fileNameResult = IOUtilities.GetAllFileNames(path, searchSubDirectories: true);
+        if (fileNameResult.IsFailed)
         {
-            mediaFiles = MediaFile.PopulateFileData(path, searchSubDirectories: true);
-        }
-        catch (ArgumentException ex)
-        {
-            printer.Error($"Path \"{path}\" could not be parsed: " + ex.Message);
+            printer.Error($"Could not read filenames for path \"{path}\"");
             return;
         }
 
-        if (mediaFiles.IsEmpty)
+        var fileNames = fileNameResult.Value;
+        if (fileNames.IsEmpty)
         {
-            printer.Warning("There are no media files to work on. Skipping...");
+            printer.Error("No files were found, so will skip this path.");
+            return;
+        }
+        printer.Print($"Found {fileNames.Length:#,##0} files in {watch.ElapsedFriendly}.");
+
+        var populateResult = MediaFile.PopulateFileData(fileNameResult.Value);
+        if (populateResult.IsFailed)
+        {
+            printer.Error($"No file tags were successfully read.");
+            populateResult.Errors.Take(5).ToList().ForEach(e => printer.Error(e.Message));
+            if (populateResult.Errors.Count > 5)
+                printer.Error($"plus {populateResult.Errors.Count - 5} more errors...");
             return;
         }
 
-        printer.Print($"Found {mediaFiles.Count:#,##0} files in {watch.ElapsedFriendly}.");
+        var (mediaFiles, errors) = populateResult.Value;
+        if (errors.Any())
+        {
+            printer.Warning($"There were {errors.Count} error(s) reading file tags.");
+        }
+
+        printer.Print($"Read tags of {mediaFiles.Count:#,##0} files in {watch.ElapsedFriendly}.");
 
         try
         {
