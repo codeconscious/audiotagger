@@ -56,7 +56,7 @@ public sealed class MediaFile
     /// <summary>
     /// A summary of both album artists and/or track artists; otherwise, an empty string.
     /// </summary>
-    public string ArtistSummary => AlbumArtists.JoinPrimaryWithSecondary(Artists, "; ");
+    public string ArtistSummary => AlbumArtists.JoinWith(Artists, "; ");
 
     public string Album
     {
