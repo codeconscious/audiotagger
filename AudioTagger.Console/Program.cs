@@ -111,23 +111,40 @@ public static class Program
         }
         printer.Print($"Found {fileNames.Length:#,##0} files in {watch.ElapsedFriendly}.");
 
-        var populateResult = MediaFile.PopulateFileData(fileNameResult.Value);
-        if (populateResult.IsFailed)
-        {
-            printer.Error($"No file tags were successfully read.");
-            populateResult.Errors.Take(5).ToList().ForEach(e => printer.Error(e.Message));
-            if (populateResult.Errors.Count > 5)
-                printer.Error($"plus {populateResult.Errors.Count - 5} more errors...");
-            return;
-        }
+        List<string> errors = [];
+        List<MediaFile> mediaFiles = [];
+        AnsiConsole.Progress()
+            .Start(ctx =>
+            {
+                // var batches = fileNames.Chunk(10);
+                // var iterateBy = 100 / fileNames.Length;
+                var task = ctx.AddTask("[green]Populating file tags[/]", maxValue: fileNames.Length);
 
-        var (mediaFiles, errors) = populateResult.Value;
-        if (errors.Any())
-        {
-            printer.Warning($"There were {errors.Count} error(s) reading file tags.");
-        }
+                // while(!ctx.IsFinished)
+                // {
+                // }
 
-        printer.Print($"Read tags of {mediaFiles.Count:#,##0} files in {watch.ElapsedFriendly}.");
+                foreach (var fileName in fileNames)
+                {
+                    var populateResult = MediaFile.PopulateSingleFileData(fileName);
+                    if (populateResult.IsSuccess)
+                    {
+                        mediaFiles.Add(populateResult.Value);
+                    }
+                    else
+                    {
+                        errors.Add(fileName);
+                    }
+
+                    task.Increment(1);
+                }
+            });
+
+
+        nint successes = fileNames.Length - errors.Count;
+        printer.Print($"Tags of {successes:#,##0} files read in {watch.ElapsedFriendly}.");
+        if (errors.Count != 0)
+            printer.Warning($"Tags could not be read for {errors.Count} file(s).");
 
         try
         {

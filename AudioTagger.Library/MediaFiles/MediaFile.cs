@@ -203,6 +203,19 @@ public sealed class MediaFile
         return Result.Fail(errors);
     }
 
+    public static Result<MediaFile> PopulateSingleFileData(string filePath)
+    {
+        try
+        {
+            MediaFile mediaFile = MediaFileFactory.CreateFileData(filePath);
+            return Result.Ok(mediaFile);
+        }
+        catch (Exception)
+        {
+            return Result.Fail($"Could not read metadata of file \"{filePath}\"");
+        }
+    }
+
     /// <summary>
     /// Generates and returns a list of tags that are populated in the file.
     /// </summary>
