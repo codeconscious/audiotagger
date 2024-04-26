@@ -114,15 +114,18 @@ public static class Program
         List<string> errors = [];
         List<MediaFile> mediaFiles = [];
         AnsiConsole.Progress()
+            .AutoClear(true)
+            .Columns(new ProgressColumn[]
+            {
+                new TaskDescriptionColumn(),
+                new ProgressBarColumn(),
+                new PercentageColumn(),
+                new RemainingTimeColumn(),
+                new SpinnerColumn(),
+            })
             .Start(ctx =>
             {
-                // var batches = fileNames.Chunk(10);
-                // var iterateBy = 100 / fileNames.Length;
-                var task = ctx.AddTask("[green]Populating file tags[/]", maxValue: fileNames.Length);
-
-                // while(!ctx.IsFinished)
-                // {
-                // }
+                var task = ctx.AddTask("Populating file tags", maxValue: fileNames.Length);
 
                 foreach (var fileName in fileNames)
                 {
@@ -139,7 +142,6 @@ public static class Program
                     task.Increment(1);
                 }
             });
-
 
         nint successes = fileNames.Length - errors.Count;
         printer.Print($"Tags of {successes:#,##0} files read in {watch.ElapsedFriendly}.");
