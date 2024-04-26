@@ -170,39 +170,8 @@ public sealed class MediaFile
     }
 
     /// <summary>
-    /// Given a folder or file path, returns a list of AudioFile for each file.
-    /// Thus, a path to a file will always return a collection of one item,
-    /// and a path to a folder will return an AudioFile for each file within that folder.
+    /// Given a file path, returns the tag information from that file.
     /// </summary>
-    /// <param name="filePaths">A collection of files.</param>
-    /// <returns>A collection of `MediaFile` representing tagged audio files.</returns>
-    public static Result<(ImmutableList<MediaFile>, List<string>)> PopulateFileData(IEnumerable<string> filePaths)
-    {
-       var mediaFiles = new List<MediaFile>();
-       var errors = new List<string>();
-
-        foreach (string fileName in filePaths)
-        {
-            try
-            {
-                mediaFiles.Add(MediaFileFactory.CreateFileData(fileName));
-            }
-            catch (Exception)
-            {
-                errors.Add($"Could not read metadata of file \"{fileName}\"");
-            }
-        }
-
-        if (mediaFiles.Count != 0)
-        {
-            var orderedFiles = mediaFiles.OrderBy(f => f.Path)
-                                         .ToImmutableList();
-            return Result.Ok((orderedFiles, errors));
-        }
-
-        return Result.Fail(errors);
-    }
-
     public static Result<MediaFile> ReadFileTags(string filePath)
     {
         try
@@ -217,7 +186,7 @@ public sealed class MediaFile
     }
 
     /// <summary>
-    /// Generates and returns a list of tags that are populated in the file.
+    /// Generates and returns a list of tag frames in the file that are populated.
     /// </summary>
     public ImmutableList<string> PopulatedTagNames()
     {
@@ -236,7 +205,7 @@ public sealed class MediaFile
         if (this.TrackNo != 0)
             tags.Add("TRACK");
 
-        return tags.ToImmutableList();
+        return [.. tags];
     }
 
     /// <summary>
