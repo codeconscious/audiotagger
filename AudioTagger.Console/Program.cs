@@ -109,10 +109,11 @@ public static class Program
             printer.Error("No files were found, so will skip this path.");
             return;
         }
+
         printer.Print($"Found {fileNames.Length:#,##0} files in {watch.ElapsedFriendly}.");
 
-        List<string> errors = [];
-        List<MediaFile> mediaFiles = [];
+        List<string> tagReadErrors = [];
+        List<MediaFile> mediaFiles = new(fileNames.Length);
         AnsiConsole.Progress()
             .AutoClear(true)
             .Columns(new ProgressColumn[]
@@ -125,28 +126,35 @@ public static class Program
             })
             .Start(ctx =>
             {
-                var task = ctx.AddTask("Populating file tags", maxValue: fileNames.Length);
+                var task = ctx.AddTask("Reading tag data", maxValue: fileNames.Length);
 
                 foreach (var fileName in fileNames)
                 {
-                    var populateResult = MediaFile.PopulateSingleFileData(fileName);
-                    if (populateResult.IsSuccess)
+                    var readResult = MediaFile.ReadFileTags(fileName);
+                    if (readResult.IsSuccess)
                     {
-                        mediaFiles.Add(populateResult.Value);
+                        mediaFiles.Add(readResult.Value);
                     }
                     else
                     {
-                        errors.Add(fileName);
+                        tagReadErrors.Add(readResult.Errors.First().Message);
                     }
 
                     task.Increment(1);
                 }
             });
 
-        nint successes = fileNames.Length - errors.Count;
+        int successes = fileNames.Length - tagReadErrors.Count;
         printer.Print($"Tags of {successes:#,##0} files read in {watch.ElapsedFriendly}.");
-        if (errors.Count != 0)
-            printer.Warning($"Tags could not be read for {errors.Count} file(s).");
+
+        if (tagReadErrors.Count != 0)
+        {
+            printer.Warning($"Tags could not be read for {tagReadErrors.Count} file(s).");
+            int showCount = 10;
+            tagReadErrors.Take(showCount).ToList().ForEach(printer.Error);
+            if (tagReadErrors.Count > showCount)
+                printer.Error($"plus {tagReadErrors.Count - showCount} more errors...");
+        }
 
         try
         {

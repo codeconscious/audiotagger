@@ -203,16 +203,16 @@ public sealed class MediaFile
         return Result.Fail(errors);
     }
 
-    public static Result<MediaFile> PopulateSingleFileData(string filePath)
+    public static Result<MediaFile> ReadFileTags(string filePath)
     {
         try
         {
             MediaFile mediaFile = MediaFileFactory.CreateFileData(filePath);
             return Result.Ok(mediaFile);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return Result.Fail($"Could not read metadata of file \"{filePath}\"");
+            return Result.Fail($"Could not read tags of file \"{filePath}\": {ex.Message}");
         }
     }
 
