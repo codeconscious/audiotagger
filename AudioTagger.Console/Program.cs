@@ -106,43 +106,13 @@ public static class Program
         var fileNames = fileNameResult.Value;
         if (fileNames.IsEmpty)
         {
-            printer.Error("No files were found, so will skip this path.");
+            printer.Warning("No files were found, so will skip this path.");
             return;
         }
 
         printer.Print($"Found {fileNames.Length:#,##0} files in {watch.ElapsedFriendly}.");
 
-        List<string> tagReadErrors = [];
-        List<MediaFile> mediaFiles = new(fileNames.Length);
-        AnsiConsole.Progress()
-            .AutoClear(true)
-            .Columns(new ProgressColumn[]
-            {
-                new TaskDescriptionColumn(),
-                new ProgressBarColumn(),
-                new PercentageColumn(),
-                new RemainingTimeColumn(),
-                new SpinnerColumn(),
-            })
-            .Start(ctx =>
-            {
-                var task = ctx.AddTask("Reading tag data", maxValue: fileNames.Length);
-
-                foreach (var fileName in fileNames)
-                {
-                    var readResult = MediaFile.ReadFileTags(fileName);
-                    if (readResult.IsSuccess)
-                    {
-                        mediaFiles.Add(readResult.Value);
-                    }
-                    else
-                    {
-                        tagReadErrors.Add(readResult.Errors.First().Message);
-                    }
-
-                    task.Increment(1);
-                }
-            });
+        var (mediaFiles, tagReadErrors) = ReadTagsShowingProgress(fileNames);
 
         int successes = fileNames.Length - tagReadErrors.Count;
         printer.Print($"Tags of {successes:#,##0} files read in {watch.ElapsedFriendly}.");
@@ -166,6 +136,44 @@ public static class Program
             printer.PrintException(ex);
             return;
         }
+    }
+
+    private static (List<MediaFile>, List<string>) ReadTagsShowingProgress(ICollection<string> fileNames)
+    {
+        List<MediaFile> mediaFiles = new(fileNames.Count);
+        List<string> tagReadErrors = [];
+
+        AnsiConsole.Progress()
+            .AutoClear(true)
+            .Columns(new ProgressColumn[]
+            {
+                new TaskDescriptionColumn(),
+                new ProgressBarColumn(),
+                new PercentageColumn(),
+                new RemainingTimeColumn(),
+                new SpinnerColumn(),
+            })
+            .Start(ctx =>
+            {
+                var task = ctx.AddTask("Reading tag data", maxValue: fileNames.Count);
+
+                foreach (var fileName in fileNames)
+                {
+                    var readResult = MediaFile.ReadFileTags(fileName);
+                    if (readResult.IsSuccess)
+                    {
+                        mediaFiles.Add(readResult.Value);
+                    }
+                    else
+                    {
+                        tagReadErrors.Add(readResult.Errors.First().Message);
+                    }
+
+                    task.Increment(1);
+                }
+            });
+
+        return (mediaFiles, tagReadErrors);
     }
 
     /// <summary>
