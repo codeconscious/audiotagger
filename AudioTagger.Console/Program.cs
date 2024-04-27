@@ -99,11 +99,12 @@ public static class Program
         var fileNameResult = IOUtilities.GetAllFileNames(path, searchSubDirectories: true);
         if (fileNameResult.IsFailed)
         {
-            printer.Error($"Could not read filenames for path \"{path}\"");
+            var firstMessage = fileNameResult.Errors.First().Message;
+            printer.Error($"Could not read any filenames for path \"{path}\": {firstMessage}");
             return;
         }
 
-        var fileNames = fileNameResult.Value;
+        ImmutableArray<string> fileNames = fileNameResult.Value;
         if (fileNames.IsEmpty)
         {
             printer.Warning("No files were found, so will skip this path.");
@@ -120,6 +121,7 @@ public static class Program
         if (tagReadErrors.Count != 0)
         {
             printer.Warning($"Tags could not be read for {tagReadErrors.Count} file(s).");
+
             int showCount = 10;
             tagReadErrors.Take(showCount).ToList().ForEach(printer.Error);
             if (tagReadErrors.Count > showCount)
@@ -132,7 +134,7 @@ public static class Program
         }
         catch (Exception ex)
         {
-            printer.Error($"Error in main operation: {ex.Message}");
+            printer.Error($"Error in while processing path \"{path}\": {ex.Message}");
             printer.PrintException(ex);
             return;
         }
