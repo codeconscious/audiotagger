@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioTagger.Console", "Audi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioTagger.Tests", "AudioTagger.Tests\AudioTagger.Tests.csproj", "{C1C64CA9-22A5-4553-ADB2-F2FEA6489019}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AudioTagger.Library.FSharp", "AudioTagger.Library.FSharp\AudioTagger.Library.FSharp.fsproj", "{083BA285-BFCB-4A9F-B138-9480FD87336C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C1C64CA9-22A5-4553-ADB2-F2FEA6489019}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1C64CA9-22A5-4553-ADB2-F2FEA6489019}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1C64CA9-22A5-4553-ADB2-F2FEA6489019}.Release|Any CPU.Build.0 = Release|Any CPU
+		{083BA285-BFCB-4A9F-B138-9480FD87336C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{083BA285-BFCB-4A9F-B138-9480FD87336C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{083BA285-BFCB-4A9F-B138-9480FD87336C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{083BA285-BFCB-4A9F-B138-9480FD87336C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

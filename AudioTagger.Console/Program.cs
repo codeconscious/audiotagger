@@ -1,6 +1,7 @@
 ﻿using AudioTagger.Library;
 using Spectre.Console;
 using System.Text.Json;
+using static AudioTagger.Library.FSharp.IO;
 
 namespace AudioTagger.Console;
 
@@ -49,7 +50,7 @@ public static class Program
             version: SettingsService.Id3v2Version.TwoPoint3,
             forceAsDefault: true);
 
-        var (operationArg, pathArgs) = (args[0], args[1..].Distinct().ToImmutableList());
+        var (operationArg, pathArgs) = (args[0], args[1..].Distinct().ToImmutableHashSet());
 
         var operationResult = OperationFactory(operationArg);
         if (operationResult.IsFailed)
@@ -60,20 +61,21 @@ public static class Program
         }
         IPathOperation operation = operationResult.Value;
 
-        var (validPaths, invalidPaths) = CheckPaths(pathArgs);
+        var (validPaths, invalidPaths) = GetFileGroups(pathArgs);
 
         if (invalidPaths.Any())
         {
-            invalidPaths.ForEach(p => printer.Error($"The path \"{p}\" is invalid."));
+            printer.Error($"{invalidPaths.Count} invalid path(s) found:");
+            invalidPaths.ForEach(p => printer.Error($"- {p}"));
         }
 
-        if (!validPaths.Any())
+        if (validPaths.Count == 0)
         {
             printer.Error("No valid paths were found, so cannot continue.");
             return;
         }
 
-        foreach (string path in validPaths)
+        foreach (PathItem path in validPaths)
         {
             try
             {
@@ -87,35 +89,31 @@ public static class Program
     }
 
     private static void ProcessPath(
-        string path,
+        PathItem pathInfo,
         IPathOperation operation,
         Settings settings,
         IPrinter printer)
     {
-        printer.Print($"Processing path \"{path}\"...");
-
-        Watch watch = new();
-
-        var fileNameResult = IOUtilities.GetAllFileNames(path, searchSubDirectories: true);
-        if (fileNameResult.IsFailed)
+        var (path, fileNames) = pathInfo switch
         {
-            var firstMessage = fileNameResult.Errors.First().Message;
-            printer.Error($"Could not read any filenames for path \"{path}\": {firstMessage}");
-            return;
-        }
+            PathItem.Directory d => (d.Item1, d.Item2.ToList()),
+            PathItem.File f      => (f.Item, [f.Item]),
+            _ => throw new InvalidOperationException(""),
+        };
 
-        ImmutableArray<string> fileNames = fileNameResult.Value;
-        if (fileNames.IsEmpty)
+        if (fileNames.Count == 0)
         {
             printer.Warning("No files were found, so will skip this path.");
             return;
         }
 
-        printer.Print($"Found {fileNames.Length:#,##0} files in {watch.ElapsedFriendly}.");
+        printer.Print($"Processing {fileNames.Count} file(s) for path \"{path}\"...");
+
+        Watch watch = new();
 
         var (mediaFiles, tagReadErrors) = ReadTagsShowingProgress(fileNames);
 
-        int successes = fileNames.Length - tagReadErrors.Count;
+        int successes = fileNames.Count - tagReadErrors.Count;
         printer.Print($"Tags of {successes:#,##0} files read in {watch.ElapsedFriendly}.");
 
         if (tagReadErrors.Count != 0)
@@ -214,23 +212,15 @@ public static class Program
     /// <summary>
     /// Checks each of a collection of paths, returning the valid and invalid ones as tuple members.
     /// </summary>
-    private static (ImmutableList<string> Valid, ImmutableList<string> Invalid) CheckPaths(
-        ICollection<string> paths)
+    private static (List<PathItem> Valid, List<PathItem> Invalid) GetFileGroups(ISet<string> paths)
     {
         if (paths?.Any() != true)
-            return new ([], []);
+            return ([], []);
 
-        List<string> valid = [];
-        List<string> invalid = [];
+        var result = AudioTagger.Library.FSharp.IO.ReadPathFilenames([.. paths]);
 
-        foreach (string path in paths)
-        {
-            if (Path.Exists(path))
-                valid.Add(path);
-            else
-                invalid.Add(path);
-        }
-
-        return new ([.. valid], [.. invalid]);
+        return
+            (result.Where(i => !i.IsInvalid).ToList(),
+             result.Where(i => i.IsInvalid).ToList());
     }
 }
