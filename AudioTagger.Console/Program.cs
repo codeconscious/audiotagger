@@ -61,7 +61,7 @@ public static class Program
         }
         IPathOperation operation = operationResult.Value;
 
-        var (validPaths, invalidPaths) = GetFileGroups(pathArgs);
+        var (validPaths, invalidPaths) = IOUtilities.GetFileGroups(pathArgs);
 
         if (invalidPaths.Any())
         {
@@ -207,20 +207,5 @@ public static class Program
                       "A nearly-blank file will be automatically created if it does not exist. " +
                       "See the GitHub repository's readme file for more.",
                       prependLines: 1, appendLines: 1);
-    }
-
-    /// <summary>
-    /// Checks each of a collection of paths, returning the valid and invalid ones as tuple members.
-    /// </summary>
-    private static (List<PathItem> Valid, List<PathItem> Invalid) GetFileGroups(ISet<string> paths)
-    {
-        if (paths?.Any() != true)
-            return ([], []);
-
-        var result = AudioTagger.Library.FSharp.IO.ReadPathFilenames([.. paths]);
-
-        return
-            (result.Where(i => !i.IsInvalid).ToList(),
-             result.Where(i => i.IsInvalid).ToList());
     }
 }

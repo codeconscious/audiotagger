@@ -1,57 +1,30 @@
 ﻿using System.Text;
+using static AudioTagger.Library.FSharp.IO;
 using FluentResults;
 
 namespace AudioTagger.Library;
 
 public static class IOUtilities
 {
-    private static readonly List<string> SupportedExtensions =
-        [".mp3", ".ogg", ".mkv", ".mp4", ".m4a"];
-
     /// <summary>
     /// Characters considered invalid for use in file paths.
     /// </summary>
     private static readonly char[] UnsafePathChars =
         [':', '?', '/', '⧸', '"', '|', '*'];
 
-    public static readonly Func<string, bool> IsSupportedFileExtension =
-        new(
-            fileName =>
-                fileName.HasText() &&
-                !fileName.StartsWith(".") && // Unix-based OS hidden files
-                SupportedExtensions.Any(ext =>
-                    fileName.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase)));
-
-    public static Result<ImmutableArray<string>> GetAllFileNames(string path, bool searchSubDirectories)
+    /// <summary>
+    /// Checks each of a collection of paths, returning the relevant data for valid ones and errors for invalid ones.
+    /// </summary>
+    public static (List<PathItem> Valid, List<PathItem> Invalid) GetFileGroups(ISet<string> paths)
     {
-        try
-        {
-            if (System.IO.Directory.Exists(path))
-            {
-                var files = System.IO.Directory
-                    .EnumerateFiles(
-                        path,
-                        "*.*",
-                        searchSubDirectories
-                            ? System.IO.SearchOption.AllDirectories
-                            : System.IO.SearchOption.TopDirectoryOnly)
-                    .Where(IsSupportedFileExtension)
-                    .ToImmutableArray();
-                return Result.Ok(files);
-            }
+        if (paths?.Any() != true)
+            return ([], []);
 
-            if (System.IO.File.Exists(path))
-            {
-                var file = new string[] { path }.ToImmutableArray();
-                return Result.Ok(file);
-            }
+        var result = AudioTagger.Library.FSharp.IO.ReadPathFilenames([.. paths]);
 
-            throw new ArgumentException($"The path \"{path}\" was invalid.");
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail(ex.Message);
-        }
+        return
+            (result.Where(i => !i.IsInvalid).ToList(),
+             result.Where(i => i.IsInvalid).ToList());
     }
 
     /// <summary>
@@ -61,9 +34,9 @@ public static class IOUtilities
     /// <remarks>It might be nice to allow specifying custom replacements for each invalid character.</remarks>
     public static string SanitizePath(string path, char replacementChar = '_')
     {
-        IEnumerable<char> invalidChars = System.IO.Path.GetInvalidPathChars()
-                                .Concat(System.IO.Path.GetInvalidFileNameChars())
-                                .Concat(UnsafePathChars);
+        var invalidChars = System.IO.Path.GetInvalidPathChars()
+                                         .Concat(System.IO.Path.GetInvalidFileNameChars())
+                                         .Concat(UnsafePathChars);
 
         return invalidChars
                     .Aggregate(
@@ -78,9 +51,10 @@ public static class IOUtilities
     /// characters in file path names with a specified safe character.
     /// </summary>
     /// <returns>A corrected string or the original if no changes were needed.</returns>
-    public static string SanitizePath(IEnumerable<string> input,
-                                      char replacementChar = '_',
-                                      string joinWith = " && ")
+    public static string SanitizePath(
+        IEnumerable<string> input,
+        char replacementChar = '_',
+        string joinWith = " && ")
     {
         return SanitizePath(
             string.Join(joinWith, input),
