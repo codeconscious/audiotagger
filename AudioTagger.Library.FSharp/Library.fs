@@ -22,7 +22,7 @@ module IO =
                 Directory
                     .EnumerateFiles(
                         directoryPath,
-                        "*.*", // TODO: Check if multiple can be specified
+                        "*.*",
                         match recursively with
                             | true  -> SearchOption.AllDirectories
                             | false -> SearchOption.TopDirectoryOnly)
