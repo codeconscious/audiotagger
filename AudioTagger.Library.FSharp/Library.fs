@@ -16,27 +16,28 @@ module IO =
             supportedExtensions
             |> List.exists (fun f ->
                 fileName.EndsWith(f, StringComparison.InvariantCultureIgnoreCase))
-        // let gatherToOpt (files:string list) = // TODO: Investigate a better way to do this.
-        //     if files.Length > 0
-        //     then Some files
-        //     else None
 
-        // TODO: Handle exceptions!
-        Directory
-            .EnumerateFiles(
-                directoryPath,
-                "*.*", // TODO: Check if multiple can be specified
-                match recursively with
-                    | true  -> SearchOption.AllDirectories
-                    | false -> SearchOption.TopDirectoryOnly)
-            |> Seq.cast<string>
-            |> Seq.toList
-            |> List.filter hasSupportedExtension
-            // |> gatherToOpt
+        try
+            Ok(
+                Directory
+                    .EnumerateFiles(
+                        directoryPath,
+                        "*.*", // TODO: Check if multiple can be specified
+                        match recursively with
+                            | true  -> SearchOption.AllDirectories
+                            | false -> SearchOption.TopDirectoryOnly)
+                    |> Seq.cast<string>
+                    |> Seq.toList
+                    |> List.filter hasSupportedExtension
+            )
+        with
+            | e -> Error $"Files unexpectedly could not be read from \"{directoryPath}\": {e.Message}"
 
     let private readPathFileNames path =
         if Directory.Exists path
-        then Directory (path, directoryFiles path true)
+        then match directoryFiles path true with
+             | Ok i -> Directory (path, i)
+             | Error e -> Invalid path
         else if File.Exists path
         then File path
         else Invalid path
