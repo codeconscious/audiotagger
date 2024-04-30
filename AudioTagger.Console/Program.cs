@@ -15,14 +15,6 @@ public static class Program
         {
             Run(args, printer);
         }
-        catch (FileNotFoundException ex)
-        {
-            printer.Error($"Missing file error: {ex.Message}");
-        }
-        catch (JsonException ex)
-        {
-            printer.Error($"JSON error: {ex.Message}");
-        }
         catch (Exception ex)
         {
             printer.Error($"Unexpected error: {ex.Message}");
@@ -46,6 +38,7 @@ public static class Program
         }
         Settings settings = readSettingsResult.Value;
 
+        // Prefer ID3 v2.3 over v2.4 because the former is apparently more widely supported.
         SettingsService.SetId3v2Version(
             version: SettingsService.Id3v2Version.TwoPoint3,
             forceAsDefault: true);
@@ -103,7 +96,7 @@ public static class Program
 
         if (fileNames.Count == 0)
         {
-            printer.Warning("No files were found, so will skip this path.");
+            printer.Warning("No files were found in \"{path}\".");
             return;
         }
 
