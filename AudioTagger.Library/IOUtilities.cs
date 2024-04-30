@@ -61,9 +61,10 @@ public static class IOUtilities
     /// <remarks>It might be nice to allow specifying custom replacements for each invalid character.</remarks>
     public static string SanitizePath(string path, char replacementChar = '_')
     {
-        IEnumerable<char> invalidChars = System.IO.Path.GetInvalidPathChars()
-                                .Concat(System.IO.Path.GetInvalidFileNameChars())
-                                .Concat(UnsafePathChars);
+        IEnumerable<char> invalidChars =
+            System.IO.Path.GetInvalidPathChars()
+                .Concat(System.IO.Path.GetInvalidFileNameChars())
+                .Concat(UnsafePathChars);
 
         return invalidChars
                     .Aggregate(
