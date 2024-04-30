@@ -98,23 +98,25 @@ public static class Program
         var fileNames = fileNameResult.Value;
         if (fileNames.IsEmpty)
         {
-            printer.Error("No files were found, so will skip this path.");
+            printer.Warning("No files were found in \"{path}\".");
             return;
         }
         printer.Print($"Found {fileNames.Length:#,##0} files in {watch.ElapsedFriendly}.");
 
-        var populateResult = MediaFile.PopulateFileData(fileNameResult.Value);
+        var populateResult = MediaFile.PopulateTagData(fileNameResult.Value);
         if (populateResult.IsFailed)
         {
             printer.Error($"No file tags were successfully read.");
             populateResult.Errors.Take(5).ToList().ForEach(e => printer.Error(e.Message));
             if (populateResult.Errors.Count > 5)
+            {
                 printer.Error($"plus {populateResult.Errors.Count - 5} more errors...");
+            }
             return;
         }
 
         var (mediaFiles, errors) = populateResult.Value;
-        if (errors.Any())
+        if (errors.Count != 0)
         {
             printer.Warning($"There were {errors.Count} error(s) reading file tags.");
         }

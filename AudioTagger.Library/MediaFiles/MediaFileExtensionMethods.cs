@@ -43,22 +43,28 @@ public static class MediaFileExtensionMethods
     }
 
     /// <summary>
-    /// Combines two string collections, enclosing the secondary one in parentheses if both are present.
+    /// Combines two string collections to a string representation.
+    /// If they are identical or if only one collection has items,
+    /// only one will be included, as-is. If both have differing items,
+    /// then both will be included, with the secondary collection's
+    /// items will be enclosed in parentheses.
     /// </summary>
-    public static string JoinPrimaryWithSecondary(
+    public static string JoinWith(
         this IList<string> primary,
         IList<string> secondary,
         string separator)
     {
-        static string formatter(IList<string> artists, string separator) => string.Join(separator, artists);
+        static string Format(IList<string> artists, string separator) =>
+            string.Join(separator, artists);
 
         return (primary, secondary) switch
         {
-            ([..], [])   => $"{formatter(primary, separator)}",
-            ([], [..])   => $"{formatter(secondary, separator)}",
-            ([..], [..]) when primary.All(secondary.Contains) && primary.Count == secondary.Count
-                         => $"{formatter(primary, separator)}",
-            ([..], [..]) => $"{formatter(primary, separator)} ({formatter(secondary, separator)})",
+            ([..], [])   => $"{Format(primary, separator)}",
+            ([], [..])   => $"{Format(secondary, separator)}",
+            ([..], [..]) when primary.All(secondary.Contains)
+                           && primary.Count == secondary.Count
+                         => $"{Format(primary, separator)}",
+            ([..], [..]) => $"{Format(primary, separator)} ({Format(secondary, separator)})",
             _ => string.Empty,
         };
     }
