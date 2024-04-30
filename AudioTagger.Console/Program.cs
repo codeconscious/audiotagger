@@ -106,7 +106,7 @@ public static class Program
         var fileNames = fileNameResult.Value;
         if (fileNames.IsEmpty)
         {
-            printer.Error("No files were found, so will skip this path.");
+            printer.Warning("No files were found in \"{path}\".");
             return;
         }
         printer.Print($"Found {fileNames.Length:#,##0} files in {watch.ElapsedFriendly}.");
