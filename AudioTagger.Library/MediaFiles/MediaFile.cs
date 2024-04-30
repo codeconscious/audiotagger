@@ -176,9 +176,9 @@ public sealed class MediaFile
     /// </summary>
     /// <param name="filePaths">A collection of files.</param>
     /// <returns>A collection of `MediaFile` representing tagged audio files.</returns>
-    public static Result<(ImmutableList<MediaFile>, List<string>)> PopulateTagData(IEnumerable<string> filePaths)
+    public static Result<(ImmutableList<MediaFile>, List<string>)> PopulateTagData(ICollection<string> filePaths)
     {
-       var mediaFiles = new List<MediaFile>();
+       var mediaFiles = new List<MediaFile>(filePaths.Count);
        var errors = new List<string>();
 
         foreach (string fileName in filePaths)
