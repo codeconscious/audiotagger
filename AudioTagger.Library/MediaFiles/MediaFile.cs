@@ -1,4 +1,6 @@
-﻿namespace AudioTagger.Library.MediaFiles;
+﻿using FluentResults;
+
+namespace AudioTagger.Library.MediaFiles;
 
 public sealed class MediaFile
 {
@@ -172,45 +174,33 @@ public sealed class MediaFile
     /// Thus, a path to a file will always return a collection of one item,
     /// and a path to a folder will return an AudioFile for each file within that folder.
     /// </summary>
-    /// <param name="path">A directory or file path</param>
-    /// <returns>A collection of MediaFile.</returns>
-    public static ImmutableList<MediaFile> PopulateFileData(string path, bool searchSubDirectories = false)
+    /// <param name="filePaths">A collection of files.</param>
+    /// <returns>A collection of `MediaFile` representing tagged audio files.</returns>
+    public static Result<(ImmutableList<MediaFile>, List<string>)> PopulateFileData(IEnumerable<string> filePaths)
     {
-        // If the path is a directory
-        if (System.IO.Directory.Exists(path))
+       var mediaFiles = new List<MediaFile>();
+       var errors = new List<string>();
+
+        foreach (string fileName in filePaths)
         {
-            var mediaFiles = new List<MediaFile>();
-
-            var fileNames = System.IO.Directory
-                .EnumerateFiles(path,
-                                "*.*",
-                                searchSubDirectories
-                                    ? System.IO.SearchOption.AllDirectories
-                                    : System.IO.SearchOption.TopDirectoryOnly)
-                .Where(IOUtilities.IsSupportedFileExtension)
-                .ToArray();
-
-            foreach (string fileName in fileNames)
+            try
             {
-                try
-                {
-                    mediaFiles.Add(MediaFileFactory.CreateFileData(fileName));
-                }
-                catch (Exception) { }
+                mediaFiles.Add(MediaFileFactory.CreateFileData(fileName));
             }
-
-            return mediaFiles.OrderBy(f => f.Path)
-                                .AsEnumerable()
-                                .ToImmutableList();
+            catch (Exception)
+            {
+                errors.Add($"Could not read metadata of file \"{fileName}\"");
+            }
         }
 
-        // Otherwise, if the path is a file
-        if (System.IO.File.Exists(path))
+        if (mediaFiles.Count != 0)
         {
-            return new MediaFile[] { MediaFileFactory.CreateFileData(path) }.ToImmutableList();
+            var orderedFiles = mediaFiles.OrderBy(f => f.Path)
+                                         .ToImmutableList();
+            return Result.Ok((orderedFiles, errors));
         }
 
-        throw new ArgumentException($"The path \"{path}\" was invalid.");
+        return Result.Fail(errors);
     }
 
     /// <summary>

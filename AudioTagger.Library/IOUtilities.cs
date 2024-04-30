@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using FluentResults;
 
 namespace AudioTagger.Library;
 
@@ -21,6 +22,38 @@ public static class IOUtilities
                 SupportedExtensions.Any(ext =>
                     fileName.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase)));
 
+    public static Result<ImmutableArray<string>> GetAllFileNames(string path, bool searchSubDirectories)
+    {
+        try
+        {
+            if (System.IO.Directory.Exists(path))
+            {
+                var files = System.IO.Directory
+                    .EnumerateFiles(
+                        path,
+                        "*.*",
+                        searchSubDirectories
+                            ? System.IO.SearchOption.AllDirectories
+                            : System.IO.SearchOption.TopDirectoryOnly)
+                    .Where(IsSupportedFileExtension)
+                    .ToImmutableArray();
+                return Result.Ok(files);
+            }
+
+            if (System.IO.File.Exists(path))
+            {
+                var file = new string[] { path }.ToImmutableArray();
+                return Result.Ok(file);
+            }
+
+            throw new ArgumentException($"The path \"{path}\" was invalid.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail(ex.Message);
+        }
+    }
+
     /// <summary>
     /// Replaces invalid characters in file path names with a specified safe character.
     /// </summary>
@@ -28,9 +61,10 @@ public static class IOUtilities
     /// <remarks>It might be nice to allow specifying custom replacements for each invalid character.</remarks>
     public static string SanitizePath(string path, char replacementChar = '_')
     {
-        IEnumerable<char> invalidChars = System.IO.Path.GetInvalidPathChars()
-                                .Concat(System.IO.Path.GetInvalidFileNameChars())
-                                .Concat(UnsafePathChars);
+        IEnumerable<char> invalidChars =
+            System.IO.Path.GetInvalidPathChars()
+                .Concat(System.IO.Path.GetInvalidFileNameChars())
+                .Concat(UnsafePathChars);
 
         return invalidChars
                     .Aggregate(
