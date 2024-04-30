@@ -91,37 +91,34 @@ public static class Program
         var fileNameResult = IOUtilities.GetAllFileNames(path, searchSubDirectories: true);
         if (fileNameResult.IsFailed)
         {
-            printer.Error($"Could not read filenames for path \"{path}\"");
+            var firstMessage = fileNameResult.Errors.First().Message;
+            printer.Error($"Could not read any filenames for path \"{path}\": {firstMessage}");
             return;
         }
 
-        var fileNames = fileNameResult.Value;
+        ImmutableArray<string> fileNames = fileNameResult.Value;
         if (fileNames.IsEmpty)
         {
             printer.Warning("No files were found in \"{path}\".");
             return;
         }
+
         printer.Print($"Found {fileNames.Length:#,##0} files in {watch.ElapsedFriendly}.");
 
-        var populateResult = MediaFile.PopulateTagData(fileNameResult.Value);
-        if (populateResult.IsFailed)
-        {
-            printer.Error($"No file tags were successfully read.");
-            populateResult.Errors.Take(5).ToList().ForEach(e => printer.Error(e.Message));
-            if (populateResult.Errors.Count > 5)
-            {
-                printer.Error($"plus {populateResult.Errors.Count - 5} more errors...");
-            }
-            return;
-        }
+        var (mediaFiles, tagReadErrors) = ReadTagsShowingProgress(fileNames);
 
-        var (mediaFiles, errors) = populateResult.Value;
-        if (errors.Count != 0)
-        {
-            printer.Warning($"There were {errors.Count} error(s) reading file tags.");
-        }
+        int successes = fileNames.Length - tagReadErrors.Count;
+        printer.Print($"Tags of {successes:#,##0} files read in {watch.ElapsedFriendly}.");
 
-        printer.Print($"Read tags of {mediaFiles.Count:#,##0} files in {watch.ElapsedFriendly}.");
+        if (tagReadErrors.Count != 0)
+        {
+            printer.Warning($"Tags could not be read for {tagReadErrors.Count} file(s).");
+
+            int showCount = 10;
+            tagReadErrors.Take(showCount).ToList().ForEach(printer.Error);
+            if (tagReadErrors.Count > showCount)
+                printer.Error($"plus {tagReadErrors.Count - showCount} more errors...");
+        }
 
         try
         {
@@ -129,10 +126,48 @@ public static class Program
         }
         catch (Exception ex)
         {
-            printer.Error($"Error in main operation: {ex.Message}");
+            printer.Error($"Error in while processing path \"{path}\": {ex.Message}");
             printer.PrintException(ex);
             return;
         }
+    }
+
+    private static (List<MediaFile>, List<string>) ReadTagsShowingProgress(ICollection<string> fileNames)
+    {
+        List<MediaFile> mediaFiles = new(fileNames.Count);
+        List<string> tagReadErrors = [];
+
+        AnsiConsole.Progress()
+            .AutoClear(true)
+            .Columns(new ProgressColumn[]
+            {
+                new TaskDescriptionColumn(),
+                new ProgressBarColumn(),
+                new PercentageColumn(),
+                new RemainingTimeColumn(),
+                new SpinnerColumn(),
+            })
+            .Start(ctx =>
+            {
+                var task = ctx.AddTask("Reading tag data", maxValue: fileNames.Count);
+
+                foreach (var fileName in fileNames)
+                {
+                    var readResult = MediaFile.ReadFileTags(fileName);
+                    if (readResult.IsSuccess)
+                    {
+                        mediaFiles.Add(readResult.Value);
+                    }
+                    else
+                    {
+                        tagReadErrors.Add(readResult.Errors.First().Message);
+                    }
+
+                    task.Increment(1);
+                }
+            });
+
+        return (mediaFiles, tagReadErrors);
     }
 
     /// <summary>
