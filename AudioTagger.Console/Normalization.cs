@@ -22,12 +22,12 @@ public sealed class Normalization : IPathOperation
 
         foreach (MediaFile file in mediaFiles)
         {
-            printer.Print($"- {file.Path}");
+            printer.Print($"- {file.FileInfo}");
 
             ProcessStartInfo startInfo = new()
             {
                 FileName = "mp3gain",
-                Arguments = $"-r -k -p -s i \"{file.Path}\"",
+                Arguments = $"-r -k -p -s i \"{file.FileInfo}\"",
                 RedirectStandardOutput = true,
             };
 

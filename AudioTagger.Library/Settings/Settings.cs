@@ -33,6 +33,19 @@ public sealed record Duplicates
 
     [JsonPropertyName("savePlaylistDirectory")]
     public string? SavePlaylistDirectory { get; set; }
+
+    [JsonPropertyName("exclusions")]
+    public ImmutableList<ExclusionPair>? Exclusions { get; set; }
+}
+
+// public record ExclusionPair(string? Artist, string? Title);
+public sealed record ExclusionPair
+{
+    [JsonPropertyName("artist")]
+    public string? Artist { get; init; }
+
+    [JsonPropertyName("title")]
+    public string? Title { get; init; }
 }
 
 public sealed record Tagging

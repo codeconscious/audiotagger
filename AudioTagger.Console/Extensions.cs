@@ -1,6 +1,6 @@
 namespace AudioTagger.Console;
 
-public static class ExtensionMethods
+public static class Extensions
 {
     /// <summary>
     /// Returns a bool indicating whether a string is not null and has text (true) or not.
@@ -14,11 +14,4 @@ public static class ExtensionMethods
             null or { Length: 0 } => null,
             _ => text
         };
-
-    /// <summary>
-    /// Parses a complete file path, returning the file's parent directory name.
-    /// Example: "/me/Documents/audio/123.m4a" returns "audio".
-    /// </summary>
-    public static string? FileParentDirectory(this string fileName) =>
-        Path.GetFileName(Path.GetDirectoryName(fileName) ?? null);
 }

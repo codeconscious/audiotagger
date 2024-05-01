@@ -11,13 +11,31 @@ public sealed class TagDuplicateFinder : IPathOperation
         Settings settings,
         IPrinter printer)
     {
-        ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ?? [];
+        ImmutableList<string> titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
         printer.Print($"Found {titleReplacements.Count} replacement term(s).");
         printer.Print("Checking for duplicates by artist(s) and title...");
 
         Watch watch = new();
 
-        var duplicateGroups = mediaFiles
+        var exclusions = settings.Duplicates?.Exclusions ?? [];
+        printer.Print($"{exclusions.Count} exclusion(s) found.");
+        // exclusions.ForEach(e => printer.Print($"- {e}"));
+
+        // var excludedFiles = mediaFiles.Where(f => ExcludeFile(f, exclusions)).ToImmutableList();
+        // excludedFiles.ForEach(f => printer.Warning($"❌ {f.ArtistSummary} - {f.Title}"));
+
+        var includedFiles = mediaFiles.Where(f => !ExcludeFile(f, exclusions)).ToImmutableList();
+        if (includedFiles.Count != mediaFiles.Count)
+        {
+            var diff = mediaFiles.Count - includedFiles.Count;
+            printer.Print($"Out of {mediaFiles.Count:#,##0} media files, {diff:#,##0} were excluded via exclusion rules.");
+        }
+        else
+        {
+            printer.Print($"No files were excluded.");
+        }
+
+        var duplicateGroups = includedFiles
             .ToLookup(m => ConcatenateCollectionText(m.Artists) +
                            RemoveSubstrings(m.Title, titleReplacements))
             .Where(m => m.Key.HasText() && m.Count() > 1)
@@ -36,6 +54,20 @@ public sealed class TagDuplicateFinder : IPathOperation
             settings?.Duplicates?.SavePlaylistDirectory,
             (searchFor, replaceWith),
             printer);
+    }
+
+    private static bool ExcludeFile(MediaFile file, ImmutableList<ExclusionPair> exclusions)
+    {
+        return exclusions.Any(exclusion =>
+        {
+            return exclusion switch
+            {
+                { Artist: string a, Title: string t } => file.AlbumArtists.Contains(a) || file.Artists.Contains(a) && file.Title.StartsWith(t),
+                { Artist: string a } => file.AlbumArtists.Contains(a) || file.Artists.Contains(a),
+                { Title: string t } => file.Title.StartsWith(t),
+                _ => false
+            };
+        });
     }
 
     private static void PrintResults(
@@ -83,7 +115,7 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         static string SummarizeMetadata(MediaFile mediaFile)
         {
-            string ext = Path.GetExtension(mediaFile.Path).ToUpperInvariant();
+            string ext = Path.GetExtension(mediaFile.FileInfo.FullName).ToUpperInvariant();
             string bitrate = mediaFile.BitRate + " kpbs";
             string fileSize = mediaFile.FileSizeInBytes.ToString("#,##0") + " bytes";
 
@@ -165,8 +197,8 @@ public sealed class TagDuplicateFinder : IPathOperation
 
                 string updatedPath = replacements.SearchFor is null ||
                                      replacements.ReplaceWith is null
-                    ? m.Path
-                    : m.Path.Replace(replacements.SearchFor, replacements.ReplaceWith);
+                    ? m.FileInfo.FullName
+                    : m.FileInfo.FullName.Replace(replacements.SearchFor, replacements.ReplaceWith);
 
                 contents.AppendLine(updatedPath);
             });
