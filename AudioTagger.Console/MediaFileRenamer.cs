@@ -8,32 +8,65 @@ namespace AudioTagger.Console;
 public sealed class MediaFileRenamer : IPathOperation
 {
     private static readonly Regex TagFinderRegex = new(@"(?<=%)\w+(?=%)");
+
     private static readonly List<string> SafeToDeleteFileExtensions = [".DS_Store"];
 
-    public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                      DirectoryInfo workingDirectory,
-                      Settings settings,
-                      IPrinter printer)
+    public void Start(
+        IReadOnlyCollection<MediaFile> mediaFiles,
+        DirectoryInfo workingDirectory,
+        Settings settings,
+        IPrinter printer)
     {
-        if (!ConfirmContinue(workingDirectory, printer))
+        if (!ConfirmStart(workingDirectory, printer))
         {
             return;
         }
 
-        if (settings?.RenamePatterns is null)
-            throw new InvalidOperationException("The settings contained no rename patterns. Cannot continue.");
+        if (settings?.Renaming is null)
+        {
+            printer.Error("The settings file contained no rename settings, so cannot continue.");
+            return;
+        }
 
-        printer.Print($"Found {settings.RenamePatterns.Count} rename patterns.");
-        RenameFiles(mediaFiles, workingDirectory, printer, settings.RenamePatterns, settings.RenameUseAlbumFolders);
+        if (settings?.Renaming.Patterns is null)
+        {
+            printer.Error("The rename settings contained no rename patterns, so cannot continue.");
+            return;
+        }
 
-        List<string> deletedDirs = DeleteEmptySubDirectories(workingDirectory.FullName, printer);
-        PrintDeletedDirectoryResults(deletedDirs, printer);
+        printer.Print($"Found {settings.Renaming.Patterns.Count} rename patterns.");
+
+        static bool IsEligibleForRename(ImmutableList<string> ignoredDirectories, MediaFile file) =>
+            file.Path.FileParentDirectory() is not null &&
+            !ignoredDirectories.Contains(file.Path.FileParentDirectory()!);
+
+        var eligibleMediaFiles = settings.Renaming.IgnoredDirectories is null
+            ? mediaFiles
+            : mediaFiles
+                .Where(file => IsEligibleForRename(settings.Renaming.IgnoredDirectories, file))
+                .ToList()
+                .AsReadOnly();
+
+        if (mediaFiles.Count != eligibleMediaFiles.Count)
+        {
+            printer.Print($"Out of {mediaFiles.Count} files, {eligibleMediaFiles.Count} are eligible for renaming.");
+        }
+
+        RenameFiles(
+            eligibleMediaFiles,
+            workingDirectory,
+            printer,
+            settings.Renaming.Patterns,
+            settings.Renaming.UseAlbumDirectories);
+
+        var deletedDirs = DeleteEmptySubDirectories(workingDirectory.FullName, printer);
+        PrintDeletedDirectories(deletedDirs, printer);
     }
 
     /// <summary>
     /// Asks user to confirm whether they want to continue (true) or cancel (false).
     /// </summary>
-    private static bool ConfirmContinue(DirectoryInfo workingDirectory, IPrinter printer)
+    private static bool ConfirmStart(DirectoryInfo workingDirectory, IPrinter printer)
     {
         string directoryResponse = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -48,11 +81,12 @@ public sealed class MediaFileRenamer : IPathOperation
         return false;
     }
 
-    private static void RenameFiles(IReadOnlyCollection<MediaFile> mediaFiles,
-                                    DirectoryInfo workingDirectory,
-                                    IPrinter printer,
-                                    IEnumerable<string> renamePatterns,
-                                    bool useAlbumFolders)
+    private static void RenameFiles(
+        IReadOnlyCollection<MediaFile> mediaFiles,
+        DirectoryInfo workingDirectory,
+        IPrinter printer,
+        IEnumerable<string> renamePatterns,
+        bool useAlbumDirectories)
     {
         var isCancelRequested = false;
         var doConfirm = true;
@@ -76,15 +110,15 @@ public sealed class MediaFileRenamer : IPathOperation
                 if (isCancelRequested)
                     break;
 
-                // Ensure artists with multiple tracks are saved in folders.
-                bool useArtistFolder = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] > 1;
+                // Ensure artists with multiple tracks are saved in subdirectories.
+                bool useArtistDirectory = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] > 1;
 
                 isCancelRequested = RenameSingleFile(
                     file,
                     printer,
                     workingDirectory.FullName,
-                    useArtistFolder,
-                    useAlbumFolders,
+                    useArtistDirectory,
+                    useAlbumDirectories,
                     ref doConfirm,
                     renamePatterns);
             }
@@ -127,13 +161,14 @@ public sealed class MediaFileRenamer : IPathOperation
     /// Renames a single file based upon its tags and specified rename patterns.
     /// </summary>
     /// <returns>A bool indicated whether the user cancelled the operation or not.</returns>
-    private static bool RenameSingleFile(MediaFile file,
-                                         IPrinter printer,
-                                         string workingPath,
-                                         bool useArtistFolder,
-                                         bool useAlbumFolders,
-                                         ref bool doConfirm,
-                                         IEnumerable<string> renamePatterns)
+    private static bool RenameSingleFile(
+        MediaFile file,
+        IPrinter printer,
+        string workingPath,
+        bool useArtistDirectory,
+        bool useAlbumDirectory,
+        ref bool doConfirm,
+        IEnumerable<string> renamePatterns)
     {
         ArgumentNullException.ThrowIfNull(file);
 
@@ -155,16 +190,16 @@ public sealed class MediaFileRenamer : IPathOperation
 
         if (matchedRenamePattern is null)
         {
-            printer.Error($"No appropriate rename pattern found for \"{file.FileNameOnly}\".");
+            printer.Warning($"No appropriate rename pattern found for \"{file.FileNameOnly}\".");
             return false;
         }
 
         MediaFilePathInfo oldPathInfo = new(workingPath, file.Path);
 
-        string newArtistDir = useArtistFolder
+        string newArtistDir = useArtistDirectory
             ? GenerateSafeDirectoryName(file)
             : string.Empty;
-        string newAlbumDir = useAlbumFolders && useArtistFolder && file.Album.HasText()
+        string newAlbumDir = useAlbumDirectory && useArtistDirectory && file.Album.HasText()
             ? IOUtilities.SanitizePath(file.Album)
             : string.Empty;
         string newFileName = GenerateFileNameViaTagData(file, populatedTagNames, matchedRenamePattern);
@@ -172,7 +207,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
         if (oldPathInfo.FullFilePath(true) == newPathInfo.FullFilePath(true))
         {
-            printer.Print($"No rename needed for \"{oldPathInfo.FullFilePath(false)}\"");
+            printer.Print($"No rename needed for \"{oldPathInfo.FullFilePath(false)}\"", fgColor: ConsoleColor.DarkGray);
             return shouldCancel;
         }
 
@@ -299,7 +334,7 @@ public sealed class MediaFileRenamer : IPathOperation
             deletedDirs.AddRange(DeleteEmptySubDirectories(dir, printer));
             string[] dirFiles = Directory.GetFiles(dir);
 
-            // Skip directories containing subfolders.
+            // Skip directories containing subdirectories.
             if (Directory.GetDirectories(dir).Length > 0)
             {
                 continue;
@@ -339,7 +374,7 @@ public sealed class MediaFileRenamer : IPathOperation
         return deletedDirs;
     }
 
-    private static void PrintDeletedDirectoryResults(IList<string> dirs, IPrinter printer)
+    private static void PrintDeletedDirectories(IList<string> dirs, IPrinter printer)
     {
         if (!dirs.Any())
         {
