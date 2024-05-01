@@ -16,7 +16,7 @@ public sealed class TagUpdaterSingle : IPathOperation
     {
         printer.Print($"Will update a single tag in {mediaFiles.Count} files:");
         foreach (MediaFile file in mediaFiles)
-            printer.Print($"- {file.Path}");
+            printer.Print($"- {file.FileInfo}");
 
         string tagName = ConfirmUpdateTagName();
         TagUpdateType updateType = ConfirmUpdateType(tagName);
@@ -49,12 +49,12 @@ public sealed class TagUpdaterSingle : IPathOperation
             catch (FormatException ex)
             {
                 failureCount++;
-                printer.Error($"{ex.Message} ({file.Path})");
+                printer.Error($"{ex.Message} ({file.FileInfo})");
             }
             catch (Exception ex)
             {
                 failureCount++;
-                printer.Error($"Error for \"{file.Path}\": {ex.Message}");
+                printer.Error($"Error for \"{file.FileInfo}\": {ex.Message}");
             }
         }
 

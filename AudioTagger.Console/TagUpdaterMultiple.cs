@@ -20,7 +20,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
                                          .ToList();
 
         printer.Print($"Will update the title tag of {sortedMediaFiles.Count} file(s):");
-        sortedMediaFiles.ForEach(f => printer.Print($"- {f.Path}"));
+        sortedMediaFiles.ForEach(f => printer.Print($"- {f.FileInfo}"));
 
         string[] inputLines;
         try
@@ -83,12 +83,12 @@ public sealed class TagUpdaterMultiple : IPathOperation
             catch (FormatException ex)
             {
                 failureCount++;
-                printer.Error($"{ex.Message} ({pair.File.Path})");
+                printer.Error($"{ex.Message} ({pair.File.FileInfo})");
             }
             catch (Exception ex)
             {
                 failureCount++;
-                printer.Error($"Error for \"{pair.File.Path}\": {ex.Message}");
+                printer.Error($"Error for \"{pair.File.FileInfo}\": {ex.Message}");
             }
         }
 

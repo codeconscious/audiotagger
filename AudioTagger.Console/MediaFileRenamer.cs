@@ -17,18 +17,12 @@ public sealed class MediaFileRenamer : IPathOperation
         Settings settings,
         IPrinter printer)
     {
-        if (!ConfirmStart(workingDirectory, printer))
-        {
-            return;
-        }
-
         if (settings?.Renaming is null)
         {
             printer.Error("The settings file contained no rename settings, so cannot continue.");
             return;
         }
-
-        if (settings?.Renaming.Patterns is null)
+        else if (settings?.Renaming.Patterns is null)
         {
             printer.Error("The rename settings contained no rename patterns, so cannot continue.");
             return;
@@ -37,8 +31,7 @@ public sealed class MediaFileRenamer : IPathOperation
         printer.Print($"Found {settings.Renaming.Patterns.Count} rename patterns.");
 
         static bool IsEligibleForRename(ImmutableList<string> ignoredDirectories, MediaFile file) =>
-            file.Path.FileParentDirectory() is not null &&
-            !ignoredDirectories.Contains(file.Path.FileParentDirectory()!);
+            !ignoredDirectories.Contains(file.ParentDirectoryName);
 
         var eligibleMediaFiles = settings.Renaming.IgnoredDirectories is null
             ? mediaFiles
@@ -47,9 +40,20 @@ public sealed class MediaFileRenamer : IPathOperation
                 .ToList()
                 .AsReadOnly();
 
+        if (eligibleMediaFiles.Count == 0)
+        {
+            printer.Warning($"None of the {mediaFiles.Count} files provided are eligible for renaming.");
+            return;
+        }
+
         if (mediaFiles.Count != eligibleMediaFiles.Count)
         {
             printer.Print($"Out of {mediaFiles.Count} files, {eligibleMediaFiles.Count} are eligible for renaming.");
+        }
+
+        if (!ConfirmStart(workingDirectory, printer))
+        {
+            return;
         }
 
         RenameFiles(
@@ -194,7 +198,7 @@ public sealed class MediaFileRenamer : IPathOperation
             return false;
         }
 
-        MediaFilePathInfo oldPathInfo = new(workingPath, file.Path);
+        MediaFilePathInfo oldPathInfo = new(workingPath, file.FileInfo.FullName);
 
         string newArtistDir = useArtistDirectory
             ? GenerateSafeDirectoryName(file)
@@ -249,8 +253,7 @@ public sealed class MediaFileRenamer : IPathOperation
             Directory.CreateDirectory(newPathInfo.DirectoryPath(true));
         }
 
-        FileInfo currentFile = new(file.Path); // Create a duplicate file object for the renamed file.
-        currentFile.MoveTo(newPathInfo.FullFilePath(true), overwrite: false);
+        file.FileInfo.MoveTo(newPathInfo.FullFilePath(true), overwrite: false);
         printer.Print("Rename OK", fgColor: ConsoleColor.Green);
 
         return shouldCancel;

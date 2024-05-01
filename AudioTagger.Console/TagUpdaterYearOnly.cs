@@ -48,10 +48,8 @@ public sealed class TagUpdaterYearOnly : IPathOperation
         const bool shouldCancel = false;
         const string updateType = "year";
 
-        DateTime createdDt = System.IO.File.GetCreationTime(mediaFile.Path);
-
-        UpdatableFields updateableFields = new UpdatableFields(updateType, createdDt.Year);
-
+        var createdYear = mediaFile.FileInfo.CreationTime.Year;
+        var updateableFields = new UpdatableFields(updateType, createdYear);
         var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
         if (proposedUpdates?.Any() != true)
