@@ -18,11 +18,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         Watch watch = new();
 
         var exclusions = settings.Duplicates?.Exclusions ?? [];
-        printer.Print($"{exclusions.Count} exclusion(s) found.");
-        // exclusions.ForEach(e => printer.Print($"- {e}"));
-
-        // var excludedFiles = mediaFiles.Where(f => ExcludeFile(f, exclusions)).ToImmutableList();
-        // excludedFiles.ForEach(f => printer.Warning($"❌ {f.ArtistSummary} - {f.Title}"));
+        printer.Print($"Found {exclusions.Count} exclusion rule(s) in the settings.");
 
         var includedFiles = mediaFiles.Where(f => !ExcludeFile(f, exclusions)).ToImmutableList();
         if (includedFiles.Count != mediaFiles.Count)
@@ -32,7 +28,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         }
         else
         {
-            printer.Print($"No files were excluded.");
+            printer.Print($"No files were excluded via exclusion rules.");
         }
 
         var duplicateGroups = includedFiles
