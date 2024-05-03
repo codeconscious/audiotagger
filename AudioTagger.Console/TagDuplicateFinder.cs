@@ -56,15 +56,26 @@ public sealed class TagDuplicateFinder : IPathOperation
             printer);
     }
 
+    /// <summary>
+    /// Determines whether a file should be excluded from duplicate processing due to the exceptions
+    /// manually specified in the user's settings file.
+    /// </summary>
+    /// <returns>Returns `true` if the file should be excluded; otherwise, `false`.</returns>
     private static bool ExcludeFile(MediaFile file, ImmutableList<ExclusionPair> exclusions)
     {
         return exclusions.Any(exclusion =>
         {
             return exclusion switch
             {
-                { Artist: string a, Title: string t } => file.AlbumArtists.Contains(a) || file.Artists.Contains(a) && file.Title.StartsWith(t),
-                { Artist: string a } => file.AlbumArtists.Contains(a) || file.Artists.Contains(a),
-                { Title: string t } => file.Title.StartsWith(t),
+                { Artist: string a, Title: string t } =>
+                    file.AlbumArtists.Contains(a, StringComparer.OrdinalIgnoreCase) ||
+                    file.Artists.Contains(a, StringComparer.OrdinalIgnoreCase) &&
+                    file.Title.StartsWith(t, StringComparison.InvariantCultureIgnoreCase),
+                { Artist: string a } =>
+                    file.AlbumArtists.Contains(a, StringComparer.OrdinalIgnoreCase) ||
+                    file.Artists.Contains(a, StringComparer.OrdinalIgnoreCase),
+                { Title: string t } =>
+                    file.Title.StartsWith(t, StringComparison.InvariantCultureIgnoreCase),
                 _ => false
             };
         });
