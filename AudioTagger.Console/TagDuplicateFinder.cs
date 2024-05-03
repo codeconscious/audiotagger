@@ -11,8 +11,6 @@ public sealed class TagDuplicateFinder : IPathOperation
         Settings settings,
         IPrinter printer)
     {
-        ImmutableList<string> titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
-        printer.Print($"Found {titleReplacements.Count} replacement term(s).");
         printer.Print("Checking for duplicates by artist(s) and title...");
 
         Watch watch = new();
@@ -20,16 +18,22 @@ public sealed class TagDuplicateFinder : IPathOperation
         var exclusions = settings.Duplicates?.Exclusions ?? [];
         printer.Print($"Found {exclusions.Count} exclusion rule(s) in the settings.");
 
-        var includedFiles = mediaFiles.Where(f => !ExcludeFile(f, exclusions)).ToImmutableList();
-        if (includedFiles.Count != mediaFiles.Count)
+        var includedFiles = exclusions.IsEmpty
+            ? mediaFiles
+            : mediaFiles.Where(f => !ExcludeFile(f, exclusions)).ToImmutableList();
+
+        if (includedFiles.Count == mediaFiles.Count)
+        {
+            printer.Print($"No files were excluded via exclusion rules.");
+        }
+        else
         {
             var diff = mediaFiles.Count - includedFiles.Count;
             printer.Print($"Out of {mediaFiles.Count:#,##0} media files, {diff:#,##0} were excluded via exclusion rules.");
         }
-        else
-        {
-            printer.Print($"No files were excluded via exclusion rules.");
-        }
+
+        var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
+        printer.Print($"Found {titleReplacements.Count} title modification term(s).");
 
         var duplicateGroups = includedFiles
             .ToLookup(m => ConcatenateCollectionText(m.Artists) +
@@ -39,12 +43,11 @@ public sealed class TagDuplicateFinder : IPathOperation
             .ToImmutableArray();
 
         int count = duplicateGroups.Length;
-
         printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
 
-        var searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
-        var replaceWith = settings?.Duplicates?.PathReplaceWith?.TextOrNull();
+        string? searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
+        string? replaceWith = settings?.Duplicates?.PathReplaceWith?.TextOrNull();
         CreatePlaylistFile(
             duplicateGroups,
             settings?.Duplicates?.SavePlaylistDirectory,
