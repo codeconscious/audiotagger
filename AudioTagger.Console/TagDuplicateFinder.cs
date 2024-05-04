@@ -29,11 +29,12 @@ public sealed class TagDuplicateFinder : IPathOperation
         else
         {
             var diff = mediaFiles.Count - includedFiles.Count;
-            printer.Print($"Out of {mediaFiles.Count:#,##0} media files, {diff:#,##0} were excluded via exclusion rules.");
+            var wasWere = diff == 1 ? "was" : "were";
+            printer.Print($"Out of {mediaFiles.Count:#,##0} media files, {diff:#,##0} {wasWere} excluded via exclusion rules.");
         }
 
         var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
-        printer.Print($"Found {titleReplacements.Count} title modification term(s).");
+        printer.Print($"Found {titleReplacements.Count} title replacement term(s).");
 
         var duplicateGroups = includedFiles
             .ToLookup(m => ConcatenateCollectionText(m.Artists) +
