@@ -46,9 +46,15 @@ public sealed class MediaFileRenamer : IPathOperation
             return;
         }
 
-        if (mediaFiles.Count != eligibleMediaFiles.Count)
+        if (mediaFiles.Count == eligibleMediaFiles.Count)
         {
-            printer.Print($"Out of {mediaFiles.Count} files, {eligibleMediaFiles.Count} are eligible for renaming.");
+            printer.Print("All files are eligible for renaming.");
+        }
+        else
+        {
+            var diff = mediaFiles.Count - eligibleMediaFiles.Count;
+            var isAre = diff == 1 ? "is" : "are";
+            printer.Print($"Out of {mediaFiles.Count} files, {diff} {isAre} eligible for renaming.");
         }
 
         if (!ConfirmStart(workingDirectory, printer))
@@ -176,7 +182,6 @@ public sealed class MediaFileRenamer : IPathOperation
     {
         ArgumentNullException.ThrowIfNull(file);
 
-        // TODO: Refactor cancellation so this isn't needed.
         const bool shouldCancel = false;
 
         var populatedTagNames = file.PopulatedTagNames();
