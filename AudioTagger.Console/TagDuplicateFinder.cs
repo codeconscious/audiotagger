@@ -43,8 +43,8 @@ public sealed class TagDuplicateFinder : IPathOperation
             .OrderBy(m => m.Key)
             .ToImmutableArray();
 
-        int count = duplicateGroups.Length;
-        printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
+        int groupCount = duplicateGroups.Length;
+        printer.Print($"Found {groupCount} duplicate group{(groupCount == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
 
         string? searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
