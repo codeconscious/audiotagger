@@ -9,7 +9,6 @@ public sealed class MediaFileRenamer : IPathOperation
 {
     private static readonly Regex TagFinderRegex = new(@"(?<=%)\w+(?=%)");
 
-
     private static readonly List<string> SafeToDeleteFileExtensions = [".DS_Store"];
 
     public void Start(
@@ -31,13 +30,10 @@ public sealed class MediaFileRenamer : IPathOperation
 
         printer.Print($"Found {settings.Renaming.Patterns.Count} rename patterns.");
 
-        static bool IsEligibleForRename(ImmutableList<string> ignoredDirectories, MediaFile file) =>
-            !ignoredDirectories.Contains(file.ParentDirectoryName);
-
         var eligibleMediaFiles = settings.Renaming.IgnoredDirectories is null
             ? mediaFiles
             : mediaFiles
-                .Where(file => IsEligibleForRename(settings.Renaming.IgnoredDirectories, file))
+                .Where(file => !settings.Renaming.IgnoredDirectories.Contains(file.ParentDirectoryName))
                 .ToList()
                 .AsReadOnly();
 
@@ -55,7 +51,7 @@ public sealed class MediaFileRenamer : IPathOperation
         {
             var diff = mediaFiles.Count - eligibleMediaFiles.Count;
             var isAre = diff == 1 ? "is" : "are";
-            printer.Print($"Out of {mediaFiles.Count} files, {diff} {isAre} eligible for renaming.");
+            printer.Print($"Out of {mediaFiles.Count} files, {diff} {isAre} ineligible for renaming.");
         }
 
         if (!ConfirmStart(workingDirectory, printer))
