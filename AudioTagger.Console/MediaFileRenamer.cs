@@ -9,6 +9,7 @@ public sealed class MediaFileRenamer : IPathOperation
 {
     private static readonly Regex TagFinderRegex = new(@"(?<=%)\w+(?=%)");
 
+
     private static readonly List<string> SafeToDeleteFileExtensions = [".DS_Store"];
 
     public void Start(
