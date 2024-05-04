@@ -83,7 +83,7 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         static string SummarizeMetadata(MediaFile mediaFile)
         {
-            string ext = Path.GetExtension(mediaFile.Path).ToUpperInvariant();
+            string ext = Path.GetExtension(mediaFile.FileInfo.FullName).ToUpperInvariant();
             string bitrate = mediaFile.BitRate + " kpbs";
             string fileSize = mediaFile.FileSizeInBytes.ToString("#,##0") + " bytes";
 
@@ -165,8 +165,8 @@ public sealed class TagDuplicateFinder : IPathOperation
 
                 string updatedPath = replacements.SearchFor is null ||
                                      replacements.ReplaceWith is null
-                    ? m.Path
-                    : m.Path.Replace(replacements.SearchFor, replacements.ReplaceWith);
+                    ? m.FileInfo.FullName
+                    : m.FileInfo.FullName.Replace(replacements.SearchFor, replacements.ReplaceWith);
 
                 contents.AppendLine(updatedPath);
             });

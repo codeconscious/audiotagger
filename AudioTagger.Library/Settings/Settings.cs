@@ -10,14 +10,11 @@ public sealed record Settings
     [JsonPropertyName("tagging")]
     public Tagging? Tagging { get; set; }
 
-    [JsonPropertyName("renamePatterns")]
-    public ImmutableList<string>? RenamePatterns { get; set; }
+    [JsonPropertyName("renaming")]
+    public Renaming? Renaming { get; set; }
 
     [JsonPropertyName("artistGenreCsvFilePath")]
     public string? ArtistGenreCsvFilePath { get; set; } = null;
-
-    [JsonPropertyName("renameUseAlbumFolders")]
-    public bool RenameUseAlbumFolders { get; set; } = false;
 
     [JsonPropertyName("resetSavedArtistGenres")]
     public bool ResetSavedArtistGenres { get; set; } = false;
@@ -42,4 +39,16 @@ public sealed record Tagging
 {
     [JsonPropertyName("regexPatterns")]
     public ImmutableList<string>? RegexPatterns { get; set; }
+}
+
+public sealed record Renaming
+{
+    [JsonPropertyName("patterns")]
+    public ImmutableList<string>? Patterns { get; set; }
+
+    [JsonPropertyName("useAlbumDirectories")]
+    public bool UseAlbumDirectories { get; set; } = false;
+
+    [JsonPropertyName("ignoredDirectories")]
+    public ImmutableList<string>? IgnoredDirectories { get; set; }
 }

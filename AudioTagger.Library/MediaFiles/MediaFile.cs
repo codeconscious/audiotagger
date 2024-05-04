@@ -1,10 +1,11 @@
-﻿using FluentResults;
+﻿using System.IO;
+using FluentResults;
 
 namespace AudioTagger.Library.MediaFiles;
 
 public sealed class MediaFile
 {
-    public string Path { get; }
+    public FileInfo FileInfo { get; }
     private readonly TagLib.File _taggedFile;
 
     public MediaFile(string filePath, TagLib.File tabLibFile)
@@ -12,13 +13,16 @@ public sealed class MediaFile
         ArgumentNullException.ThrowIfNull(filePath);
         ArgumentNullException.ThrowIfNull(tabLibFile);
 
-        Path = filePath;
+        FileInfo = new FileInfo(filePath);
         _taggedFile = tabLibFile;
     }
 
-    public string FileNameOnly => System.IO.Path.GetFileName(Path);
+    public string FileNameOnly => FileInfo.Name;
 
-    public long FileSizeInBytes => new System.IO.FileInfo(Path).Length;
+    public long FileSizeInBytes => FileInfo.Length;
+
+    public string ParentDirectoryName => FileInfo.Directory!.Name;
+
 
     public string Title
     {

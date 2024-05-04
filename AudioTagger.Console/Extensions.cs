@@ -1,6 +1,6 @@
 namespace AudioTagger.Console;
 
-public static class ExtensionMethods
+public static class Extensions
 {
     /// <summary>
     /// Returns a bool indicating whether a string is not null and has text (true) or not.

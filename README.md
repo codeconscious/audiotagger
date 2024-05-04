@@ -2,7 +2,7 @@
 
 A .NET CLI program that can perform the following actions on audio files:
 
-- View ID3v2 tags
+- View ID3v2.3 tags
 - Auto-update tags using filename patterns
 - Update a single tag for multiple files at once
 - Auto-rename and reorganize files using filename patterns
@@ -12,7 +12,7 @@ A .NET CLI program that can perform the following actions on audio files:
 - See folder stats
 - Apply audio normalization (ReplayGain)
 
-This is a little labor-of-love project that I work on in my spare time. It's not particularly polished, but it's sufficient for my use case. It relies on the [TagLibSharp](https://github.com/mono/taglib-sharp) library for tag reading and writing.
+This is a little labor-of-love project that I work on in my spare time. It relies on the [TagLibSharp](https://github.com/mono/taglib-sharp) library for tag reading and writing.
 
 ## Requirements
 
@@ -20,39 +20,70 @@ This is a little labor-of-love project that I work on in my spare time. It's not
 
 ## Running
 
-Currently, you must run this app from the `AudioTagger.Console` folder using `dotnet run`. Passing no arguments will show the instructions.
+Run this app from the `AudioTagger.Console` folder using `dotnet run`. Passing no arguments will show the instructions.
 
 Additionally, `settings.json` should exist in the application directory for some features. A sparsely populated file will be automatically created if it does not already exist when the program is started.
 
-Below is a snippet that illustrates the supported nodes with some examples:
+A sample settings file follows:
 
 ```json
 {
-    "duplicates": {
-        "titleReplacements": [
-            "Single Version",
-            "Single Ver.",
-            "Single Ver",
-            "()",
-            "（）",
-            "•",
-            "・"
-        ]
-    },
-    "renamePatterns": [
-        "%ARTISTS% - %ALBUM% - %TRACK% - %TITLE%",
-        "%ARTISTS% - %TITLE% [%YEAR%]",
-        "%ARTISTS% - %TITLE%",
-        "%TITLE%"
+  "artistGenreCsvFilePath": "/Users/me/Documents/audio",
+  "resetSavedArtistGenres": true,
+  "renaming": {
+    "useAlbumDirectories": true,
+    "ignoredDirectories": [
+      "Directory 1",
+      "Directory 2"
     ],
-    "tagging": {
-        "regexPatterns": [
-            "(?<artists>.+) - (?<album>.+) - (?<title>.+?(?:\\.{3})?) ?(?:\\[(?<year>\\d{4})\\])? ?(?:\\{(?<genres>.+?)\\})?(?=\\..+)",
-            "(?<artists>.+) - (?<title>.+?(?:\\.{3})?)(?: \\[(?<year>\\d{4})\\])?(?: \\{(?<genres>.+?)\\})?(?=\\.\\S{3,4}$)",
-            "(?<title>.+?) ?(?:\\[(?<year>\\d{4})\\])? ?(?:\\{(?<genres>.+?)\\})?(?=\\.[^.]+$)"
-        ]
-    },
-    "artistGenres": {}
+    "patterns": [
+      "%ALBUMARTISTS% ≡ %ALBUM% [%YEAR%] = %TRACK% - %ARTISTS% - %TITLE%",
+      "%ARTISTS% - %ALBUM% [%YEAR%] - %TRACK% - %TITLE%",
+      "%ALBUMARTISTS% ≡ %ARTISTS% - %ALBUM% [%YEAR%] - %TITLE%",
+      "%ARTISTS% - %ALBUM% [%YEAR%] - %TITLE%",
+      "%ARTISTS% - %ALBUM% - %TRACK% - %TITLE%",
+      "%ARTISTS% - %ALBUM% - %TITLE%",
+      "%ARTISTS% - %TITLE% [%YEAR%]",
+      "%ARTISTS% - %TITLE%",
+      "%TITLE%"
+    ]
+  },
+  "duplicates": {
+    "pathSearchFor": "/Users/me/Documents/Media/",
+    "pathReplaceWith": "",
+    "savePlaylistDirectory": "/Users/me/Downloads/NewMusic",
+    "titleReplacements": [
+      " ",
+      "　",
+      "-",
+      "~",
+      "〜",
+      "/",
+      "／",
+      "?",
+      "？",
+      "!",
+      "！",
+      "AlbumVersion",
+      "AlbumVer",
+      "ShortVersion",
+      "ShortVer",
+      "()",
+      "（）",
+      "•",
+      "・",
+      ".",
+      ":",
+      "："
+    ]
+  },
+  "tagging": {
+    "regexPatterns": [
+      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<trackNo>\\d+) [–-] (?<artists>.+?) [–-] (?<title>.+)(?=\\.m4a)",
+      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<trackNo>\\d{1,3}) [–-] (?<title>.+)(?=\\.m4a)",
+      "(?:(?<albumArtists>.+) ≡ )(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<artists>.+?) [–-] (?<title>.+)(?=\\.m4a)",
+      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<title>.+)(?=\\.m4a)",    ]
+  }
 }
 ```
 

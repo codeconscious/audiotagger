@@ -33,17 +33,17 @@ public sealed class TagScanner : IPathOperation
                     playlistUrlRegex.Match(file.Comments) is Match playlistMatch &&
                     playlistMatch.Success)
                 {
-                    highSampleRateWithPlaylistUrl.AppendLine($"{playlistMatch.Value};{file.Path}");
+                    highSampleRateWithPlaylistUrl.AppendLine($"{playlistMatch.Value};{file.FileInfo}");
                 }
                 else if (file.Comments.HasText() &&
                          videoUrlRegex.Match(file.Comments) is Match videoMatch &&
                          videoMatch.Success)
                 {
-                    highSampleRateWithVideoUrl.AppendLine($"{videoMatch.Value};{file.Path}");
+                    highSampleRateWithVideoUrl.AppendLine($"{videoMatch.Value};{file.FileInfo}");
                 }
                 else
                 {
-                    highSampleRateNoUrl.AppendLine($"{string.Join(", ", file.Artists)}; {file.Album}; {file.Title}; {file.Path}");
+                    highSampleRateNoUrl.AppendLine($"{string.Join(", ", file.Artists)}; {file.Album}; {file.Title}; {file.FileInfo}");
                 }
             }
             else if (file.BitRate < 110)
@@ -52,17 +52,17 @@ public sealed class TagScanner : IPathOperation
                     playlistUrlRegex.Match(file.Comments) is Match playlistMatch &&
                     playlistMatch.Success)
                 {
-                    lowBitRateWithPlaylistUrl.AppendLine($"{playlistMatch.Value};{file.Path}");
+                    lowBitRateWithPlaylistUrl.AppendLine($"{playlistMatch.Value};{file.FileInfo}");
                 }
                 else if (file.Comments.HasText() &&
                          videoUrlRegex.Match(file.Comments) is Match videoMatch &&
                          videoMatch.Success)
                 {
-                    lowBitRateWithVideoUrl.AppendLine($"{videoMatch.Value};{file.Path}");
+                    lowBitRateWithVideoUrl.AppendLine($"{videoMatch.Value};{file.FileInfo}");
                 }
                 else
                 {
-                    lowBitRateNoUrl.AppendLine($"{string.Join(", ", file.Artists)}; {file.Album}; {file.Title}; {file.Path}");
+                    lowBitRateNoUrl.AppendLine($"{string.Join(", ", file.Artists)}; {file.Album}; {file.Title}; {file.FileInfo}");
                 }
             }
             else

@@ -1,6 +1,6 @@
 *.profraw
 .DS_Store
-settings.json
+settings*.json
 input.txt
 *.log
 *.csv

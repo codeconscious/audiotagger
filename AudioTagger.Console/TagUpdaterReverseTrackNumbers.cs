@@ -22,7 +22,7 @@ public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
                                     .ToList();
 
         printer.Print($"Will update the track number tag of {sortedFiles.Count} file(s):");
-        sortedFiles.ForEach(f => printer.Print($"- {f.Path}"));
+        sortedFiles.ForEach(f => printer.Print($"- {f.FileInfo}"));
 
         var reversedTrackNos = sortedFiles.Select(f => f.TrackNo).Reverse().ToImmutableList();
         var filesWithNewTrackNos = sortedFiles.Zip(reversedTrackNos,
@@ -61,7 +61,7 @@ public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
             catch (Exception ex)
             {
                 failureCount++;
-                printer.Error($"Error for \"{pair.File.Path}\": {ex.Message}");
+                printer.Error($"Error for \"{pair.File.FileInfo}\": {ex.Message}");
             }
         }
 
