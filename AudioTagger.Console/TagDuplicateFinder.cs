@@ -11,31 +11,74 @@ public sealed class TagDuplicateFinder : IPathOperation
         Settings settings,
         IPrinter printer)
     {
-        ImmutableList<string> titleReplacements = settings?.Duplicates?.TitleReplacements ?? [];
-        printer.Print($"Found {titleReplacements.Count} replacement term(s).");
         printer.Print("Checking for duplicates by artist(s) and title...");
 
         Watch watch = new();
 
-        var duplicateGroups = mediaFiles
+        var exclusions = settings.Duplicates?.Exclusions ?? [];
+        printer.Print($"Found {exclusions.Count} exclusion rule(s) in the settings.");
+
+        var includedFiles = exclusions.IsEmpty
+            ? mediaFiles
+            : mediaFiles.Where(f => !ExcludeFile(f, exclusions)).ToImmutableList();
+
+        if (includedFiles.Count == mediaFiles.Count)
+        {
+            printer.Print($"No files were excluded via exclusion rules.");
+        }
+        else
+        {
+            var diff = mediaFiles.Count - includedFiles.Count;
+            var wasWere = diff == 1 ? "was" : "were";
+            printer.Print($"Out of {mediaFiles.Count:#,##0} media files, {diff:#,##0} {wasWere} excluded via exclusion rules.");
+        }
+
+        var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
+        printer.Print($"Found {titleReplacements.Count} title replacement term(s).");
+
+        var duplicateGroups = includedFiles
             .ToLookup(m => ConcatenateCollectionText(m.Artists) +
                            RemoveSubstrings(m.Title, titleReplacements))
             .Where(m => m.Key.HasText() && m.Count() > 1)
             .OrderBy(m => m.Key)
             .ToImmutableArray();
 
-        int count = duplicateGroups.Length;
-
-        printer.Print($"Found {count} duplicate group{(count == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
+        int groupCount = duplicateGroups.Length;
+        printer.Print($"Found {groupCount} duplicate group{(groupCount == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
 
-        var searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
-        var replaceWith = settings?.Duplicates?.PathReplaceWith?.TextOrNull();
+        string? searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
+        string? replaceWith = settings?.Duplicates?.PathReplaceWith?.TextOrNull();
         CreatePlaylistFile(
             duplicateGroups,
             settings?.Duplicates?.SavePlaylistDirectory,
             (searchFor, replaceWith),
             printer);
+    }
+
+    /// <summary>
+    /// Determines whether a file should be excluded from duplicate processing due to the exceptions
+    /// manually specified in the user's settings file.
+    /// </summary>
+    /// <returns>Returns `true` if the file should be excluded; otherwise, `false`.</returns>
+    private static bool ExcludeFile(MediaFile file, ImmutableList<ExclusionPair> exclusions)
+    {
+        return exclusions.Any(exclusion =>
+        {
+            return exclusion switch
+            {
+                { Artist: string a, Title: string t } =>
+                    file.AlbumArtists.Contains(a, StringComparer.OrdinalIgnoreCase) ||
+                    file.Artists.Contains(a, StringComparer.OrdinalIgnoreCase) &&
+                    file.Title.StartsWith(t, StringComparison.InvariantCultureIgnoreCase),
+                { Artist: string a } =>
+                    file.AlbumArtists.Contains(a, StringComparer.OrdinalIgnoreCase) ||
+                    file.Artists.Contains(a, StringComparer.OrdinalIgnoreCase),
+                { Title: string t } =>
+                    file.Title.StartsWith(t, StringComparison.InvariantCultureIgnoreCase),
+                _ => false
+            };
+        });
     }
 
     private static void PrintResults(
