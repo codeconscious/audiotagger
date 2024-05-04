@@ -38,7 +38,6 @@ public sealed record Duplicates
     public ImmutableList<ExclusionPair>? Exclusions { get; set; }
 }
 
-// public record ExclusionPair(string? Artist, string? Title);
 public sealed record ExclusionPair
 {
     [JsonPropertyName("artist")]
