@@ -20,9 +20,9 @@ public static class Utilities
         };
     }
 
-    public static string Pluralize(int count, string wordSingle, string wordZeroOrMultiple) =>
+    public static string Pluralize(int count, string whenOne, string whenZeroOrMultiple) =>
         count switch {
-            1 => wordSingle,
-            _ => wordZeroOrMultiple
+            1 => whenOne,
+            _ => whenZeroOrMultiple
         };
 }
