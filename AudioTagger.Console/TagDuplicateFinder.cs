@@ -44,6 +44,13 @@ public sealed class TagDuplicateFinder : IPathOperation
             .ToImmutableArray();
 
         int groupCount = duplicateGroups.Length;
+
+        if (groupCount == 0)
+        {
+            printer.Print($"No duplicates were found after {watch.ElapsedFriendly}.");
+            return;
+        }
+
         printer.Print($"Found {groupCount} duplicate group{(groupCount == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
 
