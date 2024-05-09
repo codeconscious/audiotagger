@@ -51,7 +51,8 @@ public sealed class TagDuplicateFinder : IPathOperation
             return;
         }
 
-        printer.Print($"Found {groupCount} duplicate group{(groupCount == 1 ? string.Empty : "s")} in {watch.ElapsedFriendly}.");
+        string groupLabel = Utilities.Pluralize(groupCount, "group", "groups");
+        printer.Print($"Found {groupCount} duplicate {groupLabel} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
 
         string? searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();

@@ -19,4 +19,10 @@ public static class Utilities
             _ => "white"
         };
     }
+
+    public static string Pluralize(int count, string whenOne, string whenZeroOrMultiple) =>
+        count switch {
+            1 => whenOne,
+            _ => whenZeroOrMultiple
+        };
 }
