@@ -33,7 +33,7 @@ public sealed class TagUpdater : IPathOperation
             }
             catch (Exception ex)
             {
-                printer.Error($"Error updating \"{mediaFile.FileNameOnly}\": {ex.Message}");
+                printer.Error($"Update error: {ex.Message}");
                 errorFiles.Add(mediaFile.FileNameOnly);
                 continue;
             }

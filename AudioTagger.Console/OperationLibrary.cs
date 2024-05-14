@@ -103,6 +103,30 @@ internal static class OperationLibrary
             : Result.Ok(maybeOperation);
     }
 
+    public static Result<ImmutableList<IPathOperation>> GetPathOperations(IEnumerable<string> requestedOperations)
+    {
+        var successes = new List<IPathOperation>();
+        var failures = new List<string>();
+
+        Result<IPathOperation> currentResult;
+        foreach (var operation in requestedOperations)
+        {
+            currentResult = GetPathOperation(operation);
+            if (currentResult.IsSuccess)
+            {
+                successes.Add(currentResult.Value);
+            }
+            else
+            {
+                failures.Add(currentResult.Errors.First().Message);
+            }
+        }
+
+        return failures.Count == 0
+            ? Result.Ok(successes.ToImmutableList())
+            : Result.Fail(string.Join(Environment.NewLine, failures));
+    }
+
     internal sealed class Operation
     {
         public required OperationFlags Commands { get; init; }
