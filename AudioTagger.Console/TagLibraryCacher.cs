@@ -12,7 +12,7 @@ public sealed class TagLibraryCacher : IPathOperation
         uint Year,
         string[] Genres,
         TimeSpan Duration
-        // string Comment
+        // string Comment // TODO: 追加するかどうか決めよう。もしそうならば、特別な処理が必要か検討を。
     );
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
