@@ -47,10 +47,11 @@ public sealed class TagLibraryCacher : IPathOperation
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(
                         System.Text.Unicode.UnicodeRanges.All)
         };
-        string json = JsonSerializer.Serialize(tagSummary, options);
+        var json = JsonSerializer.Serialize(tagSummary, options);
+        var unescapedJson = System.Text.RegularExpressions.Regex.Unescape(json);
 
         printer.Print($"Saving cached tag data to \"{settings.TagLibraryFilePath}\"...");
-        File.WriteAllText(settings.TagLibraryFilePath, json);
+        File.WriteAllText(settings.TagLibraryFilePath, unescapedJson);
         printer.Print($"Saved in {watch.ElapsedFriendly}.");
     }
 }
