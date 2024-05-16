@@ -90,7 +90,7 @@ public sealed class TagStats : IPathOperation
             mostCommonYears.Select(y => new[] { y.Key.ToString(), y.Value.ToString("#,##0") }).ToList(),
             [Justify.Left, Justify.Right]);
 
-        const int longestTrackCount = 15;
+        const int longestTrackCount = 25;
         var longestTracks = mediaFiles
             .OrderByDescending(f => f.Duration)
             .Take(longestTrackCount);
@@ -106,6 +106,43 @@ public sealed class TagStats : IPathOperation
                 $"{t.FileSizeInBytes:#,##0}"
             }).ToList(),
             [Justify.Left, Justify.Left, Justify.Right, Justify.Right, Justify.Right]);
+
+        const int mostAlbumTracksCount = 30;
+        var mostAlbumTracks = mediaFiles
+            .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
+            .GroupBy(m => $"{m.ArtistSummary}  /  {m.Album}")
+            .ToDictionary(g => g.Key, m => m.Count())
+            .OrderByDescending(d => d.Value)
+            .Take(mostAlbumTracksCount);
+
+        PrintToTable(
+            $"{mostAlbumTracksCount} Albums With Album Art and With The Most Tracks",
+             ["Artist & Album", "Tracks"],
+            mostAlbumTracks.Select(t => new[] {
+                t.Key,
+                t.Value.ToString()
+            }).ToList(),
+            [Justify.Left, Justify.Left]);
+
+
+        int largestEmbeddedAlbumArtCount = 50;
+        var largestEmbeddedAlbumArt = mediaFiles
+            .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
+            .OrderByDescending(m => m.AlbumArt.Length)
+            .GroupBy(m => $"{m.ArtistSummary}  /  {m.Album}")
+            .ToDictionary(g => g.Key, m => (m.Sum(n => n.AlbumArt.Length), m.Count()))
+            .OrderByDescending(d => d.Value.Item1)
+            .Take(largestEmbeddedAlbumArtCount);
+
+        PrintToTable(
+            $"{largestEmbeddedAlbumArtCount} Unique Artists and Albums With The Largest Embedded Album Art",
+             ["Artist & Album", "Size (Bytes)", "Count"],
+            largestEmbeddedAlbumArt.Select(r => new[] {
+                r.Key,
+                r.Value.Item1.ToString("#,##0"),
+                r.Value.Item2.ToString("#,##0"),
+            }).ToList(),
+            [Justify.Left, Justify.Right, Justify.Right]);
     }
 
     private static void PrintToTable(string title,
