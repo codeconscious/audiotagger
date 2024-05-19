@@ -143,6 +143,9 @@ public sealed class TagStats : IPathOperation
                 r.Value.Item2.ToString("#,##0"),
             }).ToList(),
             [Justify.Left, Justify.Right, Justify.Right]);
+
+        int totalEmbeddedAlbumArtMb = mediaFiles.Sum(m => m.AlbumArt.Length / 1048576); // 1048576 == 1024 * 1024
+        printer.Print($"Amount of album art: {totalEmbeddedAlbumArtMb} MB");
     }
 
     private static void PrintToTable(string title,
