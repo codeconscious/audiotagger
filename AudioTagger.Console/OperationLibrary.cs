@@ -80,7 +80,7 @@ internal static class OperationLibrary
             isHidden: true),
         new(
             ["--cache-tags"],
-            "Cache files' tag data locally to a JSON file whose path is specified in the settings.",
+            "Cache files' tag data locally to a JSON file whose path is specified in the settings. (Eventually, this will be helpful in speeding up certain operations.)",
             new TagCacher(),
             isHidden: true),
     };
