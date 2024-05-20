@@ -1,4 +1,6 @@
 using System.Text.Json;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace AudioTagger.Console;
 
@@ -28,7 +30,7 @@ public sealed class TagLibraryCacher : IPathOperation
 
         Watch watch = new();
 
-        var tagDtos = mediaFiles.Select(m => {
+        var summaries = mediaFiles.Select(m => {
                 return new TagSummary(
                     m.Artists,
                     m.Album,
@@ -44,10 +46,9 @@ public sealed class TagLibraryCacher : IPathOperation
         JsonSerializerOptions options = new()
         {
             WriteIndented = true,
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(
-                        System.Text.Unicode.UnicodeRanges.All)
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
         };
-        var json = JsonSerializer.Serialize(tagDtos, options);
+        var json = JsonSerializer.Serialize(summaries, options);
         var unescapedJson = System.Text.RegularExpressions.Regex.Unescape(json); // Avoids `\0027`, etc.
 
         printer.Print($"Saving cached tag data to \"{settings.TagLibraryFilePath}\"...");
