@@ -19,8 +19,8 @@ public sealed record Settings
     [JsonPropertyName("resetSavedArtistGenres")]
     public bool ResetSavedArtistGenres { get; set; } = false;
 
-    [JsonPropertyName("tagLibraryFilePath")]
-    public string? TagLibraryFilePath { get; set; }
+    [JsonPropertyName("tagCacheFilePath")]
+    public string? TagCacheFilePath { get; set; }
 }
 
 public sealed record Duplicates

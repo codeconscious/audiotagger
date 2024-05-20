@@ -22,7 +22,7 @@ public sealed class TagCacher : IPathOperation
         Settings settings,
         IPrinter printer)
     {
-        if (settings.TagLibraryFilePath is null)
+        if (settings.TagCacheFilePath is null)
         {
             printer.Error("You must specify the save file path in the settings file.");
             return;
@@ -51,8 +51,8 @@ public sealed class TagCacher : IPathOperation
         var json = JsonSerializer.Serialize(summaries, options);
         var unescapedJson = System.Text.RegularExpressions.Regex.Unescape(json); // Avoids `\0027`, etc.
 
-        printer.Print($"Saving cached tag data to \"{settings.TagLibraryFilePath}\"...");
-        File.WriteAllText(settings.TagLibraryFilePath, unescapedJson);
+        printer.Print($"Saving cached tag data to \"{settings.TagCacheFilePath}\"...");
+        File.WriteAllText(settings.TagCacheFilePath, unescapedJson);
         printer.Print($"Saved in {watch.ElapsedFriendly}.");
     }
 }
