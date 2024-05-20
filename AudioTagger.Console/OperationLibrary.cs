@@ -79,9 +79,9 @@ internal static class OperationLibrary
             new TagScanner(),
             isHidden: true),
         new(
-            ["--library"],
-            "Update cached tag data to library file. (Still under development.)",
-            new TagLibraryCacher(),
+            ["--cache-tags"],
+            "Cache files' tag data locally to a JSON file whose path is specified in the settings.",
+            new TagCacher(),
             isHidden: true),
     };
 

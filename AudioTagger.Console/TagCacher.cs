@@ -4,7 +4,7 @@ using System.Text.Unicode;
 
 namespace AudioTagger.Console;
 
-public sealed class TagLibraryCacher : IPathOperation
+public sealed class TagCacher : IPathOperation
 {
     private record TagSummary(
         string[] Artists,
