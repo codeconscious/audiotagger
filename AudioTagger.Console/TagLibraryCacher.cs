@@ -4,7 +4,7 @@ namespace AudioTagger.Console;
 
 public sealed class TagLibraryCacher : IPathOperation
 {
-    private record TagSummer(
+    private record TagSummary(
         string[] Artists,
         string Album,
         uint TrackNo,
@@ -12,24 +12,24 @@ public sealed class TagLibraryCacher : IPathOperation
         uint Year,
         string[] Genres,
         TimeSpan Duration
-        // string Comment // TODO: 追加するかどうか決めよう。もしそうならば、特別な処理が必要か検討を。
     );
 
-    public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                      DirectoryInfo workingDirectory,
-                      Settings settings,
-                      IPrinter printer)
+    public void Start(
+        IReadOnlyCollection<MediaFile> mediaFiles,
+        DirectoryInfo workingDirectory,
+        Settings settings,
+        IPrinter printer)
     {
         if (settings.TagLibraryFilePath is null)
         {
-            printer.Error("You must specify the save file path.");
+            printer.Error("You must specify the save file path in the settings file.");
             return;
         }
 
         Watch watch = new();
 
-        var tagSummary = mediaFiles.Select(m => {
-                return new TagSummer(
+        var tagDtos = mediaFiles.Select(m => {
+                return new TagSummary(
                     m.Artists,
                     m.Album,
                     m.TrackNo,
@@ -47,8 +47,8 @@ public sealed class TagLibraryCacher : IPathOperation
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(
                         System.Text.Unicode.UnicodeRanges.All)
         };
-        var json = JsonSerializer.Serialize(tagSummary, options);
-        var unescapedJson = System.Text.RegularExpressions.Regex.Unescape(json);
+        var json = JsonSerializer.Serialize(tagDtos, options);
+        var unescapedJson = System.Text.RegularExpressions.Regex.Unescape(json); // Avoids `\0027`, etc.
 
         printer.Print($"Saving cached tag data to \"{settings.TagLibraryFilePath}\"...");
         File.WriteAllText(settings.TagLibraryFilePath, unescapedJson);
