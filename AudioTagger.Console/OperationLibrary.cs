@@ -78,6 +78,11 @@ internal static class OperationLibrary
             "Ad-hoc maintenance scanning work. (Not intended for normal use.)",
             new TagScanner(),
             isHidden: true),
+        new(
+            ["--cache-tags"],
+            "Cache files' tag data locally to a JSON file whose path is specified in the settings. (Eventually, this will be helpful in speeding up certain operations.)",
+            new TagCacher(),
+            isHidden: true),
     };
 
     public static Dictionary<string, string> GenerateHelpTextPairs(bool includeHidden)
