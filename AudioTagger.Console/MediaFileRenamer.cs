@@ -272,7 +272,7 @@ public sealed class MediaFileRenamer : IPathOperation
             StringBuilder workingFileName =
                 fileTagNames.Aggregate(
                     new StringBuilder(renamePattern),
-                    (working, tagName) => ReplacePlaceholders(working, tagName)
+                    (workingName, tagName) => ReplacePlaceholders(workingName, tagName)
                 );
 
             var ext = Path.GetExtension(file.FileNameOnly);
