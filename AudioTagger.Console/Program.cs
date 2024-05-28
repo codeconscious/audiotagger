@@ -41,16 +41,17 @@ public static class Program
             version: SettingsService.Id3v2Version.TwoPoint3,
             forceAsDefault: true);
 
-        var (operationArg, pathArgs) = (args[0], args[1..].Distinct().ToImmutableList());
+        var operationArgs = args.TakeWhile(a => a.StartsWith('-')).ToImmutableArray();
+        var pathArgs = args[operationArgs.Length..];
 
-        var operationResult = OperationFactory(operationArg);
+        var operationResult = OperationFactory(operationArgs);
         if (operationResult.IsFailed)
         {
             readSettingsResult.Errors.ForEach(x => printer.Error(x.Message));
             PrintInstructions(printer);
             return;
         }
-        IPathOperation operation = operationResult.Value;
+        var operations = operationResult.Value;
 
         var (validPaths, invalidPaths) = CheckPaths(pathArgs);
 
@@ -69,7 +70,7 @@ public static class Program
         {
             try
             {
-                ProcessPath(path, operation, settings, printer);
+                ProcessPath(path, operations, settings, printer);
             }
             catch (Exception ex)
             {
@@ -80,7 +81,7 @@ public static class Program
 
     private static void ProcessPath(
         string path,
-        IPathOperation operation,
+        ImmutableList<IPathOperation> operations,
         Settings settings,
         IPrinter printer)
     {
@@ -99,7 +100,7 @@ public static class Program
         ImmutableArray<string> fileNames = fileNameResult.Value;
         if (fileNames.IsEmpty)
         {
-            printer.Warning("No files were found in \"{path}\".");
+            printer.Warning($"No files were found in \"{path}\".");
             return;
         }
 
@@ -122,7 +123,10 @@ public static class Program
 
         try
         {
-            operation.Start(mediaFiles, new DirectoryInfo(path), settings, printer);
+            foreach (var operation in operations)
+            {
+                operation.Start(mediaFiles, new DirectoryInfo(path), settings, printer);
+            }
         }
         catch (Exception ex)
         {
@@ -132,7 +136,8 @@ public static class Program
         }
     }
 
-    private static (List<MediaFile>, List<string>) ReadTagsShowingProgress(ICollection<string> fileNames)
+    private static (List<MediaFile>, List<string>) ReadTagsShowingProgress(
+        ICollection<string> fileNames)
     {
         List<MediaFile> mediaFiles = new(fileNames.Count);
         List<string> tagReadErrors = [];
@@ -173,24 +178,25 @@ public static class Program
     /// <summary>
     /// Get the correct operation from the argument passed in.
     /// </summary>
-    /// <param name="modeArg">The argument passed from the console.</param>
+    /// <param name="modeArgs">The argument passed from the console.</param>
     /// <returns>A class for performing operations on files.</returns>
-    private static Result<IPathOperation> OperationFactory(string modeArg)
+    private static Result<ImmutableList<IPathOperation>> OperationFactory(IEnumerable<string> modeArgs)
     {
-        return OperationLibrary.GetPathOperation(modeArg);
+        return OperationLibrary.GetPathOperations(modeArgs);
     }
 
     private static void PrintInstructions(IPrinter printer)
     {
         printer.Print("ID3 audio tagger utilities.");
-        printer.Print("Usage: ccaudiotagger [COMMAND] [FILES/DIRECTORIES]...", 0, 1, string.Empty);
-        printer.Print("Supply one command, followed by one or more files or directories to process.", 0, 1, string.Empty);
+        printer.Print("Usage: dotnet run -- [COMMAND(s)] [FILES/DIRECTORIES]...", 0, 1, string.Empty);
+        printer.Print("Supply one or more commands, followed by one or more files or directories to process.", 0, 1, string.Empty);
 
         Table table = new();
         table.AddColumns("Commands", "Descriptions");
         table.Border = TableBorder.Rounded;
 
-        foreach (KeyValuePair<string, string> pair in OperationLibrary.GenerateHelpTextPairs(includeHidden: false))
+        var helpPairs = OperationLibrary.GenerateHelpTextPairs(includeHidden: false);
+        foreach (KeyValuePair<string, string> pair in helpPairs)
         {
             table.AddRow(pair.Key, pair.Value);
         }
