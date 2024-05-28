@@ -183,14 +183,14 @@ public sealed class MediaFileRenamer : IPathOperation
 
         var populatedTagNames = file.PopulatedTagNames();
         string? matchedRenamePattern = null;
-        foreach (string renamePattern in renamePatterns)
+        foreach (string testPattern in renamePatterns)
         {
-            MatchCollection matches = TagFinderRegex.Matches(renamePattern);
+            MatchCollection matches = TagFinderRegex.Matches(testPattern);
             var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
             if (expectedTags.Count == populatedTagNames.Count &&
                 expectedTags.TrueForAll(tag => populatedTagNames.Contains(tag)))
             {
-                matchedRenamePattern = renamePattern;
+                matchedRenamePattern = testPattern;
             }
         }
 
@@ -208,7 +208,7 @@ public sealed class MediaFileRenamer : IPathOperation
         string newAlbumDir = useAlbumDirectory && useArtistDirectory && file.Album.HasText()
             ? IOUtilities.SanitizePath(file.Album)
             : string.Empty;
-        string newFileName = GenerateFileNameViaRenamePatterns(file, populatedTagNames, matchedRenamePattern);
+        string newFileName = GenerateFileNameUsingPattern(file, populatedTagNames, matchedRenamePattern);
         MediaFilePathInfo newPathInfo = new(workingPath, [newArtistDir, newAlbumDir], newFileName);
 
         if (oldPathInfo.FullFilePath(true) == newPathInfo.FullFilePath(true))
@@ -261,10 +261,10 @@ public sealed class MediaFileRenamer : IPathOperation
         return shouldCancel;
 
         /// <summary>
-        /// Generates and returns an updated filename by replaceming placeholders within
-        /// the rename pattern (e.g., `%ALBUM%`) with actual tag data from the `MediaFile`.
+        /// Generates and returns a new filename by replacing placeholders within the rename
+        /// pattern (e.g., `%ALBUM%`) with actual tag data from the `MediaFile`.
         /// </summary>
-        static string GenerateFileNameViaRenamePatterns(
+        static string GenerateFileNameUsingPattern(
             MediaFile file,
             ICollection<string> fileTagNames,
             string renamePattern)
