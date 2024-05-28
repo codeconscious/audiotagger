@@ -261,8 +261,8 @@ public sealed class MediaFileRenamer : IPathOperation
         return shouldCancel;
 
         /// <summary>
-        /// Generates and returns an updated filename using the given rename
-        /// pattern and tag names.
+        /// Generates and returns an updated filename by replaceming placeholders within
+        /// the rename pattern (e.g., `%ALBUM%`) with actual tag data from the `MediaFile`.
         /// </summary>
         static string GenerateFileNameViaRenamePatterns(
             MediaFile file,
