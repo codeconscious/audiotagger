@@ -136,7 +136,8 @@ public static class Program
         }
     }
 
-    private static (List<MediaFile>, List<string>) ReadTagsShowingProgress(ICollection<string> fileNames)
+    private static (List<MediaFile>, List<string>) ReadTagsShowingProgress(
+        ICollection<string> fileNames)
     {
         List<MediaFile> mediaFiles = new(fileNames.Count);
         List<string> tagReadErrors = [];
@@ -194,7 +195,8 @@ public static class Program
         table.AddColumns("Commands", "Descriptions");
         table.Border = TableBorder.Rounded;
 
-        foreach (KeyValuePair<string, string> pair in OperationLibrary.GenerateHelpTextPairs(includeHidden: false))
+        var helpPairs = OperationLibrary.GenerateHelpTextPairs(includeHidden: false);
+        foreach (KeyValuePair<string, string> pair in helpPairs)
         {
             table.AddRow(pair.Key, pair.Value);
         }
