@@ -51,13 +51,14 @@ public sealed class SpectrePrinter : IPrinter
         if (!lineParts.Any())
             return;
 
-        lineParts.ToList().ForEach(p =>
+        foreach (var linePart in lineParts)
         {
-            if (p.AddLineBreak)
-                AnsiConsole.MarkupLine(new LineSubString(p.Text, p.FgColor, p.BgColor).GetSpectreString());
+            var subString = new LineSubString(linePart.Text, linePart.FgColor, linePart.BgColor).GetSpectreString();
+            if (linePart.AddLineBreak)
+                AnsiConsole.MarkupLine(subString);
             else
-                AnsiConsole.Markup(new LineSubString(p.Text, p.FgColor, p.BgColor).GetSpectreString());
-        });
+                AnsiConsole.Markup(subString);
+        };
 
         PrintEmptyLines(appendLines);
     }
