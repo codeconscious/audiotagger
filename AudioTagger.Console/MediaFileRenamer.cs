@@ -208,7 +208,7 @@ public sealed class MediaFileRenamer : IPathOperation
         string newAlbumDir = useAlbumDirectory && useArtistDirectory && file.Album.HasText()
             ? IOUtilities.SanitizePath(file.Album)
             : string.Empty;
-        string newFileName = GenerateFileNameViaTagData(file, populatedTagNames, matchedRenamePattern);
+        string newFileName = GenerateFileNameViaRenamePatterns(file, populatedTagNames, matchedRenamePattern);
         MediaFilePathInfo newPathInfo = new(workingPath, [newArtistDir, newAlbumDir], newFileName);
 
         if (oldPathInfo.FullFilePath(true) == newPathInfo.FullFilePath(true))
@@ -261,51 +261,55 @@ public sealed class MediaFileRenamer : IPathOperation
         return shouldCancel;
 
         /// <summary>
-        /// Generates and returns an updated filename using the given rename pattern and tag names.
+        /// Generates and returns an updated filename using the given rename
+        /// pattern and tag names.
         /// </summary>
-        static string GenerateFileNameViaTagData(
+        static string GenerateFileNameViaRenamePatterns(
             MediaFile file,
             ICollection<string> fileTagNames,
             string renamePattern)
         {
-            StringBuilder newBaseFileName =
+            StringBuilder workingFileName =
                 fileTagNames.Aggregate(
                     new StringBuilder(renamePattern),
-                    (workingNameSb, tagName) =>
-                    {
-                        return tagName switch
-                        {
-                            "ALBUMARTISTS" =>
-                                workingNameSb.Replace(
-                                    "%ALBUMARTISTS%",
-                                    IOUtilities.SanitizePath(file.AlbumArtists)),
-                            "ARTISTS" =>
-                                workingNameSb.Replace(
-                                    "%ARTISTS%",
-                                    IOUtilities.SanitizePath(file.Artists)),
-                            "ALBUM" =>
-                                workingNameSb.Replace(
-                                    "%ALBUM%",
-                                    IOUtilities.SanitizePath(file.Album)),
-                            "TITLE" =>
-                                workingNameSb.Replace(
-                                    "%TITLE%",
-                                    IOUtilities.SanitizePath(file.Title)),
-                            "YEAR" =>
-                                workingNameSb.Replace(
-                                    "%YEAR%",
-                                    IOUtilities.SanitizePath(file.Year.ToString())),
-                            "TRACK" =>
-                                workingNameSb.Replace(
-                                    "%TRACK%",
-                                    IOUtilities.SanitizePath(file.TrackNo.ToString())),
-                            _ => throw new InvalidOperationException($"File tag name \"{tagName} is not supported."),
-                        };
-                    }
+                    (working, tagName) => ReplacePlaceholders(working, tagName)
                 );
 
-            string unsanitizedName = newBaseFileName.ToString() + Path.GetExtension(file.FileNameOnly);
+            var ext = Path.GetExtension(file.FileNameOnly);
+            var unsanitizedName = workingFileName.ToString() + ext;
             return IOUtilities.SanitizePath(unsanitizedName);
+
+            StringBuilder ReplacePlaceholders(StringBuilder workingName, string tagName)
+            {
+                return tagName switch
+                    {
+                        "ALBUMARTISTS" =>
+                            workingName.Replace(
+                                "%ALBUMARTISTS%",
+                                IOUtilities.SanitizePath(file.AlbumArtists)),
+                        "ARTISTS" =>
+                            workingName.Replace(
+                                "%ARTISTS%",
+                                IOUtilities.SanitizePath(file.Artists)),
+                        "ALBUM" =>
+                            workingName.Replace(
+                                "%ALBUM%",
+                                IOUtilities.SanitizePath(file.Album)),
+                        "TITLE" =>
+                            workingName.Replace(
+                                "%TITLE%",
+                                IOUtilities.SanitizePath(file.Title)),
+                        "YEAR" =>
+                            workingName.Replace(
+                                "%YEAR%",
+                                IOUtilities.SanitizePath(file.Year.ToString())),
+                        "TRACK" =>
+                            workingName.Replace(
+                                "%TRACK%",
+                                IOUtilities.SanitizePath(file.TrackNo.ToString())),
+                        _ => throw new InvalidOperationException($"File tag name \"{tagName} is not supported."),
+                    };
+            }
         }
 
         /// <summary>
