@@ -196,7 +196,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
         if (matchedRenamePattern is null)
         {
-            printer.Warning($"No appropriate rename pattern found for \"{file.FileNameOnly}\".");
+            printer.Warning($"No rename pattern found for \"{file.FileNameOnly}\".");
             return false;
         }
 
