@@ -183,20 +183,20 @@ public sealed class MediaFileRenamer : IPathOperation
 
         var populatedTagNames = file.PopulatedTagNames();
         string? matchedRenamePattern = null;
-        foreach (string renamePattern in renamePatterns)
+        foreach (string testPattern in renamePatterns)
         {
-            MatchCollection matches = TagFinderRegex.Matches(renamePattern);
+            MatchCollection matches = TagFinderRegex.Matches(testPattern);
             var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
             if (expectedTags.Count == populatedTagNames.Count &&
                 expectedTags.TrueForAll(tag => populatedTagNames.Contains(tag)))
             {
-                matchedRenamePattern = renamePattern;
+                matchedRenamePattern = testPattern;
             }
         }
 
         if (matchedRenamePattern is null)
         {
-            printer.Warning($"No appropriate rename pattern found for \"{file.FileNameOnly}\".");
+            printer.Warning($"No rename pattern found for \"{file.FileNameOnly}\".");
             return false;
         }
 
@@ -208,7 +208,7 @@ public sealed class MediaFileRenamer : IPathOperation
         string newAlbumDir = useAlbumDirectory && useArtistDirectory && file.Album.HasText()
             ? IOUtilities.SanitizePath(file.Album)
             : string.Empty;
-        string newFileName = GenerateFileNameViaTagData(file, populatedTagNames, matchedRenamePattern);
+        string newFileName = GenerateFileNameUsingPattern(file, populatedTagNames, matchedRenamePattern);
         MediaFilePathInfo newPathInfo = new(workingPath, [newArtistDir, newAlbumDir], newFileName);
 
         if (oldPathInfo.FullFilePath(true) == newPathInfo.FullFilePath(true))
@@ -261,51 +261,55 @@ public sealed class MediaFileRenamer : IPathOperation
         return shouldCancel;
 
         /// <summary>
-        /// Generates and returns an updated filename using the given rename pattern and tag names.
+        /// Generates and returns a new filename by replacing placeholders within the rename
+        /// pattern (e.g., `%ALBUM%`) with actual tag data from the `MediaFile`.
         /// </summary>
-        static string GenerateFileNameViaTagData(
+        static string GenerateFileNameUsingPattern(
             MediaFile file,
             ICollection<string> fileTagNames,
             string renamePattern)
         {
-            StringBuilder newBaseFileName =
+            StringBuilder workingFileName =
                 fileTagNames.Aggregate(
                     new StringBuilder(renamePattern),
-                    (workingNameSb, tagName) =>
-                    {
-                        return tagName switch
-                        {
-                            "ALBUMARTISTS" =>
-                                workingNameSb.Replace(
-                                    "%ALBUMARTISTS%",
-                                    IOUtilities.SanitizePath(file.AlbumArtists)),
-                            "ARTISTS" =>
-                                workingNameSb.Replace(
-                                    "%ARTISTS%",
-                                    IOUtilities.SanitizePath(file.Artists)),
-                            "ALBUM" =>
-                                workingNameSb.Replace(
-                                    "%ALBUM%",
-                                    IOUtilities.SanitizePath(file.Album)),
-                            "TITLE" =>
-                                workingNameSb.Replace(
-                                    "%TITLE%",
-                                    IOUtilities.SanitizePath(file.Title)),
-                            "YEAR" =>
-                                workingNameSb.Replace(
-                                    "%YEAR%",
-                                    IOUtilities.SanitizePath(file.Year.ToString())),
-                            "TRACK" =>
-                                workingNameSb.Replace(
-                                    "%TRACK%",
-                                    IOUtilities.SanitizePath(file.TrackNo.ToString())),
-                            _ => throw new InvalidOperationException($"File tag name \"{tagName} is not supported."),
-                        };
-                    }
+                    (workingName, tagName) => ReplacePlaceholders(workingName, tagName)
                 );
 
-            string unsanitizedName = newBaseFileName.ToString() + Path.GetExtension(file.FileNameOnly);
+            var ext = Path.GetExtension(file.FileNameOnly);
+            var unsanitizedName = workingFileName.ToString() + ext;
             return IOUtilities.SanitizePath(unsanitizedName);
+
+            StringBuilder ReplacePlaceholders(StringBuilder workingName, string tagName)
+            {
+                return tagName switch
+                    {
+                        "ALBUMARTISTS" =>
+                            workingName.Replace(
+                                "%ALBUMARTISTS%",
+                                IOUtilities.SanitizePath(file.AlbumArtists)),
+                        "ARTISTS" =>
+                            workingName.Replace(
+                                "%ARTISTS%",
+                                IOUtilities.SanitizePath(file.Artists)),
+                        "ALBUM" =>
+                            workingName.Replace(
+                                "%ALBUM%",
+                                IOUtilities.SanitizePath(file.Album)),
+                        "TITLE" =>
+                            workingName.Replace(
+                                "%TITLE%",
+                                IOUtilities.SanitizePath(file.Title)),
+                        "YEAR" =>
+                            workingName.Replace(
+                                "%YEAR%",
+                                IOUtilities.SanitizePath(file.Year.ToString())),
+                        "TRACK" =>
+                            workingName.Replace(
+                                "%TRACK%",
+                                IOUtilities.SanitizePath(file.TrackNo.ToString())),
+                        _ => throw new InvalidOperationException($"File tag name \"{tagName} is not supported."),
+                    };
+            }
         }
 
         /// <summary>
