@@ -4,6 +4,16 @@ namespace AudioTagger.Library.Settings;
 
 public sealed record Settings
 {
+    public static Settings CreateEmpty()
+    {
+        return new Settings()
+            {
+                Duplicates = new(),
+                Tagging = new(),
+                Renaming = new()
+            };
+    }
+
     [JsonPropertyName("duplicates")]
     public Duplicates Duplicates { get; set; } = new();
 

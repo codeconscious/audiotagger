@@ -8,6 +8,14 @@ public static class SettingsService
 {
     private const string _settingsFileName = "settings.json";
 
+    private static readonly JsonSerializerOptions _jsonSerializerOptions =
+        new()
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(
+                System.Text.Unicode.UnicodeRanges.All)
+        };
+
     /// <summary>
     /// Subversions of ID3 version 2 (such as 2.3 or 2.4).
     /// </summary>
@@ -33,40 +41,25 @@ public static class SettingsService
     }
 
     /// <summary>
-    /// Creates the specified settings file if it is missing.
-    /// Otherwise, does nothing.
-    /// </summary>
-    /// <returns>A bool indicating success or no action (true) or else failure (false).</returns>
-    public static bool CreateIfMissing(IPrinter printer)
-    {
-        if (File.Exists(_settingsFileName))
-            return true;
-
-        try
-        {
-            return Write(new Settings(), printer);
-        }
-        catch (Exception ex)
-        {
-            printer.Error($"There was an error creating \"{_settingsFileName}\": {ex.Message}");
-            return false;
-        }
-    }
-
-    /// <summary>
     /// Reads the settings file and parses the JSON to a Settings object.
     /// </summary>
-    public static Result<Settings> Read(IPrinter printer, bool createFileIfMissing = false)
+    public static Result<Settings> Read(bool createFileIfMissing = false)
     {
         try
         {
-            if (createFileIfMissing && !CreateIfMissing(printer))
-                return Result.Fail($"Settings file \"{_settingsFileName}\" missing.");
+            if (createFileIfMissing)
+            {
+                var result = CreateNewIfMissing();
+                if (result.IsFailed)
+                {
+                    return result;
+                }
+            }
 
-            string text = File.ReadAllText(_settingsFileName);
-            Settings json = JsonSerializer.Deserialize<Settings>(text)
-                            ?? throw new JsonException();
-            return Result.Ok(json);
+            var json = File.ReadAllText(_settingsFileName);
+            Settings settings = JsonSerializer.Deserialize<Settings>(json)
+                                ?? throw new JsonException();
+            return Result.Ok(settings);
         }
         catch (JsonException ex)
         {
@@ -75,35 +68,35 @@ public static class SettingsService
     }
 
     /// <summary>
+    /// Creates the specified settings file if it is missing.
+    /// Otherwise, does nothing.
+    /// </summary>
+    /// <returns>A bool indicating success or no action (true) or else failure (false).</returns>
+    public static Result CreateNewIfMissing()
+    {
+        return File.Exists(_settingsFileName)
+            ? Result.Ok()
+            : Write(Settings.CreateEmpty());
+    }
+
+    /// <summary>
     /// Write settings to the specified file.
     /// </summary>
-    /// <param name="settings"></param>
-    /// <param name="printer"></param>
-    /// <returns>A bool indicating success or failure.</returns>
-    public static bool Write(Settings settings, IPrinter printer)
+    public static Result Write(Settings settings)
     {
         try
         {
-            var json = JsonSerializer.Serialize(
-                settings,
-                new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(
-                        System.Text.Unicode.UnicodeRanges.All)
-                });
+            var json = JsonSerializer.Serialize(settings, _jsonSerializerOptions);
             File.WriteAllText(_settingsFileName, json);
-            return true;
-        }
-        catch (FileNotFoundException)
-        {
-            printer.Error($"Settings file \"{_settingsFileName}\" is missing.");
-            return false;
+            return Result.Ok();
         }
         catch (JsonException ex)
         {
-            printer.Error($"The settings file is invalid: {ex.Message}");
-            return false;
+            return Result.Fail($"Failed to serialize the settings: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail(ex.Message);
         }
     }
 }
