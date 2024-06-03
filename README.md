@@ -9,7 +9,8 @@ A .NET CLI program that can perform the following actions on audio files:
 - Reorganize files into folders using their tag data
 - Find duplicate files by their tags
 - Auto-write genres for registered artists
-- See folder stats
+- Remove artwork
+- See media file stats
 - Apply audio normalization (ReplayGain)
 
 This is a little labor-of-love project that I work on in my spare time. It relies on the [TagLibSharp](https://github.com/mono/taglib-sharp) library for tag reading and writing.
