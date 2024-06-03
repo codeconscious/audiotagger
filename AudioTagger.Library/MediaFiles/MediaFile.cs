@@ -6,7 +6,7 @@ namespace AudioTagger.Library.MediaFiles;
 public sealed class MediaFile
 {
     public FileInfo FileInfo { get; }
-    private readonly TagLib.File _taggedFile;
+    private TagLib.File _taggedFile;
 
     public MediaFile(string filePath, TagLib.File tabLibFile)
     {
@@ -199,6 +199,31 @@ public sealed class MediaFile
         catch (Exception ex)
         {
             return Result.Fail($"Could not read tags of file \"{filePath}\": {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Delete and readd the same tag data to the file. Useful for removing remaining
+    /// padding from deleted artwork, etc.
+    /// </summary>
+    public Result RewriteFileTags()
+    {
+        try
+        {
+            TagLib.Tag tempTags = new TagLib.Id3v2.Tag();
+            _taggedFile.Tag.CopyTo(tempTags, true);
+            _taggedFile.RemoveTags(TagLib.TagTypes.AllTags);
+            SaveUpdates();
+
+            _taggedFile = TagLib.File.Create(FileInfo.FullName);
+            tempTags.CopyTo(_taggedFile.Tag, true);
+            SaveUpdates();
+
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Save error: {ex.Message}");
         }
     }
 
