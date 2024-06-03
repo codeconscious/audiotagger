@@ -144,6 +144,21 @@ public sealed class TagStats : IPathOperation
             }).ToList(),
             [Justify.Left, Justify.Right, Justify.Right]);
 
+        int largestEmbeddedAlbumFilesCount = 50;
+        var largestEmbeddedAlbumFiles = mediaFiles
+            .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
+            .OrderByDescending(m => m.AlbumArt.Length)
+            .Take(largestEmbeddedAlbumFilesCount);
+
+        PrintToTable(
+            $"{largestEmbeddedAlbumFilesCount} Files With The Largest Embedded Album Art",
+             ["Artist & Album", "Size (Bytes)"],
+            largestEmbeddedAlbumFiles.Select(r => new[] {
+                $"{r.FileInfo.FullName}".EscapeMarkup(),
+                r.AlbumArt.Length.ToString("#,##0")
+            }).ToList(),
+            [Justify.Left, Justify.Right]);
+
         int totalEmbeddedAlbumArtMb = mediaFiles.Sum(m => m.AlbumArt.Length / 1048576); // 1048576 == 1024 * 1024
         printer.Print($"Amount of album art: {totalEmbeddedAlbumArtMb} MB");
     }
