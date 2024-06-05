@@ -47,6 +47,11 @@ internal static class OperationLibrary
                 new TagUpdaterReverseTrackNumbers()
             ),
             new(
+                ["-uea", "--extract-artwork"],
+                "Extracts artwork from directory files if they have the same artist and album.",
+                new TagArtworkExtractor()
+            ),
+            new(
                 ["-ura", "--remove-artwork"],
                 "Removes artwork from files. (File size is not reduced.)",
                 new TagArtworkRemover()
