@@ -166,11 +166,24 @@ public sealed class MediaFile
     }
 
     /// <summary>
+    /// Removes album art from the file's tag data.
+    /// </summary>
+    /// <remarks>Padding space remains, so the file size is not reduced.</remarks>
+    public void RemoveAlbumArt()
+    {
+        if (_taggedFile.Tag?.Pictures.Any() != true)
+            return;
+
+        _taggedFile.Tag.Pictures = [];
+    }
+
+    /// <summary>
     /// Save pending tag data updates to the file.
     /// </summary>
     public void SaveUpdates()
     {
         _taggedFile.Save();
+        _taggedFile.Dispose();
     }
 
     /// <summary>

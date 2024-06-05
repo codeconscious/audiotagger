@@ -47,6 +47,11 @@ internal static class OperationLibrary
                 new TagUpdaterReverseTrackNumbers()
             ),
             new(
+                ["-ura", "--remove-artwork"],
+                "Removes artwork from files. (File size is not reduced.)",
+                new TagArtworkRemover()
+            ),
+            new(
                 ["-r", "--rename"],
                 "Rename and reorganize files into folders based on tag data.",
                 new MediaFileRenamer()
