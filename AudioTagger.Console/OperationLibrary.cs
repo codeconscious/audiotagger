@@ -52,6 +52,11 @@ internal static class OperationLibrary
                 new TagArtworkRemover()
             ),
             new(
+                ["-rt", "--rewrite-tags"],
+                "Rewrites file tags. (Can be helping in reducing padding, such as from removed artwork.)",
+                new TagRewriter()
+            ),
+            new(
                 ["-r", "--rename"],
                 "Rename and reorganize files into folders based on tag data.",
                 new MediaFileRenamer()
