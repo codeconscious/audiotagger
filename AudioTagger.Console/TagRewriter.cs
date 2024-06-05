@@ -3,7 +3,7 @@ namespace AudioTagger.Console;
 public sealed class TagRewriter : IPathOperation
 {
     public void Start(
-        IReadOnlyCollection<MediaFile> filesData,
+        IReadOnlyCollection<MediaFile> mediaFiles,
         DirectoryInfo workingDirectory,
         Settings settings,
         IPrinter printer)
@@ -12,7 +12,7 @@ public sealed class TagRewriter : IPathOperation
         var failures = 0;
 
         Result result;
-        foreach (MediaFile file in filesData)
+        foreach (MediaFile file in mediaFiles)
         {
             result = file.RewriteFileTags();
             if (result.IsFailed)

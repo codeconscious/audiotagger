@@ -3,7 +3,7 @@ namespace AudioTagger.Console;
 public sealed class TagArtworkRemover : IPathOperation
 {
     public void Start(
-        IReadOnlyCollection<MediaFile> filesData,
+        IReadOnlyCollection<MediaFile> mediaFiles,
         DirectoryInfo workingDirectory,
         Settings settings,
         IPrinter printer)
@@ -11,7 +11,7 @@ public sealed class TagArtworkRemover : IPathOperation
         var watch = new Watch();
         var failures = 0;
 
-        foreach (var file in filesData)
+        foreach (MediaFile file in mediaFiles)
         {
             try
             {
