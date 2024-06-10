@@ -49,7 +49,7 @@ public sealed class TagArtworkExtractor : IPathOperation
             var mostCommonArtCount = filesGroupedByArtSize.Max(a => a.Count());
             var filesWithMostCommonArt = filesGroupedByArtSize.Where(a => a.Count() == mostCommonArtCount);
 
-            if (filesWithMostCommonArt.All(g => g.Count() == 1))
+            if (mediaFiles.Count > 1 && filesWithMostCommonArt.All(g => g.Count() == 1))
             {
                 printer.Warning("All of the artwork is unique, so will not extract any artwork.");
                 return;
