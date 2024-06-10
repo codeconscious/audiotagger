@@ -25,13 +25,14 @@ public static class Program
         if (args.Length < 2)
         {
             PrintInstructions(printer);
+            SettingsService.CreateNewIfMissing();
             return;
         }
 
-        var readSettingsResult = SettingsService.Read(printer, createFileIfMissing: false);
+        var readSettingsResult = SettingsService.Read(createFileIfMissing: true);
         if (readSettingsResult.IsFailed)
         {
-            printer.Error(readSettingsResult.Errors[0].Message);
+            printer.Error($"Settings error: {readSettingsResult.Errors[0].Message}");
             return;
         }
         Settings settings = readSettingsResult.Value;
@@ -187,7 +188,7 @@ public static class Program
 
     private static void PrintInstructions(IPrinter printer)
     {
-        printer.Print("ID3 audio tagger utilities.");
+        printer.Print("CodeConscious AudioTagger -- tag-related utilities for audio files.");
         printer.Print("Usage: dotnet run -- [COMMAND(s)] [FILES/DIRECTORIES]...", 0, 1, string.Empty);
         printer.Print("Supply one or more commands, followed by one or more files or directories to process.", 0, 1, string.Empty);
 
@@ -204,8 +205,9 @@ public static class Program
         AnsiConsole.Write(table);
 
         printer.Print("Additionally, the file `settings.json` should be present in the application directory. " +
-                      "A nearly-blank file will be automatically created if it does not exist. " +
-                      "See the GitHub repository's readme file for more.",
+                      "A nearly-blank file was automatically created if it did not exist. " +
+                      "See the GitHub repository's readme file for more information. " +
+                      "\nURL: https://github.com/codeconscious/audiotagger/",
                       prependLines: 1, appendLines: 1);
     }
 
