@@ -16,9 +16,7 @@ public interface IPrinter
 
     void Error(string message);
 
-    void FirstError<T>(Result<T> result, string? prepend = null);
-
-    void FirstError(Result result, string? prepend = null);
+    void FirstError(IResultBase result, string? prepend = null);
 
     void Warning(string message);
 
