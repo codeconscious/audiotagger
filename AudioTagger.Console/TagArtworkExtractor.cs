@@ -2,8 +2,7 @@ namespace AudioTagger.Console;
 
 public sealed class TagArtworkExtractor : IPathOperation
 {
-    private static readonly string _artworkFileNamePrefix = "cover";
-    private static readonly string _artworkFileNameExtension = ".jpg";
+    private static readonly string _artworkFileName = "cover.jpg";
 
     static bool AllUnique(IEnumerable<string> items) => items.Distinct().Count() == 1;
 
@@ -67,16 +66,16 @@ public sealed class TagArtworkExtractor : IPathOperation
             foreach (var file in filesWithChosenMostCommonArt)
             {
                 var directoryName = file.FileInfo.DirectoryName!;
-                var result = file.ExtractArtworkToFile(directoryName, _artworkFileNamePrefix, _artworkFileNameExtension);
+                var extractResult = file.ExtractArtworkToFile(directoryName, _artworkFileName);
 
-                if (result.IsSuccess)
+                if (extractResult.IsSuccess)
                 {
-                    printer.Print($"Saved artwork to \"{_artworkFileNamePrefix}{_artworkFileNameExtension}");
+                    printer.Print($"Saved artwork to \"{_artworkFileName}\".");
                 }
                 else
                 {
                     failures++;
-                    printer.Error(result.Errors.First().Message);
+                    printer.Error($"Artwork extraction error: {extractResult.Errors.First().Message}");
                 }
             }
 
