@@ -180,10 +180,18 @@ public sealed class MediaFile
     /// <summary>
     /// Save pending tag data updates to the file.
     /// </summary>
-    public void SaveUpdates()
+    public Result SaveUpdates()
     {
-        _taggedFile.Save();
-        _taggedFile.Dispose();
+        try
+        {
+            _taggedFile.Save();
+            _taggedFile.Dispose();
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail($"Save error: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -224,6 +232,29 @@ public sealed class MediaFile
         catch (Exception ex)
         {
             return Result.Fail($"Save error: {ex.Message}");
+        }
+    }
+
+    public Result ExtractArtworkToFile(string saveDirectory, string saveFileName)
+    {
+        if (_taggedFile.Tag.Pictures.Length == 0)
+            return Result.Fail("No artwork was found in the file tags.");
+
+        var artwork = _taggedFile.Tag.Pictures[^1];
+
+        var savePath = Path.Combine(saveDirectory, saveFileName);
+
+        try
+        {
+            using MemoryStream ms = new([.. artwork.Data]);
+            using FileStream fs = new(savePath, FileMode.Create, FileAccess.Write);
+            ms.WriteTo(fs);
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            Result.Fail(ex.Message);
+            throw;
         }
     }
 
