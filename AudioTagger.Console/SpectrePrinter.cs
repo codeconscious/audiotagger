@@ -12,7 +12,9 @@ public sealed class SpectrePrinter : IPrinter
     private static void PrintEmptyLines(byte count)
     {
         if (count == 0)
+        {
             return;
+        }
 
         Write(string.Concat(Enumerable.Repeat(Environment.NewLine, count - 1)));
     }
@@ -22,7 +24,9 @@ public sealed class SpectrePrinter : IPrinter
                       ConsoleColor? bgColor = null, bool addLinebreak = true)
     {
         if (string.IsNullOrWhiteSpace(message))
+        {
             throw new ArgumentNullException(nameof(message), "Message cannot be empty");
+        }
 
         PrintEmptyLines(prependLines);
 
@@ -49,7 +53,9 @@ public sealed class SpectrePrinter : IPrinter
         PrintEmptyLines(prependLines);
 
         if (!lineParts.Any())
+        {
             return;
+        }
 
         foreach (var linePart in lineParts)
         {
@@ -69,7 +75,9 @@ public sealed class SpectrePrinter : IPrinter
         PrintEmptyLines(prependLines);
 
         if (!lines.Any())
+        {
             return; // TODO: Think about this.
+        }
 
         foreach (OutputLine line in lines)
         {

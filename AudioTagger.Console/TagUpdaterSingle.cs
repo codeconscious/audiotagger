@@ -76,7 +76,9 @@ public sealed class TagUpdaterSingle : IPathOperation
     private static TagUpdateType ConfirmUpdateType(string tagName)
     {
         if (tagName == "year" || tagName == "trackNo")
+        {
             return TagUpdateType.Overwrite;
+        }
 
         return AnsiConsole.Prompt(
             new SelectionPrompt<TagUpdateType>()
@@ -226,7 +228,9 @@ public sealed class TagUpdaterSingle : IPathOperation
             bool useNewLines)
         {
             if (updateType == TagUpdateType.Clear)
+            {
                 return string.Empty;
+            }
 
             string divider = useNewLines ? Environment.NewLine + Environment.NewLine : string.Empty;
             return updateType switch

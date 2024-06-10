@@ -169,10 +169,14 @@ public sealed class TagStats : IPathOperation
                                      List<Justify>? justifications = null)
     {
         if (string.IsNullOrWhiteSpace(title))
+        {
             throw new InvalidOperationException("A title must be provided.");
+        }
 
         if (columnNames == null || rows == null || !columnNames.Any() || !rows.Any())
+        {
             throw new InvalidOperationException("Column names and row data must be provided.");
+        }
 
         if (columnNames.Count != rows[0].Length ||
             !rows.All(r => r.Length == columnNames.Count))
@@ -220,10 +224,14 @@ public sealed class TagStats : IPathOperation
         public bool Equals(string[]? x, string[]? y)
         {
             if (x is null && y is null)
+            {
                 return true;
+            }
 
             if (x is null || y is null)
+            {
                 return false;
+            }
 
             return ConcatenateArtists(x) == ConcatenateArtists(y);
         }

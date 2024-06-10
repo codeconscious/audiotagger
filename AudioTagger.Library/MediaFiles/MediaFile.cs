@@ -172,7 +172,9 @@ public sealed class MediaFile
     public void RemoveAlbumArt()
     {
         if (_taggedFile.Tag?.Pictures.Any() != true)
+        {
             return;
+        }
 
         _taggedFile.Tag.Pictures = [];
     }
@@ -238,7 +240,9 @@ public sealed class MediaFile
     public Result ExtractArtworkToFile(string saveDirectory, string saveFileName)
     {
         if (_taggedFile.Tag.Pictures.Length == 0)
+        {
             return Result.Fail("No artwork was found in the file tags.");
+        }
 
         var artwork = _taggedFile.Tag.Pictures[^1];
 
@@ -253,8 +257,7 @@ public sealed class MediaFile
         }
         catch (Exception ex)
         {
-            Result.Fail(ex.Message);
-            throw;
+            return Result.Fail(ex.Message);
         }
     }
 
@@ -287,15 +290,21 @@ public sealed class MediaFile
     public static bool HasAnyValues(IEnumerable<string> tagValues)
     {
         if (tagValues?.Any() != true)
+        {
             return false;
+        }
 
         string asString = string.Concat(tagValues);
 
         if (string.IsNullOrWhiteSpace(asString))
+        {
             return false;
+        }
 
         if (asString.Contains("<unknown>"))
+        {
             return false;
+        }
 
         return true;
     }
