@@ -1,4 +1,5 @@
 ﻿using AudioTagger.Library.MediaFiles;
+using FluentResults;
 
 namespace AudioTagger;
 
@@ -14,6 +15,10 @@ public interface IPrinter
     void Print(string message, ResultType type, byte prependLines = 0, byte appendLines = 0);
 
     void Error(string message);
+
+    void FirstError<T>(Result<T> result, string? prepend = null);
+
+    void FirstError(Result result, string? prepend = null);
 
     void Warning(string message);
 

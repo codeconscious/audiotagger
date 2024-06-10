@@ -75,7 +75,7 @@ public sealed class TagArtworkExtractor : IPathOperation
                 else
                 {
                     failures++;
-                    printer.Error($"Artwork extraction error: {extractResult.Errors.First().Message}");
+                    printer.FirstError(extractResult, "Artwork extraction error:");
                 }
             }
 
@@ -92,14 +92,14 @@ public sealed class TagArtworkExtractor : IPathOperation
                 var saveResult = file.SaveUpdates();
                 if (saveResult.IsFailed)
                 {
-                    printer.Error(saveResult.Errors.First().Message);
+                    printer.FirstError(saveResult);
                     continue;
                 }
 
                 var rewriteResult = file.RewriteFileTags();
                 if (rewriteResult.IsFailed)
                 {
-                    printer.Error(rewriteResult.Errors.First().Message);
+                    printer.FirstError(rewriteResult);
                     continue;
                 }
 

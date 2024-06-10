@@ -17,7 +17,7 @@ public sealed class TagRewriter : IPathOperation
             result = file.RewriteFileTags();
             if (result.IsFailed)
             {
-                printer.Error(result.Errors.First().Message);
+                printer.FirstError(result);
             }
         }
 

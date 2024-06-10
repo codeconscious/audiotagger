@@ -18,7 +18,7 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
         var readResult = GenreService.Read(settings.ArtistGenreCsvFilePath);
         if (readResult.IsFailed)
         {
-            printer.Error(readResult.Errors.First().Message);
+            printer.FirstError(readResult, "Genre read error:");
             return;
         }
 
