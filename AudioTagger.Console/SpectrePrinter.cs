@@ -86,10 +86,12 @@ public sealed class SpectrePrinter : IPrinter
         PrintEmptyLines(appendLines);
     }
 
-    public void FirstError(IResultBase result, string? prepend)
+    public void FirstError(IResultBase failResult, string? prepend = null)
     {
         string pre = prepend is null ? string.Empty : $"{prepend} ";
-        Error($"{pre}{result.Errors[0].Message}");
+        string message = failResult?.Errors?.FirstOrDefault()?.Message ?? string.Empty;
+
+        Error($"{pre}{message}");
     }
 
     public void Error(string message) =>
