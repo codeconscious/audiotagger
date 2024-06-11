@@ -17,7 +17,9 @@ public sealed class TagUpdater : IPathOperation
 
         var regexes = settings?.Tagging?.RegexPatterns;
         if (regexes?.Any() != true)
+        {
             throw new InvalidOperationException("No regexes were found! Cannot continue.");
+        }
 
         RegexCollection regexCollection = new(regexes);
         printer.Print($"Found {regexCollection.Patterns.Count} regex expression(s).");

@@ -15,7 +15,9 @@ public sealed record class RegexCollection
         ArgumentNullException.ThrowIfNull(regexes);
 
         if (!regexes.Any())
+        {
             throw new InvalidOperationException("No regex patterns were found.");
+        }
 
         Patterns = regexes.Where(line =>
                                !line.StartsWith("# ") &&  // Comments
@@ -40,7 +42,9 @@ public static class RegexCollectionExtensionMethods
             Match match = Regex.Match(fileName, pattern, RegexOptions.CultureInvariant);
 
             if (match.Success)
+            {
                 return match;
+            }
         }
 
         return null;

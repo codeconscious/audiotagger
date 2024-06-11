@@ -215,7 +215,9 @@ public static class Program
         ICollection<string> paths)
     {
         if (paths?.Any() != true)
+        {
             return new ([], []);
+        }
 
         List<string> valid = [];
         List<string> invalid = [];

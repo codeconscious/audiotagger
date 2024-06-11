@@ -40,7 +40,9 @@ public static class SettingsService
     public static bool CreateIfMissing(IPrinter printer)
     {
         if (File.Exists(_settingsFileName))
+        {
             return true;
+        }
 
         try
         {
@@ -61,7 +63,9 @@ public static class SettingsService
         try
         {
             if (createFileIfMissing && !CreateIfMissing(printer))
+            {
                 return Result.Fail($"Settings file \"{_settingsFileName}\" missing.");
+            }
 
             string text = File.ReadAllText(_settingsFileName);
             Settings json = JsonSerializer.Deserialize<Settings>(text)

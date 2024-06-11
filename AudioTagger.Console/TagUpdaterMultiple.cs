@@ -100,7 +100,9 @@ public sealed class TagUpdaterMultiple : IPathOperation
     private static TagUpdateType ConfirmUpdateType(string tagName)
     {
         if (tagName == "year" || tagName == "trackNo")
+        {
             return TagUpdateType.Overwrite;
+        }
 
         return AnsiConsole.Prompt(
             new SelectionPrompt<TagUpdateType>()

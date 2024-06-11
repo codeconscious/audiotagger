@@ -82,7 +82,9 @@ public sealed class MediaFileRenamer : IPathOperation
                 .AddChoices(["Continue", "Cancel"]));
 
         if (directoryResponse == "Continue")
+        {
             return true;
+        }
 
         printer.Print("Cancelling...");
         return false;
@@ -148,7 +150,9 @@ public sealed class MediaFileRenamer : IPathOperation
         static void PrintErrors(IList<string> errors, IPrinter printer)
         {
             if (!errors.Any())
+            {
                 return;
+            }
 
             uint number = 1;
             printer.Print("ERRORS:");
@@ -318,13 +322,19 @@ public sealed class MediaFileRenamer : IPathOperation
         static string GenerateSafeDirectoryName(MediaFile file)
         {
             if (MediaFile.HasAnyValues(file.AlbumArtists))
+            {
                 return IOUtilities.SanitizePath(file.AlbumArtists);
+            }
 
             if (MediaFile.HasAnyValues(file.Artists))
+            {
                 return IOUtilities.SanitizePath(file.Artists);
+            }
 
             if (file.Album.HasText())
+            {
                 return IOUtilities.SanitizePath(file.Album);
+            }
 
             return "___UNSPECIFIED___";
         }
