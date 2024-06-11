@@ -31,7 +31,7 @@ public static class Program
         var readSettingsResult = SettingsService.Read(printer, createFileIfMissing: false);
         if (readSettingsResult.IsFailed)
         {
-            printer.Error(readSettingsResult.Errors[0].Message);
+            printer.FirstError(readSettingsResult);
             return;
         }
         Settings settings = readSettingsResult.Value;
@@ -92,8 +92,7 @@ public static class Program
         var fileNameResult = IOUtilities.GetAllFileNames(path, searchSubDirectories: true);
         if (fileNameResult.IsFailed)
         {
-            var firstMessage = fileNameResult.Errors.First().Message;
-            printer.Error($"Could not read any filenames for path \"{path}\": {firstMessage}");
+            printer.FirstError(fileNameResult, "Error reading filenames for path \"{path}\":");
             return;
         }
 

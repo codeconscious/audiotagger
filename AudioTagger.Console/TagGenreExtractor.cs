@@ -90,7 +90,7 @@ public sealed class TagGenreExtractor : IPathOperation
         if (writeResult.IsSuccess)
             printer.Success($"Genres written to \"{settings.ArtistGenreCsvFilePath}\" in {watch.ElapsedFriendly}.");
         else
-            printer.Error(writeResult.Errors.First().Message);
+            printer.FirstError(writeResult, "Genre save error: ");
 
         static void WriteSummary(int beforeCount, int afterCount, IPrinter printer)
         {

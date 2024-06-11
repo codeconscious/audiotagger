@@ -61,7 +61,7 @@ public static class GenreService
         }
         catch (Exception ex)
         {
-            return Result.Fail($"Reading the genre file failed: {ex.Message}");
+            return Result.Fail(ex.Message);
         }
     }
 

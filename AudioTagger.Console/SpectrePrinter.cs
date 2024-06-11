@@ -86,6 +86,14 @@ public sealed class SpectrePrinter : IPrinter
         PrintEmptyLines(appendLines);
     }
 
+    public void FirstError(IResultBase failResult, string? prepend = null)
+    {
+        string pre = prepend is null ? string.Empty : $"{prepend} ";
+        string message = failResult?.Errors?.FirstOrDefault()?.Message ?? string.Empty;
+
+        Error($"{pre}{message}");
+    }
+
     public void Error(string message) =>
         Print(message, prependText: "ERROR: ", fgColor: ConsoleColor.Red);
 
