@@ -36,12 +36,15 @@ public sealed class TagDuplicateFinder : IPathOperation
         var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
         printer.Print($"Found {titleReplacements.Count} title replacement term(s).");
 
+        var artistReplacements =  new string[] { "The ", "ザ・" }; // TODO: Make a new setting.
         var duplicateGroups = includedFiles
-            .ToLookup(m => ConcatenateCollectionText(m.Artists) +
-                           RemoveSubstrings(m.Title, titleReplacements),
-                           StringComparer.OrdinalIgnoreCase)
-            .Where(m => m.Key.HasText() && m.Count() > 1)
-            .OrderBy(m => m.Key)
+            .ToLookup(m =>
+                RemoveSubstrings(m.ArtistSummary, artistReplacements) +
+                RemoveSubstrings(m.Title, titleReplacements),
+                StringComparer.OrdinalIgnoreCase
+            )
+            .Where(g => g.Key.HasText() && g.Count() > 1)
+            .OrderBy(g => g.Key)
             .ToImmutableArray();
 
         int groupCount = duplicateGroups.Length;
@@ -63,6 +66,8 @@ public sealed class TagDuplicateFinder : IPathOperation
             settings?.Duplicates?.SavePlaylistDirectory,
             (searchFor, replaceWith),
             printer);
+
+        return;
     }
 
     /// <summary>
@@ -148,31 +153,18 @@ public sealed class TagDuplicateFinder : IPathOperation
     }
 
     /// <summary>
-    /// Removes parts of a string that should be ignored for comparison.
-    /// For example, "The Beatles" would convert to "Beatles" because "The"
-    /// should not be included in the comparison.
-    /// </summary>
-    /// <param name="strings"></param>
-    private static string ConcatenateCollectionText(IEnumerable<string> strings)
-    {
-        var concatenated = string.Concat(strings).ToLowerInvariant().Trim();
-        return Regex.Replace(concatenated, "^the", string.Empty);
-    }
-
-    /// <summary>
     /// Removes occurrences of each of a collection of substrings from a string.
     /// Returns the source string as-is if no replacement terms were passed in.
     /// </summary>
-    private static string RemoveSubstrings(string source, ImmutableList<string> terms)
+    private static string RemoveSubstrings(string source, ICollection<string> terms)
     {
         return terms switch
         {
             null or { Count: 0 } => source,
-            _ => terms.ToList()
-                       .Aggregate(
-                           new StringBuilder(source),
-                           (sb, term) => sb.Replace(term, string.Empty),
-                           sb => sb.ToString())
+            _ => terms.Aggregate(
+                    new StringBuilder(source),
+                    (sb, term) => sb.Replace(term, string.Empty),
+                    sb => sb.ToString())
         };
     }
 
