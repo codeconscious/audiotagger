@@ -38,7 +38,8 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         var duplicateGroups = includedFiles
             .ToLookup(m => ConcatenateCollectionText(m.Artists) +
-                           RemoveSubstrings(m.Title, titleReplacements))
+                           RemoveSubstrings(m.Title, titleReplacements),
+                           StringComparer.OrdinalIgnoreCase)
             .Where(m => m.Key.HasText() && m.Count() > 1)
             .OrderBy(m => m.Key)
             .ToImmutableArray();
