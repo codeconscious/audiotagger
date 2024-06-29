@@ -63,11 +63,8 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         string? searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
         string? replaceWith = settings?.Duplicates?.PathReplaceWith?.TextOrNull();
-        CreatePlaylistFile(
-            duplicateGroups,
-            settings?.Duplicates?.SavePlaylistDirectory,
-            (searchFor, replaceWith),
-            printer);
+        string? saveDir = settings?.Duplicates?.SavePlaylistDirectory;
+        CreatePlaylistFile(duplicateGroups, saveDir, (searchFor, replaceWith), printer);
     }
 
     /// <summary>
