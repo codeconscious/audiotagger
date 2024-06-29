@@ -28,6 +28,9 @@ public sealed record Duplicates
     [JsonPropertyName("titleReplacements")]
     public ImmutableList<string>? TitleReplacements { get; set; }
 
+    [JsonPropertyName("artistReplacements")]
+    public ImmutableList<string>? ArtistReplacements { get; set; }
+
     [JsonPropertyName("pathSearchFor")]
     public string? PathSearchFor { get; set; }
 

@@ -36,7 +36,9 @@ public sealed class TagDuplicateFinder : IPathOperation
         var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
         printer.Print($"Found {titleReplacements.Count} title replacement term(s).");
 
-        var artistReplacements =  new string[] { "The ", "ザ・" }; // TODO: Make a new setting.
+        var artistReplacements =  settings.Duplicates?.ArtistReplacements ?? [];
+        printer.Print($"Found {artistReplacements.Count} artist replacement term(s).");
+
         var duplicateGroups = includedFiles
             .ToLookup(m =>
                 RemoveSubstrings(m.ArtistSummary, artistReplacements) +
