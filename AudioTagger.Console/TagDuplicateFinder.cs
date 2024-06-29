@@ -33,18 +33,20 @@ public sealed class TagDuplicateFinder : IPathOperation
             printer.Print($"Out of {mediaFiles.Count:#,##0} media files, {diff:#,##0} {wasWere} excluded via exclusion rules.");
         }
 
-        var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
-        printer.Print($"Found {titleReplacements.Count} title replacement term(s).");
-
         var artistReplacements =  settings.Duplicates?.ArtistReplacements ?? [];
-        printer.Print($"Found {artistReplacements.Count} artist replacement term(s).");
+        string artistLabel = Utilities.Pluralize(artistReplacements.Count, "term", "terms");
+        printer.Print($"Found {artistReplacements.Count} artist replacement {artistLabel}.");
+
+        var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
+        string titleLabel = Utilities.Pluralize(titleReplacements.Count, "term", "terms");
+        printer.Print($"Found {titleReplacements.Count} title replacement {titleLabel}.");
+
 
         var duplicateGroups = includedFiles
             .ToLookup(m =>
                 RemoveSubstrings(m.ArtistSummary, artistReplacements) +
                 RemoveSubstrings(m.Title, titleReplacements),
-                StringComparer.OrdinalIgnoreCase
-            )
+                StringComparer.OrdinalIgnoreCase)
             .Where(g => g.Key.HasText() && g.Count() > 1)
             .OrderBy(g => g.Key)
             .ToImmutableArray();
@@ -150,8 +152,8 @@ public sealed class TagDuplicateFinder : IPathOperation
     }
 
     /// <summary>
-    /// Removes occurrences of each of a collection of substrings from a string.
-    /// Returns the source string as-is if no replacement terms were passed in.
+    /// Removes each of collection of substrings from a source string.
+    /// Returns the source as-is if no replacement terms are provided.
     /// </summary>
     private static string RemoveSubstrings(string source, ICollection<string> terms)
     {
