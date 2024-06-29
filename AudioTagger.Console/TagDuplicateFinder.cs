@@ -73,7 +73,7 @@ public sealed class TagDuplicateFinder : IPathOperation
     /// manually specified in the user's settings file.
     /// </summary>
     /// <returns>Returns `true` if the file should be excluded; otherwise, `false`.</returns>
-    private static bool ExcludeFile(MediaFile file, ImmutableList<ExclusionPair> exclusions)
+    private static bool ExcludeFile(MediaFile file, ICollection<ExclusionPair> exclusions)
     {
         return exclusions.Any(exclusion =>
         {
@@ -94,7 +94,7 @@ public sealed class TagDuplicateFinder : IPathOperation
     }
 
     private static void PrintResults(
-        IList<IGrouping<string, MediaFile>> duplicateGroups,
+        ICollection<IGrouping<string, MediaFile>> duplicateGroups,
         IPrinter printer)
     {
         int groupIndex = 1;
@@ -173,7 +173,7 @@ public sealed class TagDuplicateFinder : IPathOperation
     /// <param name="replacements">Optionally replace parts of the file paths.</param>
     /// <param name="printer"></param>
     private static void CreatePlaylistFile(
-        ImmutableArray<IGrouping<string, MediaFile>> duplicateGroups,
+        ICollection<IGrouping<string, MediaFile>> duplicateGroups,
         string? saveDirectory,
         (string? SearchFor, string? ReplaceWith) replacements,
         IPrinter printer)
