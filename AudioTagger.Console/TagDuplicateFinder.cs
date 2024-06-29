@@ -66,8 +66,6 @@ public sealed class TagDuplicateFinder : IPathOperation
             settings?.Duplicates?.SavePlaylistDirectory,
             (searchFor, replaceWith),
             printer);
-
-        return;
     }
 
     /// <summary>
