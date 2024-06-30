@@ -33,14 +33,15 @@ public sealed class TagDuplicateFinder : IPathOperation
             printer.Print($"Out of {mediaFiles.Count:#,##0} media files, {diff:#,##0} {wasWere} excluded via exclusion rules.");
         }
 
+        static string pluralizeTerm(int count) => Utilities.Pluralize(count, "term", "terms");
+
         var artistReplacements =  settings.Duplicates?.ArtistReplacements ?? [];
-        string artistLabel = Utilities.Pluralize(artistReplacements.Count, "term", "terms");
+        string artistLabel = pluralizeTerm(artistReplacements.Count);
         printer.Print($"Found {artistReplacements.Count} artist replacement {artistLabel}.");
 
         var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
-        string titleLabel = Utilities.Pluralize(titleReplacements.Count, "term", "terms");
+        string titleLabel = pluralizeTerm(titleReplacements.Count);
         printer.Print($"Found {titleReplacements.Count} title replacement {titleLabel}.");
-
 
         var duplicateGroups = includedFiles
             .ToLookup(m =>
