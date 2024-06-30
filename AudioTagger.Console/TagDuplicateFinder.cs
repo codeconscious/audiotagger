@@ -33,14 +33,23 @@ public sealed class TagDuplicateFinder : IPathOperation
             printer.Print($"Out of {mediaFiles.Count:#,##0} media files, {diff:#,##0} {wasWere} excluded via exclusion rules.");
         }
 
+        static string pluralizeTerm(int count) => Utilities.Pluralize(count, "term", "terms");
+
+        var artistReplacements =  settings.Duplicates?.ArtistReplacements ?? [];
+        string artistLabel = pluralizeTerm(artistReplacements.Count);
+        printer.Print($"Found {artistReplacements.Count} artist replacement {artistLabel}.");
+
         var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
-        printer.Print($"Found {titleReplacements.Count} title replacement term(s).");
+        string titleLabel = pluralizeTerm(titleReplacements.Count);
+        printer.Print($"Found {titleReplacements.Count} title replacement {titleLabel}.");
 
         var duplicateGroups = includedFiles
-            .ToLookup(m => ConcatenateCollectionText(m.Artists) +
-                           RemoveSubstrings(m.Title, titleReplacements))
-            .Where(m => m.Key.HasText() && m.Count() > 1)
-            .OrderBy(m => m.Key)
+            .ToLookup(m =>
+                RemoveSubstrings(m.ArtistSummary, artistReplacements) +
+                RemoveSubstrings(m.Title, titleReplacements),
+                StringComparer.OrdinalIgnoreCase)
+            .Where(g => g.Key.HasText() && g.Count() > 1)
+            .OrderBy(g => g.Key)
             .ToImmutableArray();
 
         int groupCount = duplicateGroups.Length;
@@ -57,11 +66,8 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         string? searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
         string? replaceWith = settings?.Duplicates?.PathReplaceWith?.TextOrNull();
-        CreatePlaylistFile(
-            duplicateGroups,
-            settings?.Duplicates?.SavePlaylistDirectory,
-            (searchFor, replaceWith),
-            printer);
+        string? saveDir = settings?.Duplicates?.SavePlaylistDirectory;
+        CreatePlaylistFile(duplicateGroups, saveDir, (searchFor, replaceWith), printer);
     }
 
     /// <summary>
@@ -69,7 +75,7 @@ public sealed class TagDuplicateFinder : IPathOperation
     /// manually specified in the user's settings file.
     /// </summary>
     /// <returns>Returns `true` if the file should be excluded; otherwise, `false`.</returns>
-    private static bool ExcludeFile(MediaFile file, ImmutableList<ExclusionPair> exclusions)
+    private static bool ExcludeFile(MediaFile file, ICollection<ExclusionPair> exclusions)
     {
         return exclusions.Any(exclusion =>
         {
@@ -90,7 +96,7 @@ public sealed class TagDuplicateFinder : IPathOperation
     }
 
     private static void PrintResults(
-        IList<IGrouping<string, MediaFile>> duplicateGroups,
+        ICollection<IGrouping<string, MediaFile>> duplicateGroups,
         IPrinter printer)
     {
         int groupIndex = 1;
@@ -147,31 +153,18 @@ public sealed class TagDuplicateFinder : IPathOperation
     }
 
     /// <summary>
-    /// Removes parts of a string that should be ignored for comparison.
-    /// For example, "The Beatles" would convert to "Beatles" because "The"
-    /// should not be included in the comparison.
+    /// Removes each of collection of substrings from a source string.
+    /// Returns the source as-is if no replacement terms are provided.
     /// </summary>
-    /// <param name="strings"></param>
-    private static string ConcatenateCollectionText(IEnumerable<string> strings)
-    {
-        var concatenated = string.Concat(strings).ToLowerInvariant().Trim();
-        return Regex.Replace(concatenated, "^the", string.Empty);
-    }
-
-    /// <summary>
-    /// Removes occurrences of each of a collection of substrings from a string.
-    /// Returns the source string as-is if no replacement terms were passed in.
-    /// </summary>
-    private static string RemoveSubstrings(string source, ImmutableList<string> terms)
+    private static string RemoveSubstrings(string source, ICollection<string> terms)
     {
         return terms switch
         {
             null or { Count: 0 } => source,
-            _ => terms.ToList()
-                       .Aggregate(
-                           new StringBuilder(source),
-                           (sb, term) => sb.Replace(term, string.Empty),
-                           sb => sb.ToString())
+            _ => terms.Aggregate(
+                    new StringBuilder(source),
+                    (sb, term) => sb.Replace(term, string.Empty),
+                    sb => sb.ToString())
         };
     }
 
@@ -182,7 +175,7 @@ public sealed class TagDuplicateFinder : IPathOperation
     /// <param name="replacements">Optionally replace parts of the file paths.</param>
     /// <param name="printer"></param>
     private static void CreatePlaylistFile(
-        ImmutableArray<IGrouping<string, MediaFile>> duplicateGroups,
+        ICollection<IGrouping<string, MediaFile>> duplicateGroups,
         string? saveDirectory,
         (string? SearchFor, string? ReplaceWith) replacements,
         IPrinter printer)
