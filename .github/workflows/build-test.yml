@@ -15,8 +15,8 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - name: Install dependencies
-        run: dotnet restore
+        run: dotnet restore src
       - name: Build
-        run: dotnet build
+        run: dotnet build src
       - name: Test via the dotnet CLI
-        run: dotnet test
+        run: dotnet test src
