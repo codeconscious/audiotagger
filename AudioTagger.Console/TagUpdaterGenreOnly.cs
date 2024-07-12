@@ -37,7 +37,7 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             }
         }
 
-        if (errorFiles.Any())
+        if (errorFiles.Count != 0)
         {
             printer.Print("Files with errors:");
             errorFiles.ForEach(f => printer.Print($"• {f}"));
