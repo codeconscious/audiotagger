@@ -102,7 +102,7 @@ internal static class OperationLibrary
 
     public static Dictionary<string, string> GenerateHelpTextPairs(bool includeHidden)
     {
-        IReadOnlyList<Operation> operations = includeHidden
+        var operations = includeHidden
             ? Operations
             : Operations.Where(o => !o.IsHidden).ToList();
 
@@ -114,10 +114,12 @@ internal static class OperationLibrary
     public static Result<IPathOperation> GetPathOperation(string requestedOperation)
     {
         string loweredOperation = requestedOperation.ToLowerInvariant();
+
         IPathOperation? maybeOperation =
             Operations
                 .FirstOrDefault(o => o.Commands.Contains(loweredOperation))?
                 .PathOperation;
+
         return maybeOperation is null
             ? Result.Fail($"No valid operation for {requestedOperation} was found.")
             : Result.Ok(maybeOperation);
@@ -130,7 +132,7 @@ internal static class OperationLibrary
         var failures = new List<string>();
 
         Result<IPathOperation> currentResult;
-        foreach (var operation in requestedOperations)
+        foreach (string operation in requestedOperations)
         {
             currentResult = GetPathOperation(operation);
             if (currentResult.IsSuccess)
@@ -158,15 +160,14 @@ internal static class OperationLibrary
         private Operation() { }
 
         [SetsRequiredMembers]
-        public Operation(OperationFlags options,
-                         string description,
-                         IPathOperation pathOperation,
-                         bool isHidden = false)
+        public Operation(
+            OperationFlags commands,
+            string description,
+            IPathOperation pathOperation,
+            bool isHidden = false)
         {
-            Commands = options;
-            Description = description;
-            PathOperation = pathOperation;
-            IsHidden = isHidden;
+            (Commands, Description, PathOperation, IsHidden) =
+            (commands, description, pathOperation, isHidden);
         }
     };
 }
