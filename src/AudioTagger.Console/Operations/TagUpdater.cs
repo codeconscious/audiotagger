@@ -7,10 +7,11 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagUpdater : IPathOperation
 {
-    public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                      DirectoryInfo workingDirectory,
-                      Settings settings,
-                      IPrinter printer)
+    public void Start(
+        IReadOnlyCollection<MediaFile> mediaFiles,
+        DirectoryInfo workingDirectory,
+        Settings settings,
+        IPrinter printer)
     {
         bool cancelRequested = false;
         bool doConfirm = true;
@@ -29,7 +30,12 @@ public sealed class TagUpdater : IPathOperation
         {
             try
             {
-                cancelRequested = UpdateTags(mediaFile, regexCollection, printer, settings!, ref doConfirm);
+                cancelRequested = UpdateTags(
+                    mediaFile,
+                    regexCollection,
+                    printer,
+                    settings!,
+                    ref doConfirm);
 
                 if (cancelRequested)
                     break;
@@ -53,11 +59,12 @@ public sealed class TagUpdater : IPathOperation
     /// Make proposed tag updates to the specified file if the user agrees.
     /// </summary>
     /// <returns>A bool indicating whether the following file should be processed.</returns>
-    private static bool UpdateTags(MediaFile mediaFile,
-                                   RegexCollection regexCollection,
-                                   IPrinter printer,
-                                   Settings settings,
-                                   ref bool doConfirm)
+    private static bool UpdateTags(
+        MediaFile mediaFile,
+        RegexCollection regexCollection,
+        IPrinter printer,
+        Settings settings,
+        ref bool doConfirm)
     {
         // TODO: Refactor cancellation so this isn't needed.
         const bool shouldCancel = false;
