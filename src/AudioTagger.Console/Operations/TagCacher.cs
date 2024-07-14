@@ -1,8 +1,9 @@
 using System.Text.Json;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using AudioTagger.Library;
 
-namespace AudioTagger.Console;
+namespace AudioTagger.Console.Operations;
 
 public sealed class TagCacher : IPathOperation
 {

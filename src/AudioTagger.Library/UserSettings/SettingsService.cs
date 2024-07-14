@@ -2,7 +2,7 @@ using System.IO;
 using System.Text.Json;
 using FluentResults;
 
-namespace AudioTagger.Library.Settings;
+namespace AudioTagger.Library.UserSettings;
 
 public static class SettingsService
 {

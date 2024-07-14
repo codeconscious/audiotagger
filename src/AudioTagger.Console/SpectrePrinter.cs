@@ -1,5 +1,6 @@
 using static System.Console;
 using Spectre.Console;
+using AudioTagger.Library;
 
 namespace AudioTagger.Console;
 

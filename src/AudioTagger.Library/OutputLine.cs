@@ -1,7 +1,6 @@
-using AudioTagger.Library;
 using AudioTagger.Library.MediaFiles;
 
-namespace AudioTagger;
+namespace AudioTagger.Library;
 
 public sealed class OutputLine
 {

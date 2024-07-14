@@ -1,9 +1,8 @@
 using System.Text.RegularExpressions;
 using System.Globalization;
 using AudioTagger.Library.MediaFiles;
-using AudioTagger.Library.Settings;
 
-namespace AudioTagger;
+namespace AudioTagger.Library;
 
 public sealed class UpdatableFields
 {
@@ -111,7 +110,7 @@ public sealed class UpdatableFields
         if (tagField.Equals("year", StringComparison.OrdinalIgnoreCase) &&
             newValue is int newYear)
         {
-            Year = (uint) newYear;
+            Year = (uint)newYear;
             Count++;
         }
         else if (tagField.Equals("genre", StringComparison.OrdinalIgnoreCase) &&

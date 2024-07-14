@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
-using Startwatch.Library;
+using AudioTagger.Library;
 
-namespace AudioTagger.Console;
+namespace AudioTagger.Console.Operations;
 
 public sealed class TagParser : IPathOperation
 {

@@ -1,8 +1,9 @@
 using System.Text.RegularExpressions;
+using AudioTagger.Library;
 using AudioTagger.Library.Genres;
 using Spectre.Console;
 
-namespace AudioTagger.Console;
+namespace AudioTagger.Console.Operations;
 
 public sealed class TagUpdater : IPathOperation
 {

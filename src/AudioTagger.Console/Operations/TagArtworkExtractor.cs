@@ -1,10 +1,13 @@
-namespace AudioTagger.Console;
+using AudioTagger.Library;
+
+namespace AudioTagger.Console.Operations;
 
 public sealed class TagArtworkExtractor : IPathOperation
 {
     private static readonly string _artworkFileName = "cover.jpg";
 
-    static bool AllUnique(IEnumerable<string> items) => items.Distinct().Count() == 1;
+    static bool AllUnique(IEnumerable<string> items) =>
+        items.Distinct().Count() == 1;
 
     public void Start(
         IReadOnlyCollection<MediaFile> mediaFiles,

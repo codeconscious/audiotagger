@@ -1,6 +1,7 @@
+using AudioTagger.Library;
 using Spectre.Console;
 
-namespace AudioTagger.Console;
+namespace AudioTagger.Console.Operations;
 
 /// <summary>
 /// Reverse the order of track numbers in the provided media files.
