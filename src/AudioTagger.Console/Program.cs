@@ -122,7 +122,7 @@ public static class Program
 
         try
         {
-            foreach (var operation in operations)
+            foreach (IPathOperation operation in operations)
             {
                 operation.Start(mediaFiles, new DirectoryInfo(path), settings, printer);
             }
@@ -155,7 +155,7 @@ public static class Program
             {
                 var task = ctx.AddTask("Reading tag data", maxValue: fileNames.Count);
 
-                foreach (var fileName in fileNames)
+                foreach (string fileName in fileNames)
                 {
                     var readResult = MediaFile.ReadFileTags(fileName);
                     if (readResult.IsSuccess)

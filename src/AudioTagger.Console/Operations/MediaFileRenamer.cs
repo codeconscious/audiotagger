@@ -375,7 +375,7 @@ public sealed class MediaFileRenamer : IPathOperation
             {
                 try
                 {
-                    foreach (var file in dirFiles)
+                    foreach (string file in dirFiles)
                     {
                         File.Delete(file);
                         Directory.Delete(dir, recursive: false);

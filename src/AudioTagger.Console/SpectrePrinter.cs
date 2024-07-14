@@ -58,7 +58,7 @@ public sealed class SpectrePrinter : IPrinter
             return;
         }
 
-        foreach (var linePart in lineParts)
+        foreach (LineSubString linePart in lineParts)
         {
             var subString = new LineSubString(linePart.Text, linePart.FgColor, linePart.BgColor).GetSpectreString();
             if (linePart.AddLineBreak)
