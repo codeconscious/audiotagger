@@ -148,6 +148,8 @@ public sealed class MediaFile
         return $"Track: {trackGain}  |  Album: {albumGain}";
     }
 
+    public bool HasAlbumArt() => AlbumArt.Length != 0;
+
     /// <summary>
     /// The embedded image for the album, represented as an array of bytes or,
     /// if none, an empty array.
@@ -165,8 +167,32 @@ public sealed class MediaFile
         }
     }
 
+    public Result ExtractArtworkToFile(string saveDirectory, string saveFileName)
+    {
+        if (_taggedFile.Tag.Pictures.Length == 0)
+        {
+            return Result.Fail("No artwork was found in the file tags.");
+        }
+
+        var artwork = _taggedFile.Tag.Pictures[^1];
+
+        var savePath = Path.Combine(saveDirectory, saveFileName);
+
+        try
+        {
+            using MemoryStream ms = new([.. artwork.Data]);
+            using FileStream fs = new(savePath, FileMode.Create, FileAccess.Write);
+            ms.WriteTo(fs);
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail(ex.Message);
+        }
+    }
+
     /// <summary>
-    /// Removes album art from the file's tag data.
+    /// Removes album art from the file's tag data. Requires saving the file separately.
     /// </summary>
     /// <remarks>Padding space remains, so the file size is not reduced.</remarks>
     public void RemoveAlbumArt()
@@ -234,30 +260,6 @@ public sealed class MediaFile
         catch (Exception ex)
         {
             return Result.Fail($"Tag rewrite error: {ex.Message}");
-        }
-    }
-
-    public Result ExtractArtworkToFile(string saveDirectory, string saveFileName)
-    {
-        if (_taggedFile.Tag.Pictures.Length == 0)
-        {
-            return Result.Fail("No artwork was found in the file tags.");
-        }
-
-        var artwork = _taggedFile.Tag.Pictures[^1];
-
-        var savePath = Path.Combine(saveDirectory, saveFileName);
-
-        try
-        {
-            using MemoryStream ms = new([.. artwork.Data]);
-            using FileStream fs = new(savePath, FileMode.Create, FileAccess.Write);
-            ms.WriteTo(fs);
-            return Result.Ok();
-        }
-        catch (Exception ex)
-        {
-            return Result.Fail(ex.Message);
         }
     }
 
