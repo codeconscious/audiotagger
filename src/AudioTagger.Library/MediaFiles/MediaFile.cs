@@ -192,7 +192,7 @@ public sealed class MediaFile
         }
         catch (Exception ex)
         {
-            return Result.Fail($"Save error: {ex.Message}");
+            return Result.Fail($"Tag save error: {ex.Message}");
         }
     }
 
@@ -233,7 +233,7 @@ public sealed class MediaFile
         }
         catch (Exception ex)
         {
-            return Result.Fail($"Save error: {ex.Message}");
+            return Result.Fail($"Tag rewrite error: {ex.Message}");
         }
     }
 
