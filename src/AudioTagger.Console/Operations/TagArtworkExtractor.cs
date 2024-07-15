@@ -17,30 +17,40 @@ public sealed class TagArtworkExtractor : IPathOperation
     {
         var watch = new Watch();
 
-        var filesWithArtwork = mediaFiles.Where(f => f.AlbumArt.Length != 0);
-        if (!filesWithArtwork.Any())
+        var filesWithArt = mediaFiles.Where(f => f.HasAlbumArt());
+        if (filesWithArt.None())
         {
-            printer.Warning("No artwork found in the files.");
+            printer.Warning($"No artwork found in any files in \"{workingDirectory.FullName}\".");
             return;
         }
 
-        var filesGroupedByDirectory = filesWithArtwork.GroupBy(m => m.FileInfo.DirectoryName);
-        foreach (var fileGroup in filesGroupedByDirectory)
+        var filesByDir = filesWithArt.GroupBy(m => m.FileInfo.DirectoryName);
+        foreach (var fileGroup in filesByDir)
         {
-            ProcessDirectory(fileGroup, mediaFiles.Count, printer);
+            ProcessDirectory(fileGroup, printer);
         }
 
         printer.Print($"Done in {watch.ElapsedFriendly}.");
     }
 
+    static bool HaveOnlyUniqueArt(
+        IGrouping<string?, MediaFile> fileGroup,
+        IEnumerable<IGrouping<int, MediaFile>> filesGroupedByCount)
+    {
+        return
+            fileGroup.Count() > 1 &&
+            filesGroupedByCount.All(g => g.Count() == 1);
+    }
+
     private static void ProcessDirectory(
         IGrouping<string?, MediaFile> fileGroup,
-        int mediaFileCount,
         IPrinter printer)
     {
-        if (fileGroup.All(f => f.AlbumArt.Length == 0))
+        printer.Print($"Processing \"{fileGroup.Key}\"...");
+
+        if (fileGroup.None(f => f.HasAlbumArt()))
         {
-            printer.Warning($"No artwork found in directory {fileGroup.Key}.");
+            printer.Warning($"No artwork found in this directory.");
             return;
         }
 
@@ -62,7 +72,7 @@ public sealed class TagArtworkExtractor : IPathOperation
         int mostCommonArtCount = filesGroupedByArtSize.Max(a => a.Count());
         var filesWithMostCommonArt = filesGroupedByArtSize.Where(a => a.Count() == mostCommonArtCount);
 
-        if (mediaFileCount > 1 && filesWithMostCommonArt.All(g => g.Count() == 1))
+        if (HaveOnlyUniqueArt(fileGroup, filesWithMostCommonArt))
         {
             printer.Warning("All of the artwork is unique, so will not extract any artwork.");
             return;
@@ -70,19 +80,30 @@ public sealed class TagArtworkExtractor : IPathOperation
 
         if (filesWithMostCommonArt.Count() != 1)
         {
-            printer.Warning("More than one artwork appears multiple times. Will only extract one.");
+            printer.Warning("More than one image is most populous, but only one will be extracted.");
         }
-
-        int failures = 0;
         var filesWithChosenMostCommonArt = filesWithMostCommonArt.First();
 
-        // Extract artwork from first file of the chosen artwork group.
+        ExtractArtwork(filesWithChosenMostCommonArt, printer);
+
+        foreach (MediaFile file in filesWithChosenMostCommonArt)
+        {
+            RemoveArtworkAndRewriteTags(file, printer);
+        }
+    }
+
+    private static void ExtractArtwork(
+        IGrouping<int, MediaFile> filesWithChosenMostCommonArt,
+        IPrinter printer)
+    {
+        int failures = 0;
+
         var fileToExtractFrom = filesWithChosenMostCommonArt.First();
         var directoryName = fileToExtractFrom.FileInfo.DirectoryName!;
         var extractResult = fileToExtractFrom.ExtractArtworkToFile(directoryName, _artworkFileName);
         if (extractResult.IsSuccess)
         {
-            printer.Print($"Saved artwork to \"{_artworkFileName}\".");
+            printer.Print($"Saved most common artwork to \"{_artworkFileName}\" in the same directory.");
         }
         else
         {
@@ -96,26 +117,25 @@ public sealed class TagArtworkExtractor : IPathOperation
             printer.Warning($"There were {failures} extraction {errorLabel}, so will not delete any artwork.");
             return;
         }
+    }
 
-        // Remove artwork from and rewrite tags of the files with the chosen artwork.
-        foreach (MediaFile file in filesWithChosenMostCommonArt)
+    private static void RemoveArtworkAndRewriteTags(MediaFile file, IPrinter printer)
+    {
+        file.RemoveAlbumArt();
+        var saveResult = file.SaveUpdates();
+        if (saveResult.IsFailed)
         {
-            file.RemoveAlbumArt();
-            var saveResult = file.SaveUpdates();
-            if (saveResult.IsFailed)
-            {
-                printer.FirstError(saveResult);
-                continue;
-            }
-
-            var rewriteResult = file.RewriteFileTags();
-            if (rewriteResult.IsFailed)
-            {
-                printer.FirstError(rewriteResult);
-                continue;
-            }
-
-            printer.Print($"Removed artwork from \"{file.FileNameOnly}\"");
+            printer.FirstError(saveResult);
+            return;
         }
+
+        var rewriteResult = file.RewriteFileTags();
+        if (rewriteResult.IsFailed)
+        {
+            printer.FirstError(rewriteResult);
+            return;
+        }
+
+        printer.Print($"Removed artwork from \"{file.FileNameOnly}\"");
     }
 }
