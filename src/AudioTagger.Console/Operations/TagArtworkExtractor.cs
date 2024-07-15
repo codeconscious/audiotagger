@@ -1,4 +1,6 @@
 using AudioTagger.Library;
+using FilesGroupedByDir = System.Linq.IGrouping<string?, AudioTagger.Library.MediaFiles.MediaFile>;
+using FilesGroupedByCount = System.Linq.IGrouping<int, AudioTagger.Library.MediaFiles.MediaFile>;
 
 namespace AudioTagger.Console.Operations;
 
@@ -6,8 +8,17 @@ public sealed class TagArtworkExtractor : IPathOperation
 {
     private static readonly string _artworkFileName = "cover.jpg";
 
-    static bool AllUnique(IEnumerable<string> items) =>
+    private static bool AllUnique(IEnumerable<string> items) =>
         items.Distinct().Count() == 1;
+
+    private static bool HaveOnlyUniqueArt(
+        FilesGroupedByDir fileGroup,
+        IEnumerable<FilesGroupedByCount> filesGroupedByCount)
+    {
+        return
+            fileGroup.Count() > 1 &&
+            filesGroupedByCount.All(g => g.Count() == 1);
+    }
 
     public void Start(
         IReadOnlyCollection<MediaFile> mediaFiles,
@@ -25,25 +36,16 @@ public sealed class TagArtworkExtractor : IPathOperation
         }
 
         var filesByDir = filesWithArt.GroupBy(m => m.FileInfo.DirectoryName);
-        foreach (var fileGroup in filesByDir)
+        foreach (FilesGroupedByDir file in filesByDir)
         {
-            ProcessDirectory(fileGroup, printer);
+            ProcessDirectory(file, printer);
         }
 
         printer.Print($"Done in {watch.ElapsedFriendly}.");
     }
 
-    static bool HaveOnlyUniqueArt(
-        IGrouping<string?, MediaFile> fileGroup,
-        IEnumerable<IGrouping<int, MediaFile>> filesGroupedByCount)
-    {
-        return
-            fileGroup.Count() > 1 &&
-            filesGroupedByCount.All(g => g.Count() == 1);
-    }
-
     private static void ProcessDirectory(
-        IGrouping<string?, MediaFile> fileGroup,
+        FilesGroupedByDir fileGroup,
         IPrinter printer)
     {
         printer.Print($"Processing \"{fileGroup.Key}\"...");
@@ -93,7 +95,7 @@ public sealed class TagArtworkExtractor : IPathOperation
     }
 
     private static void ExtractArtwork(
-        IGrouping<int, MediaFile> filesWithChosenMostCommonArt,
+        FilesGroupedByCount filesWithChosenMostCommonArt,
         IPrinter printer)
     {
         int failures = 0;
