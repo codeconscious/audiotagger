@@ -50,7 +50,7 @@ internal static class OperationLibrary
             ),
             new(
                 ["-uea", "--extract-artwork"],
-                "Extracts artwork from directory files if they have the same artist and album.",
+                "Extracts artwork from directory files if they have the same artist and album, then deletes the artwork from the files containing it.",
                 new TagArtworkExtractor()
             ),
             new(
