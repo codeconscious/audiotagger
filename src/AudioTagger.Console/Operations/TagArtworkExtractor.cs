@@ -8,10 +8,10 @@ public sealed class TagArtworkExtractor : IPathOperation
 {
     private static readonly string _artworkFileName = "cover.jpg";
 
-    private static bool AllUnique(IEnumerable<string> items) =>
+    private static bool AreAllSame(IEnumerable<string> items) =>
         items.Distinct().Count() == 1;
 
-    private static bool HaveOnlyUniqueArt(
+    private static bool IsAllArtUnique(
         FilesGroupedByDir fileGroup,
         IEnumerable<FilesGroupedByCount> filesGroupedByCount)
     {
@@ -35,18 +35,16 @@ public sealed class TagArtworkExtractor : IPathOperation
             return;
         }
 
-        var filesByDir = filesWithArt.GroupBy(m => m.FileInfo.DirectoryName);
-        foreach (FilesGroupedByDir file in filesByDir)
+        var filesGroupedByDir = filesWithArt.GroupBy(m => m.FileInfo.DirectoryName);
+        foreach (FilesGroupedByDir fileGroup in filesGroupedByDir)
         {
-            ProcessDirectory(file, printer);
+            ProcessDirectory(fileGroup, printer);
         }
 
         printer.Print($"Done in {watch.ElapsedFriendly}.");
     }
 
-    private static void ProcessDirectory(
-        FilesGroupedByDir fileGroup,
-        IPrinter printer)
+    private static void ProcessDirectory(FilesGroupedByDir fileGroup, IPrinter printer)
     {
         printer.Print($"Processing \"{fileGroup.Key}\"...");
 
@@ -64,7 +62,7 @@ public sealed class TagArtworkExtractor : IPathOperation
                     ?? "None";
             });
 
-        if (!AllUnique(artistNames) || !AllUnique(albumNames))
+        if (!AreAllSame(artistNames) || !AreAllSame(albumNames))
         {
             printer.Warning($"Skipping directory \"{fileGroup.Key}\" because either the artists or albums are not unique.");
             return;
@@ -74,7 +72,7 @@ public sealed class TagArtworkExtractor : IPathOperation
         int mostCommonArtCount = filesGroupedByArtSize.Max(a => a.Count());
         var filesWithMostCommonArt = filesGroupedByArtSize.Where(a => a.Count() == mostCommonArtCount);
 
-        if (HaveOnlyUniqueArt(fileGroup, filesWithMostCommonArt))
+        if (IsAllArtUnique(fileGroup, filesWithMostCommonArt))
         {
             printer.Warning("All of the artwork is unique, so will not extract any artwork.");
             return;
@@ -100,9 +98,10 @@ public sealed class TagArtworkExtractor : IPathOperation
     {
         int failures = 0;
 
-        var fileToExtractFrom = filesWithChosenMostCommonArt.First();
-        var directoryName = fileToExtractFrom.FileInfo.DirectoryName!;
-        var extractResult = fileToExtractFrom.ExtractArtworkToFile(directoryName, _artworkFileName);
+        MediaFile artSourceFile = filesWithChosenMostCommonArt.First();
+        string directoryName = artSourceFile.FileInfo.DirectoryName!;
+
+        var extractResult = artSourceFile.ExtractArtworkToFile(directoryName, _artworkFileName);
         if (extractResult.IsSuccess)
         {
             printer.Print($"Saved most common artwork to \"{_artworkFileName}\" in the same directory.");
