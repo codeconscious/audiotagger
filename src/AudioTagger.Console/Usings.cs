@@ -5,6 +5,6 @@ global using System.Collections.Immutable;
 global using System.Collections.Frozen;
 global using System.IO;
 global using AudioTagger.Library.MediaFiles;
-global using AudioTagger.Library.Settings;
+global using AudioTagger.Library.UserSettings;
 global using FluentResults;
 global using Startwatch.Library;

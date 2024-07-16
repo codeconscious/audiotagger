@@ -1,6 +1,7 @@
+using AudioTagger.Library;
 using AudioTagger.Library.Genres;
 
-namespace AudioTagger.Console;
+namespace AudioTagger.Console.Operations;
 
 public sealed class TagUpdaterGenreOnly : IPathOperation
 {

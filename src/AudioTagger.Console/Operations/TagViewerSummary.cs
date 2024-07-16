@@ -1,6 +1,7 @@
+using AudioTagger.Library;
 using Spectre.Console;
 
-namespace AudioTagger.Console;
+namespace AudioTagger.Console.Operations;
 
 public sealed class TagViewerSummary : IPathOperation
 {

@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
-using AudioTagger.Library;
 
-namespace AudioTagger;
+namespace AudioTagger.Library;
 
 public sealed record class RegexCollection
 {

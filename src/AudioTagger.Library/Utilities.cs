@@ -1,4 +1,4 @@
-namespace AudioTagger;
+namespace AudioTagger.Library;
 
 public static class Utilities
 {
@@ -21,7 +21,8 @@ public static class Utilities
     }
 
     public static string Pluralize(int count, string whenOne, string whenZeroOrMultiple) =>
-        count switch {
+        count switch
+        {
             1 => whenOne,
             _ => whenZeroOrMultiple
         };

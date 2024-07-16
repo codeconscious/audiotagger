@@ -1,4 +1,4 @@
-﻿namespace AudioTagger;
+﻿namespace AudioTagger.Library;
 
 public sealed class LineSubString(
     string text,

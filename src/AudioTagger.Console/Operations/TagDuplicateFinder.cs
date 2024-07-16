@@ -1,7 +1,7 @@
 using System.Text;
-using System.Text.RegularExpressions;
+using AudioTagger.Library;
 
-namespace AudioTagger.Console;
+namespace AudioTagger.Console.Operations;
 
 public sealed class TagDuplicateFinder : IPathOperation
 {

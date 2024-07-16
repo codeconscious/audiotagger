@@ -1,4 +1,4 @@
-﻿namespace AudioTagger;
+﻿namespace AudioTagger.Library;
 
 public enum ResultType
 {

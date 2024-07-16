@@ -1,4 +1,6 @@
-namespace AudioTagger.Console;
+using AudioTagger.Library;
+
+namespace AudioTagger.Console.Operations;
 
 public sealed class TagArtworkRemover : IPathOperation
 {

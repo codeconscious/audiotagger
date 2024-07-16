@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using AudioTagger.Library.MediaFiles;
-using AudioTagger.Library.Settings;
+using AudioTagger.Library.UserSettings;
 
-namespace AudioTagger;
+namespace AudioTagger.Library;
 
 public interface IPathOperation
 {

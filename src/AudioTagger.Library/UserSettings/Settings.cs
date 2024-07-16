@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace AudioTagger.Library.Settings;
+namespace AudioTagger.Library.UserSettings;
 
 public sealed record Settings
 {

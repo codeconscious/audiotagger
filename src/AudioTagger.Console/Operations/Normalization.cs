@@ -1,6 +1,7 @@
 using System.Diagnostics;
+using AudioTagger.Library;
 
-namespace AudioTagger.Console;
+namespace AudioTagger.Console.Operations;
 
 /// <summary>
 /// Normalize audio using ReplayGain.

@@ -1,14 +1,13 @@
-using AudioTagger.Console;
 using Spectre.Console;
 
-namespace AudioTagger;
+namespace AudioTagger.Console;
 
 public sealed class MediaFileViewer
 {
     public void PrintFileDetails(MediaFile file)
     {
         // TODO: Handle colors more gracefully.
-        var tagNameFormatter = (string s) => "[grey]" + s +"[/]";
+        var tagNameFormatter = (string s) => "[grey]" + s + "[/]";
 
         Table table = new();
         table.AddColumns(string.Empty, string.Empty);

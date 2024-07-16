@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using AudioTagger.Library;
+using Xunit;
 
 namespace AudioTagger.Tests;
 

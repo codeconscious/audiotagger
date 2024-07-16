@@ -1,7 +1,7 @@
 ﻿using AudioTagger.Library.MediaFiles;
 using FluentResults;
 
-namespace AudioTagger;
+namespace AudioTagger.Library;
 
 public interface IPrinter
 {

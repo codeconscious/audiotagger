@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using Spectre.Console;
 using AudioTagger.Library;
 
-namespace AudioTagger.Console;
+namespace AudioTagger.Console.Operations;
 
 public sealed class MediaFileRenamer : IPathOperation
 {
@@ -375,7 +375,7 @@ public sealed class MediaFileRenamer : IPathOperation
             {
                 try
                 {
-                    foreach (var file in dirFiles)
+                    foreach (string file in dirFiles)
                     {
                         File.Delete(file);
                         Directory.Delete(dir, recursive: false);

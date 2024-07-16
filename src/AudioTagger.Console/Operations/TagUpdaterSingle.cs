@@ -1,63 +1,32 @@
+using AudioTagger.Library;
 using Spectre.Console;
 
-namespace AudioTagger.Console;
+namespace AudioTagger.Console.Operations;
 
 /// <summary>
-/// Updates a single supported tag to a specified value for all files in a specific path.
+/// Updates a single supported tag to a specified value for all files in the specific path.
 /// </summary>
-public sealed class TagUpdaterMultiple : IPathOperation
+public sealed class TagUpdaterSingle : IPathOperation
 {
-    private static readonly string _inputFile = "input.txt";
-
-    private enum TagUpdateType { Overwrite, Prepend, Append }
+    private enum TagUpdateType { Overwrite, Prepend, Append, Clear }
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       Settings settings,
                       IPrinter printer)
     {
-        var sortedMediaFiles = mediaFiles.OrderBy(f => $"{f.TrackNo:00000}{f.Title}")
-                                         .ToList();
-
-        printer.Print($"Will update the title tag of {sortedMediaFiles.Count} file(s):");
-        sortedMediaFiles.ForEach(f => printer.Print($"- {f.FileInfo}"));
-
-        string[] inputLines;
-        try
-        {
-            inputLines = File.ReadAllLines(_inputFile);
-        }
-        catch (FileNotFoundException)
-        {
-            printer.Error($"Could not find the file {_inputFile}");
-            return;
-        }
-        catch (Exception ex)
-        {
-            printer.Error($"Couldn't read input file: {ex.Message}");
-            return;
-        }
-
-        if (inputLines.Length != sortedMediaFiles.Count)
-        {
-            printer.Error($"Cannot match the {inputLines.Length} input lines to the {sortedMediaFiles.Count} media files.");
-            return;
-        }
+        printer.Print($"Will update a single tag in {mediaFiles.Count} files:");
+        foreach (MediaFile file in mediaFiles)
+            printer.Print($"- {file.FileInfo}");
 
         string tagName = ConfirmUpdateTagName();
         TagUpdateType updateType = ConfirmUpdateType(tagName);
+        string tagValue = ConfirmTagValue(tagName, updateType);
 
-        Table table = new();
-        table.AddColumns("Filename", "Current", "Proposed new");
-        for (int i = 0; i < inputLines.Length; i++)
-        {
-            MediaFile thisFile = sortedMediaFiles[i];
-            table.AddRow(
-                Markup.Escape(thisFile.FileNameOnly),
-                Markup.Escape(GetTagValue(thisFile, tagName)),
-                Markup.Escape(inputLines[i]));
-        }
-        AnsiConsole.Write(table);
+        printer.Print($"Will {updateType.ToString().ToUpperInvariant()} the {tagName.ToUpperInvariant()} tag using this text:");
+        printer.Print(string.IsNullOrEmpty(tagValue)
+            ? "(None)"
+            : tagValue, appendLines: 1, fgColor: ConsoleColor.Magenta);
 
         if (!ConfirmContinue())
         {
@@ -69,32 +38,40 @@ public sealed class TagUpdaterMultiple : IPathOperation
         uint successCount = 0;
         uint failureCount = 0;
 
-        var updateSet = sortedMediaFiles.Zip(inputLines, (f, l) => (File: f, NewTitle: l));
-
-        foreach ((MediaFile File, string NewTitle) pair in updateSet)
+        foreach (MediaFile file in mediaFiles)
         {
-            ArgumentNullException.ThrowIfNull(pair);
+            ArgumentNullException.ThrowIfNull(file);
 
             try
             {
-                UpdateTags(pair.File, tagName, pair.NewTitle, updateType);
+                UpdateTags(file, tagName, tagValue, updateType);
                 successCount++;
             }
             catch (FormatException ex)
             {
                 failureCount++;
-                printer.Error($"{ex.Message} ({pair.File.FileInfo})");
+                printer.Error($"{ex.Message} ({file.FileInfo})");
             }
             catch (Exception ex)
             {
                 failureCount++;
-                printer.Error($"Error for \"{pair.File.FileInfo}\": {ex.Message}");
+                printer.Error($"Error for \"{file.FileInfo}\": {ex.Message}");
             }
         }
 
         string successLabel = successCount == 1 ? "success" : "successes";
         string failureLabel = failureCount == 1 ? "failure" : "failures";
         printer.Print($"Done in {watch.ElapsedFriendly} with {successCount} {successLabel} and {failureCount} {failureLabel}");
+    }
+
+    private static string ConfirmTagValue(string tagName, TagUpdateType updateType)
+    {
+        string updateTypeName = updateType.ToString().ToUpperInvariant();
+        return updateType switch
+        {
+            TagUpdateType.Clear => string.Empty,
+            _ => AnsiConsole.Ask<string>($"Enter the text to {updateTypeName} to {tagName.ToUpperInvariant()}: ")
+        };
     }
 
     private static TagUpdateType ConfirmUpdateType(string tagName)
@@ -150,21 +127,6 @@ public sealed class TagUpdaterMultiple : IPathOperation
         return shouldProceed == yes;
     }
 
-    private static string GetTagValue(MediaFile mediaFile, string tagName) =>
-        Markup.Escape(
-            tagName switch
-            {
-                "title"        => mediaFile.Title,
-                "albumArtists" => string.Join("; ", mediaFile.AlbumArtists),
-                "artists"      => string.Join("; ", mediaFile.Artists),
-                "album"        => mediaFile.Album,
-                "genres"       => string.Join("; ", mediaFile.Genres),
-                "year"         => mediaFile.Year.ToString(),
-                "comment"      => mediaFile.Comments,
-                "trackNo"      => mediaFile.TrackNo.ToString(),
-                _              => throw new ArgumentException($"\"{tagName}\" is an invalid tagName.")
-            });
-
     private static void UpdateTags(MediaFile mediaFile,
                                    string tagName,
                                    string tagValue,
@@ -182,25 +144,33 @@ public sealed class TagUpdaterMultiple : IPathOperation
                                                   false);
                 break;
             case "albumArtists":
-                string[] sanitizedAlbumArtists = tagValue.Replace("___", "　")
-                                                    .Replace("__", " ")
-                                                    .Split(new[] { ";" },
-                                                           StringSplitOptions.RemoveEmptyEntries |
-                                                           StringSplitOptions.TrimEntries)
-                                                    .Select(a => a.Normalize())
-                                                    .ToArray();
+                string[] sanitizedAlbumArtists =
+                    updateType == TagUpdateType.Clear
+                        ? []
+                        : tagValue.Replace("___", "　")
+                            .Replace("__", " ")
+                            .Split(
+                                new[] { ";" },
+                                StringSplitOptions.RemoveEmptyEntries |
+                                    StringSplitOptions.TrimEntries)
+                            .Select(a => a.Normalize())
+                            .ToArray();
                 mediaFile.AlbumArtists = GetUpdatedValues(mediaFile.AlbumArtists,
                                                           sanitizedAlbumArtists,
                                                           updateType);
                 break;
             case "artists":
-                string[] sanitizedArtists = tagValue.Replace("___", "　")
-                                               .Replace("__", " ")
-                                               .Split(new[] { ";" },
-                                                      StringSplitOptions.RemoveEmptyEntries |
-                                                      StringSplitOptions.TrimEntries)
-                                               .Select(a => a.Normalize())
-                                               .ToArray();
+                string[] sanitizedArtists =
+                    updateType == TagUpdateType.Clear
+                        ? []
+                        : tagValue.Replace("___", "　")
+                            .Replace("__", " ")
+                            .Split(
+                                new[] { ";" },
+                                StringSplitOptions.RemoveEmptyEntries |
+                                    StringSplitOptions.TrimEntries)
+                            .Select(a => a.Normalize())
+                            .ToArray();
                 mediaFile.Artists = GetUpdatedValues(mediaFile.Artists,
                                                      sanitizedArtists,
                                                      updateType);
@@ -215,12 +185,17 @@ public sealed class TagUpdaterMultiple : IPathOperation
                                                   false);
                 break;
             case "genres":
-                string[] sanitizedGenres = tagValue.Replace("___", "　")
-                                              .Replace("__", " ")
-                                              .Split(new[] { ";" },
-                                                     StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                                              .Select(g => g.Normalize())
-                                              .ToArray();
+                string[] sanitizedGenres =
+                    updateType == TagUpdateType.Clear
+                        ? []
+                        : tagValue.Replace("___", "　")
+                                  .Replace("__", " ")
+                                  .Split(
+                                      new[] { ";" },
+                                      StringSplitOptions.RemoveEmptyEntries |
+                                         StringSplitOptions.TrimEntries)
+                                  .Select(g => g.Normalize())
+                                  .ToArray();
                 mediaFile.Genres = GetUpdatedValues(mediaFile.Genres,
                                                     sanitizedGenres,
                                                     updateType);
@@ -247,18 +222,32 @@ public sealed class TagUpdaterMultiple : IPathOperation
         /// <param name="newValue">The text to be added.</param>
         /// <param name="updateType"></param>
         /// <param name="useNewLine">Whether or not to add line breaks between the new and old text.</param>
-        /// <returns></returns>
-        static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType, bool useNewLines)
+        static string GetUpdatedValue(
+            string currentValue,
+            string newValue,
+            TagUpdateType updateType,
+            bool useNewLines)
         {
+            if (updateType == TagUpdateType.Clear)
+            {
+                return string.Empty;
+            }
+
             string divider = useNewLines ? Environment.NewLine + Environment.NewLine : string.Empty;
             return updateType switch
             {
                 TagUpdateType.Overwrite => newValue,
-                TagUpdateType.Prepend =>   newValue + divider + currentValue,
+                TagUpdateType.Prepend   => newValue + divider + currentValue,
                 _ =>                       currentValue + divider + newValue,
             };
         }
 
+        /// <summary>
+        /// Returns the new, updated values for a tag as a collection.
+        /// </summary>
+        /// <param name="currentValues">The original values to be modified.</param>
+        /// <param name="newValues">The new text to be added.</param>
+        /// <param name="updateType"></param>
         static string[] GetUpdatedValues(
             string[] currentValues,
             string[] newValues,
@@ -266,9 +255,10 @@ public sealed class TagUpdaterMultiple : IPathOperation
         {
             return updateType switch
             {
+                TagUpdateType.Clear     => [],
                 TagUpdateType.Overwrite => newValues,
-                TagUpdateType.Prepend =>   newValues.Concat(currentValues).ToArray(),
-                _ =>                       currentValues.Concat(newValues).ToArray()
+                TagUpdateType.Prepend   => [.. newValues, .. currentValues],
+                _ =>                       [.. currentValues, .. newValues]
             };
         }
     }
