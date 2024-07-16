@@ -82,6 +82,7 @@ public sealed class TagArtworkExtractor : IPathOperation
         {
             printer.Warning("More than one image is most populous, but only one will be extracted.");
         }
+
         var filesWithChosenMostCommonArt = filesWithMostCommonArt.First();
 
         ExtractArtwork(filesWithChosenMostCommonArt, printer);
@@ -92,13 +93,9 @@ public sealed class TagArtworkExtractor : IPathOperation
         }
     }
 
-    private static void ExtractArtwork(
-        FilesGroupedByCount filesWithChosenMostCommonArt,
-        IPrinter printer)
+    private static void ExtractArtwork(FilesGroupedByCount fileGroup, IPrinter printer)
     {
-        int failures = 0;
-
-        MediaFile artSourceFile = filesWithChosenMostCommonArt.First();
+        MediaFile artSourceFile = fileGroup.First();
         string directoryName = artSourceFile.FileInfo.DirectoryName!;
 
         var extractResult = artSourceFile.ExtractArtworkToFile(directoryName, _artworkFileName);
@@ -108,15 +105,7 @@ public sealed class TagArtworkExtractor : IPathOperation
         }
         else
         {
-            failures++;
             printer.FirstError(extractResult, "Artwork extraction error:");
-        }
-
-        if (failures != 0)
-        {
-            var errorLabel = failures == 1 ? "error" : "errors";
-            printer.Warning($"There were {failures} extraction {errorLabel}, so will not delete any artwork.");
-            return;
         }
     }
 
