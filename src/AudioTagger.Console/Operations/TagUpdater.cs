@@ -20,7 +20,7 @@ public sealed class TagUpdater : IPathOperation
         var regexes = settings?.Tagging?.RegexPatterns;
         if (regexes?.Any() != true)
         {
-            throw new InvalidOperationException("No regexes were found! Cannot continue.");
+            throw new InvalidOperationException("No tagging regexes found in settings! Cannot continue.");
         }
 
         RegexCollection regexCollection = new(regexes);
