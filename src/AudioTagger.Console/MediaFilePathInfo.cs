@@ -27,25 +27,20 @@ internal sealed class MediaFilePathInfo
 
     internal MediaFilePathInfo(string workingPath, string path)
     {
-        if (path.Contains(workingPath))
-        {
-            WorkingPath = workingPath;
-
-            string relativePath = path.Replace(workingPath, string.Empty);
-            string[] parts = relativePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
-            SubDirectories = [.. parts[..^1]]; // All but the final item.
-            FileName = parts[^1]; // The final item, which, in paths, should always be the file name.
-        }
-        else
-        {
+        if (!path.Contains(workingPath))
             throw new ArgumentException($"Working path \"{workingPath}\" must be present in path \"{path}\".");
-        }
+
+        WorkingPath = workingPath;
+
+        string relativePath = path.Replace(workingPath, string.Empty);
+        string[] parts = relativePath.Split(PathSeparators, StringSplitOptions.RemoveEmptyEntries);
+        SubDirectories = [.. parts[..^1]]; // All but the final item.
+        FileName = parts[^1]; // The final item, which, in paths, should always be the file name.
     }
 
     /// <summary>
     /// Gets the full path, including the file name, optionally prepending the working directory.
     /// </summary>
-    /// <param name="includeWorkingPath"></param>
     internal string FullFilePath(bool includeWorkingPath)
     {
         return includeWorkingPath
@@ -56,7 +51,6 @@ internal sealed class MediaFilePathInfo
     /// <summary>
     /// Gets the directory path, excluding the file name, optionally prepending the working directory.
     /// </summary>
-    /// <param name="includeWorkingPath"></param>
     internal string DirectoryPath(bool includeWorkingPath)
     {
         return includeWorkingPath
