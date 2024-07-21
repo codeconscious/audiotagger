@@ -53,7 +53,7 @@ public sealed class SpectrePrinter : IPrinter
     {
         PrintEmptyLines(prependLines);
 
-        if (!lineParts.Any())
+        if (lineParts.None())
         {
             return;
         }
@@ -75,9 +75,9 @@ public sealed class SpectrePrinter : IPrinter
     {
         PrintEmptyLines(prependLines);
 
-        if (!lines.Any())
+        if (lines.None())
         {
-            return; // TODO: Think about this.
+            return;
         }
 
         foreach (OutputLine line in lines)

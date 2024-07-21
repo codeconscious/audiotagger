@@ -48,7 +48,7 @@ public sealed class TagUpdater : IPathOperation
             }
         }
 
-        if (errorFiles.Any())
+        if (errorFiles.Count != 0)
         {
             printer.Print("Files with errors:");
             errorFiles.ForEach(f => printer.Print("- " + f));
@@ -98,7 +98,7 @@ public sealed class TagUpdater : IPathOperation
         UpdatableFields updateableFields = new(matchedTags, artistsWithGenres);
         Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
-        if (!proposedUpdates.Any())
+        if (proposedUpdates.None())
         {
             printer.Print($"No updates needed for \"{mediaFile.FileNameOnly}\".",
                           ResultType.Neutral);

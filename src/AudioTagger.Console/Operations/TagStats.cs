@@ -7,26 +7,26 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagStats : IPathOperation
 {
-    public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
-                      DirectoryInfo workingDirectory,
-                      Settings settings,
-                      IPrinter printer)
+    public void Start(
+        IReadOnlyCollection<MediaFile> mediaFiles,
+        DirectoryInfo workingDirectory,
+        Settings settings,
+        IPrinter printer)
     {
         const int topArtistCount = 25;
         string[] ignoreArtists = [string.Empty, "VA", "Various", "Various Artists", "<unknown>"];
 
         var topArtists = mediaFiles
-            .Where(m => m.Artists.Any() &&
-                        m.AlbumArtists.All(a => !ignoreArtists.Contains(a)) &&
-                        !ignoreArtists.Intersect(m.Artists).Any() &&
-                        !m.Genres.Contains("日本語会話"))
+            .Where(m =>
+                m.Artists.Length != 0 &&
+                m.AlbumArtists.All(a => !ignoreArtists.Contains(a)) &&
+                ignoreArtists.Intersect(m.Artists).None() &&
+                !m.Genres.Contains("日本語会話"))
             .GroupBy(a =>
-                a.AlbumArtists.Any()
+                a.AlbumArtists.Length != 0
                     ? a.AlbumArtists
                     : a.Artists, new ArtistsComparer())
-            .ToDictionary(g =>
-                string.Join(", ", g.Key),
-                g => g.Count())
+            .ToDictionary(g => string.Join(", ", g.Key), g => g.Count())
             .OrderByDescending(g => g.Value)
             .Take(topArtistCount);
 
@@ -164,17 +164,18 @@ public sealed class TagStats : IPathOperation
         printer.Print($"Amount of album art: {totalEmbeddedAlbumArtMb} MB");
     }
 
-    private static void PrintToTable(string title,
-                                     IList<string> columnNames,
-                                     List<string[]> rows,
-                                     List<Justify>? justifications = null)
+    private static void PrintToTable(
+        string title,
+        IList<string> columnNames,
+        List<string[]> rows,
+        List<Justify>? justifications = null)
     {
         if (string.IsNullOrWhiteSpace(title))
         {
             throw new InvalidOperationException("A title must be provided.");
         }
 
-        if (columnNames == null || rows == null || !columnNames.Any() || !rows.Any())
+        if (columnNames == null || rows == null || columnNames.Count == 0 || rows.Count == 0)
         {
             throw new InvalidOperationException("Column names and row data must be provided.");
         }

@@ -2,9 +2,15 @@ namespace AudioTagger.Console;
 
 public static class Extensions
 {
+    /// <summary>
+    /// Determines whether a collection is empty.
+    /// </summary>
     public static bool None<T>(this IEnumerable<T> collection) =>
         !collection.Any();
 
+    /// <summary>
+    /// Determines whether no elements of a sequence satisfy a given condition.
+    /// </summary>
     public static bool None<T>(this IEnumerable<T> collection, Func<T, bool> predicate) =>
         !collection.Any(predicate);
 

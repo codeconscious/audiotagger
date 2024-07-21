@@ -43,7 +43,6 @@ public sealed class MediaFile
                          .ToArray();
     }
 
-    // TODO: Note why Performers is used instead of Artists.
     public string[] Artists
     {
         get => _taggedFile.Tag.Performers?.Select(a => a?.Normalize() ?? string.Empty)
@@ -68,7 +67,7 @@ public sealed class MediaFile
         set => _taggedFile.Tag.Album = value?.Trim()?.Normalize();
     }
 
-    public bool LacksArtists => !AlbumArtists.Any() && !Artists.Any();
+    public bool LacksArtists => AlbumArtists.Length == 0 && Artists.Length == 0;
 
     public uint Year
     {

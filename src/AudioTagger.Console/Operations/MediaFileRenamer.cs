@@ -149,7 +149,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
         static void PrintErrors(IList<string> errors, IPrinter printer)
         {
-            if (!errors.Any())
+            if (errors.None())
             {
                 return;
             }
@@ -395,7 +395,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
     private static void PrintDeletedDirectories(IList<string> dirs, IPrinter printer)
     {
-        if (!dirs.Any())
+        if (dirs.None())
         {
             printer.Print("No directories were deleted.");
             return;

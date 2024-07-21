@@ -34,14 +34,14 @@ public static class ResponseHandler
                                                IReadOnlyList<KeyResponse> allowedResponses,
                                                IPrinter printer)
     {
-        if (!question.Any())
+        if (question.None())
         {
             throw new ArgumentException(
                 "Question data must be provided",
                 nameof(question));
         }
 
-        if (!allowedResponses.Any())
+        if (allowedResponses.None())
         {
             throw new ArgumentException(
                 "At least one allowed response must be provided",

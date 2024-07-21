@@ -39,7 +39,7 @@ public sealed class TagGenreExtractor : IPathOperation
         Watch watch = new();
 
         var relevantFiles = mediaFiles.Where(HasGenresAndArtists);
-        if (!relevantFiles.Any())
+        if (relevantFiles.None())
         {
             printer.Error("There are no media files with an artist and genre to process.");
             return;

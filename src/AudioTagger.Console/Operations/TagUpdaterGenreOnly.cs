@@ -78,7 +78,7 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
         const string updateType = "genre";
         UpdatableFields updateableFields = new(updateType, artistsWithGenres[artistName]);
         Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
-        if (!proposedUpdates.Any())
+        if (proposedUpdates.None())
         {
             printer.Print($"No {updateType} updates needed for \"{mediaFile.FileNameOnly}\".", fgColor: ConsoleColor.DarkGray);
         }

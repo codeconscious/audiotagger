@@ -9,16 +9,16 @@ public sealed record class RegexCollection
     /// </summary>
     public IReadOnlyCollection<string> Patterns { get; }
 
-    public RegexCollection(IEnumerable<string> regexes)
+    public RegexCollection(ICollection<string> regexPatterns)
     {
-        ArgumentNullException.ThrowIfNull(regexes);
+        ArgumentNullException.ThrowIfNull(regexPatterns);
 
-        if (!regexes.Any())
+        if (regexPatterns.Count == 0)
         {
             throw new InvalidOperationException("No regex patterns were found.");
         }
 
-        Patterns = regexes.Where(line =>
+        Patterns = regexPatterns.Where(line =>
                                !line.StartsWith("# ") &&  // Comments
                                !line.StartsWith("// ") && // Comments
                                line.HasText())

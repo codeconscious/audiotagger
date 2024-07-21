@@ -60,7 +60,7 @@ public static class Program
             invalidPaths.ForEach(p => printer.Error($"The path \"{p}\" is invalid."));
         }
 
-        if (!validPaths.Any())
+        if (validPaths.None())
         {
             printer.Error("No valid paths were found, so cannot continue.");
             return;
