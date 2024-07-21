@@ -22,7 +22,8 @@ public sealed class MediaFileRenamer : IPathOperation
             printer.Error("The settings file contained no rename settings, so cannot continue.");
             return;
         }
-        else if (settings?.Renaming.Patterns is null)
+
+        if (settings.Renaming.Patterns is null)
         {
             printer.Error("The rename settings contained no rename patterns, so cannot continue.");
             return;
