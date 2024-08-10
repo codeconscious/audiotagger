@@ -80,10 +80,10 @@ A sample settings file follows:
   },
   "tagging": {
     "regexPatterns": [
-      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<trackNo>\\d+) [–-] (?<artists>.+?) [–-] (?<title>.+)(?=\\.m4a)",
-      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<trackNo>\\d{1,3}) [–-] (?<title>.+)(?=\\.m4a)",
-      "(?:(?<albumArtists>.+) ≡ )(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<artists>.+?) [–-] (?<title>.+)(?=\\.m4a)",
-      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<title>.+)(?=\\.m4a)",    ]
+      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<trackNo>\\d+) [–-] (?<artists>.+?) [–-] (?<title>.+)(?=\\.(?:m4a|opus))",
+      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<trackNo>\\d{1,3}) [–-] (?<title>.+)(?=\\.(?:m4a|opus))",
+      "(?:(?<albumArtists>.+) ≡ )(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<artists>.+?) [–-] (?<title>.+)(?=\\.(?:m4a|opus))",
+      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<title>.+)(?=\\.(?:m4a|opus))",    ]
   }
 }
 ```

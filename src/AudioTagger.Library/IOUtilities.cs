@@ -6,7 +6,7 @@ namespace AudioTagger.Library;
 public static class IOUtilities
 {
     private static readonly List<string> SupportedExtensions =
-        [".mp3", ".ogg", ".mkv", ".mp4", ".m4a"];
+        [".mp3", ".ogg", ".mkv", ".mp4", ".m4a", ".opus"];
 
     /// <summary>
     /// Characters considered invalid for use in file paths.
