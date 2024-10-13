@@ -26,7 +26,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
         string[] inputLines;
         try
         {
-            inputLines = File.ReadAllLines(_inputFile);
+            inputLines = File.ReadAllLines(_inputFile).Where(l => l.HasText()).ToArray();
         }
         catch (FileNotFoundException)
         {
