@@ -115,11 +115,13 @@ public sealed class MediaFileRenamer : IPathOperation
                 continue;
             }
 
+            if (isCancelRequested)
+            {
+                break;
+            }
+
             try
             {
-                if (isCancelRequested)
-                    break;
-
                 // Ensure artists with multiple tracks are saved in subdirectories.
                 bool useArtistDirectory = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] > 1;
 
