@@ -45,7 +45,7 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         var duplicateGroups = includedFiles
             .ToLookup(m =>
-                RemoveSubstrings(m.ArtistSummary, artistReplacements) +
+                RemoveSubstrings(m.Artists.FirstOrDefault() ?? string.Empty, artistReplacements) +
                 RemoveSubstrings(m.Title, titleReplacements),
                 StringComparer.OrdinalIgnoreCase)
             .Where(g => g.Key.HasText() && g.Count() > 1)
@@ -164,7 +164,7 @@ public sealed class TagDuplicateFinder : IPathOperation
             _ => terms.Aggregate(
                     new StringBuilder(source),
                     (sb, term) => sb.Replace(term, string.Empty),
-                    sb => sb.ToString())
+                    sb => sb.ToString().Trim())
         };
     }
 
