@@ -17,7 +17,7 @@ public sealed class MediaFileRenamer : IPathOperation
         Settings settings,
         IPrinter printer)
     {
-        if (settings?.Renaming is null)
+        if (settings.Renaming is null)
         {
             printer.Error("The settings file contained no rename settings, so cannot continue.");
             return;
@@ -108,7 +108,7 @@ public sealed class MediaFileRenamer : IPathOperation
         {
             MediaFile file = mediaFiles.ElementAt(i);
 
-            if (file.Title?.Length == 0)
+            if (file.Title.Length == 0)
             {
                 printer.Print($"Skipping \"{file.FileNameOnly}\" because it has no title.",
                               fgColor: ConsoleColor.DarkRed);
@@ -193,7 +193,7 @@ public sealed class MediaFileRenamer : IPathOperation
         foreach (string testPattern in renamePatterns)
         {
             MatchCollection matches = TagFinderRegex.Matches(testPattern);
-            var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
+            var expectedTags = matches.Select(m => m.Value).ToImmutableList();
             if (expectedTags.Count == populatedTagNames.Count &&
                 expectedTags.TrueForAll(tag => populatedTagNames.Contains(tag)))
             {
@@ -225,7 +225,7 @@ public sealed class MediaFileRenamer : IPathOperation
         }
 
         printer.Print("   Old name: " + oldPathInfo.FullFilePath(true));
-        printer.Print("   New name: " + newPathInfo.FullFilePath(true));;
+        printer.Print("   New name: " + newPathInfo.FullFilePath(true));
 
         if (doConfirm)
         {
@@ -283,7 +283,7 @@ public sealed class MediaFileRenamer : IPathOperation
                 );
 
             var ext = Path.GetExtension(file.FileNameOnly);
-            var unsanitizedName = workingFileName.ToString() + ext;
+            var unsanitizedName = workingFileName + ext;
             return IOUtilities.SanitizePath(unsanitizedName);
 
             StringBuilder ReplacePlaceholders(StringBuilder workingName, string tagName)

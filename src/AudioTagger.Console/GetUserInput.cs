@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using AudioTagger.Library;
+﻿using AudioTagger.Library;
 
 namespace AudioTagger.Console;
 
 public enum UserResponse
 {
-    None,
     Yes,
     No,
     Cancel
@@ -15,8 +11,8 @@ public enum UserResponse
 
 public sealed record KeyResponse
 {
-    public char Key { get; init; }
-    public UserResponse Response { get; init; }
+    public char Key { get; }
+    public UserResponse Response { get; }
 
     public KeyResponse(char key, UserResponse response)
     {
@@ -30,9 +26,9 @@ public static class ResponseHandler
     /// <summary>
     /// Ask the user a question that they can answer with a single keystroke.
     /// </summary>
-    public static UserResponse AskUserQuestion(IReadOnlyList<LineSubString> question,
-                                               IReadOnlyList<KeyResponse> allowedResponses,
-                                               IPrinter printer)
+    private static UserResponse AskUserQuestion(IReadOnlyList<LineSubString> question,
+                                                IReadOnlyList<KeyResponse> allowedResponses,
+                                                IPrinter printer)
     {
         if (question.None())
         {
@@ -56,13 +52,12 @@ public static class ResponseHandler
             ConsoleKeyInfo keyInfo = System.Console.ReadKey(true);
             char keyChar = char.ToLowerInvariant(keyInfo.KeyChar);
 
-            KeyResponse? relevantKeyResponse =
-                allowedResponses
-                    .Where(r => r.Key == keyChar)?
-                    .FirstOrDefault();
+            var relevantKeyResponse = allowedResponses.FirstOrDefault(r => r.Key == keyChar);
 
             if (relevantKeyResponse == null)
+            {
                 continue;
+            }
 
             return relevantKeyResponse.Response;
         }
@@ -76,13 +71,13 @@ public static class ResponseHandler
     {
         var question = new LineSubString[]
         {
-            new ("Press "),
-            new ("Y", ConsoleColor.Magenta),
-            new (" or "),
-            new ("N", ConsoleColor.Magenta),
-            new (" (or "),
-            new ("C", ConsoleColor.Magenta),
-            new (" to cancel):  "),
+            new("Press "),
+            new("Y", ConsoleColor.Magenta),
+            new(" or "),
+            new("N", ConsoleColor.Magenta),
+            new(" (or "),
+            new("C", ConsoleColor.Magenta),
+            new(" to cancel):  "),
         };
 
         var allowedResponses = new List<KeyResponse>

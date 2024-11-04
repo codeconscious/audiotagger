@@ -15,7 +15,7 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         Watch watch = new();
 
-        var exclusions = settings.Duplicates?.Exclusions ?? [];
+        var exclusions = settings.Duplicates.Exclusions ?? [];
         printer.Print($"Found {exclusions.Count} exclusion rule(s) in the settings.");
 
         var includedFiles = exclusions.IsEmpty
@@ -35,11 +35,11 @@ public sealed class TagDuplicateFinder : IPathOperation
 
         static string pluralizeTerm(int count) => Utilities.Pluralize(count, "term", "terms");
 
-        var artistReplacements =  settings.Duplicates?.ArtistReplacements ?? [];
+        var artistReplacements =  settings.Duplicates.ArtistReplacements ?? [];
         string artistLabel = pluralizeTerm(artistReplacements.Count);
         printer.Print($"Found {artistReplacements.Count} artist replacement {artistLabel}.");
 
-        var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
+        var titleReplacements = settings.Duplicates.TitleReplacements ?? [];
         string titleLabel = pluralizeTerm(titleReplacements.Count);
         printer.Print($"Found {titleReplacements.Count} title replacement {titleLabel}.");
 
@@ -64,9 +64,9 @@ public sealed class TagDuplicateFinder : IPathOperation
         printer.Print($"Found {groupCount} duplicate {groupLabel} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
 
-        string? searchFor = settings?.Duplicates?.PathSearchFor?.TextOrNull();
-        string? replaceWith = settings?.Duplicates?.PathReplaceWith?.TextOrNull();
-        string? saveDir = settings?.Duplicates?.SavePlaylistDirectory;
+        string? searchFor = settings.Duplicates.PathSearchFor?.TextOrNull();
+        string? replaceWith = settings.Duplicates.PathReplaceWith?.TextOrNull();
+        string? saveDir = settings.Duplicates.SavePlaylistDirectory;
         CreatePlaylistFile(duplicateGroups, saveDir, (searchFor, replaceWith), printer);
     }
 
@@ -172,6 +172,7 @@ public sealed class TagDuplicateFinder : IPathOperation
     /// Creates a playlist list in M3U playlist format.
     /// </summary>
     /// <param name="duplicateGroups"></param>
+    /// <param name="saveDirectory"></param>
     /// <param name="replacements">Optionally replace parts of the file paths.</param>
     /// <param name="printer"></param>
     private static void CreatePlaylistFile(

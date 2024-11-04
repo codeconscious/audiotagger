@@ -31,8 +31,9 @@ public sealed class TagCacher : IPathOperation
 
         Watch watch = new();
 
-        var summaries = mediaFiles.Select(m => {
-                return new TagSummary(
+        var summaries = mediaFiles
+            .Select(m =>
+                new TagSummary(
                     m.Artists,
                     m.Album,
                     m.TrackNo,
@@ -40,8 +41,7 @@ public sealed class TagCacher : IPathOperation
                     m.Year,
                     m.Genres,
                     m.Duration
-                );
-            });
+        ));
 
         printer.Print("Serializing the tags to JSON...");
         JsonSerializerOptions options = new()

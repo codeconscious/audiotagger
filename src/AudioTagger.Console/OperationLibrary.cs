@@ -7,7 +7,7 @@ namespace AudioTagger.Console;
 
 internal static class OperationLibrary
 {
-    internal static readonly IReadOnlyList<Operation> Operations =
+    private static readonly IReadOnlyList<Operation> Operations =
         [
             new(
                 ["-v", "--view"],
@@ -109,7 +109,7 @@ internal static class OperationLibrary
             o => o.Description);
     }
 
-    public static Result<IPathOperation> GetPathOperation(string requestedOperation)
+    private static Result<IPathOperation> GetPathOperation(string requestedOperation)
     {
         string loweredOperation = requestedOperation.ToLowerInvariant();
 
@@ -129,10 +129,9 @@ internal static class OperationLibrary
         var successes = new List<IPathOperation>();
         var failures = new List<string>();
 
-        Result<IPathOperation> currentResult;
         foreach (string operation in requestedOperations)
         {
-            currentResult = GetPathOperation(operation);
+            Result<IPathOperation> currentResult = GetPathOperation(operation);
             if (currentResult.IsSuccess)
             {
                 successes.Add(currentResult.Value);
@@ -154,8 +153,6 @@ internal static class OperationLibrary
         public required string Description { get; init; }
         public required IPathOperation PathOperation { get; init; }
         public required bool IsHidden { get; init; }
-
-        private Operation() { }
 
         [SetsRequiredMembers]
         public Operation(

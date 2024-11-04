@@ -15,14 +15,14 @@ public sealed class TagViewerSummary : IPathOperation
         var orderedFiles = mediaFiles
             .OrderBy(m => {
                 return string.Concat(
-                    m.AlbumArtists?.Any() == true
+                    m.AlbumArtists.Length != 0
                     ? m.AlbumArtists
-                    : m.Artists?.Any() == true
+                    : m.Artists.Length != 0
                         ? m.Artists
                         : []
                 );
             })
-            .ThenBy(m => m.Album ?? string.Empty)
+            .ThenBy(m => m.Album)
             .ThenBy(m => m.TrackNo)
             .ThenBy(m => m.Title)
             .ToImmutableArray();
@@ -37,9 +37,7 @@ public sealed class TagViewerSummary : IPathOperation
             ("Dur.", Justify.Right),
             ("RG(Tr)", Justify.Right));
 
-        table = AppendDataRowsToTable(table,
-                                      orderedFiles,
-                                      printer);
+        table = AppendDataRowsToTable(table, orderedFiles, printer);
 
         AnsiConsole.Write(table);
     }

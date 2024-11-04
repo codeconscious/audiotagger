@@ -65,7 +65,7 @@ public sealed class SpectrePrinter : IPrinter
                 AnsiConsole.MarkupLine(subString);
             else
                 AnsiConsole.Markup(subString);
-        };
+        }
 
         PrintEmptyLines(appendLines);
     }
@@ -98,7 +98,7 @@ public sealed class SpectrePrinter : IPrinter
     public void FirstError(IResultBase failResult, string? prepend = null)
     {
         string pre = prepend is null ? string.Empty : $"{prepend} ";
-        string message = failResult?.Errors?.FirstOrDefault()?.Message ?? string.Empty;
+        string message = failResult.Errors?.FirstOrDefault()?.Message ?? string.Empty;
 
         Error($"{pre}{message}");
     }

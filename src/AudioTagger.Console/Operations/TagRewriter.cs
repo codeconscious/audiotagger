@@ -13,14 +13,17 @@ public sealed class TagRewriter : IPathOperation
         var watch = new Watch();
         var failures = 0;
 
-        Result result;
         foreach (MediaFile file in mediaFiles)
         {
-            result = file.RewriteFileTags();
-            if (result.IsFailed)
+            var result = file.RewriteFileTags();
+            
+            if (result.IsSuccess)
             {
-                printer.FirstError(result);
+                continue;
             }
+            
+            failures++;
+            printer.FirstError(result);
         }
 
         var failureLabel = failures == 1 ? "failure" : "failures";

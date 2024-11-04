@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using AudioTagger.Library;
 using Spectre.Console;
@@ -102,7 +101,7 @@ public sealed class TagStats : IPathOperation
             longestTracks.Select(t => new[] {
                 t.Artists.Any() ? t.Artists.First() : "(Unknown Artist)",
                 t.Title,
-                string.Format("{0:D2}:{1:D2}", (int) t.Duration.TotalMinutes, t.Duration.Seconds), // mm:ss
+                $"{(int)t.Duration.TotalMinutes:D2}:{t.Duration.Seconds:D2}", // mm:ss
                 Path.GetExtension(t.FileNameOnly),
                 $"{t.FileSizeInBytes:#,##0}"
             }).ToList(),
@@ -110,7 +109,7 @@ public sealed class TagStats : IPathOperation
 
         const int mostAlbumTracksCount = 30;
         var mostAlbumTracks = mediaFiles
-            .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
+            .Where(m => m.AlbumArt.Length != 0)
             .GroupBy(m => $"{m.ArtistSummary}  /  {m.Album}")
             .ToDictionary(g => g.Key, m => m.Count())
             .OrderByDescending(d => d.Value)
@@ -128,7 +127,7 @@ public sealed class TagStats : IPathOperation
 
         int largestEmbeddedAlbumArtCount = 50;
         var largestEmbeddedAlbumArt = mediaFiles
-            .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
+            .Where(m => m.AlbumArt.Length != 0)
             .OrderByDescending(m => m.AlbumArt.Length)
             .GroupBy(m => $"{m.ArtistSummary}  /  {m.Album}")
             .ToDictionary(g => g.Key, m => (m.Sum(n => n.AlbumArt.Length), m.Count()))
@@ -147,7 +146,7 @@ public sealed class TagStats : IPathOperation
 
         int largestEmbeddedAlbumFilesCount = 50;
         var largestEmbeddedAlbumFiles = mediaFiles
-            .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
+            .Where(m => m.AlbumArt.Length != 0)
             .OrderByDescending(m => m.AlbumArt.Length)
             .Take(largestEmbeddedAlbumFilesCount);
 
@@ -181,7 +180,7 @@ public sealed class TagStats : IPathOperation
         }
 
         if (columnNames.Count != rows[0].Length ||
-            !rows.All(r => r.Length == columnNames.Count))
+            rows.Any(r => r.Length != columnNames.Count))
         {
             throw new InvalidOperationException("The counts of columns and rows must be identical.");
         }
@@ -238,9 +237,9 @@ public sealed class TagStats : IPathOperation
             return ConcatenateArtists(x) == ConcatenateArtists(y);
         }
 
-        public int GetHashCode([DisallowNull] string[] obj)
+        public int GetHashCode(string[] obj)
         {
-            // Not sure this is correct.
+            // Not sure that this is correct.
             return string.Concat(obj).ToLower().GetHashCode();
         }
 
@@ -267,7 +266,7 @@ public sealed class TagStats : IPathOperation
             };
         }
 
-        public int GetHashCode([DisallowNull] string obj)
+        public int GetHashCode(string obj)
         {
             return obj.ToLower().GetHashCode();
         }

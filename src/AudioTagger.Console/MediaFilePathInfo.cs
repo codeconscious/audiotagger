@@ -1,7 +1,7 @@
 namespace AudioTagger.Console;
 
 /// <summary>
-/// Contains all of the path information for a specific MediaFile.
+/// Contains all the path information for a specific MediaFile.
 /// </summary>
 internal sealed class MediaFilePathInfo
 {

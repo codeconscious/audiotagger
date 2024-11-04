@@ -13,11 +13,10 @@ public sealed class TagUpdater : IPathOperation
         Settings settings,
         IPrinter printer)
     {
-        bool cancelRequested = false;
-        bool doConfirm = true;
+        var doConfirm = true;
         List<string> errorFiles = [];
 
-        var regexes = settings?.Tagging?.RegexPatterns;
+        var regexes = settings.Tagging?.RegexPatterns;
         if (regexes?.Any() != true)
         {
             throw new InvalidOperationException("No tagging regexes found in settings! Cannot continue.");
@@ -30,11 +29,11 @@ public sealed class TagUpdater : IPathOperation
         {
             try
             {
-                cancelRequested = UpdateTags(
+                var cancelRequested = UpdateTags(
                     mediaFile,
                     regexCollection,
                     printer,
-                    settings!,
+                    settings,
                     ref doConfirm);
 
                 if (cancelRequested)
@@ -44,7 +43,6 @@ public sealed class TagUpdater : IPathOperation
             {
                 printer.Error($"Update error: {ex.Message}");
                 errorFiles.Add(mediaFile.FileNameOnly);
-                continue;
             }
         }
 
@@ -79,11 +77,11 @@ public sealed class TagUpdater : IPathOperation
             return shouldCancel;
         }
 
-        IEnumerable<Group>? matchedTags = match.Groups
+        IEnumerable<Group> matchedTags = match.Groups
                                .OfType<Group>()
                                .Where(g => g.Success);
 
-        if (matchedTags?.Any() != true)
+        if (matchedTags.Any() != true)
         {
             printer.Print($"Could not parse data for filename \"{mediaFile.FileNameOnly}.\"",
                             ResultType.Failure);
