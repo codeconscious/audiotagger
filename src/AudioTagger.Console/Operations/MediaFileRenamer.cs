@@ -11,6 +11,8 @@ public sealed class MediaFileRenamer : IPathOperation
 
     private static readonly List<string> SafeToDeleteFileExtensions = [".DS_Store"];
 
+    private const string JoinSeparator = "; ";
+
     public void Start(
         IReadOnlyCollection<MediaFile> mediaFiles,
         DirectoryInfo workingDirectory,
@@ -123,7 +125,7 @@ public sealed class MediaFileRenamer : IPathOperation
             try
             {
                 // Ensure artists with multiple tracks are saved in subdirectories.
-                bool useArtistDirectory = artistCounts[file.AlbumArtists.JoinWith(file.Artists)] > 1;
+                bool useArtistDirectory = artistCounts[file.AlbumArtists.JoinWith(file.Artists, JoinSeparator)] > 1;
 
                 isCancelRequested = RenameSingleFile(
                     file,
@@ -149,6 +151,7 @@ public sealed class MediaFileRenamer : IPathOperation
         }
 
         PrintErrors(errors, printer);
+        return;
 
         static void PrintErrors(IList<string> errors, IPrinter printer)
         {
@@ -160,13 +163,15 @@ public sealed class MediaFileRenamer : IPathOperation
             uint number = 1;
             printer.Print("ERRORS:");
             foreach (string error in errors)
+            {
                 printer.Print($" - #{number++}: {error}");
+            }
         }
 
         static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
         {
             return mediaFiles
-                .GroupBy(file => file.AlbumArtists.JoinWith(file.Artists))
+                .GroupBy(file => file.AlbumArtists.JoinWith(file.Artists, JoinSeparator))
                 .ToDictionary(g => g.Key, g => g.Count());
         }
     }
