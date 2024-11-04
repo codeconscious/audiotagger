@@ -2,7 +2,7 @@
 
 namespace AudioTagger.Library;
 
-public sealed record class RegexCollection
+public sealed record RegexCollection
 {
     /// <summary>
     /// The regexes used for reading tags from names.

@@ -5,22 +5,22 @@ namespace AudioTagger.Library.UserSettings;
 public sealed record Settings
 {
     [JsonPropertyName("duplicates")]
-    public Duplicates Duplicates { get; set; } = new();
+    public Duplicates Duplicates { get; init; } = new();
 
     [JsonPropertyName("tagging")]
-    public Tagging? Tagging { get; set; }
+    public Tagging? Tagging { get; init; }
 
     [JsonPropertyName("renaming")]
-    public Renaming? Renaming { get; set; }
+    public Renaming? Renaming { get; init; }
 
     [JsonPropertyName("artistGenreCsvFilePath")]
-    public string? ArtistGenreCsvFilePath { get; set; } = null;
+    public string? ArtistGenreCsvFilePath { get; init; } = null;
 
     [JsonPropertyName("resetSavedArtistGenres")]
-    public bool ResetSavedArtistGenres { get; set; } = false;
+    public bool ResetSavedArtistGenres { get; init; } = false;
 
     [JsonPropertyName("tagCacheFilePath")]
-    public string? TagCacheFilePath { get; set; }
+    public string? TagCacheFilePath { get; init; }
 }
 
 /// <summary>

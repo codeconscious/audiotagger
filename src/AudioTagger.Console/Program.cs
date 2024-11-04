@@ -37,8 +37,8 @@ public static class Program
         Settings settings = readSettingsResult.Value;
 
         // Prefer ID3 v2.3 over v2.4 because the former is apparently more widely supported.
-        SettingsService.SetId3v2Version(
-            version: SettingsService.Id3v2Version.TwoPoint3,
+        SettingsService.SetId3V2Version(
+            version: SettingsService.Id3V2Version.TwoPoint3,
             forceAsDefault: true);
 
         var operationArgs = args.TakeWhile(a => a.StartsWith('-')).ToImmutableArray();

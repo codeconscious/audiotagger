@@ -6,7 +6,7 @@ public sealed class OutputLine
 {
     public List<LineSubString> Line { get; set; } = [];
 
-    public OutputLine() { }
+    private OutputLine() { }
 
     public OutputLine(LineSubString lineParts)
     {
@@ -23,17 +23,17 @@ public sealed class OutputLine
         Line.Add(new LineSubString(text, fgColor, bgColor));
     }
 
-    public void Add(LineSubString lineParts)
+    private void Add(LineSubString lineParts)
     {
         Line.Add(lineParts);
     }
 
-    public void Add(string text, ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
+    private void Add(string text, ConsoleColor? fgColor = null, ConsoleColor? bgColor = null)
     {
         Line.Add(new LineSubString(text, fgColor, bgColor));
     }
 
-    public static OutputLine TagDataWithHeader(string tagName,
+    private static OutputLine TagDataWithHeader(string tagName,
                                                IReadOnlyList<LineSubString> tagData,
                                                string prependLine = "")
     {
@@ -53,7 +53,7 @@ public sealed class OutputLine
         return lineOutput;
     }
 
-    public static OutputLine TagDataWithHeader(string tagName, string tagData,
+    private static OutputLine TagDataWithHeader(string tagName, string tagData,
                                                string prependLine = "")
     {
         return TagDataWithHeader(
@@ -94,7 +94,7 @@ public sealed class OutputLine
                     new(fileData.ReplayGainSummary())
                 }));
 
-        if (fileData.Composers?.Length > 0)
+        if (fileData.Composers.Length > 0)
             lines.Add(TagDataWithHeader("Composers", fileData.Composers.Join()));
 
         if (fileData.Comments.HasText())
@@ -129,7 +129,7 @@ public sealed class OutputLine
             "Quality",
             $"{bitrate}kbps" + separator + $"{sampleRate} kHz" + separator + fileData.ReplayGainSummary());
 
-        if (fileData.Composers?.Length > 0)
+        if (fileData.Composers.Length > 0)
             lines.Add("Composers", string.Join("; ", fileData.Composers));
 
         if (includeComments && fileData.Comments.HasText())

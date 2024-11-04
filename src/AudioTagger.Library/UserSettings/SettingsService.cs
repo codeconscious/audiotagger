@@ -9,9 +9,9 @@ public static class SettingsService
     private const string _settingsFileName = "settings.json";
 
     /// <summary>
-    /// Subversions of ID3 version 2 (such as 2.3 or 2.4).
+    /// Minor versions of ID3 version 2 (such as 2.3 or 2.4).
     /// </summary>
-    public enum Id3v2Version : byte
+    public enum Id3V2Version : byte
     {
         TwoPoint2 = 2,
         TwoPoint3 = 3,
@@ -26,7 +26,7 @@ public static class SettingsService
     ///     When true, forces the specified version when writing the file.
     ///     When false, will defer to the version within the file, if any.
     /// </param>
-    public static void SetId3v2Version(Id3v2Version version, bool forceAsDefault)
+    public static void SetId3V2Version(Id3V2Version version, bool forceAsDefault)
     {
         TagLib.Id3v2.Tag.DefaultVersion = (byte)version;
         TagLib.Id3v2.Tag.ForceDefaultVersion = forceAsDefault;
@@ -37,7 +37,7 @@ public static class SettingsService
     /// Otherwise, does nothing.
     /// </summary>
     /// <returns>A bool indicating success or no action (true) or else failure (false).</returns>
-    public static bool CreateIfMissing(IPrinter printer)
+    private static bool CreateIfMissing(IPrinter printer)
     {
         if (File.Exists(_settingsFileName))
         {
@@ -84,7 +84,7 @@ public static class SettingsService
     /// <param name="settings"></param>
     /// <param name="printer"></param>
     /// <returns>A bool indicating success or failure.</returns>
-    public static bool Write(Settings settings, IPrinter printer)
+    private static bool Write(Settings settings, IPrinter printer)
     {
         try
         {

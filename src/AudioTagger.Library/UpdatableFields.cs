@@ -14,13 +14,14 @@ public sealed class UpdatableFields
     public uint? TrackNo { get; }
     public string[]? Genres { get; }
 
-    public byte Count { get; }
+    private byte Count { get; }
 
     /// <summary>
     /// Constructor that reads matched regex group names and
     /// maps the data to the correct tag name property.
     /// </summary>
     /// <param name="matchedGroups"></param>
+    /// <param name="artistsWithGenres"></param>
     public UpdatableFields(
         IEnumerable<Group> matchedGroups,
         IDictionary<string, string> artistsWithGenres)
@@ -92,7 +93,7 @@ public sealed class UpdatableFields
         // If no genre was manually passed in, check the settings for a registered one.
         if (Genres?.Any() != true &&
             Artists?.Any() == true &&
-            artistsWithGenres?.Any() == true)
+            artistsWithGenres.Any() == true)
         {
             if (artistsWithGenres.Any() &&
                 artistsWithGenres.ContainsKey(Artists[0]))
