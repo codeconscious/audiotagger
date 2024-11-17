@@ -74,8 +74,6 @@ public sealed class TagUpdaterMultiple : IPathOperation
 
         foreach ((MediaFile File, string NewTitle) pair in updateSet)
         {
-            ArgumentNullException.ThrowIfNull(pair);
-
             try
             {
                 UpdateTags(pair.File, tagName, pair.NewTitle, updateType);
