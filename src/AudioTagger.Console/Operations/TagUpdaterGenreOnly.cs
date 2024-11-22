@@ -34,7 +34,6 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             {
                 printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
                 errorFiles.Add(mediaFile.FileNameOnly);
-                continue;
             }
         }
 
@@ -97,8 +96,8 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             return;
         }
 
-        printer.Print($"Added \"{proposedUpdates["Genres"]}\" to '{mediaFile.FileNameOnly}'", 0, 0, fgColor: ConsoleColor.Green);
-        return;
+        printer.Print($"Added \"{proposedUpdates["Genres"]}\" to '{mediaFile.FileNameOnly}'",
+                      0, 0, fgColor: ConsoleColor.Green);
     }
 
     /// <summary>

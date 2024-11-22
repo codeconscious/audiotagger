@@ -19,8 +19,8 @@ public sealed class TagGenreExtractor : IPathOperation
         group
             .Select(f => f.Genres.First())
             .GroupBy(genre => genre)
-            .OrderByDescending(group => group.Count())
-            .Select(group => group.Key)
+            .OrderByDescending(g => g.Count())
+            .Select(g => g.Key)
             .First() // Keep only the most populous genre.
             .Trim();
 
@@ -86,12 +86,13 @@ public sealed class TagGenreExtractor : IPathOperation
 
         WriteSummary(existingGenres.Count, mergedGenres.Count, printer);
 
-        Result writeResult = GenreService.Write(settings.ArtistGenreCsvFilePath, mergedGenres);
+        var writeResult = GenreService.Write(settings.ArtistGenreCsvFilePath, mergedGenres);
 
         if (writeResult.IsSuccess)
             printer.Success($"Genres written to \"{settings.ArtistGenreCsvFilePath}\" in {watch.ElapsedFriendly}.");
         else
             printer.FirstError(writeResult, "Genre save error: ");
+        return;
 
         static void WriteSummary(int beforeCount, int afterCount, IPrinter printer)
         {

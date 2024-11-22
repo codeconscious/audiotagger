@@ -29,7 +29,7 @@ public sealed class Normalization : IPathOperation
             {
                 FileName = "mp3gain",
                 Arguments = $"-r -k -p -s i \"{file.FileInfo}\"",
-                RedirectStandardOutput = true,
+                RedirectStandardOutput = true
             };
 
             Process.Start(startInfo)!.WaitForExit();

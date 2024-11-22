@@ -3,7 +3,7 @@ using FluentResults;
 
 namespace AudioTagger.Library;
 
-public static class IOUtilities
+public static class IoUtilities
 {
     private static readonly List<string> SupportedExtensions =
         [".mp3", ".ogg", ".mkv", ".mp4", ".m4a", ".opus"];
@@ -14,13 +14,12 @@ public static class IOUtilities
     private static readonly char[] UnsafePathChars =
         [':', '?', '/', '⧸', '"', '|', '*'];
 
-    public static readonly Func<string, bool> IsSupportedFileExtension =
-        new(
-            fileName =>
-                fileName.HasText() &&
-                !fileName.StartsWith(".") && // Unix-based OS hidden files
-                SupportedExtensions.Any(ext =>
-                    fileName.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase)));
+    private static readonly Func<string, bool> IsSupportedFileExtension =
+        fileName =>
+            fileName.HasText() &&
+            !fileName.StartsWith(".") && // Unix-based OS hidden files
+            SupportedExtensions.Any(ext =>
+                fileName.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase));
 
     public static Result<ImmutableArray<string>> GetAllFileNames(string path, bool searchSubDirectories)
     {
@@ -42,7 +41,7 @@ public static class IOUtilities
 
             if (System.IO.File.Exists(path))
             {
-                var file = new string[] { path }.ToImmutableArray();
+                var file = new[] { path }.ToImmutableArray();
                 return Result.Ok(file);
             }
 

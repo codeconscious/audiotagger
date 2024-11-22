@@ -8,7 +8,7 @@ namespace AudioTagger.Console.Operations;
 /// </summary>
 public sealed class TagUpdaterMultiple : IPathOperation
 {
-    private static readonly string _inputFile = "input.txt";
+    private const string _inputFile = "input.txt";
 
     private enum TagUpdateType { Overwrite, Prepend, Append }
 
@@ -98,7 +98,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
 
     private static TagUpdateType ConfirmUpdateType(string tagName)
     {
-        if (tagName == "year" || tagName == "trackNo")
+        if (tagName is "year" or "trackNo")
         {
             return TagUpdateType.Overwrite;
         }
@@ -125,7 +125,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
             {"Genres", "genres"},
             {"Year", "year"},
             {"Comment", "comment"},
-            {"Track No.", "trackNo"},
+            {"Track No.", "trackNo"}
         };
 
         string response = AnsiConsole.Prompt(
@@ -144,7 +144,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
         string shouldProceed = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("[yellow]Do you want to continue?[/]")
-                .AddChoices([no, yes]));
+                .AddChoices(no, yes));
 
         return shouldProceed == yes;
     }
@@ -183,7 +183,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
             case "albumArtists":
                 string[] sanitizedAlbumArtists = tagValue.Replace("___", "　")
                                                     .Replace("__", " ")
-                                                    .Split(new[] { ";" },
+                                                    .Split([";"],
                                                            StringSplitOptions.RemoveEmptyEntries |
                                                            StringSplitOptions.TrimEntries)
                                                     .Select(a => a.Normalize())
@@ -195,7 +195,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
             case "artists":
                 string[] sanitizedArtists = tagValue.Replace("___", "　")
                                                .Replace("__", " ")
-                                               .Split(new[] { ";" },
+                                               .Split([";"],
                                                       StringSplitOptions.RemoveEmptyEntries |
                                                       StringSplitOptions.TrimEntries)
                                                .Select(a => a.Normalize())
@@ -216,7 +216,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
             case "genres":
                 string[] sanitizedGenres = tagValue.Replace("___", "　")
                                               .Replace("__", " ")
-                                              .Split(new[] { ";" },
+                                              .Split([";"],
                                                      StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                                               .Select(g => g.Normalize())
                                               .ToArray();
@@ -254,7 +254,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
             {
                 TagUpdateType.Overwrite => newValue,
                 TagUpdateType.Prepend =>   newValue + divider + currentValue,
-                _ =>                       currentValue + divider + newValue,
+                _ =>                       currentValue + divider + newValue
             };
         }
 

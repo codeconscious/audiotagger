@@ -126,7 +126,7 @@ public sealed class TagStats : IPathOperation
             [Justify.Left, Justify.Left]);
 
 
-        int largestEmbeddedAlbumArtCount = 50;
+        const int largestEmbeddedAlbumArtCount = 50;
         var largestEmbeddedAlbumArt = mediaFiles
             .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
             .OrderByDescending(m => m.AlbumArt.Length)
@@ -141,11 +141,11 @@ public sealed class TagStats : IPathOperation
             largestEmbeddedAlbumArt.Select(r => new[] {
                 r.Key,
                 r.Value.Item1.ToString("#,##0"),
-                r.Value.Item2.ToString("#,##0"),
+                r.Value.Item2.ToString("#,##0")
             }).ToList(),
             [Justify.Left, Justify.Right, Justify.Right]);
 
-        int largestEmbeddedAlbumFilesCount = 50;
+        const int largestEmbeddedAlbumFilesCount = 50;
         var largestEmbeddedAlbumFiles = mediaFiles
             .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
             .OrderByDescending(m => m.AlbumArt.Length)
@@ -180,8 +180,7 @@ public sealed class TagStats : IPathOperation
             throw new InvalidOperationException("Column names and row data must be provided.");
         }
 
-        if (columnNames.Count != rows[0].Length ||
-            !rows.All(r => r.Length == columnNames.Count))
+        if (columnNames.Count != rows[0].Length || rows.Any(r => r.Length != columnNames.Count))
         {
             throw new InvalidOperationException("The counts of columns and rows must be identical.");
         }
@@ -221,7 +220,7 @@ public sealed class TagStats : IPathOperation
         AnsiConsole.Write(panel);
     }
 
-    class ArtistsComparer : IEqualityComparer<string[]>
+    private class ArtistsComparer : IEqualityComparer<string[]>
     {
         public bool Equals(string[]? x, string[]? y)
         {
@@ -238,13 +237,13 @@ public sealed class TagStats : IPathOperation
             return ConcatenateArtists(x) == ConcatenateArtists(y);
         }
 
-        public int GetHashCode([DisallowNull] string[] obj)
+        public int GetHashCode(string[] obj)
         {
             // Not sure this is correct.
             return string.Concat(obj).ToLower().GetHashCode();
         }
 
-        static string ConcatenateArtists(IEnumerable<string> artists)
+        private static string ConcatenateArtists(IEnumerable<string> artists)
         {
             return Regex.Replace(
                 string.Concat(artists)
@@ -267,7 +266,7 @@ public sealed class TagStats : IPathOperation
             };
         }
 
-        public int GetHashCode([DisallowNull] string obj)
+        public int GetHashCode(string obj)
         {
             return obj.ToLower().GetHashCode();
         }

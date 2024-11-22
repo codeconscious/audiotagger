@@ -13,16 +13,14 @@ public sealed class TagViewerSummary : IPathOperation
         ArgumentNullException.ThrowIfNull(mediaFiles);
 
         var orderedFiles = mediaFiles
-            .OrderBy(m => {
-                return string.Concat(
-                    m.AlbumArtists?.Any() == true
+            .OrderBy(m => string.Concat(
+                m.AlbumArtists.Any() == true
                     ? m.AlbumArtists
-                    : m.Artists?.Any() == true
+                    : m.Artists.Any() == true
                         ? m.Artists
                         : []
-                );
-            })
-            .ThenBy(m => m.Album ?? string.Empty)
+            ))
+            .ThenBy(m => m.Album)
             .ThenBy(m => m.TrackNo)
             .ThenBy(m => m.Title)
             .ToImmutableArray();

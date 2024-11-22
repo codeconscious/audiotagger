@@ -11,9 +11,9 @@ internal sealed class MediaFilePathInfo
         Path.DirectorySeparatorChar
     ];
 
-    private string WorkingPath { get; init; }
-    private List<string> SubDirectories { get; init; }
-    private string FileName { get; init; }
+    private string WorkingPath { get; }
+    private List<string> SubDirectories { get; }
+    private string FileName { get; }
 
     public MediaFilePathInfo(
         string workingPath,

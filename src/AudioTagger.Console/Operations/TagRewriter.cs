@@ -17,8 +17,10 @@ public sealed class TagRewriter : IPathOperation
         foreach (MediaFile file in mediaFiles)
         {
             result = file.RewriteFileTags();
+
             if (result.IsFailed)
             {
+                failures++;
                 printer.FirstError(result);
             }
         }

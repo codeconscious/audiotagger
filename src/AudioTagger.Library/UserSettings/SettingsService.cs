@@ -6,16 +6,16 @@ namespace AudioTagger.Library.UserSettings;
 
 public static class SettingsService
 {
-    private const string _settingsFileName = "settings.json";
+    private const string SettingsFileName = "settings.json";
 
     /// <summary>
     /// Subversions of ID3 version 2 (such as 2.3 or 2.4).
     /// </summary>
-    public enum Id3v2Version : byte
+    public enum Id3V2Version : byte
     {
         TwoPoint2 = 2,
         TwoPoint3 = 3,
-        TwoPoint4 = 4,
+        TwoPoint4 = 4
     }
 
     /// <summary>
@@ -26,7 +26,7 @@ public static class SettingsService
     ///     When true, forces the specified version when writing the file.
     ///     When false, will defer to the version within the file, if any.
     /// </param>
-    public static void SetId3v2Version(Id3v2Version version, bool forceAsDefault)
+    public static void SetId3V2Version(Id3V2Version version, bool forceAsDefault)
     {
         TagLib.Id3v2.Tag.DefaultVersion = (byte)version;
         TagLib.Id3v2.Tag.ForceDefaultVersion = forceAsDefault;
@@ -39,7 +39,7 @@ public static class SettingsService
     /// <returns>A bool indicating success or no action (true) or else failure (false).</returns>
     public static bool CreateIfMissing(IPrinter printer)
     {
-        if (File.Exists(_settingsFileName))
+        if (File.Exists(SettingsFileName))
         {
             return true;
         }
@@ -50,7 +50,7 @@ public static class SettingsService
         }
         catch (Exception ex)
         {
-            printer.Error($"There was an error creating \"{_settingsFileName}\": {ex.Message}");
+            printer.Error($"There was an error creating \"{SettingsFileName}\": {ex.Message}");
             return false;
         }
     }
@@ -64,10 +64,10 @@ public static class SettingsService
         {
             if (createFileIfMissing && !CreateIfMissing(printer))
             {
-                return Result.Fail($"Settings file \"{_settingsFileName}\" missing.");
+                return Result.Fail($"Settings file \"{SettingsFileName}\" missing.");
             }
 
-            string text = File.ReadAllText(_settingsFileName);
+            string text = File.ReadAllText(SettingsFileName);
             Settings json = JsonSerializer.Deserialize<Settings>(text)
                             ?? throw new JsonException();
             return Result.Ok(json);
@@ -96,12 +96,12 @@ public static class SettingsService
                     Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(
                         System.Text.Unicode.UnicodeRanges.All)
                 });
-            File.WriteAllText(_settingsFileName, json);
+            File.WriteAllText(SettingsFileName, json);
             return true;
         }
         catch (FileNotFoundException)
         {
-            printer.Error($"Settings file \"{_settingsFileName}\" is missing.");
+            printer.Error($"Settings file \"{SettingsFileName}\" is missing.");
             return false;
         }
         catch (JsonException ex)

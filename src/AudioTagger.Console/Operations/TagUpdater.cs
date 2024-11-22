@@ -13,11 +13,10 @@ public sealed class TagUpdater : IPathOperation
         Settings settings,
         IPrinter printer)
     {
-        bool cancelRequested = false;
         bool doConfirm = true;
         List<string> errorFiles = [];
 
-        var regexes = settings?.Tagging?.RegexPatterns;
+        var regexes = settings.Tagging?.RegexPatterns;
         if (regexes?.Any() != true)
         {
             throw new InvalidOperationException("No tagging regexes found in settings! Cannot continue.");
@@ -30,7 +29,7 @@ public sealed class TagUpdater : IPathOperation
         {
             try
             {
-                cancelRequested = UpdateTags(
+                var cancelRequested = UpdateTags(
                     mediaFile,
                     regexCollection,
                     printer,
@@ -44,7 +43,6 @@ public sealed class TagUpdater : IPathOperation
             {
                 printer.Error($"Update error: {ex.Message}");
                 errorFiles.Add(mediaFile.FileNameOnly);
-                continue;
             }
         }
 
@@ -83,7 +81,7 @@ public sealed class TagUpdater : IPathOperation
                                .OfType<Group>()
                                .Where(g => g.Success);
 
-        if (matchedTags?.Any() != true)
+        if (matchedTags.Any() != true)
         {
             printer.Print($"Could not parse data for filename \"{mediaFile.FileNameOnly}.\"",
                             ResultType.Failure);
@@ -128,7 +126,7 @@ public sealed class TagUpdater : IPathOperation
             string response = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Apply these updates?")
-                    .AddChoices([no, yes, yesToAll, cancel]));
+                    .AddChoices(no, yes, yesToAll, cancel));
 
             if (response == cancel)
             {
