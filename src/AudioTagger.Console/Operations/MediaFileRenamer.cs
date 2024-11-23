@@ -237,7 +237,7 @@ public sealed class MediaFileRenamer : IPathOperation
             string response = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Rename this file?")
-                    .AddChoices([no, yes, yesToAll, cancel]));
+                    .AddChoices(no, yes, yesToAll, cancel));
 
             if (response == cancel)
             {

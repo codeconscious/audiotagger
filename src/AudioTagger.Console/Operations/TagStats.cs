@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using AudioTagger.Library;
 using Spectre.Console;
@@ -110,7 +109,7 @@ public sealed class TagStats : IPathOperation
 
         const int mostAlbumTracksCount = 30;
         var mostAlbumTracks = mediaFiles
-            .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
+            .Where(m => m.AlbumArt.Length != 0)
             .GroupBy(m => $"{m.ArtistSummary}  /  {m.Album}")
             .ToDictionary(g => g.Key, m => m.Count())
             .OrderByDescending(d => d.Value)
@@ -128,7 +127,7 @@ public sealed class TagStats : IPathOperation
 
         const int largestEmbeddedAlbumArtCount = 50;
         var largestEmbeddedAlbumArt = mediaFiles
-            .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
+            .Where(m => m.AlbumArt.Length != 0)
             .OrderByDescending(m => m.AlbumArt.Length)
             .GroupBy(m => $"{m.ArtistSummary}  /  {m.Album}")
             .ToDictionary(g => g.Key, m => (m.Sum(n => n.AlbumArt.Length), m.Count()))
@@ -147,7 +146,7 @@ public sealed class TagStats : IPathOperation
 
         const int largestEmbeddedAlbumFilesCount = 50;
         var largestEmbeddedAlbumFiles = mediaFiles
-            .Where(m => m.AlbumArt is not null && m.AlbumArt.Length != 0)
+            .Where(m => m.AlbumArt.Length != 0)
             .OrderByDescending(m => m.AlbumArt.Length)
             .Take(largestEmbeddedAlbumFilesCount);
 

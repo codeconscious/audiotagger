@@ -94,11 +94,11 @@ public sealed record Tagging
 public sealed record Renaming
 {
     [JsonPropertyName("patterns")]
-    public ImmutableList<string>? Patterns { get; set; }
+    public ImmutableList<string>? Patterns { get; }
 
     [JsonPropertyName("useAlbumDirectories")]
-    public bool UseAlbumDirectories { get; set; } = false;
+    public bool UseAlbumDirectories { get; } = false;
 
     [JsonPropertyName("ignoredDirectories")]
-    public ImmutableList<string>? IgnoredDirectories { get; set; }
+    public ImmutableList<string>? IgnoredDirectories { get; }
 }

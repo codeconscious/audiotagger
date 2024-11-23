@@ -79,7 +79,7 @@ public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
         string shouldProceed = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("[yellow]Do you want to continue?[/]")
-                .AddChoices([no, yes]));
+                .AddChoices(no, yes));
 
         return shouldProceed == yes;
     }

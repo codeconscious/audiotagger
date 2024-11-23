@@ -8,7 +8,7 @@ namespace AudioTagger.Console.Operations;
 /// </summary>
 public sealed class TagUpdaterMultiple : IPathOperation
 {
-    private const string _inputFile = "input.txt";
+    private const string InputFile = "input.txt";
 
     private enum TagUpdateType { Overwrite, Prepend, Append }
 
@@ -26,11 +26,11 @@ public sealed class TagUpdaterMultiple : IPathOperation
         string[] inputLines;
         try
         {
-            inputLines = File.ReadAllLines(_inputFile).Where(l => l.HasText()).ToArray();
+            inputLines = File.ReadAllLines(InputFile).Where(l => l.HasText()).ToArray();
         }
         catch (FileNotFoundException)
         {
-            printer.Error($"Could not find the file {_inputFile}");
+            printer.Error($"Could not find the file {InputFile}");
             return;
         }
         catch (Exception ex)

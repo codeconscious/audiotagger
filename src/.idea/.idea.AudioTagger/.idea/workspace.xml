@@ -9,6 +9,19 @@
   <component name="ChangeListManager">
     <list default="true" id="337a5000-1f14-4965-9082-d70792ffc586" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.AudioTagger/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AudioTagger/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Operations/MediaFileRenamer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Operations/MediaFileRenamer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagDuplicateFinder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagDuplicateFinder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagRewriter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagRewriter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagStats.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagStats.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagUpdater.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagUpdater.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagUpdaterGenreOnly.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagUpdaterGenreOnly.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagUpdaterMultiple.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagUpdaterMultiple.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagUpdaterReverseTrackNumbers.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagUpdaterReverseTrackNumbers.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagUpdaterYearOnly.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagUpdaterYearOnly.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagViewerSummary.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Operations/TagViewerSummary.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Console/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Console/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Library/MediaFiles/MediaFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Library/MediaFiles/MediaFile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AudioTagger.Library/UpdatableFields.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Library/UpdatableFields.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AudioTagger.Library/UserSettings/Settings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AudioTagger.Library/UserSettings/Settings.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -56,7 +69,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected=".NET Project.AudioTagger.Console">
     <configuration name="AudioTagger.Console" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
@@ -87,7 +100,7 @@
       <workItem from="1729839919064" duration="833000" />
       <workItem from="1730683792787" duration="7272000" />
       <workItem from="1731814863179" duration="5461000" />
-      <workItem from="1732264533929" duration="2476000" />
+      <workItem from="1732264533929" duration="5392000" />
     </task>
     <servers />
   </component>

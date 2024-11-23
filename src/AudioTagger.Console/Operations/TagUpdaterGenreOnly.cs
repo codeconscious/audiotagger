@@ -61,14 +61,15 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             return;
         }
 
-        if (!artistsWithGenres.ContainsKey(artistName))
+        if (!artistsWithGenres.TryGetValue(artistName, out var genre))
         {
             printer.Print($"No registered genre found for artist \"{artistName}\", so skipping \"{mediaFile.FileNameOnly}\".",
                 fgColor: ConsoleColor.Gray);
+
             return;
         }
 
-        if (mediaFile.Genres.FirstOrDefault() == artistsWithGenres[artistName])
+        if (mediaFile.Genres.FirstOrDefault() == genre)
         {
             printer.Print($"Genre is correct, so skipping \"{mediaFile.FileNameOnly}\".");
             return;

@@ -33,7 +33,7 @@ public sealed class TagUpdater : IPathOperation
                     mediaFile,
                     regexCollection,
                     printer,
-                    settings!,
+                    settings,
                     ref doConfirm);
 
                 if (cancelRequested)

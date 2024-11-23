@@ -14,9 +14,9 @@ public sealed class TagViewerSummary : IPathOperation
 
         var orderedFiles = mediaFiles
             .OrderBy(m => string.Concat(
-                m.AlbumArtists.Any() == true
+                m.AlbumArtists.Any()
                     ? m.AlbumArtists
-                    : m.Artists.Any() == true
+                    : m.Artists.Any()
                         ? m.Artists
                         : []
             ))

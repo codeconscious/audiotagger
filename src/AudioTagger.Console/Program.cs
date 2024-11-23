@@ -213,7 +213,7 @@ public static class Program
     private static (ImmutableList<string> Valid, ImmutableList<string> Invalid) CheckPaths(
         ICollection<string> paths)
     {
-        if (paths?.Any() != true)
+        if (paths.Any() != true)
         {
             return new ([], []);
         }

@@ -26,18 +26,18 @@ public static class MediaFileExtensionMethods
         if (first is null && second is null)
             return string.Empty;
 
-        string JoinerFunc(IEnumerable<string> collection) => string.Join(separator, collection);
+        string Joiner(IEnumerable<string> collection) => string.Join(separator, collection);
 
         if (first?.Any() != true)
-            return JoinerFunc(second);
+            return Joiner(second);
 
         if (second?.Any() != true)
-            return JoinerFunc(first);
+            return Joiner(first);
 
         if (first.Count() != second.Count())
-            return $"{JoinerFunc(first)} ({JoinerFunc(second)})";
+            return $"{Joiner(first)} ({Joiner(second)})";
 
-        return JoinerFunc(first); // Identical collections of equal length, so only print the first.
+        return Joiner(first); // Identical collections of equal length, so only print the first.
     }
 
     /// <summary>

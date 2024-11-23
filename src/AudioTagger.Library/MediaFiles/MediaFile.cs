@@ -264,9 +264,9 @@ public sealed class MediaFile
     {
         List<string> tags = [];
 
-        if (HasAnyValues(this.AlbumArtists))
+        if (HasAnyValues(AlbumArtists))
             tags.Add("ALBUMARTISTS");
-        if (HasAnyValues(this.Artists))
+        if (HasAnyValues(Artists))
             tags.Add("ARTISTS");
         if (Album.HasText())
             tags.Add("ALBUM");
@@ -285,7 +285,7 @@ public sealed class MediaFile
     /// </summary>
     public static bool HasAnyValues(IEnumerable<string> tagValues)
     {
-        if (tagValues?.Any() != true)
+        if (tagValues.Any() != true)
         {
             return false;
         }

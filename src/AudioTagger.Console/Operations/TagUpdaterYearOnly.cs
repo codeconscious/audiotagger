@@ -27,7 +27,6 @@ public sealed class TagUpdaterYearOnly : IPathOperation
                 printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
                 //printer.PrintException(ex);
                 errorFiles.Add(mediaFile.FileNameOnly);
-                continue;
             }
         }
 
