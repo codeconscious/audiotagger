@@ -17,7 +17,7 @@ public sealed class MediaFileRenamer : IPathOperation
         Settings settings,
         IPrinter printer)
     {
-        if (settings?.Renaming is null)
+        if (settings.Renaming is null)
         {
             printer.Error("The settings file contained no rename settings, so cannot continue.");
             return;
@@ -80,7 +80,7 @@ public sealed class MediaFileRenamer : IPathOperation
             new SelectionPrompt<string>()
                 // Escaped because substrings like "[1984]" will be misinterpreted as formatting codes.
                 .Title($"All files will be saved under directory \"{Markup.Escape(workingDirectory.FullName)}\"")
-                .AddChoices(["Continue", "Cancel"]));
+                .AddChoices("Continue", "Cancel"));
 
         if (directoryResponse == "Continue")
         {
@@ -108,7 +108,7 @@ public sealed class MediaFileRenamer : IPathOperation
         {
             MediaFile file = mediaFiles.ElementAt(i);
 
-            if (file.Title?.Length == 0)
+            if (file.Title.Length == 0)
             {
                 printer.Print($"Skipping \"{file.FileNameOnly}\" because it has no title.",
                               fgColor: ConsoleColor.DarkRed);
@@ -190,14 +190,14 @@ public sealed class MediaFileRenamer : IPathOperation
 
         var populatedTagNames = file.PopulatedTagNames();
         string? matchedRenamePattern = null;
-        foreach (string testPattern in renamePatterns)
+        foreach (string pattern in renamePatterns)
         {
-            MatchCollection matches = TagFinderRegex.Matches(testPattern);
-            var expectedTags = matches.Cast<Match>().Select(m => m.Value).ToImmutableList();
-            if (expectedTags.Count == populatedTagNames.Count &&
-                expectedTags.TrueForAll(tag => populatedTagNames.Contains(tag)))
+            var matches = TagFinderRegex.Matches(pattern);
+            var expectedTags = matches.Select(m => m.Value).ToList();
+
+            if (AreIdentical(expectedTags, populatedTagNames))
             {
-                matchedRenamePattern = testPattern;
+                matchedRenamePattern = pattern;
             }
         }
 
@@ -213,7 +213,7 @@ public sealed class MediaFileRenamer : IPathOperation
             ? GenerateSafeDirectoryName(file)
             : string.Empty;
         string newAlbumDir = useAlbumDirectory && useArtistDirectory && file.Album.HasText()
-            ? IOUtilities.SanitizePath(file.Album)
+            ? IoUtilities.SanitizePath(file.Album)
             : string.Empty;
         string newFileName = GenerateFileNameUsingPattern(file, populatedTagNames, matchedRenamePattern);
         MediaFilePathInfo newPathInfo = new(workingPath, [newArtistDir, newAlbumDir], newFileName);
@@ -225,7 +225,7 @@ public sealed class MediaFileRenamer : IPathOperation
         }
 
         printer.Print("   Old name: " + oldPathInfo.FullFilePath(true));
-        printer.Print("   New name: " + newPathInfo.FullFilePath(true));;
+        printer.Print("   New name: " + newPathInfo.FullFilePath(true));
 
         if (doConfirm)
         {
@@ -237,7 +237,7 @@ public sealed class MediaFileRenamer : IPathOperation
             string response = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Rename this file?")
-                    .AddChoices([no, yes, yesToAll, cancel]));
+                    .AddChoices(no, yes, yesToAll, cancel));
 
             if (response == cancel)
             {
@@ -283,8 +283,8 @@ public sealed class MediaFileRenamer : IPathOperation
                 );
 
             var ext = Path.GetExtension(file.FileNameOnly);
-            var unsanitizedName = workingFileName.ToString() + ext;
-            return IOUtilities.SanitizePath(unsanitizedName);
+            var unsanitizedName = workingFileName + ext;
+            return IoUtilities.SanitizePath(unsanitizedName);
 
             StringBuilder ReplacePlaceholders(StringBuilder workingName, string tagName)
             {
@@ -293,28 +293,28 @@ public sealed class MediaFileRenamer : IPathOperation
                         "ALBUMARTISTS" =>
                             workingName.Replace(
                                 "%ALBUMARTISTS%",
-                                IOUtilities.SanitizePath(file.AlbumArtists)),
+                                IoUtilities.SanitizePath(file.AlbumArtists)),
                         "ARTISTS" =>
                             workingName.Replace(
                                 "%ARTISTS%",
-                                IOUtilities.SanitizePath(file.Artists)),
+                                IoUtilities.SanitizePath(file.Artists)),
                         "ALBUM" =>
                             workingName.Replace(
                                 "%ALBUM%",
-                                IOUtilities.SanitizePath(file.Album)),
+                                IoUtilities.SanitizePath(file.Album)),
                         "TITLE" =>
                             workingName.Replace(
                                 "%TITLE%",
-                                IOUtilities.SanitizePath(file.Title)),
+                                IoUtilities.SanitizePath(file.Title)),
                         "YEAR" =>
                             workingName.Replace(
                                 "%YEAR%",
-                                IOUtilities.SanitizePath(file.Year.ToString())),
+                                IoUtilities.SanitizePath(file.Year.ToString())),
                         "TRACK" =>
                             workingName.Replace(
                                 "%TRACK%",
-                                IOUtilities.SanitizePath(file.TrackNo.ToString())),
-                        _ => throw new InvalidOperationException($"File tag name \"{tagName} is not supported."),
+                                IoUtilities.SanitizePath(file.TrackNo.ToString())),
+                        _ => throw new InvalidOperationException($"File tag name \"{tagName} is not supported.")
                     };
             }
         }
@@ -326,17 +326,17 @@ public sealed class MediaFileRenamer : IPathOperation
         {
             if (MediaFile.HasAnyValues(file.AlbumArtists))
             {
-                return IOUtilities.SanitizePath(file.AlbumArtists);
+                return IoUtilities.SanitizePath(file.AlbumArtists);
             }
 
             if (MediaFile.HasAnyValues(file.Artists))
             {
-                return IOUtilities.SanitizePath(file.Artists);
+                return IoUtilities.SanitizePath(file.Artists);
             }
 
             if (file.Album.HasText())
             {
-                return IOUtilities.SanitizePath(file.Album);
+                return IoUtilities.SanitizePath(file.Album);
             }
 
             return "___UNSPECIFIED___";
@@ -408,4 +408,8 @@ public sealed class MediaFileRenamer : IPathOperation
         foreach (string dir in dirs)
             printer.Print("- " + dir);
     }
+
+    private static bool AreIdentical<T>(List<T> expectedTags, IList<T> populatedTagNames)
+        => expectedTags.Count == populatedTagNames.Count &&
+           expectedTags.TrueForAll(populatedTagNames.Contains);
 }

@@ -61,11 +61,12 @@ public sealed class SpectrePrinter : IPrinter
         foreach (LineSubString linePart in lineParts)
         {
             var subString = new LineSubString(linePart.Text, linePart.FgColor, linePart.BgColor).GetSpectreString();
+
             if (linePart.AddLineBreak)
                 AnsiConsole.MarkupLine(subString);
             else
                 AnsiConsole.Markup(subString);
-        };
+        }
 
         PrintEmptyLines(appendLines);
     }
@@ -98,7 +99,7 @@ public sealed class SpectrePrinter : IPrinter
     public void FirstError(IResultBase failResult, string? prepend = null)
     {
         string pre = prepend is null ? string.Empty : $"{prepend} ";
-        string message = failResult?.Errors?.FirstOrDefault()?.Message ?? string.Empty;
+        string message = failResult.Errors?.FirstOrDefault()?.Message ?? string.Empty;
 
         Error($"{pre}{message}");
     }

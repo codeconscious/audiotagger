@@ -20,6 +20,6 @@ public static class ResultsMap
             { ResultType.Success, new(ConsoleColor.DarkGreen, "✔︎ ")},
             { ResultType.Failure, new(ConsoleColor.DarkRed, "× ")},
             { ResultType.Cancelled, new(ConsoleColor.DarkRed, "＊ ")},
-            { ResultType.Unknown, new(ConsoleColor.Blue, "? ")},
+            { ResultType.Unknown, new(ConsoleColor.Blue, "? ")}
         };
 }

@@ -6,7 +6,7 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagArtworkExtractor : IPathOperation
 {
-    private static readonly string _artworkFileName = "cover.jpg";
+    private const string ArtworkFileName = "cover.jpg";
 
     private static bool AreAllSame(IEnumerable<string> items) =>
         items.Distinct().Count() == 1;
@@ -50,17 +50,15 @@ public sealed class TagArtworkExtractor : IPathOperation
 
         if (fileGroup.None(f => f.HasAlbumArt()))
         {
-            printer.Warning($"No artwork found in this directory.");
+            printer.Warning("No artwork found in this directory.");
             return;
         }
 
         var albumNames = fileGroup.Select(file => file.Album);
         var artistNames = fileGroup
-            .Select(file => {
-                return file.AlbumArtists.FirstOrDefault()
-                    ?? file.Artists.FirstOrDefault()
-                    ?? "None";
-            });
+            .Select(file => file.AlbumArtists.FirstOrDefault()
+                            ?? file.Artists.FirstOrDefault()
+                            ?? "None");
 
         if (!AreAllSame(artistNames) || !AreAllSame(albumNames))
         {
@@ -98,10 +96,10 @@ public sealed class TagArtworkExtractor : IPathOperation
         MediaFile artSourceFile = fileGroup.First();
         string directoryName = artSourceFile.FileInfo.DirectoryName!;
 
-        var extractResult = artSourceFile.ExtractArtworkToFile(directoryName, _artworkFileName);
+        var extractResult = artSourceFile.ExtractArtworkToFile(directoryName, ArtworkFileName);
         if (extractResult.IsSuccess)
         {
-            printer.Print($"Saved most common artwork to \"{_artworkFileName}\" in the same directory.");
+            printer.Print($"Saved most common artwork to \"{ArtworkFileName}\" in the same directory.");
         }
         else
         {

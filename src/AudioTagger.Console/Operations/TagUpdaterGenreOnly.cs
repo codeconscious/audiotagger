@@ -34,7 +34,6 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             {
                 printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
                 errorFiles.Add(mediaFile.FileNameOnly);
-                continue;
             }
         }
 
@@ -62,14 +61,15 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             return;
         }
 
-        if (!artistsWithGenres.ContainsKey(artistName))
+        if (!artistsWithGenres.TryGetValue(artistName, out var genre))
         {
             printer.Print($"No registered genre found for artist \"{artistName}\", so skipping \"{mediaFile.FileNameOnly}\".",
                 fgColor: ConsoleColor.Gray);
+
             return;
         }
 
-        if (mediaFile.Genres.FirstOrDefault() == artistsWithGenres[artistName])
+        if (mediaFile.Genres.FirstOrDefault() == genre)
         {
             printer.Print($"Genre is correct, so skipping \"{mediaFile.FileNameOnly}\".");
             return;
@@ -97,8 +97,8 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             return;
         }
 
-        printer.Print($"Added \"{proposedUpdates["Genres"]}\" to '{mediaFile.FileNameOnly}'", 0, 0, fgColor: ConsoleColor.Green);
-        return;
+        printer.Print($"Added \"{proposedUpdates["Genres"]}\" to '{mediaFile.FileNameOnly}'",
+                      0, 0, fgColor: ConsoleColor.Green);
     }
 
     /// <summary>

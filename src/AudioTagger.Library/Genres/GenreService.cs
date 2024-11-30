@@ -38,7 +38,7 @@ public static class GenreService
     {
         if (genreFileName is null)
         {
-            return Result.Fail($"No artist-genre file name was passed.");
+            return Result.Fail("No artist-genre file name was passed.");
         }
 
         Dictionary<string, string> artistsWithGenres = [];

@@ -27,12 +27,10 @@ public sealed class TagViewer : IPathOperation
             catch (TagLib.CorruptFileException e)
             {
                 printer.Error("The file's tag metadata was corrupt: " + e.Message);
-                continue;
             }
             catch (Exception e)
             {
                 printer.Error($"An unexpected error occurred with file {mediaFile.FileNameOnly}: " + e.Message);
-                continue;
             }
         }
     }

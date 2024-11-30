@@ -15,8 +15,8 @@ public sealed class TagScanner : IPathOperation
 
         printer.Print($"Found {mediaFiles.Count} audio files.");
 
-        Regex playlistUrlRegex = new("""(?<=Playlist URL: ).+""");
-        Regex videoUrlRegex = new("""(?<=URL: ).+""");
+        Regex playlistUrlRegex = new("(?<=Playlist URL: ).+");
+        Regex videoUrlRegex = new("(?<=URL: ).+");
 
         StringBuilder okFiles = new();
         StringBuilder lowBitRateNoUrl = new();
@@ -31,14 +31,12 @@ public sealed class TagScanner : IPathOperation
             if (file.SampleRate >= 48_000)
             {
                 if (file.Comments.HasText() &&
-                    playlistUrlRegex.Match(file.Comments) is Match playlistMatch &&
-                    playlistMatch.Success)
+                    playlistUrlRegex.Match(file.Comments) is { Success: true } playlistMatch)
                 {
                     highSampleRateWithPlaylistUrl.AppendLine($"{playlistMatch.Value};{file.FileInfo}");
                 }
                 else if (file.Comments.HasText() &&
-                         videoUrlRegex.Match(file.Comments) is Match videoMatch &&
-                         videoMatch.Success)
+                         videoUrlRegex.Match(file.Comments) is { Success: true } videoMatch)
                 {
                     highSampleRateWithVideoUrl.AppendLine($"{videoMatch.Value};{file.FileInfo}");
                 }
@@ -50,14 +48,12 @@ public sealed class TagScanner : IPathOperation
             else if (file.BitRate < 110)
             {
                 if (file.Comments.HasText() &&
-                    playlistUrlRegex.Match(file.Comments) is Match playlistMatch &&
-                    playlistMatch.Success)
+                    playlistUrlRegex.Match(file.Comments) is { Success: true } playlistMatch)
                 {
                     lowBitRateWithPlaylistUrl.AppendLine($"{playlistMatch.Value};{file.FileInfo}");
                 }
                 else if (file.Comments.HasText() &&
-                         videoUrlRegex.Match(file.Comments) is Match videoMatch &&
-                         videoMatch.Success)
+                         videoUrlRegex.Match(file.Comments) is { Success: true } videoMatch)
                 {
                     lowBitRateWithVideoUrl.AppendLine($"{videoMatch.Value};{file.FileInfo}");
                 }

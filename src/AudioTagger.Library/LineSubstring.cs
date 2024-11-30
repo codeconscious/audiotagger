@@ -6,10 +6,10 @@ public sealed class LineSubString(
     ConsoleColor? bgColor = null,
     bool addLineBreak = false)
 {
-    public string Text { get; set; } = text;
-    public ConsoleColor? FgColor { get; set; } = fgColor;
-    public ConsoleColor? BgColor { get; set; } = bgColor;
-    public bool AddLineBreak { get; set; } = addLineBreak;
+    public string Text { get; } = text;
+    public ConsoleColor? FgColor { get; } = fgColor;
+    public ConsoleColor? BgColor { get; } = bgColor;
+    public bool AddLineBreak { get; } = addLineBreak;
 
     public string GetSpectreString()
     {

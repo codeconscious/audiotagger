@@ -12,7 +12,7 @@ public sealed class TagParser : IPathOperation
     {
         Watch watch = new();
 
-        Regex regex = new("""(?<=[アルバム|シングル][『「]).+(?=[」』])"""); // Make class-level?
+        Regex regex = new("(?<=[アルバム|シングル][『「]).+(?=[」』])"); // Make class-level?
 
         foreach (MediaFile mediaFile in mediaFiles)
         {

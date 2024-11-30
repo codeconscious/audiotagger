@@ -5,22 +5,22 @@ namespace AudioTagger.Library.UserSettings;
 public sealed record Settings
 {
     [JsonPropertyName("duplicates")]
-    public Duplicates Duplicates { get; set; } = new();
+    public Duplicates Duplicates { get; init; } = new();
 
     [JsonPropertyName("tagging")]
-    public Tagging? Tagging { get; set; }
+    public Tagging? Tagging { get; init; }
 
     [JsonPropertyName("renaming")]
-    public Renaming? Renaming { get; set; }
+    public Renaming? Renaming { get; init; }
 
     [JsonPropertyName("artistGenreCsvFilePath")]
-    public string? ArtistGenreCsvFilePath { get; set; } = null;
+    public string? ArtistGenreCsvFilePath { get; init; }
 
     [JsonPropertyName("resetSavedArtistGenres")]
-    public bool ResetSavedArtistGenres { get; set; } = false;
+    public bool ResetSavedArtistGenres { get; init; }
 
     [JsonPropertyName("tagCacheFilePath")]
-    public string? TagCacheFilePath { get; set; }
+    public string? TagCacheFilePath { get; init; }
 }
 
 /// <summary>
@@ -34,7 +34,7 @@ public sealed record Duplicates
     /// "The Beatles" and "Beatles" would be recognized as the same artist.
     /// </summary>
     [JsonPropertyName("titleReplacements")]
-    public ImmutableList<string>? TitleReplacements { get; set; }
+    public ImmutableList<string>? TitleReplacements { get; init; }
 
     /// <summary>
     /// A collection of substrings that should be ignored when searching for
@@ -42,7 +42,7 @@ public sealed record Duplicates
     /// "TrackTitle" and "TrackTitle (Remix)" would be considered identical.
     /// </summary>
     [JsonPropertyName("artistReplacements")]
-    public ImmutableList<string>? ArtistReplacements { get; set; }
+    public ImmutableList<string>? ArtistReplacements { get; init; }
 
     /// <summary>
     /// When creating a playlist file, search for this substring in
@@ -50,26 +50,26 @@ public sealed record Duplicates
     /// with the string specified in the `PathReplaceWith` property).
     /// </summary>
     [JsonPropertyName("pathSearchFor")]
-    public string? PathSearchFor { get; set; }
+    public string? PathSearchFor { get; init; }
 
     /// <summary>
     /// When creating a playlist of duplicate tracks, replace the matched
     /// path substring from the `PathSearchFor` property with this text.
     /// </summary>
     [JsonPropertyName("pathReplaceWith")]
-    public string? PathReplaceWith { get; set; }
+    public string? PathReplaceWith { get; init; }
 
     /// <summary>
     /// The directory to which the playlist of duplicates should be saved.
     /// </summary>
     [JsonPropertyName("savePlaylistDirectory")]
-    public string? SavePlaylistDirectory { get; set; }
+    public string? SavePlaylistDirectory { get; init; }
 
     /// <summary>
     /// Track metadata that should be ignored when searching for duplicates.
     /// </summary>
     [JsonPropertyName("exclusions")]
-    public ImmutableList<ExclusionPair>? Exclusions { get; set; }
+    public ImmutableList<ExclusionPair>? Exclusions { get; init; }
 }
 
 /// <summary>
@@ -94,11 +94,11 @@ public sealed record Tagging
 public sealed record Renaming
 {
     [JsonPropertyName("patterns")]
-    public ImmutableList<string>? Patterns { get; set; }
+    public ImmutableList<string>? Patterns { get; }
 
     [JsonPropertyName("useAlbumDirectories")]
-    public bool UseAlbumDirectories { get; set; } = false;
+    public bool UseAlbumDirectories { get; } = false;
 
     [JsonPropertyName("ignoredDirectories")]
-    public ImmutableList<string>? IgnoredDirectories { get; set; }
+    public ImmutableList<string>? IgnoredDirectories { get; }
 }

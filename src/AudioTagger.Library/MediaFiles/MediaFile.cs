@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using FluentResults;
 
 namespace AudioTagger.Library.MediaFiles;
@@ -47,7 +48,7 @@ public sealed class MediaFile
     {
         get => _taggedFile.Tag.Performers?.Select(a => a?.Normalize() ?? string.Empty)
                                           .ToArray()
-                ?? Array.Empty<string>();
+                ?? [];
 
         set => _taggedFile.Tag.Performers =
                     value.Where(a => a.HasText())
@@ -64,7 +65,7 @@ public sealed class MediaFile
     public string Album
     {
         get => _taggedFile.Tag.Album?.Normalize() ?? string.Empty;
-        set => _taggedFile.Tag.Album = value?.Trim()?.Normalize();
+        set => _taggedFile.Tag.Album = value.Trim().Normalize();
     }
 
     public bool LacksArtists => AlbumArtists.Length == 0 && Artists.Length == 0;
@@ -81,50 +82,41 @@ public sealed class MediaFile
         set => _taggedFile.Tag.Track = value;
     }
 
-    public TimeSpan Duration
-    {
-        get => _taggedFile.Properties.Duration;
-    }
+    public TimeSpan Duration => _taggedFile.Properties.Duration;
 
     public string[] Genres
     {
         get => _taggedFile.Tag.Genres;
 
         // TODO: Add first genre tag too?
-        set => _taggedFile.Tag.Genres = value?.Select(g => g?.Trim()?.Normalize()
-                                                      ?? string.Empty)?
-                                              .ToArray()
-                                        ?? Array.Empty<string>();
+        set => _taggedFile.Tag.Genres = value.Select(g => g.Trim().Normalize()).ToArray();
     }
 
     public string[] Composers
     {
-        get => _taggedFile.Tag.Composers?.Select(c => c?.Trim()?.Normalize()
-                                                      ?? string.Empty)?
+        get => _taggedFile.Tag.Composers?.Select(c => c?.Trim().Normalize()
+                                                      ?? string.Empty)
                                          .ToArray()
-               ?? Array.Empty<string>();
+               ?? [];
 
-        set => _taggedFile.Tag.Composers = value?.Select(g => g?.Trim()?
-                                                                .Normalize())?
-                                                 .ToArray()
-                                           ?? Array.Empty<string>();
+        set => _taggedFile.Tag.Composers = value.Select(g => g.Trim().Normalize()).ToArray();
     }
 
     public string Lyrics
     {
-        get => _taggedFile.Tag.Lyrics?.Trim()?.Normalize() ?? string.Empty;
+        get => _taggedFile.Tag.Lyrics?.Trim().Normalize() ?? string.Empty;
         set => _taggedFile.Tag.Lyrics = value.Trim().Normalize();
     }
 
     public string Comments
     {
-        get => _taggedFile.Tag.Comment?.Trim()?.Normalize() ?? string.Empty;
+        get => _taggedFile.Tag.Comment?.Trim().Normalize() ?? string.Empty;
         set => _taggedFile.Tag.Comment = value.Trim().Normalize();
     }
 
     public string Description
     {
-        get => _taggedFile.Tag.Description?.Trim()?.Normalize() ?? string.Empty;
+        get => _taggedFile.Tag.Description?.Trim().Normalize() ?? string.Empty;
         set => _taggedFile.Tag.Description = value.Trim().Normalize();
     }
 
@@ -142,8 +134,12 @@ public sealed class MediaFile
     public string ReplayGainSummary()
     {
         const string noData = "———";
-        string trackGain = double.IsNaN(ReplayGainTrack) ? noData : ReplayGainTrack.ToString();
-        string albumGain = double.IsNaN(ReplayGainAlbum) ? noData : ReplayGainAlbum.ToString();
+        string trackGain = double.IsNaN(ReplayGainTrack)
+            ? noData
+            : ReplayGainTrack.ToString(CultureInfo.InvariantCulture);
+        string albumGain = double.IsNaN(ReplayGainAlbum)
+            ? noData
+            : ReplayGainAlbum.ToString(CultureInfo.InvariantCulture);
         return $"Track: {trackGain}  |  Album: {albumGain}";
     }
 
@@ -160,9 +156,8 @@ public sealed class MediaFile
             var albumData = _taggedFile.Tag?.Pictures;
 
             return albumData == null || albumData.Length == 0
-                ? Array.Empty<byte>()
-                : _taggedFile.Tag?.Pictures[0]?.Data?.Data
-                  ?? Array.Empty<byte>();
+                ? []
+                : _taggedFile.Tag?.Pictures[0]?.Data?.Data ?? [];
         }
     }
 
@@ -269,17 +264,17 @@ public sealed class MediaFile
     {
         List<string> tags = [];
 
-        if (HasAnyValues(this.AlbumArtists))
+        if (HasAnyValues(AlbumArtists))
             tags.Add("ALBUMARTISTS");
-        if (HasAnyValues(this.Artists))
+        if (HasAnyValues(Artists))
             tags.Add("ARTISTS");
-        if (this.Album.HasText())
+        if (Album.HasText())
             tags.Add("ALBUM");
-        if (this.Title.HasText())
+        if (Title.HasText())
             tags.Add("TITLE");
-        if (this.Year != 0)
+        if (Year != 0)
             tags.Add("YEAR");
-        if (this.TrackNo != 0)
+        if (TrackNo != 0)
             tags.Add("TRACK");
 
         return [.. tags];
@@ -290,7 +285,7 @@ public sealed class MediaFile
     /// </summary>
     public static bool HasAnyValues(IEnumerable<string> tagValues)
     {
-        if (tagValues?.Any() != true)
+        if (tagValues.Any() != true)
         {
             return false;
         }

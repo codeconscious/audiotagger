@@ -1,3 +1,4 @@
+using System.Globalization;
 using Spectre.Console;
 
 namespace AudioTagger.Console;
@@ -7,7 +8,7 @@ public sealed class MediaFileViewer
     public void PrintFileDetails(MediaFile file)
     {
         // TODO: Handle colors more gracefully.
-        var tagNameFormatter = (string s) => "[grey]" + s + "[/]";
+        string TagNameFormatter(string s) => "[grey]" + s + "[/]";
 
         Table table = new();
         table.AddColumns(string.Empty, string.Empty);
@@ -15,45 +16,45 @@ public sealed class MediaFileViewer
         table.HideHeaders();
         table.Expand = true;
 
-        table.AddRow(tagNameFormatter("Title"), file.Title.EscapeMarkup());
+        table.AddRow(TagNameFormatter("Title"), file.Title.EscapeMarkup());
         if (file.AlbumArtists.Any())
         {
-            table.AddRow(tagNameFormatter("Album Artist"),
+            table.AddRow(TagNameFormatter("Album Artist"),
                          file.AlbumArtists.Join().EscapeMarkup());
         }
-        table.AddRow(tagNameFormatter("Artist"), file.Artists.Join().EscapeMarkup());
-        table.AddRow(tagNameFormatter("Album"), file.Album.EscapeMarkup());
+        table.AddRow(TagNameFormatter("Artist"), file.Artists.Join().EscapeMarkup());
+        table.AddRow(TagNameFormatter("Album"), file.Album.EscapeMarkup());
         if (file.TrackNo > 0)
-            table.AddRow(tagNameFormatter("Track"), file.TrackNo.ToString());
+            table.AddRow(TagNameFormatter("Track"), file.TrackNo.ToString());
         if (file.Year > 0)
-            table.AddRow(tagNameFormatter("Year"), file.Year.ToString());
-        table.AddRow(tagNameFormatter("Duration"), file.Duration.ToString("m\\:ss"));
+            table.AddRow(TagNameFormatter("Year"), file.Year.ToString());
+        table.AddRow(TagNameFormatter("Duration"), file.Duration.ToString("m\\:ss"));
 
         int genreCount = file.Genres.Length;
-        table.AddRow(tagNameFormatter("Genres"),
+        table.AddRow(TagNameFormatter("Genres"),
                      file.Genres.Join().EscapeMarkup() +
                         (genreCount > 1 ? $" ({genreCount})" : string.Empty));
 
         string bitrate = file.BitRate.ToString();
         string sampleRate = file.SampleRate.ToString("#,##0");
 
-        table.AddRow(tagNameFormatter("Quality"), $"{bitrate} kbps @ {sampleRate} kHz | {file.ReplayGainSummary()}");
+        table.AddRow(TagNameFormatter("Quality"), $"{bitrate} kbps @ {sampleRate} kHz | {file.ReplayGainSummary()}");
 
-        if (file.Composers?.Length > 0)
+        if (file.Composers.Length > 0)
         {
             table.AddRow(
-                tagNameFormatter("Composers"),
+                TagNameFormatter("Composers"),
                 file.Composers.Join().EscapeMarkup());
         }
 
         if (file.Comments.HasText())
-            table.AddRow(tagNameFormatter("Comments"), file.Comments.EscapeMarkup());
+            table.AddRow(TagNameFormatter("Comments"), file.Comments.EscapeMarkup());
 
         if (file.Description.HasText())
-            table.AddRow(tagNameFormatter("Comments"), file.Description.EscapeMarkup());
+            table.AddRow(TagNameFormatter("Comments"), file.Description.EscapeMarkup());
 
         if (file.Lyrics.HasText())
-            table.AddRow(tagNameFormatter("Lyrics"), file.Lyrics[..25].EscapeMarkup() + "...");
+            table.AddRow(TagNameFormatter("Lyrics"), file.Lyrics[..25].EscapeMarkup() + "...");
 
         table.Columns[0].Width(15);
 
@@ -78,7 +79,7 @@ public sealed class MediaFileViewer
             file.Year == 0 ? string.Empty : file.Year.ToString(),
             file.Genres.Join().EscapeMarkup(),
             file.Duration.ToString("m\\:ss"),
-            file.ReplayGainTrack.ToString()
+            file.ReplayGainTrack.ToString(CultureInfo.InvariantCulture)
         };
 
         IEnumerable<Markup> markups = rows.Select(r => new Markup(r));

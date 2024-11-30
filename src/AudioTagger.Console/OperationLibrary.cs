@@ -7,7 +7,7 @@ namespace AudioTagger.Console;
 
 internal static class OperationLibrary
 {
-    internal static readonly IReadOnlyList<Operation> Operations =
+    private static readonly IReadOnlyList<Operation> Operations =
         [
             new(
                 ["-v", "--view"],
@@ -95,7 +95,7 @@ internal static class OperationLibrary
                 ["--cache-tags"],
                 "Cache files' tag data locally to a JSON file whose path is specified in the settings. (Eventually, this will be helpful in speeding up certain operations.)",
                 new TagCacher(),
-                isHidden: true),
+                isHidden: true)
         ];
 
     public static Dictionary<string, string> GenerateHelpTextPairs(bool includeHidden)
@@ -109,7 +109,7 @@ internal static class OperationLibrary
             o => o.Description);
     }
 
-    public static Result<IPathOperation> GetPathOperation(string requestedOperation)
+    private static Result<IPathOperation> GetPathOperation(string requestedOperation)
     {
         string loweredOperation = requestedOperation.ToLowerInvariant();
 
@@ -129,10 +129,9 @@ internal static class OperationLibrary
         var successes = new List<IPathOperation>();
         var failures = new List<string>();
 
-        Result<IPathOperation> currentResult;
         foreach (string operation in requestedOperations)
         {
-            currentResult = GetPathOperation(operation);
+            Result<IPathOperation> currentResult = GetPathOperation(operation);
             if (currentResult.IsSuccess)
             {
                 successes.Add(currentResult.Value);
@@ -167,5 +166,5 @@ internal static class OperationLibrary
             (Commands, Description, PathOperation, IsHidden) =
             (commands, description, pathOperation, isHidden);
         }
-    };
+    }
 }

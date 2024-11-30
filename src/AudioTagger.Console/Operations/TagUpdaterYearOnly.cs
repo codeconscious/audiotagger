@@ -10,7 +10,6 @@ public sealed class TagUpdaterYearOnly : IPathOperation
                       Settings settings,
                       IPrinter printer)
     {
-        var isCancelled = false;
         var doConfirm = true;
         var errorFiles = new List<string>();
 
@@ -18,7 +17,7 @@ public sealed class TagUpdaterYearOnly : IPathOperation
         {
             try
             {
-                isCancelled = UpdateTags(mediaFile, printer, ref doConfirm);
+                var isCancelled = UpdateTags(mediaFile, printer, ref doConfirm);
 
                 if (isCancelled)
                     break;
@@ -28,7 +27,6 @@ public sealed class TagUpdaterYearOnly : IPathOperation
                 printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
                 //printer.PrintException(ex);
                 errorFiles.Add(mediaFile.FileNameOnly);
-                continue;
             }
         }
 
@@ -53,7 +51,7 @@ public sealed class TagUpdaterYearOnly : IPathOperation
         var updateableFields = new UpdatableFields(updateType, createdYear);
         var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
-        if (proposedUpdates?.Any() != true)
+        if (proposedUpdates.Any() != true)
         {
             printer.Print($"No {updateType} updates needed for \"{mediaFile.FileNameOnly}\".",
                           ResultType.Neutral);
@@ -72,7 +70,7 @@ public sealed class TagUpdaterYearOnly : IPathOperation
             string response = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Apply these updates?")
-                    .AddChoices([no, yes, yesToAll, cancel]));
+                    .AddChoices(no, yes, yesToAll, cancel));
 
             if (response == cancel)
             {

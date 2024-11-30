@@ -37,8 +37,8 @@ public static class Program
         Settings settings = readSettingsResult.Value;
 
         // Prefer ID3 v2.3 over v2.4 because the former is apparently more widely supported.
-        SettingsService.SetId3v2Version(
-            version: SettingsService.Id3v2Version.TwoPoint3,
+        SettingsService.SetId3V2Version(
+            version: SettingsService.Id3V2Version.TwoPoint3,
             forceAsDefault: true);
 
         var operationArgs = args.TakeWhile(a => a.StartsWith('-')).ToImmutableArray();
@@ -89,7 +89,7 @@ public static class Program
 
         Watch watch = new();
 
-        var fileNameResult = IOUtilities.GetAllFileNames(path, searchSubDirectories: true);
+        var fileNameResult = IoUtilities.GetAllFileNames(path, searchSubDirectories: true);
         if (fileNameResult.IsFailed)
         {
             printer.FirstError(fileNameResult, "Error reading filenames for path \"{path}\":");
@@ -114,10 +114,12 @@ public static class Program
         {
             printer.Warning($"Tags could not be read for {tagReadErrors.Count} file(s).");
 
-            int showCount = 10;
+            const int showCount = 10;
             tagReadErrors.Take(showCount).ToList().ForEach(printer.Error);
             if (tagReadErrors.Count > showCount)
+            {
                 printer.Error($"plus {tagReadErrors.Count - showCount} more errors...");
+            }
         }
 
         try
@@ -131,7 +133,6 @@ public static class Program
         {
             printer.Error($"Error in while processing path \"{path}\": {ex.Message}");
             printer.PrintException(ex);
-            return;
         }
     }
 
@@ -143,14 +144,12 @@ public static class Program
 
         AnsiConsole.Progress()
             .AutoClear(true)
-            .Columns(new ProgressColumn[]
-            {
+            .Columns(
                 new TaskDescriptionColumn(),
                 new ProgressBarColumn(),
                 new PercentageColumn(),
                 new RemainingTimeColumn(),
-                new SpinnerColumn(),
-            })
+                new SpinnerColumn())
             .Start(ctx =>
             {
                 var task = ctx.AddTask("Reading tag data", maxValue: fileNames.Count);
@@ -214,7 +213,7 @@ public static class Program
     private static (ImmutableList<string> Valid, ImmutableList<string> Invalid) CheckPaths(
         ICollection<string> paths)
     {
-        if (paths?.Any() != true)
+        if (paths.Any() != true)
         {
             return new ([], []);
         }

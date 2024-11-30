@@ -7,14 +7,14 @@ public sealed class MediaFileTests
 {
     public sealed class ArtistSummary
     {
-        private static readonly string Separator = "; ";
+        private const string Separator = "; ";
 
         [Fact]
         public void ContainsAllArtists_ReturnsExpectedString()
         {
             string[] albumArtists = ["Album Artist A"];
             string[] artists = ["Artist 1", "Artist 2"];
-            string expected = "Album Artist A (Artist 1; Artist 2)";
+            const string expected = "Album Artist A (Artist 1; Artist 2)";
             string actual = albumArtists.JoinWith(artists, Separator);
             Assert.Equal(expected, actual);
         }
@@ -24,7 +24,7 @@ public sealed class MediaFileTests
         {
             string[] albumArtists = ["Album Artist"];
             string[] artists = [];
-            string expected = "Album Artist";
+            const string expected = "Album Artist";
             string actual = albumArtists.JoinWith(artists, Separator);
             Assert.Equal(expected, actual);
         }
@@ -34,7 +34,7 @@ public sealed class MediaFileTests
         {
             string[] albumArtists = [];
             string[] artists = ["Artist 1", "Artist 2"];
-            string expected = "Artist 1; Artist 2";
+            const string expected = "Artist 1; Artist 2";
             string actual = albumArtists.JoinWith(artists, Separator);
             Assert.Equal(expected, actual);
         }

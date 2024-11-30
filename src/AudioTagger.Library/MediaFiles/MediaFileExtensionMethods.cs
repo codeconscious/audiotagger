@@ -10,9 +10,7 @@ public static class MediaFileExtensionMethods
     /// <returns>A joined string. Never returns null.</returns>
     public static string Join(this IEnumerable<string> collection, string separator = "; ")
     {
-        return collection is null
-            ? string.Empty
-            : string.Join(separator, collection);
+        return string.Join(separator, collection);
     }
 
     /// <summary>
@@ -25,21 +23,18 @@ public static class MediaFileExtensionMethods
     /// <returns>A combined string. Never returns null. Example: "first1; first2 (second1; second2)"</returns>
     public static string JoinWith(this IEnumerable<string> first, IEnumerable<string> second, string separator = "; ")
     {
-        if (first is null && second is null)
-            return string.Empty;
-
-        string joinerFunc(IEnumerable<string> collection) => string.Join(separator, collection);
+        string Joiner(IEnumerable<string> collection) => string.Join(separator, collection);
 
         if (first?.Any() != true)
-            return joinerFunc(second);
+            return Joiner(second);
 
         if (second?.Any() != true)
-            return joinerFunc(first);
+            return Joiner(first);
 
         if (first.Count() != second.Count())
-            return $"{joinerFunc(first)} ({joinerFunc(second)})";
+            return $"{Joiner(first)} ({Joiner(second)})";
 
-        return joinerFunc(first); // Identical collections of equal length, so only print the first.
+        return Joiner(first); // Identical collections of equal length, so only print the first.
     }
 
     /// <summary>
@@ -65,7 +60,7 @@ public static class MediaFileExtensionMethods
                            && primary.Count == secondary.Count
                          => $"{Format(primary, separator)}",
             ([..], [..]) => $"{Format(primary, separator)} ({Format(secondary, separator)})",
-            _ => string.Empty,
+            _ => string.Empty
         };
     }
 }
