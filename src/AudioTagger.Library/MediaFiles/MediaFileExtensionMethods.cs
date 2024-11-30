@@ -21,11 +21,8 @@ public static class MediaFileExtensionMethods
     /// <param name="second">This collection will not be added if it is identical to the primary one.</param>
     /// <param name="separator">Applies to each collection separately.</param>
     /// <returns>A combined string. Never returns null. Example: "first1; first2 (second1; second2)"</returns>
-    public static string JoinWith(this IEnumerable<string>? first, IEnumerable<string>? second, string separator = "; ")
+    public static string JoinWith(this IEnumerable<string> first, IEnumerable<string> second, string separator = "; ")
     {
-        if (first is null && second is null)
-            return string.Empty;
-
         string Joiner(IEnumerable<string> collection) => string.Join(separator, collection);
 
         if (first?.Any() != true)
