@@ -88,17 +88,17 @@ public sealed record ExclusionPair
 public sealed record Tagging
 {
     [JsonPropertyName("regexPatterns")]
-    public ImmutableList<string>? RegexPatterns { get; set; }
+    public ImmutableList<string>? RegexPatterns { get; init; }
 }
 
 public sealed record Renaming
 {
     [JsonPropertyName("patterns")]
-    public ImmutableList<string>? Patterns { get; }
+    public ImmutableList<string>? Patterns { get; init; }
 
     [JsonPropertyName("useAlbumDirectories")]
-    public bool UseAlbumDirectories { get; } = false;
+    public bool UseAlbumDirectories { get; init; } = false;
 
     [JsonPropertyName("ignoredDirectories")]
-    public ImmutableList<string>? IgnoredDirectories { get; }
+    public ImmutableList<string>? IgnoredDirectories { get; init; }
 }
