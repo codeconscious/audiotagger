@@ -207,7 +207,7 @@ public sealed class MediaFileRenamer : IPathOperation
             return false;
         }
 
-        MediaFilePathInfo oldPathInfo = new(workingPath, file.FileInfo.FullName);
+        var oldPathInfo = new MediaFilePathInfo(workingPath, file.FileInfo.FullName);
 
         string newArtistDir = useArtistDirectory
             ? GenerateSafeDirectoryName(file)
@@ -215,8 +215,8 @@ public sealed class MediaFileRenamer : IPathOperation
         string newAlbumDir = useAlbumDirectory && useArtistDirectory && file.Album.HasText()
             ? IoUtilities.SanitizePath(file.Album)
             : string.Empty;
-        string newFileName = GenerateFileNameUsingPattern(file, populatedTagNames, matchedRenamePattern);
-        MediaFilePathInfo newPathInfo = new(workingPath, [newArtistDir, newAlbumDir], newFileName);
+        string newFileName = GenerateFileName(file, populatedTagNames, matchedRenamePattern).Normalize();
+        var newPathInfo = new MediaFilePathInfo(workingPath, [newArtistDir, newAlbumDir], newFileName);
 
         if (oldPathInfo.FullFilePath(true) == newPathInfo.FullFilePath(true))
         {
@@ -271,7 +271,7 @@ public sealed class MediaFileRenamer : IPathOperation
         /// Generates and returns a new filename by replacing placeholders within the rename
         /// pattern (e.g., `%ALBUM%`) with actual tag data from the `MediaFile`.
         /// </summary>
-        static string GenerateFileNameUsingPattern(
+        static string GenerateFileName(
             MediaFile file,
             ICollection<string> fileTagNames,
             string renamePattern)
