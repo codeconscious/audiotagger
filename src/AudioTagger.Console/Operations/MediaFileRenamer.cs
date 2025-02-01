@@ -215,7 +215,8 @@ public sealed class MediaFileRenamer : IPathOperation
         string newAlbumDir = useAlbumDirectory && useArtistDirectory && file.Album.HasText()
             ? IoUtilities.SanitizePath(file.Album)
             : string.Empty;
-        string newFileName = GenerateFileName(file, populatedTagNames, matchedRenamePattern).Normalize();
+        string newFileName = GenerateFileName(file, populatedTagNames, matchedRenamePattern)
+                                .Normalize(NormalizationForm.FormC);
         var newPathInfo = new MediaFilePathInfo(workingPath, [newArtistDir, newAlbumDir], newFileName);
 
         if (oldPathInfo.FullFilePath(true) == newPathInfo.FullFilePath(true))
