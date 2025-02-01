@@ -99,6 +99,9 @@ public sealed record Renaming
     [JsonPropertyName("useAlbumDirectories")]
     public bool UseAlbumDirectories { get; init; } = false;
 
+    [JsonPropertyName("normalizationForm")]
+    public string NormalizationForm { get; init; } = "C";
+
     [JsonPropertyName("ignoredDirectories")]
     public ImmutableList<string>? IgnoredDirectories { get; init; }
 }

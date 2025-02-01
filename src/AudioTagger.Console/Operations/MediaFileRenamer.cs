@@ -60,12 +60,22 @@ public sealed class MediaFileRenamer : IPathOperation
             return;
         }
 
+        var normalizationForm = settings.Renaming.NormalizationForm.Trim() switch
+        {
+            "D" => NormalizationForm.FormD,
+            "KD" => NormalizationForm.FormKD,
+            "KC" => NormalizationForm.FormKC,
+            _ => NormalizationForm.FormC
+        };
+        printer.Print($"Normalization form is {normalizationForm}.");
+
         RenameFiles(
             eligibleMediaFiles,
             workingDirectory,
             printer,
             settings.Renaming.Patterns,
-            settings.Renaming.UseAlbumDirectories);
+            settings.Renaming.UseAlbumDirectories,
+            normalizationForm);
 
         var deletedDirs = DeleteEmptySubDirectories(workingDirectory.FullName, printer);
         PrintDeletedDirectories(deletedDirs, printer);
@@ -96,7 +106,8 @@ public sealed class MediaFileRenamer : IPathOperation
         DirectoryInfo workingDirectory,
         IPrinter printer,
         IEnumerable<string> renamePatterns,
-        bool useAlbumDirectories)
+        bool useAlbumDirectories,
+        NormalizationForm normalizationForm)
     {
         var isCancelRequested = false;
         var doConfirm = true;
@@ -131,6 +142,7 @@ public sealed class MediaFileRenamer : IPathOperation
                     workingDirectory.FullName,
                     useArtistDirectory,
                     useAlbumDirectories,
+                    normalizationForm,
                     ref doConfirm,
                     renamePatterns);
             }
@@ -181,6 +193,7 @@ public sealed class MediaFileRenamer : IPathOperation
         string workingPath,
         bool useArtistDirectory,
         bool useAlbumDirectory,
+        NormalizationForm normalizationForm,
         ref bool doConfirm,
         IEnumerable<string> renamePatterns)
     {
@@ -210,13 +223,13 @@ public sealed class MediaFileRenamer : IPathOperation
         var oldPathInfo = new MediaFilePathInfo(workingPath, file.FileInfo.FullName);
 
         string newArtistDir = useArtistDirectory
-            ? GenerateSafeDirectoryName(file)
+            ? GenerateSafeDirectoryName(file).Normalize(normalizationForm)
             : string.Empty;
         string newAlbumDir = useAlbumDirectory && useArtistDirectory && file.Album.HasText()
-            ? IoUtilities.SanitizePath(file.Album)
+            ? IoUtilities.SanitizePath(file.Album).Normalize(normalizationForm)
             : string.Empty;
         string newFileName = GenerateFileName(file, populatedTagNames, matchedRenamePattern)
-                                .Normalize(NormalizationForm.FormC);
+                                .Normalize(normalizationForm);
         var newPathInfo = new MediaFilePathInfo(workingPath, [newArtistDir, newAlbumDir], newFileName);
 
         if (oldPathInfo.FullFilePath(true) == newPathInfo.FullFilePath(true))
