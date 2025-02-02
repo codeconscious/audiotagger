@@ -14,7 +14,8 @@ public sealed class TagCacher : IPathOperation
         string Title,
         uint Year,
         string[] Genres,
-        TimeSpan Duration
+        TimeSpan Duration,
+        DateTime UpdatedAt
     );
 
     public void Start(
@@ -25,23 +26,23 @@ public sealed class TagCacher : IPathOperation
     {
         if (settings.TagCacheFilePath is null)
         {
-            printer.Error("You must specify the save file path in the settings file.");
+            printer.Error("You must specify the save file path in the settings.");
             return;
         }
 
         Watch watch = new();
 
-        var summaries = mediaFiles.Select(m => {
-                return new TagSummary(
-                    m.Artists,
-                    m.Album,
-                    m.TrackNo,
-                    m.Title,
-                    m.Year,
-                    m.Genres,
-                    m.Duration
-                );
-            });
+        var summaries =
+            mediaFiles.Select(m => new TagSummary(
+                m.Artists,
+                m.Album,
+                m.TrackNo,
+                m.Title,
+                m.Year,
+                m.Genres,
+                m.Duration,
+                m.FileInfo.LastWriteTime
+            ));
 
         printer.Print("Serializing the tags to JSON...");
         JsonSerializerOptions options = new()
