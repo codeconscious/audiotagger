@@ -9,6 +9,7 @@ public sealed class TagCacher : IPathOperation
 {
     private record TagSummary(
         string[] Artists,
+        string[] AlbumArtists,
         string Album,
         uint TrackNo,
         string Title,
@@ -35,6 +36,7 @@ public sealed class TagCacher : IPathOperation
         var summaries =
             mediaFiles.Select(m => new TagSummary(
                 m.Artists,
+                m.AlbumArtists,
                 m.Album,
                 m.TrackNo,
                 m.Title,
