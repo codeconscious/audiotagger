@@ -99,6 +99,17 @@ public sealed record Renaming
     [JsonPropertyName("useAlbumDirectories")]
     public bool UseAlbumDirectories { get; init; } = false;
 
+    /// <summary>
+    /// The Unicode normalization form to use for renamed filenames.
+    /// Valid values are `C`, `D`, `KC`, and `KD`.
+    /// `C` is used by default is no valid value is provided.
+    ///
+    /// Reference: https://unicode.org/reports/tr15/
+    /// Reference: https://en.wikipedia.org/wiki/Unicode_equivalence
+    /// </summary>
+    [JsonPropertyName("normalizationForm")]
+    public string NormalizationForm { get; init; } = "C";
+
     [JsonPropertyName("ignoredDirectories")]
     public ImmutableList<string>? IgnoredDirectories { get; init; }
 }
