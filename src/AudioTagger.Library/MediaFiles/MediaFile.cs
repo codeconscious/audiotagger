@@ -4,7 +4,7 @@ using FluentResults;
 
 namespace AudioTagger.Library.MediaFiles;
 
-public sealed class MediaFile
+public sealed class MediaFile : IMediaData
 {
     public FileInfo FileInfo { get; }
     private TagLib.File _taggedFile;
