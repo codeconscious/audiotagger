@@ -67,7 +67,7 @@ public sealed class MediaFileRenamer : IPathOperation
             "KC" => NormalizationForm.FormKC,
             _ => NormalizationForm.FormC
         };
-        printer.Print($"Normalization form is {normalizationForm}.");
+        printer.Print($"Filename normalization form is {normalizationForm}.");
 
         RenameFiles(
             eligibleMediaFiles,
@@ -117,7 +117,7 @@ public sealed class MediaFileRenamer : IPathOperation
 
         for (int i = 0; i < mediaFiles.Count; i++)
         {
-            MediaFile file = mediaFiles.ElementAt(i);
+            var file = mediaFiles.ElementAt(i);
 
             if (file.Title.Length == 0)
             {
