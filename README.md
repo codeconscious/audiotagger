@@ -1,10 +1,10 @@
 # AudioTagger
 
-A .NET CLI program that performs various metadata-related operations on supported audio files. It relies on the [TagLibSharp](https://github.com/mono/taglib-sharp) library for tag reading and writing.
+AudioTagger is .NET CLI program that performs various metadata-related operations on supported audio files. It relies on the [TagLibSharp](https://github.com/mono/taglib-sharp) library for tag reading and writing operations.
 
-This is a little labor-of-love project that I work on in my spare time. While I maintain it for my own use, feel free to use it yourself. However, please note that it's geared to my own personal use cases and that no warranties or guarantees are provided.
+This is a little labor-of-love project that I work on in my spare time. While I maintain it for my own use, feel free to use it yourself. However, please note that it's geared to my own personal use case and that no warranties or guarantees are provided.
 
-While I maintain this tool for my own use, feel free to use it yourself. However, please note that it's geared to my own personal use case and that no warranties or guarantees are provided. Additionally, your original audio files might be modified, so I recommend making backups of any irreplacable files to be safe.
+Additionally, your original audio files will be modified during selected operations, so I recommend making backups of your files to be safe.
 
 ## Requirements
 
