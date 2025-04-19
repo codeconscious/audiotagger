@@ -5,7 +5,7 @@ using AudioTagger.Library;
 
 namespace AudioTagger.Console.Operations;
 
-public sealed class TagCacher
+public sealed class TagCacher : IPathOperation
 {
     private record TagSummary(
         string[] Artists,

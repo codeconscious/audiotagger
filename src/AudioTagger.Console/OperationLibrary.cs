@@ -89,8 +89,7 @@ internal static class OperationLibrary
             new(
                 ["--cache-tags"],
                 "Cache files' tag data to a local JSON file whose path is specified in the settings.",
-                new TagCacher(),
-                isHidden: true),
+                new TagCacher()),
             new(
                 ["--scan"],
                 "Ad-hoc maintenance scanning work. (Not intended for normal use.)",
