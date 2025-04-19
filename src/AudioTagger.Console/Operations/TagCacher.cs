@@ -7,18 +7,6 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagCacher : IPathOperation
 {
-    private record TagSummary(
-        string[] Artists,
-        string[] AlbumArtists,
-        string Album,
-        uint TrackNo,
-        string Title,
-        uint Year,
-        string[] Genres,
-        TimeSpan Duration,
-        DateTime UpdatedAt
-    );
-
     public void Start(
         IReadOnlyCollection<MediaFile> mediaFiles,
         DirectoryInfo workingDirectory,
@@ -34,7 +22,10 @@ public sealed class TagCacher : IPathOperation
         Watch watch = new();
 
         var summaries =
-            mediaFiles.Select(m => new TagSummary(
+            mediaFiles.Select(m => new
+            {
+                m.FileNameOnly,
+                m.FileInfo.DirectoryName,
                 m.Artists,
                 m.AlbumArtists,
                 m.Album,
@@ -43,8 +34,8 @@ public sealed class TagCacher : IPathOperation
                 m.Year,
                 m.Genres,
                 m.Duration,
-                m.FileInfo.LastWriteTime
-            ));
+                m.FileInfo.LastWriteTime,
+            });
 
         printer.Print("Serializing the tags to JSON...");
         JsonSerializerOptions options = new()
