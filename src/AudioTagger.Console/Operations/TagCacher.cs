@@ -5,7 +5,7 @@ using AudioTagger.Library;
 
 namespace AudioTagger.Console.Operations;
 
-public sealed class TagCacher : IPathOperation
+public sealed class TagCacher
 {
     private record TagSummary(
         string[] Artists,
@@ -53,10 +53,10 @@ public sealed class TagCacher : IPathOperation
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
         };
         var json = JsonSerializer.Serialize(summaries, options);
-        var unescapedJson = System.Text.RegularExpressions.Regex.Unescape(json); // Avoids `\0027`, etc.
+        // var unescapedJson = System.Text.RegularExpressions.Regex.Unescape(json); // Avoids `\0027`, etc.
 
         printer.Print($"Saving cached tag data to \"{settings.TagCacheFilePath}\"...");
-        File.WriteAllText(settings.TagCacheFilePath, unescapedJson);
+        File.WriteAllText(settings.TagCacheFilePath, json);
         printer.Print($"Saved in {watch.ElapsedFriendly}.");
     }
 }
