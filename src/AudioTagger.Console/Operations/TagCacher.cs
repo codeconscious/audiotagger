@@ -44,7 +44,6 @@ public sealed class TagCacher : IPathOperation
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
         };
         var json = JsonSerializer.Serialize(summaries, options);
-        // var unescapedJson = System.Text.RegularExpressions.Regex.Unescape(json); // Avoids `\0027`, etc.
 
         printer.Print($"Saving cached tag data to \"{settings.TagCacheFilePath}\"...");
         File.WriteAllText(settings.TagCacheFilePath, json);
