@@ -131,6 +131,11 @@ public sealed class UpdatableFields
     {
         var updateOutput = new Dictionary<string, string>();
 
+        if (Title != null && Title != fileData.Title)
+        {
+            updateOutput.Add("Title", Title);
+        }
+
         if (AlbumArtists?.All(a => fileData.AlbumArtists.Contains(a)) == false)
         {
             updateOutput.Add("Album Artists", string.Join("; ", AlbumArtists));
@@ -139,11 +144,6 @@ public sealed class UpdatableFields
         if (Artists?.All(a => fileData.Artists.Contains(a)) == false)
         {
             updateOutput.Add("Artists", string.Join("; ", Artists));
-        }
-
-        if (Title != null && Title != fileData.Title)
-        {
-            updateOutput.Add("Title", Title);
         }
 
         if (Album != null && Album != fileData.Album)
