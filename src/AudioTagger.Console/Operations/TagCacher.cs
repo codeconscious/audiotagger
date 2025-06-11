@@ -37,7 +37,7 @@ public sealed class TagCacher : IPathOperation
                 m.FileInfo.LastWriteTime,
             });
 
-        printer.Print("Serializing the tags to JSON...");
+        printer.Print("Serializing tag data to JSON...");
         JsonSerializerOptions options = new()
         {
             WriteIndented = true,
