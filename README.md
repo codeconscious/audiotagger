@@ -8,7 +8,7 @@ Additionally, your original audio files will be modified during selected operati
 
 ## Requirements
 
-- [.NET 9 runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+- [.NET 10 runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 - `settings.json` (See below)
 
 ## Running
@@ -36,24 +36,24 @@ dotnet run -- -r ~/Downloads/Audio/
 
 ## Flags
 
-| Flags | Description
+| Flags | Description |
 |---|---|
-| -v, --view | View full tag data.
-| -vs, --view-summary | View a summary of tag data.
-| -u, --update | Update tag data using filename patterns from the settings.
-| -u1, --update-single | Update a single tag in multiple files to a single, manually-specified value.
-| -ug, --update-genres | Update the genres in all files automatically using the CSV specified in the settings.
-| -um, --update-multiple | Update a single tag in multiple files with multiple values.
-| -uy, --update-year | Update the year using media files' own dates of creation. (Must do before other updates, lest the creation date be modified by those updates.)
-| -urt, --reverse-track-numbers | Reverse the track numbers of the given files.
-| -uea, --extract-artwork | Extracts artwork from directory files if they have the same artist and album, then deletes the artwork from the files containing it.
-| -ura, --remove-artwork | Removes artwork from files. (File size is not reduced, as padding remains.)
-| -rt, --rewrite-tags | Rewrites file tags. (Can be helping in reducing padding, such as from removed artwork.)
-| -r, --rename | Rename and reorganize files into folders based on tag data.
-| -d, --duplicates | List tracks with identical artists and titles. No files are modified or deleted.
-| -s, --stats | Display file statistics based on tag data.
-| -g, --genres | Save the primary genre for each artist to a genre file.
-| -p, --parse | Get a single tag value by parsing the data of another (generally Comments).
+| -v, --view | View full tag data. |
+| -vs, --view-summary | View a summary of tag data. |
+| -u, --update | Update tag data using filename patterns from the settings. |
+| -u1, --update-single | Update a single tag in multiple files to a single, manually-specified value. |
+| -ug, --update-genres | Update the genres in all files automatically using the CSV specified in the settings. |
+| -um, --update-multiple | Update a single tag in multiple files with multiple values. |
+| -uy, --update-year | Update the year using media files' own dates of creation. (Must do before other updates, lest the creation date be modified by those updates.) |
+| -urt, --reverse-track-numbers | Reverse the track numbers of the given files. |
+| -uea, --extract-artwork | Extracts artwork from directory files if they have the same artist and album, then deletes the artwork from the files containing it. |
+| -ura, --remove-artwork | Removes artwork from files. (File size is not reduced, as padding remains.) |
+| -rt, --rewrite-tags | Rewrites file tags. (Can be helping in reducing padding, such as from removed artwork.) |
+| -r, --rename | Rename and reorganize files into folders based on tag data. |
+| -d, --duplicates | List tracks with identical artists and titles. No files are modified or deleted. |
+| -s, --stats | Display file statistics based on tag data. |
+| -g, --genres | Save the primary genre for each artist to a genre file. |
+| -p, --parse | Get a single tag value by parsing the data of another (generally Comments). |
 
 Passing no arguments will also display these instructions.
 
@@ -72,7 +72,7 @@ A sample settings file, which can you copy and paste if you wish, follows:
       "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<trackNo>\\d+) [–-] (?<artists>.+?) [–-] (?<title>.+)(?=\\.(?:m4a|opus))",
       "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<trackNo>\\d{1,3}) [–-] (?<title>.+)(?=\\.(?:m4a|opus))",
       "(?:(?<albumArtists>.+) ≡ )(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<artists>.+?) [–-] (?<title>.+)(?=\\.(?:m4a|opus))",
-      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<title>.+)(?=\\.(?:m4a|opus))",    ]
+      "(?:(?<albumArtists>.+) ≡ )?(?<album>.+?)(?: ?\\[(?<year>\\d{4})\\])? = (?<title>.+)(?=\\.(?:m4a|opus))" ]
   },
   "renaming": {
     "useAlbumDirectories": true,
@@ -99,7 +99,7 @@ A sample settings file, which can you copy and paste if you wish, follows:
     "exclusions": [
       { "artist": "Artist Name" },
       { "title": "Track Title" },
-      { "artist": "Artist Name", "title": "Track Title" },
+      { "artist": "Artist Name", "title": "Track Title" }
     ],
     "artistReplacements": [
       " ",
@@ -131,7 +131,7 @@ A sample settings file, which can you copy and paste if you wish, follows:
       ":",
       "："
     ]
-  },
+  }
 }
 ```
 
