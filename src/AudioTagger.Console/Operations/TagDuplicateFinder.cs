@@ -39,7 +39,7 @@ public sealed class TagDuplicateFinder : IPathOperation
         string artistLabel = PluralizeTerm(artistReplacements.Count);
         printer.Print($"Found {artistReplacements.Count} artist replacement {artistLabel}.");
 
-        var titleReplacements = settings.Duplicates?.TitleReplacements ?? [];
+        var titleReplacements = settings.Duplicates.TitleReplacements ?? [];
         string titleLabel = PluralizeTerm(titleReplacements.Count);
         printer.Print($"Found {titleReplacements.Count} title replacement {titleLabel}.");
 
@@ -64,9 +64,9 @@ public sealed class TagDuplicateFinder : IPathOperation
         printer.Print($"Found {groupCount} duplicate {groupLabel} in {watch.ElapsedFriendly}.");
         PrintResults(duplicateGroups, printer);
 
-        string? searchFor = settings.Duplicates?.PathSearchFor?.TextOrNull();
-        string? replaceWith = settings.Duplicates?.PathReplaceWith?.TextOrNull();
-        string? saveDir = settings?.Duplicates?.SavePlaylistDirectory;
+        string? searchFor = settings.Duplicates.PathSearchFor?.TextOrNull();
+        string? replaceWith = settings.Duplicates.PathReplaceWith?.TextOrNull();
+        string? saveDir = settings.Duplicates.SavePlaylistDirectory;
         CreatePlaylistFile(duplicateGroups, saveDir, (searchFor, replaceWith), printer);
     }
 

@@ -138,7 +138,7 @@ public sealed class TagUpdaterSingle : IPathOperation
                 string sanitizedTitle = tagValue.Trim().Normalize()
                                              .Replace("___", "　")
                                              .Replace("__", " ");
-                mediaFile.Title = GetUpdatedValue(mediaFile.Title,
+                mediaFile.Title = GetUpdatedTagValue(mediaFile.Title,
                                                   sanitizedTitle,
                                                   updateType,
                                                   false);
@@ -155,7 +155,7 @@ public sealed class TagUpdaterSingle : IPathOperation
                                     StringSplitOptions.TrimEntries)
                             .Select(a => a.Normalize())
                             .ToArray();
-                mediaFile.AlbumArtists = GetUpdatedValues(mediaFile.AlbumArtists,
+                mediaFile.AlbumArtists = GetUpdatedTagValues(mediaFile.AlbumArtists,
                                                           sanitizedAlbumArtists,
                                                           updateType);
                 break;
@@ -171,7 +171,7 @@ public sealed class TagUpdaterSingle : IPathOperation
                                     StringSplitOptions.TrimEntries)
                             .Select(a => a.Normalize())
                             .ToArray();
-                mediaFile.Artists = GetUpdatedValues(mediaFile.Artists,
+                mediaFile.Artists = GetUpdatedTagValues(mediaFile.Artists,
                                                      sanitizedArtists,
                                                      updateType);
                 break;
@@ -179,7 +179,7 @@ public sealed class TagUpdaterSingle : IPathOperation
                 string sanitizedAlbum = tagValue.Trim().Normalize()
                                              .Replace("___", "　")
                                              .Replace("__", " ");
-                mediaFile.Album = GetUpdatedValue(mediaFile.Album,
+                mediaFile.Album = GetUpdatedTagValue(mediaFile.Album,
                                                   sanitizedAlbum,
                                                   updateType,
                                                   false);
@@ -196,7 +196,7 @@ public sealed class TagUpdaterSingle : IPathOperation
                                          StringSplitOptions.TrimEntries)
                                   .Select(g => g.Normalize())
                                   .ToArray();
-                mediaFile.Genres = GetUpdatedValues(mediaFile.Genres,
+                mediaFile.Genres = GetUpdatedTagValues(mediaFile.Genres,
                                                     sanitizedGenres,
                                                     updateType);
                 break;
@@ -207,7 +207,7 @@ public sealed class TagUpdaterSingle : IPathOperation
                 mediaFile.TrackNo = ushort.Parse(tagValue);
                 break;
             case "comment":
-                mediaFile.Comments = GetUpdatedValue(mediaFile.Comments, tagValue, updateType, true);
+                mediaFile.Comments = GetUpdatedTagValue(mediaFile.Comments, tagValue, updateType, true);
                 break;
             default:
                 throw new InvalidOperationException($"Unsupported tag \"{tagName}\" could not be processed.");
@@ -215,14 +215,7 @@ public sealed class TagUpdaterSingle : IPathOperation
 
         mediaFile.SaveUpdates();
 
-        /// <summary>
-        /// Returns the new, updated value for a tag.
-        /// </summary>
-        /// <param name="currentValue">The original value to be modified.</param>
-        /// <param name="newValue">The text to be added.</param>
-        /// <param name="updateType"></param>
-        /// <param name="useNewLine">Whether or not to add line breaks between the new and old text.</param>
-        static string GetUpdatedValue(
+        static string GetUpdatedTagValue(
             string currentValue,
             string newValue,
             TagUpdateType updateType,
@@ -242,13 +235,7 @@ public sealed class TagUpdaterSingle : IPathOperation
             };
         }
 
-        /// <summary>
-        /// Returns the new, updated values for a tag as a collection.
-        /// </summary>
-        /// <param name="currentValues">The original values to be modified.</param>
-        /// <param name="newValues">The new text to be added.</param>
-        /// <param name="updateType"></param>
-        static string[] GetUpdatedValues(
+        static string[] GetUpdatedTagValues(
             string[] currentValues,
             string[] newValues,
             TagUpdateType updateType)

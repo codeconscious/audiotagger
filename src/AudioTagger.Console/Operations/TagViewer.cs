@@ -16,7 +16,7 @@ public sealed class TagViewer : IPathOperation
             try
             {
                 //printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
-                var viewer = new MediaFileViewer();
+                // var viewer = new MediaFileViewer();
                 MediaFileViewer.PrintFileDetails(mediaFile);
 
 #if _WINDOWS
