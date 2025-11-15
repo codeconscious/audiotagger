@@ -17,7 +17,7 @@ public sealed class TagViewer : IPathOperation
             {
                 //printer.Print(OutputLine.GetTagPrintedLines(mediaFile));
                 var viewer = new MediaFileViewer();
-                viewer.PrintFileDetails(mediaFile);
+                MediaFileViewer.PrintFileDetails(mediaFile);
 
 #if _WINDOWS
                 if (mediaFile.AlbumArt.Length > 0)
