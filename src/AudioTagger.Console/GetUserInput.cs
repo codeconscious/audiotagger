@@ -26,9 +26,10 @@ public static class ResponseHandler
     /// <summary>
     /// Ask the user a question that they can answer with a single keystroke.
     /// </summary>
-    private static UserResponse AskUserQuestion(IReadOnlyList<LineSubString> question,
-                                               IReadOnlyList<KeyResponse> allowedResponses,
-                                               IPrinter printer)
+    private static UserResponse AskUserQuestion(
+        IReadOnlyList<LineSubString> question,
+        IReadOnlyList<KeyResponse> allowedResponses,
+        IPrinter printer)
     {
         if (question.None())
         {

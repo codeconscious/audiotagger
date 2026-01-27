@@ -97,6 +97,7 @@ public static class Program
         }
 
         ImmutableArray<string> fileNames = fileNameResult.Value;
+
         if (fileNames.IsEmpty)
         {
             printer.Warning($"No files were found in \"{path}\".");
@@ -107,8 +108,8 @@ public static class Program
 
         var (mediaFiles, tagReadErrors) = ReadTagsShowingProgress(fileNames);
 
-        int successes = fileNames.Length - tagReadErrors.Count;
-        printer.Print($"Tags of {successes:#,##0} files read in {watch.ElapsedFriendly}.");
+        var successCount = fileNames.Length - tagReadErrors.Count;
+        printer.Print($"Tags of {successCount:#,##0} files read in {watch.ElapsedFriendly}.");
 
         if (tagReadErrors.Count != 0)
         {
@@ -213,7 +214,7 @@ public static class Program
     private static (ImmutableList<string> Valid, ImmutableList<string> Invalid) CheckPaths(
         ICollection<string> paths)
     {
-        if (paths.Any() != true)
+        if (paths.Count == 0)
         {
             return new ([], []);
         }

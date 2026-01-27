@@ -281,20 +281,15 @@ public sealed class MediaFileRenamer : IPathOperation
 
         return shouldCancel;
 
-        /// <summary>
-        /// Generates and returns a new filename by replacing placeholders within the rename
-        /// pattern (e.g., `%ALBUM%`) with actual tag data from the `MediaFile`.
-        /// </summary>
+        // Generates and returns a new filename by replacing placeholders within the rename
+        // pattern (e.g., `%ALBUM%`) with actual tag data from the `MediaFile`.
         static string GenerateFileName(
             MediaFile file,
             ICollection<string> fileTagNames,
             string renamePattern)
         {
             StringBuilder workingFileName =
-                fileTagNames.Aggregate(
-                    new StringBuilder(renamePattern),
-                    (workingName, tagName) => ReplacePlaceholders(workingName, tagName)
-                );
+                fileTagNames.Aggregate(new StringBuilder(renamePattern), ReplacePlaceholders);
 
             var ext = Path.GetExtension(file.FileNameOnly);
             var unsanitizedName = workingFileName + ext;
@@ -333,9 +328,7 @@ public sealed class MediaFileRenamer : IPathOperation
             }
         }
 
-        /// <summary>
-        /// Generates and returns a directory name for a file given its tags. Never returns null.
-        /// </summary>
+        // Generates and returns a directory name for a file given its tags. Never returns null.
         static string GenerateSafeDirectoryName(MediaFile file)
         {
             if (MediaFile.HasAnyValues(file.AlbumArtists))

@@ -175,7 +175,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
                 string sanitizedTitle = tagValue.Trim().Normalize()
                                              .Replace("___", "　")
                                              .Replace("__", " ");
-                mediaFile.Title = GetUpdatedValue(mediaFile.Title,
+                mediaFile.Title = GetUpdatedTagValue(mediaFile.Title,
                                                   sanitizedTitle,
                                                   updateType,
                                                   false);
@@ -208,7 +208,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
                 string sanitizedAlbum = tagValue.Trim().Normalize()
                                              .Replace("___", "　")
                                              .Replace("__", " ");
-                mediaFile.Album = GetUpdatedValue(mediaFile.Album,
+                mediaFile.Album = GetUpdatedTagValue(mediaFile.Album,
                                                   sanitizedAlbum,
                                                   updateType,
                                                   false);
@@ -231,7 +231,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
                 mediaFile.TrackNo = ushort.Parse(tagValue);
                 break;
             case "comment":
-                mediaFile.Comments = GetUpdatedValue(mediaFile.Comments, tagValue, updateType, true);
+                mediaFile.Comments = GetUpdatedTagValue(mediaFile.Comments, tagValue, updateType, true);
                 break;
             default:
                 throw new InvalidOperationException($"Unsupported tag \"{tagName}\" could not be processed.");
@@ -239,15 +239,7 @@ public sealed class TagUpdaterMultiple : IPathOperation
 
         mediaFile.SaveUpdates();
 
-        /// <summary>
-        /// Returns the new, updated value for a tag.
-        /// </summary>
-        /// <param name="currentValue">The original value to be modified.</param>
-        /// <param name="newValue">The text to be added.</param>
-        /// <param name="updateType"></param>
-        /// <param name="useNewLine">Whether or not to add line breaks between the new and old text.</param>
-        /// <returns></returns>
-        static string GetUpdatedValue(string currentValue, string newValue, TagUpdateType updateType, bool useNewLines)
+        static string GetUpdatedTagValue(string currentValue, string newValue, TagUpdateType updateType, bool useNewLines)
         {
             string divider = useNewLines ? Environment.NewLine + Environment.NewLine : string.Empty;
             return updateType switch

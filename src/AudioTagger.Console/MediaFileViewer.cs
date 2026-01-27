@@ -5,7 +5,7 @@ namespace AudioTagger.Console;
 
 public sealed class MediaFileViewer
 {
-    public void PrintFileDetails(MediaFile file)
+    public static void PrintFileDetails(MediaFile file)
     {
         // TODO: Handle colors more gracefully.
         string TagNameFormatter(string s) => "[grey]" + s + "[/]";
@@ -30,7 +30,7 @@ public sealed class MediaFileViewer
             table.AddRow(TagNameFormatter("Year"), file.Year.ToString());
         table.AddRow(TagNameFormatter("Duration"), file.Duration.ToString("m\\:ss"));
 
-        int genreCount = file.Genres.Length;
+        var genreCount = file.Genres.Length;
         table.AddRow(TagNameFormatter("Genres"),
                      file.Genres.Join().EscapeMarkup() +
                         (genreCount > 1 ? $" ({genreCount})" : string.Empty));
@@ -82,7 +82,7 @@ public sealed class MediaFileViewer
             file.ReplayGainTrack.ToString(CultureInfo.InvariantCulture)
         };
 
-        IEnumerable<Markup> markups = rows.Select(r => new Markup(r));
+        var markups = rows.Select(r => new Markup(r));
 
         return new TableRow(markups);
     }

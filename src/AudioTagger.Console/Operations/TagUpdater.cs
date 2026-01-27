@@ -77,11 +77,11 @@ public sealed class TagUpdater : IPathOperation
             return shouldCancel;
         }
 
-        IEnumerable<Group>? matchedTags = match.Groups
+        IEnumerable<Group> matchedTags = match.Groups
                                .OfType<Group>()
                                .Where(g => g.Success);
 
-        if (matchedTags.Any() != true)
+        if (!matchedTags.Any())
         {
             printer.Print($"Could not parse data for filename \"{mediaFile.FileNameOnly}.\"",
                             ResultType.Failure);

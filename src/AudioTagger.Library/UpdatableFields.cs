@@ -20,7 +20,6 @@ public sealed class UpdatableFields
     /// Constructor that reads matched regex group names and
     /// maps the data to the correct tag name property.
     /// </summary>
-    /// <param name="matchedGroups"></param>
     public UpdatableFields(
         IEnumerable<Group> matchedGroups,
         IDictionary<string, string> artistsWithGenres)
