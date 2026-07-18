@@ -146,17 +146,15 @@ public sealed class MediaFileRenamer : IPathOperation
                     ref doConfirm,
                     renamePatterns);
             }
-            catch (IOException ex)
+            catch (IOException exn)
             {
-                printer.Error($"Error renaming \"{file.FileNameOnly}\": {ex.Message}");
-                printer.PrintException(ex);
-                errors.Add(ex.Message); // The message should contain the file name.
+                printer.Error($"Renaming error: {exn.Message}");
+                errors.Add(exn.Message);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException exn)
             {
-                printer.Error($"Error renaming \"{file.FileNameOnly}\": {ex.Message}");
-                printer.PrintException(ex);
-                errors.Add(ex.Message);
+                printer.Error($"Error renaming \"{file.FileNameOnly}\": {exn.Message}");
+                errors.Add(exn.Message);
             }
         }
 
@@ -172,7 +170,9 @@ public sealed class MediaFileRenamer : IPathOperation
             uint number = 1;
             printer.Print("ERRORS:");
             foreach (string error in errors)
-                printer.Print($" - #{number++}: {error}");
+            {
+                printer.Print($"- #{number++}: {error}");
+            }
         }
 
         static IDictionary<string, int> GetArtistCounts(IReadOnlyCollection<MediaFile> mediaFiles)
