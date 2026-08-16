@@ -55,7 +55,7 @@ public static class Program
 
         var (validPaths, invalidPaths) = CheckPaths(pathArgs);
 
-        if (invalidPaths.Any())
+        if (!invalidPaths.IsEmpty)
         {
             invalidPaths.ForEach(p => printer.Error($"The path \"{p}\" is invalid."));
         }
