@@ -116,9 +116,9 @@ public sealed class SpectrePrinter : IPrinter
         return type switch
         {
             ResultType.Cancelled => '×',
-            ResultType.Failure => '×',
-            ResultType.Neutral => '-',
-            ResultType.Success => '◯',
+            ResultType.Failure   => '×',
+            ResultType.Neutral   => '-',
+            ResultType.Success   => '◯',
             _ => '?'
         };
     }
