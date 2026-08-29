@@ -64,6 +64,11 @@ internal static class OperationLibrary
                 new TagRewriter()
             ),
             new(
+                ["-st", "--switch-tags"],
+                "Switches the Title and Artist (first one only) tag values.",
+                new TagSwitcher()
+            ),
+            new(
                 ["-r", "--rename"],
                 "Rename and reorganize files into folders based on tag data.",
                 new MediaFileRenamer()
