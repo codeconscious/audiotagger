@@ -12,29 +12,31 @@ public sealed class TagParser : IPathOperation
     {
         Watch watch = new();
 
-        Regex regex = new("(?<=[アルバム|シングル][『「]).+(?=[」』])"); // Make class-level?
+        // This needs to be manually updated each time, as does the field to update.
+        // It's not ideal, but I only need to do this very rarely.
+        Regex regex = new("(?<=\\d - )[^「]+(?= - .+\\..+)");
 
-        foreach (MediaFile mediaFile in mediaFiles)
+        foreach (MediaFile file in mediaFiles)
         {
             // The media field can be customized as needed.
-            Match match = regex.Match(mediaFile.Comments);
+            Match match = regex.Match(file.FileNameOnly);
 
-            if (!match.Success || mediaFile.Album == match.Value)
+            if (!match.Success || file.Artists[0] == match.Value)
             {
-                printer.Print($"No changes needed for \"{mediaFile.FileNameOnly}\".");
+                printer.Print($"No changes needed for \"{file.FileNameOnly}\".");
                 continue;
             }
 
-            mediaFile.Album = match.Value;
+            file.Artists = [match.Value];
 
             try
             {
-                mediaFile.SaveUpdates();
-                printer.Print($"Wrote album \"{match.Value}\" to file \"{mediaFile.FileNameOnly}\"...");
+                file.SaveUpdates();
+                printer.Print($"Wrote artist \"{match.Value}\" to file \"{file.FileNameOnly}\"...");
             }
             catch (Exception ex)
             {
-                printer.Error($"Error writing album to \"{mediaFile.FileNameOnly}\": {ex.Message}");
+                printer.Error($"Error writing artist to \"{file.FileNameOnly}\": {ex.Message}");
             }
         }
 
