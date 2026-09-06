@@ -47,7 +47,11 @@ public static class Program
         var operationResult = OperationFactory(operationArgs);
         if (operationResult.IsFailed)
         {
-            readSettingsResult.Errors.ForEach(x => printer.Error(x.Message));
+            foreach (var err in readSettingsResult.Errors)
+            {
+                printer.Error(err.Message);
+            }
+
             PrintInstructions(printer);
             return;
         }
