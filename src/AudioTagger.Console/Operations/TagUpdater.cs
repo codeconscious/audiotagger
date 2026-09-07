@@ -24,21 +24,21 @@ public sealed class TagUpdater : IPathOperation
         RegexCollection regexCollection = new(regexes);
         printer.Print($"Found {regexCollection.Patterns.Count} regex expression(s).");
 
-        var filteredMediaFiles =
+        var filteredFiles =
             settings.Tagging?.IgnoredDirectories is null
                 ? mediaFiles
                 : mediaFiles.Where(f => settings.Tagging
                                                 .IgnoredDirectories
                                                 .Contains(f.FileInfo.DirectoryName!))
                                                 .ToImmutableList();
-        printer.Print($"Tagging {filteredMediaFiles.Count} of {mediaFiles.Count} files.");
+        printer.Print($"Tagging {filteredFiles.Count} of {mediaFiles.Count} files.");
 
-        foreach (var mediaFile in filteredMediaFiles)
+        foreach (var file in filteredFiles)
         {
             try
             {
                 var cancelRequested = UpdateTags(
-                    mediaFile,
+                    file,
                     regexCollection,
                     printer,
                     settings,
@@ -50,7 +50,7 @@ public sealed class TagUpdater : IPathOperation
             catch (Exception ex)
             {
                 printer.Error($"Update error: {ex.Message}");
-                errorFiles.Add(mediaFile.FileNameOnly);
+                errorFiles.Add(file.FileNameOnly);
             }
         }
 
