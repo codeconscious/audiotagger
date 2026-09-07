@@ -21,11 +21,19 @@ public sealed class TagUpdater : IPathOperation
         {
             throw new InvalidOperationException("No tagging regexes found in settings! Cannot continue.");
         }
-
         RegexCollection regexCollection = new(regexes);
         printer.Print($"Found {regexCollection.Patterns.Count} regex expression(s).");
 
-        foreach (MediaFile mediaFile in mediaFiles)
+        var filteredMediaFiles =
+            settings.Tagging?.IgnoredDirectories is null
+                ? mediaFiles
+                : mediaFiles.Where(f => settings.Tagging
+                                                .IgnoredDirectories
+                                                .Contains(f.FileInfo.DirectoryName!))
+                                                .ToImmutableList();
+        printer.Print($"Tagging {filteredMediaFiles.Count} of {mediaFiles.Count} files.");
+
+        foreach (var mediaFile in filteredMediaFiles)
         {
             try
             {
