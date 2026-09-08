@@ -30,7 +30,10 @@ public sealed class TagUpdater : IPathOperation
                 : mediaFiles
                     .Where(f =>
                         f.FileInfo.DirectoryName is not null &&
-                        !settings.Tagging.IgnoredDirectories.Contains(new DirectoryInfo(f.FileInfo.DirectoryName).Name))
+                        !settings
+                            .Tagging
+                            .IgnoredDirectories
+                            .Contains(new DirectoryInfo(f.FileInfo.DirectoryName).Name))
                     .ToImmutableList();
         printer.Print($"Tagging {filteredFiles.Count} of {mediaFiles.Count} file{(mediaFiles.Count == 1 ? "" : "s")}.");
 
