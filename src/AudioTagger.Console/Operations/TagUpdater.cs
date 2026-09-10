@@ -22,6 +22,7 @@ public sealed class TagUpdater : IPathOperation
             throw new InvalidOperationException("No tagging regexes found in settings! Cannot continue.");
         }
         RegexCollection regexCollection = new(regexes);
+
         printer.Print($"Found {regexCollection.Patterns.Count} regex expression(s).");
 
         var filteredFiles =
@@ -35,6 +36,7 @@ public sealed class TagUpdater : IPathOperation
                             .IgnoredDirectories
                             .Contains(new DirectoryInfo(f.FileInfo.DirectoryName).Name))
                     .ToImmutableList();
+
         printer.Print($"Tagging {filteredFiles.Count} of {mediaFiles.Count} file{(mediaFiles.Count == 1 ? "" : "s")}.");
 
         foreach (var file in filteredFiles)
