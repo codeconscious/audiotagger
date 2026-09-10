@@ -43,12 +43,7 @@ public sealed class TagUpdater : IPathOperation
         {
             try
             {
-                var cancelRequested = UpdateTags(
-                    file,
-                    regexCollection,
-                    printer,
-                    settings,
-                    ref doConfirm);
+                var cancelRequested = UpdateTags(file, regexCollection, printer, settings, ref doConfirm);
 
                 if (cancelRequested)
                     break;
