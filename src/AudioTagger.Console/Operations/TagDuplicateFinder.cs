@@ -3,8 +3,12 @@ using AudioTagger.Library;
 
 namespace AudioTagger.Console.Operations;
 
+// This has been replaced with my AudioTagTool application instead.
+// It will likely no longer be updated.
 public sealed class TagDuplicateFinder : IPathOperation
 {
+    public string Name() => "tag duplicate finder";
+
     public void Start(
         IReadOnlyCollection<MediaFile> mediaFiles,
         DirectoryInfo workingDirectory,

@@ -5,6 +5,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagUpdaterYearOnly : IPathOperation
 {
+    public string Name() => "tag year-only updater";
+
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       Settings settings,

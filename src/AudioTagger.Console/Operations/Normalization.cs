@@ -8,6 +8,8 @@ namespace AudioTagger.Console.Operations;
 /// </summary>
 public sealed class Normalization : IPathOperation
 {
+    public string Name() => "normalization";
+
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       Settings settings,

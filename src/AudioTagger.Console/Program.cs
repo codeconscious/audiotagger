@@ -131,6 +131,7 @@ public static class Program
         {
             foreach (IPathOperation operation in operations)
             {
+                printer.Print($"▪︎ Starting {operation.Name()}");
                 operation.Start(mediaFiles, new DirectoryInfo(path), settings, printer);
             }
         }
