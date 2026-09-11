@@ -21,20 +21,29 @@ public sealed class TagUpdater : IPathOperation
         {
             throw new InvalidOperationException("No tagging regexes found in settings! Cannot continue.");
         }
-
         RegexCollection regexCollection = new(regexes);
+
         printer.Print($"Found {regexCollection.Patterns.Count} regex expression(s).");
 
-        foreach (MediaFile mediaFile in mediaFiles)
+        var filteredFiles =
+            settings.Tagging?.IgnoredDirectories is null
+                ? mediaFiles
+                : mediaFiles
+                    .Where(f =>
+                        f.FileInfo.DirectoryName is not null &&
+                        !settings
+                            .Tagging
+                            .IgnoredDirectories
+                            .Contains(new DirectoryInfo(f.FileInfo.DirectoryName).Name))
+                    .ToImmutableList();
+
+        printer.Print($"Tagging {filteredFiles.Count} of {mediaFiles.Count} file{(mediaFiles.Count == 1 ? "" : "s")}.");
+
+        foreach (var file in filteredFiles)
         {
             try
             {
-                var cancelRequested = UpdateTags(
-                    mediaFile,
-                    regexCollection,
-                    printer,
-                    settings,
-                    ref doConfirm);
+                var cancelRequested = UpdateTags(file, regexCollection, printer, settings, ref doConfirm);
 
                 if (cancelRequested)
                     break;
@@ -42,7 +51,7 @@ public sealed class TagUpdater : IPathOperation
             catch (Exception ex)
             {
                 printer.Error($"Update error: {ex.Message}");
-                errorFiles.Add(mediaFile.FileNameOnly);
+                errorFiles.Add(file.FileNameOnly);
             }
         }
 

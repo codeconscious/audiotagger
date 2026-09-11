@@ -89,6 +89,9 @@ public sealed record Tagging
 {
     [JsonPropertyName("regexPatterns")]
     public ImmutableList<string>? RegexPatterns { get; init; }
+
+    [JsonPropertyName("ignoredDirectories")]
+    public ImmutableList<string>? IgnoredDirectories { get; init; }
 }
 
 public sealed record Renaming
