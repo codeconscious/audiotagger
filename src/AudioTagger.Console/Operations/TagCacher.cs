@@ -5,8 +5,8 @@ using AudioTagger.Library;
 
 namespace AudioTagger.Console.Operations;
 
-// This has been replaced with my AudioTagTool application instead.
-// It will likely no longer be updated.
+// This functionality has been replaced with my AudioTagTools application instead.
+// It will likely no longer be updated and might be removed later.
 public sealed class TagCacher : IPathOperation
 {
     public string Name() => "tag cacher";
