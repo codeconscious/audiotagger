@@ -5,6 +5,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagViewerSummary : IPathOperation
 {
+    public string Name() => "tag summary viewer";
+
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       Settings settings,

@@ -4,6 +4,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagArtworkRemover : IPathOperation
 {
+    public string Name() => "tag artwork remover";
+
     public void Start(
         IReadOnlyCollection<MediaFile> mediaFiles,
         DirectoryInfo workingDirectory,

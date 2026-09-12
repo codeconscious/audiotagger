@@ -6,6 +6,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagScanner : IPathOperation
 {
+    public string Name() => "tag scanner";
+
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       Settings settings,

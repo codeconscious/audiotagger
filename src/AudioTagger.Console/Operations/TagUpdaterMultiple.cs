@@ -8,6 +8,8 @@ namespace AudioTagger.Console.Operations;
 /// </summary>
 public sealed class TagUpdaterMultiple : IPathOperation
 {
+    public string Name() => "single tag updater for multiple files";
+
     private const string InputFile = "input.txt";
 
     private enum TagUpdateType { Overwrite, Prepend, Append }

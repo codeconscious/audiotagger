@@ -8,6 +8,8 @@ namespace AudioTagger.Console.Operations;
 /// </summary>
 public sealed class TagUpdaterSingle : IPathOperation
 {
+    public string Name() => "single-value tag updater";
+
     private enum TagUpdateType { Overwrite, Prepend, Append, Clear }
 
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,

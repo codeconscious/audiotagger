@@ -131,12 +131,13 @@ public static class Program
         {
             foreach (IPathOperation operation in operations)
             {
+                printer.Print($"▪︎ Starting {operation.Name()}");
                 operation.Start(mediaFiles, new DirectoryInfo(path), settings, printer);
             }
         }
         catch (Exception ex)
         {
-            printer.Error($"Error in while processing path \"{path}\": {ex.Message}");
+            printer.Error($"Error while processing path \"{path}\": {ex.Message}");
             printer.PrintException(ex);
         }
     }
