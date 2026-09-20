@@ -8,6 +8,8 @@ namespace AudioTagger.Console.Operations;
 /// </summary>
 public sealed class TagUpdaterReverseTrackNumbers : IPathOperation
 {
+    public string Name() => "track number reversal";
+
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       Settings settings,

@@ -6,6 +6,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagArtworkExtractor : IPathOperation
 {
+    public string Name() => "tag artwork extractor";
+
     private const string ArtworkFileName = "cover.jpg";
 
     private static bool AreAllSame(IEnumerable<string> items) =>

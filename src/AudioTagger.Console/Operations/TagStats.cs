@@ -6,6 +6,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagStats : IPathOperation
 {
+    public string Name() => "tag stats";
+
     public void Start(
         IReadOnlyCollection<MediaFile> mediaFiles,
         DirectoryInfo workingDirectory,

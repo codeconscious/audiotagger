@@ -10,4 +10,10 @@ public interface IPathOperation
                       DirectoryInfo workingDirectory,
                       Settings settings,
                       IPrinter printer);
+
+    /// <summary>
+    /// The name of the operation. It should be grammatically able to follow
+    /// the word "starting" -- e.g., "starting tag updater".
+    /// </summary>
+    public abstract string Name();
 }

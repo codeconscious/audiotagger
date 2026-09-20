@@ -5,6 +5,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagParser : IPathOperation
 {
+    public string Name() => "tag parser";
+
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       Settings settings,

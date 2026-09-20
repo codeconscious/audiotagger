@@ -4,6 +4,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagRewriter : IPathOperation
 {
+    public string Name() => "tag rewriter";
+
     public void Start(
         IReadOnlyCollection<MediaFile> mediaFiles,
         DirectoryInfo workingDirectory,

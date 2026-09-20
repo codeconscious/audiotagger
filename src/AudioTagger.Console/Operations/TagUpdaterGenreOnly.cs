@@ -5,6 +5,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagUpdaterGenreOnly : IPathOperation
 {
+    public string Name() => "tag updater for genre only";
+
     public void Start(IReadOnlyCollection<MediaFile> mediaFiles,
                       DirectoryInfo workingDirectory,
                       Settings settings,

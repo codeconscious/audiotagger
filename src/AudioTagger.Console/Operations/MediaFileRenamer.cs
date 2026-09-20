@@ -7,6 +7,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class MediaFileRenamer : IPathOperation
 {
+    public string Name() => "media file renamer";
+
     private static readonly Regex TagFinderRegex = new(@"(?<=%)\w+(?=%)");
 
     private static readonly List<string> SafeToDeleteFileExtensions = [".DS_Store"];

@@ -7,6 +7,8 @@ namespace AudioTagger.Console.Operations;
 
 public sealed class TagUpdater : IPathOperation
 {
+    public string Name() => "tag updater";
+
     public void Start(
         IReadOnlyCollection<MediaFile> mediaFiles,
         DirectoryInfo workingDirectory,

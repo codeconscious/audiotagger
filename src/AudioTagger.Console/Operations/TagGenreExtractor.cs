@@ -3,8 +3,12 @@ using AudioTagger.Library.Genres;
 
 namespace AudioTagger.Console.Operations;
 
+// This functionality has been replaced with my AudioTagTools application instead.
+// It will likely no longer be updated and might be removed later.
 public sealed class TagGenreExtractor : IPathOperation
 {
+    public string Name() => "tag genre extractor";
+
     private static bool HasGenresAndArtists(MediaFile file) =>
         file.Genres.Length != 0 &&
         file.Artists.Length != 0;
