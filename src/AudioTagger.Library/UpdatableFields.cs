@@ -105,7 +105,7 @@ public sealed class UpdatableFields
         ArgumentNullException.ThrowIfNull(tagField);
         ArgumentNullException.ThrowIfNull(newValue);
 
-        var comparisonType = StringComparison.OrdinalIgnoreCase;
+        const StringComparison comparisonType = StringComparison.OrdinalIgnoreCase;
 
         if (tagField.Equals("year", comparisonType) &&
             newValue is int newYear)
