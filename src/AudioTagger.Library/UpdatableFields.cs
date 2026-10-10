@@ -28,35 +28,27 @@ public sealed class UpdatableFields
 
         foreach (Group element in matchedGroups)
         {
-            if (element.Name == "title")
-            {
-                // TODO: Relocate the replacements.
-                Title = element.Value.Trim().Normalize()
-                                     .Replace("___", "　")
-                                     .Replace("__", " ");
-                Count++;
-            }
-            else if (element.Name == "albumArtists")
+            if (element.Name == "albumArtists")
             {
                 AlbumArtists = element.Value
-                                      .Replace("___", "　")
-                                      .Replace("__", " ")
-                                      .Split([";"],
-                                             StringSplitOptions.RemoveEmptyEntries |
-                                             StringSplitOptions.TrimEntries)
-                                      .Select(a => a.Normalize())
-                                      .ToArray();
+                    .Replace("___", "　")
+                    .Replace("__", " ")
+                    .Split([";"],
+                        StringSplitOptions.RemoveEmptyEntries |
+                        StringSplitOptions.TrimEntries)
+                    .Select(a => a.Normalize())
+                    .ToArray();
                 Count++;
             }
             else if (element.Name == "artists")
             {
                 Artists = element.Value.Replace("___", "　")
-                                       .Replace("__", " ")
-                                       .Split([";"],
-                                              StringSplitOptions.RemoveEmptyEntries |
-                                              StringSplitOptions.TrimEntries)
-                                       .Select(a => a.Normalize())
-                                       .ToArray();
+                    .Replace("__", " ")
+                    .Split([";"],
+                        StringSplitOptions.RemoveEmptyEntries |
+                        StringSplitOptions.TrimEntries)
+                    .Select(a => a.Normalize())
+                    .ToArray();
                 Count++;
             }
             else if (element.Name == "album")
@@ -66,12 +58,21 @@ public sealed class UpdatableFields
                                      .Replace("__", " ");
                 Count++;
             }
+            else if (element.Name == "title")
+            {
+                // TODO: Relocate the replacements.
+                Title = element.Value.Trim().Normalize()
+                                     .Replace("___", "　")
+                                     .Replace("__", " ");
+                Count++;
+            }
             else if (element.Name == "genres")
             {
                 Genres = element.Value.Replace("___", "　")
                                       .Replace("__", " ")
                                       .Split([";"],
-                                             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                             StringSplitOptions.RemoveEmptyEntries |
+                                             StringSplitOptions.TrimEntries)
                                       .Select(g => g.Normalize())
                                       .ToArray();
                 Count++;
@@ -130,11 +131,6 @@ public sealed class UpdatableFields
     {
         var updateOutput = new Dictionary<string, string>();
 
-        if (Title != null && Title != fileData.Title)
-        {
-            updateOutput.Add("Title", Title);
-        }
-
         if (AlbumArtists?.All(a => fileData.AlbumArtists.Contains(a)) == false)
         {
             updateOutput.Add("Album Artists", string.Join("; ", AlbumArtists));
@@ -148,6 +144,11 @@ public sealed class UpdatableFields
         if (Album != null && Album != fileData.Album)
         {
             updateOutput.Add("Album", Album);
+        }
+
+        if (Title != null && Title != fileData.Title)
+        {
+            updateOutput.Add("Title", Title);
         }
 
         if (Year != null && Year != fileData.Year)
