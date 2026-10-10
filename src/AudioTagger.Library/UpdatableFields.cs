@@ -31,24 +31,25 @@ public sealed class UpdatableFields
             if (element.Name == "albumArtists")
             {
                 AlbumArtists = element.Value
-                    .Replace("___", "　")
-                    .Replace("__", " ")
-                    .Split([";"],
-                        StringSplitOptions.RemoveEmptyEntries |
-                        StringSplitOptions.TrimEntries)
-                    .Select(a => a.Normalize())
-                    .ToArray();
+                                      .Replace("___", "　")
+                                      .Replace("__", " ")
+                                      .Split([";"],
+                                          StringSplitOptions.RemoveEmptyEntries |
+                                          StringSplitOptions.TrimEntries)
+                                      .Select(a => a.Normalize())
+                                      .ToArray();
                 Count++;
             }
             else if (element.Name == "artists")
             {
-                Artists = element.Value.Replace("___", "　")
-                    .Replace("__", " ")
-                    .Split([";"],
-                        StringSplitOptions.RemoveEmptyEntries |
-                        StringSplitOptions.TrimEntries)
-                    .Select(a => a.Normalize())
-                    .ToArray();
+                Artists = element.Value
+                                 .Replace("___", "　")
+                                 .Replace("__", " ")
+                                 .Split([";"],
+                                     StringSplitOptions.RemoveEmptyEntries |
+                                     StringSplitOptions.TrimEntries)
+                                 .Select(a => a.Normalize())
+                                 .ToArray();
                 Count++;
             }
             else if (element.Name == "album")
