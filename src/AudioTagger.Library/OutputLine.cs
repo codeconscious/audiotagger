@@ -109,8 +109,9 @@ public sealed class OutputLine
     {
         var lines = new Dictionary<string, string>
         {
-            { "Title", fileData.Title },
+            { "Album Artist(s)", fileData.AlbumArtists.Join() },
             { "Artist(s)", fileData.Artists.Join() },
+            { "Title", fileData.Title },
             { "Album", fileData.Album },
             { "Year", fileData.Year.ToString() },
             { "Duration", fileData.Duration.ToString("m\\:ss") }
