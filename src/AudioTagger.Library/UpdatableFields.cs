@@ -26,6 +26,9 @@ public sealed class UpdatableFields
     {
         ArgumentNullException.ThrowIfNull(matchedGroups);
 
+        const StringSplitOptions splitStringOptions = StringSplitOptions.RemoveEmptyEntries |
+                                                      StringSplitOptions.TrimEntries;
+
         foreach (Group element in matchedGroups)
         {
             if (element.Name == "albumArtists")
@@ -33,9 +36,7 @@ public sealed class UpdatableFields
                 AlbumArtists = element.Value
                                       .Replace("___", "　")
                                       .Replace("__", " ")
-                                      .Split([";"],
-                                          StringSplitOptions.RemoveEmptyEntries |
-                                          StringSplitOptions.TrimEntries)
+                                      .Split([";"], splitStringOptions)
                                       .Select(a => a.Normalize())
                                       .ToArray();
                 Count++;
@@ -45,9 +46,7 @@ public sealed class UpdatableFields
                 Artists = element.Value
                                  .Replace("___", "　")
                                  .Replace("__", " ")
-                                 .Split([";"],
-                                     StringSplitOptions.RemoveEmptyEntries |
-                                     StringSplitOptions.TrimEntries)
+                                 .Split([";"], splitStringOptions)
                                  .Select(a => a.Normalize())
                                  .ToArray();
                 Count++;
@@ -71,9 +70,7 @@ public sealed class UpdatableFields
             {
                 Genres = element.Value.Replace("___", "　")
                                       .Replace("__", " ")
-                                      .Split([";"],
-                                             StringSplitOptions.RemoveEmptyEntries |
-                                             StringSplitOptions.TrimEntries)
+                                      .Split([";"], splitStringOptions)
                                       .Select(g => g.Normalize())
                                       .ToArray();
                 Count++;
