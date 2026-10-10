@@ -107,19 +107,21 @@ public sealed class UpdatableFields
         ArgumentNullException.ThrowIfNull(tagField);
         ArgumentNullException.ThrowIfNull(newValue);
 
-        if (tagField.Equals("year", StringComparison.OrdinalIgnoreCase) &&
+        var comparisonType = StringComparison.OrdinalIgnoreCase;
+
+        if (tagField.Equals("year", comparisonType) &&
             newValue is int newYear)
         {
             Year = (uint)newYear;
             Count++;
         }
-        else if (tagField.Equals("genre", StringComparison.OrdinalIgnoreCase) &&
+        else if (tagField.Equals("genre", comparisonType) &&
                  newValue is string newGenre)
         {
             Genres = [newGenre];
             Count++;
         }
-        else if (tagField.Equals("genre", StringComparison.OrdinalIgnoreCase) &&
+        else if (tagField.Equals("genre", comparisonType) &&
                  newValue is string[] newGenres)
         {
             Genres = newGenres;
