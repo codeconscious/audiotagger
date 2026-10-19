@@ -34,42 +34,43 @@ public sealed class UpdatableFields
             switch (element.Name)
             {
                 case "albumArtists":
-                    AlbumArtists = element.Value
-                        .Replace("___", "　")
-                        .Replace("__", " ")
-                        .Split([";"], splitOptions)
-                        .Select(a => a.Normalize())
-                        .ToArray();
+                    AlbumArtists = element.Value.Trim().Normalize()
+                                          .Replace("___", "　")
+                                          .Replace("__", " ")
+                                          .Split([";"], splitOptions)
+                                          .Select(a => a.Normalize())
+                                          .ToArray();
                     Count++;
                     break;
                 case "artists":
-                    Artists = element.Value
-                        .Replace("___", "　")
-                        .Replace("__", " ")
-                        .Split([";"], splitOptions)
-                        .Select(a => a.Normalize())
-                        .ToArray();
+                    Artists = element.Value.Trim().Normalize()
+                                     .Replace("___", "　")
+                                     .Replace("__", " ")
+                                     .Split([";"], splitOptions)
+                                     .Select(a => a.Normalize())
+                                     .ToArray();
                     Count++;
                     break;
                 case "album":
                     Album = element.Value.Trim().Normalize()
-                        .Replace("___", "　")
-                        .Replace("__", " ");
+                                   .Replace("___", "　")
+                                   .Replace("__", " ");
                     Count++;
                     break;
                 case "title":
                     // TODO: Relocate the replacements.
                     Title = element.Value.Trim().Normalize()
-                        .Replace("___", "　")
-                        .Replace("__", " ");
+                                   .Replace("___", "　")
+                                   .Replace("__", " ");
                     Count++;
                     break;
                 case "genres":
-                    Genres = element.Value.Replace("___", "　")
-                        .Replace("__", " ")
-                        .Split([";"], splitOptions)
-                        .Select(g => g.Normalize())
-                        .ToArray();
+                    Genres = element.Value.Trim().Normalize()
+                                   .Replace("___", "　")
+                                   .Replace("__", " ")
+                                   .Split([";"], splitOptions)
+                                   .Select(g => g.Normalize())
+                                   .ToArray();
                     Count++;
                     break;
                 case "year":
