@@ -31,59 +31,59 @@ public sealed class UpdatableFields
 
         foreach (Group element in matchedGroups)
         {
-            if (element.Name == "albumArtists")
+            switch (element.Name)
             {
-                AlbumArtists = element.Value
-                                      .Replace("___", "　")
-                                      .Replace("__", " ")
-                                      .Split([";"], splitOptions)
-                                      .Select(a => a.Normalize())
-                                      .ToArray();
-                Count++;
-            }
-            else if (element.Name == "artists")
-            {
-                Artists = element.Value
-                                 .Replace("___", "　")
-                                 .Replace("__", " ")
-                                 .Split([";"], splitOptions)
-                                 .Select(a => a.Normalize())
-                                 .ToArray();
-                Count++;
-            }
-            else if (element.Name == "album")
-            {
-                Album = element.Value.Trim().Normalize()
-                                     .Replace("___", "　")
-                                     .Replace("__", " ");
-                Count++;
-            }
-            else if (element.Name == "title")
-            {
-                // TODO: Relocate the replacements.
-                Title = element.Value.Trim().Normalize()
-                                     .Replace("___", "　")
-                                     .Replace("__", " ");
-                Count++;
-            }
-            else if (element.Name == "genres")
-            {
-                Genres = element.Value.Replace("___", "　")
-                                      .Replace("__", " ")
-                                      .Split([";"], splitOptions)
-                                      .Select(g => g.Normalize())
-                                      .ToArray();
-                Count++;
-            }
-            else if (element.Name == "year")
-            {
-                Year = uint.TryParse(element.Value, out var parsed) ? parsed : 0;
-                Count++;
-            }
-            else if (element.Name == "trackNo")
-            {
-                TrackNo = uint.TryParse(element.Value, out var parsed) ? parsed : null;
-                Count++;
+                case "albumArtists":
+                    AlbumArtists = element.Value
+                        .Replace("___", "　")
+                        .Replace("__", " ")
+                        .Split([";"], splitOptions)
+                        .Select(a => a.Normalize())
+                        .ToArray();
+                    Count++;
+                    break;
+                case "artists":
+                    Artists = element.Value
+                        .Replace("___", "　")
+                        .Replace("__", " ")
+                        .Split([";"], splitOptions)
+                        .Select(a => a.Normalize())
+                        .ToArray();
+                    Count++;
+                    break;
+                case "album":
+                    Album = element.Value.Trim().Normalize()
+                        .Replace("___", "　")
+                        .Replace("__", " ");
+                    Count++;
+                    break;
+                case "title":
+                    // TODO: Relocate the replacements.
+                    Title = element.Value.Trim().Normalize()
+                        .Replace("___", "　")
+                        .Replace("__", " ");
+                    Count++;
+                    break;
+                case "genres":
+                    Genres = element.Value.Replace("___", "　")
+                        .Replace("__", " ")
+                        .Split([";"], splitOptions)
+                        .Select(g => g.Normalize())
+                        .ToArray();
+                    Count++;
+                    break;
+                case "year":
+                {
+                    Year = uint.TryParse(element.Value, out var parsed) ? parsed : 0;
+                    Count++;
+                    break;
+                }
+                case "trackNo":
+                {
+                    TrackNo = uint.TryParse(element.Value, out var parsed) ? parsed : null;
+                    Count++;
+                    break;
+                }
             }
         }
 
