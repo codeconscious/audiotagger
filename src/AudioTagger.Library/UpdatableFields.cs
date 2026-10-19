@@ -34,7 +34,8 @@ public sealed class UpdatableFields
             switch (element.Name)
             {
                 case "albumArtists":
-                    AlbumArtists = element.Value.Trim().Normalize()
+                    AlbumArtists = element.Value
+                                          .Trim().Normalize()
                                           .Replace("___", "　")
                                           .Replace("__", " ")
                                           .Split([";"], splitOptions)
@@ -43,7 +44,8 @@ public sealed class UpdatableFields
                     Count++;
                     break;
                 case "artists":
-                    Artists = element.Value.Trim().Normalize()
+                    Artists = element.Value
+                                     .Trim().Normalize()
                                      .Replace("___", "　")
                                      .Replace("__", " ")
                                      .Split([";"], splitOptions)
@@ -52,25 +54,28 @@ public sealed class UpdatableFields
                     Count++;
                     break;
                 case "album":
-                    Album = element.Value.Trim().Normalize()
+                    Album = element.Value
+                                   .Trim().Normalize()
                                    .Replace("___", "　")
                                    .Replace("__", " ");
                     Count++;
                     break;
                 case "title":
                     // TODO: Relocate the replacements.
-                    Title = element.Value.Trim().Normalize()
+                    Title = element.Value
+                                   .Trim().Normalize()
                                    .Replace("___", "　")
                                    .Replace("__", " ");
                     Count++;
                     break;
                 case "genres":
-                    Genres = element.Value.Trim().Normalize()
-                                   .Replace("___", "　")
-                                   .Replace("__", " ")
-                                   .Split([";"], splitOptions)
-                                   .Select(g => g.Normalize())
-                                   .ToArray();
+                    Genres = element.Value
+                                    .Trim().Normalize()
+                                    .Replace("___", "　")
+                                    .Replace("__", " ")
+                                    .Split([";"], splitOptions)
+                                    .Select(g => g.Normalize())
+                                    .ToArray();
                     Count++;
                     break;
                 case "year":
