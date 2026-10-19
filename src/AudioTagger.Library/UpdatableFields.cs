@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using System.Globalization;
+using static System.StringSplitOptions;
 using AudioTagger.Library.MediaFiles;
 
 namespace AudioTagger.Library;
@@ -26,8 +27,7 @@ public sealed class UpdatableFields
     {
         ArgumentNullException.ThrowIfNull(matchedGroups);
 
-        const StringSplitOptions splitStringOptions = StringSplitOptions.RemoveEmptyEntries |
-                                                      StringSplitOptions.TrimEntries;
+        const StringSplitOptions splitOptions = RemoveEmptyEntries | TrimEntries;
 
         foreach (Group element in matchedGroups)
         {
@@ -36,7 +36,7 @@ public sealed class UpdatableFields
                 AlbumArtists = element.Value
                                       .Replace("___", "　")
                                       .Replace("__", " ")
-                                      .Split([";"], splitStringOptions)
+                                      .Split([";"], splitOptions)
                                       .Select(a => a.Normalize())
                                       .ToArray();
                 Count++;
@@ -46,7 +46,7 @@ public sealed class UpdatableFields
                 Artists = element.Value
                                  .Replace("___", "　")
                                  .Replace("__", " ")
-                                 .Split([";"], splitStringOptions)
+                                 .Split([";"], splitOptions)
                                  .Select(a => a.Normalize())
                                  .ToArray();
                 Count++;
@@ -70,7 +70,7 @@ public sealed class UpdatableFields
             {
                 Genres = element.Value.Replace("___", "　")
                                       .Replace("__", " ")
-                                      .Split([";"], splitStringOptions)
+                                      .Split([";"], splitOptions)
                                       .Select(g => g.Normalize())
                                       .ToArray();
                 Count++;
