@@ -89,8 +89,8 @@ public sealed class UpdatableFields
         }
 
         // If no genre was manually passed in, check the settings for a registered one.
-        if (Genres?.Any() != true &&
-            Artists?.Any() == true &&
+        if (Genres?.Any() is not true &&
+            Artists?.Any() is true &&
             artistsWithGenres.Any())
         {
             if (artistsWithGenres.Any() &&
