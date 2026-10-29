@@ -89,8 +89,8 @@ public sealed class TagUpdater : IPathOperation
         }
 
         IEnumerable<Group> matchedTags = match.Groups
-                               .OfType<Group>()
-                               .Where(g => g.Success);
+                                              .OfType<Group>()
+                                              .Where(g => g.Success);
 
         if (!matchedTags.Any())
         {
