@@ -27,7 +27,6 @@ public sealed class TagUpdaterYearOnly : IPathOperation
             catch (Exception ex)
             {
                 printer.Error($"Error updating {mediaFile.FileNameOnly}: {ex.Message}");
-                //printer.PrintException(ex);
                 errorFiles.Add(mediaFile.FileNameOnly);
             }
         }
@@ -105,8 +104,7 @@ public sealed class TagUpdaterYearOnly : IPathOperation
             return shouldCancel;
         }
 
-        //printer.Print("Updates saved", ResultType.Success, 0, 1);
-        AnsiConsole.MarkupLine("[green]Updates saved[/]" + Environment.NewLine);
+        printer.Print("Updates saved", ResultType.Success, 0, 1);
         return shouldCancel;
     }
 

@@ -85,8 +85,6 @@ public sealed class TagUpdaterGenreOnly : IPathOperation
             printer.Print($"No {updateType} updates needed for \"{mediaFile.FileNameOnly}\".", fgColor: ConsoleColor.DarkGray);
         }
 
-        // printer.PrintTagDataToTable(mediaFile, proposedUpdates, false);
-
         // Make the tag updates
         try
         {
