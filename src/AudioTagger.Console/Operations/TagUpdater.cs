@@ -105,7 +105,7 @@ public sealed class TagUpdater : IPathOperation
                 : [];
 
         UpdatableFields updateableFields = new(matchedTags, artistsWithGenres);
-        Dictionary<string, string> proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
+        var proposedUpdates = updateableFields.GetUpdateKeyValuePairs(mediaFile);
 
         if (proposedUpdates.None())
         {
@@ -114,18 +114,7 @@ public sealed class TagUpdater : IPathOperation
             return shouldCancel;
         }
 
-        // Print the filename
-        //printer.PrintDivider(mediaFile.FileNameOnly, ConsoleColor.Cyan);
-
-        // Print the current tag data.
-        // printer.Print(OutputLine.GetTagPrintedLines(mediaFile), 1, 0);
-
         printer.PrintTagDataToTable(mediaFile, proposedUpdates, false);
-
-        // Show the proposed updates and ask the user to confirm.
-        // printer.Print("Apply these updates?", 0, 0, string.Empty, ConsoleColor.Yellow);
-        // foreach (var update in proposedUpdates)
-        //     printer.Print(update.Line);
 
         if (doConfirm)
         {
