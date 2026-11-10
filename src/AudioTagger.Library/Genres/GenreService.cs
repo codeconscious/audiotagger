@@ -42,6 +42,7 @@ public static class GenreService
         }
 
         Dictionary<string, string> artistsWithGenres = [];
+
         try
         {
             using TextFieldParser csvParser = new(genreFileName);
