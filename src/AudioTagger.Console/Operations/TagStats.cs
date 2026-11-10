@@ -80,7 +80,6 @@ public sealed class TagStats : IPathOperation
         const int mostCommonYearCount = 15;
 
         var mostCommonYears = mediaFiles
-            .Where(f => f.Year != 0)
             .GroupBy(f => f.Year)
             .ToDictionary(f => f.Key, f => f.Count())
             .OrderByDescending(f => f.Value)
