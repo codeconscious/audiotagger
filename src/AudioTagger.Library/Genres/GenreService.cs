@@ -42,13 +42,12 @@ public static class GenreService
         }
 
         Dictionary<string, string> artistsWithGenres = [];
+
         try
         {
             using TextFieldParser csvParser = new(genreFileName);
-            // csvParser.CommentTokens = ["#"];
             csvParser.SetDelimiters(Delimiters);
             csvParser.HasFieldsEnclosedInQuotes = false;
-            // csvParser.ReadLine(); // Skip header row
 
             while (!csvParser.EndOfData)
             {
@@ -64,6 +63,4 @@ public static class GenreService
             return Result.Fail(ex.Message);
         }
     }
-
-    private static string EscapeQuotationMarks(string text) => text.Replace("\"", "\\\"");
 }

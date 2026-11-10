@@ -80,7 +80,6 @@ public sealed class TagStats : IPathOperation
         const int mostCommonYearCount = 15;
 
         var mostCommonYears = mediaFiles
-            // .Where(f => f.Year != 0)
             .GroupBy(f => f.Year)
             .ToDictionary(f => f.Key, f => f.Count())
             .OrderByDescending(f => f.Value)
@@ -196,13 +195,9 @@ public sealed class TagStats : IPathOperation
         {
             Border = TableBorder.None
         };
+
         table.AddColumns(columnNames.Select(n => $"[gray]{n}[/]").ToArray());
-        // table.Columns[0].Width = rows.Max(r => r[0].Length + 3);
-        // table.Columns[1].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
-        // if (columnNames.Count > 2)
-        // {
-        //     table.Columns[2].Width = rows.Max(r => Math.Max(r[1].Length + 3, 6));
-        // }
+
         if (justifications != null)
         {
             for (int i = 0; i < justifications.Count; i++)
